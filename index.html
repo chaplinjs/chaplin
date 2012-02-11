@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Architecture Example</title>
+<link rel="stylesheet" href="css/main.css">
+<!--[if lt IE 9]>
+<script>
+'abbr article aside audio canvas details figcaption figure footer header hgroup mark meter nav output progress section summary time video'.replace(/\w+/g,function(n){document.createElement(n)})
+</script>
+<![endif]-->
+<script>
+document.documentElement.className += 'js';
+</script>
+</head>
+<body>
+
+<h1>Architecture Example</h1>
+
+<p id="startup-loading">Loading App…</p>
+
+<div id="page-container">
+  <nav id="navigation-container"></nav>
+  <div id="content-container"></div>
+  <aside id="sidebar-container"></aside>
+</div>
+
+<div id="fb-root"></div>
+
+<!--
+This is a simple solution. We use the non-AMD versions of the core libraries
+because nearly every module uses these libraries. For this demo, it's okay
+that they create global objects (jQuery, $, _, Backbone, Handlebars etc.).
+-->
+<script src="js/vendor/jquery-1.7.1.js"></script>
+<script src="js/vendor/underscore-1.3.1.js"></script>
+<script src="js/vendor/backbone-0.9.1.js"></script>
+<script src="js/vendor/handlebars-1.0.0.beta.6.js"></script>
+<script src="js/vendor/require-1.0.5.js"></script>
+<script>
+require.config({
+    baseUrl: 'js/',
+    paths: {
+      text: 'vendor/require-text-1.0.2'
+    },
+    waitSeconds: 1,
+    urlArgs: 'bust=' +  (new Date()).getTime()
+});
+require(['application']);
+</script>
+
+</body>
+</html>

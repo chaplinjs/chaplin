@@ -1,0 +1,16 @@
+{{#if resolved}}
+  <h2 class="name">{{name}} ({{category}})</h2>
+  <p class="image"><img src="{{fb_img_url id "large"}}" alt=""></p>
+  <p class="description">{{{description}}}</p>
+  {{#if website}}
+    <p class="website">Website: <a href="{{website}}">{{website}}</a></p>
+  {{/if}}
+  {{#if link}}
+    <p class="link">Link: <a href="{{link}}">{{link}}</a></p>
+  {{/if}}
+  <p class="likes">Likes: {{likes}}</p>
+  <div class="fb-like" data-href="{{link}}" data-send="false" data-width="450" data-show-faces="true"></div>
+{{else}}
+  <h2>Like Details</h2>
+  <p>Loading…</p>
+{{/if}}

@@ -1,0 +1,12 @@
+{{#if id}}
+  {{#if name}}
+    <p>Hello {{name}}!</p>
+  {{else}}
+    <p>You’re logged in!</p>
+  {{/if}}
+  <p class="image"><img src="{{fb_img_url id "large"}}" alt=""></p>
+  <p id="logout-button"><button type="button">Logout</button></p>
+{{else}}
+  <p>Not logged in.</p>
+{{/if}}
+

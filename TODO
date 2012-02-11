@@ -1,0 +1,3 @@
+- Persistent controllers with aren't disposed
+- Controller transition example
+- Should the controller add views to the DOM? Should the views have a containerSelector? IMHO the controller should not directly do DOM operations. Only something like attachView using a containerSelector stored elsewhere.
