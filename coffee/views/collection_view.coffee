@@ -16,7 +16,16 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     # The list element the item views are actually appended to.
     # If empty, $el is used.
-    $listElement: null
+    # Set the selector property in the derived class to use a specific element.
+
+    listSelector: null
+    $list: null
+
+    # Selector for a fallback element which is shown if the collection is empty.
+    # Set the selector property in the derived class to use a specific element.
+
+    fallbackSelector: null
+    $fallback: null
 
     # Selector which identifies child elements belonging to collection
     # All children are seen as belonging to collection if not present
@@ -25,20 +34,33 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # Track a list of the visible views
     visibleItems: null
 
+
+    # Returns an instance of the view class
+    # This method has to be overridden by a derived class.
+    # This is not simply a property with a constructor so that
+    # several item view constructors are possible depending
+    # on the item model type.
+
+    getView: ->
+      throw new Error 'CollectionView#getView must be overridden'
+
+
     initialize: (options = {}) ->
       super
-      #console.debug 'CollectionView#initialize', @, options
+      console.debug 'CollectionView#initialize', @, @collection, options
 
+      # Default options
       _(options).defaults
-        render: true
-        renderItems: true
-        filterer: null
+        render: true      # Render the view immediately per default
+        renderItems: true # Render all items immediately per default
+        filterer: null    # No filter function
 
+      # Initialize lists for views and visible items
       @viewsByCid = {}
-
       @visibleItems = []
 
-      @addModelListeners()
+      # Start observing the model
+      @addCollectionListeners()
 
       # Set the filter function
       @filter options.filterer if options.filterer
@@ -46,14 +68,13 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # Render template once
       @render() if options.render
 
-      # Render all items
-      #console.debug '\tRender all items initially'
+      # Render all items initially
       @renderAllItems() if options.renderItems
 
 
-    # Binding of model listeners
+    # Binding of collection listeners
 
-    addModelListeners: ->
+    addCollectionListeners: ->
       @modelBind 'loadStart', @showLoadingIndicator
       @modelBind 'load',      @hideLoadingIndicator
       @modelBind 'add',       @itemAdded
@@ -81,7 +102,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       #console.debug 'CollectionView#itemAdded', @, item.cid, item
       @renderAndInsertItem item, options.at
 
-    # When an item is removed, remove the view from DOM and caches
+    # When an item is removed, remove the corresponding view from DOM and caches
 
     itemRemoved: (item) =>
       #console.debug 'CollectionView#itemRemoved', @, item.cid, item
@@ -94,7 +115,55 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       @renderAllItems()
 
 
+    # Main render method (should be called only once)
+
+    render: ->
+      super
+      #console.debug 'CollectionView#render', @, @collection
+
+      # Set the $list property
+      @$list = if @listSelector then @$(@listSelector) else @$el
+
+      @initFallback()
+
+
+    #
+    # Fallback message when the collection is empty
+    #
+
+    # Initialize the fallback
+
+    initFallback: ->
+      return unless @fallbackSelector
+
+      # Set the $fallback property
+      @$fallback = @$(@fallbackSelector)
+
+      # The collection has to be a deferred in order that
+      # the fallback can be shown properly
+      f = 'function'
+      isDeferred = typeof @collection.done is f and typeof @collection.state is f
+      return unless isDeferred
+
+      # Listen for visible items changes
+      @bind 'visibilityChange', @showHideFallback
+
+      # Register a done handler on the collection
+      # TODO: How to dispose this reference?
+      @collection.done @showHideFallback
+
+    # Show or hide the fallback when the visible items change
+
+    showHideFallback: =>
+      console.debug 'CollectionView#showHideFallback', @, @visibleItems, @collection
+      # Show fallback message if no item is visible and
+      # the collection Deferred has been resolved
+      empty = @visibleItems.length is 0 and @collection.state() is 'resolved'
+      @$fallback.css 'display', if empty then 'block' else 'none'
+
+
     # Render and insert all items
+    # Accepts the options `shuffle` (Boolean) and `limit` (Number)
 
     renderAllItems: (options = {}) =>
 
@@ -102,10 +171,12 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       #console.debug 'CollectionView#renderAllItems', items.length
 
       # Shuffle
-      items = MovieExplorer.utils.shuffle @collection.models if options.shuffle
+      if options.shuffle
+        items = MovieExplorer.utils.shuffle @collection.models
 
       # Apply limit
-      items = items.slice(0, options.limit) if options.limit
+      if options.limit
+        items = items.slice(0, options.limit)
 
       # Reset visible items
       @visibleItems = []
@@ -139,10 +210,11 @@ define ['lib/utils', 'views/view'], (utils, View) ->
           #console.debug '\trender and insert new view for', item.cid
           @renderAndInsertItem item, index
 
-      # If no view was created, trigger `visibilityChange` manually
+      # If no view was created, trigger `visibilityChange` event manually
       unless items.length
         #console.debug 'CollectionView#renderAllItems', 'visibleItems', @visibleItems.length
         @trigger 'visibilityChange', @visibleItems
+
 
     # Applies a filter to the collection. Expects an interator function as parameter.
     # Hides all items for which the iterator returns false.
@@ -176,13 +248,6 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # Trigger a combined `visibilityChange` event
       #console.debug 'CollectionView#filter', 'visibleItems', @visibleItems.length
       @trigger 'visibilityChange', @visibleItems
-
-
-    # Returns an instance of the view class
-    # This has to be overridden by the class which inherits from CollectionView
-
-    getView: ->
-      throw new Error 'CollectionView#getView must be overridden'
 
 
     # Render the view for an item
@@ -227,17 +292,18 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       included = if @filterer then @filterer(item, position) else true
       #console.debug '\tincluded?', included
 
-      # Get the view's top element
-      $viewEl = $(view.el)
+      # Get the view’s top element
+      $viewEl = view.$el
 
       if included
         # Make view transparent if animation is enabled
         $viewEl.css 'opacity', 0 if animationDuration
       else
-        # Hide the view if it's filtered
+        # Hide the view if it’s filtered
         $viewEl.css 'display', 'none'
 
-      $list = @$listElement || @$el
+      # Get the lsit and its children which are originate from item views
+      $list = @$list
       children = $list.children(@itemSelector)
 
       if position is 0
@@ -297,6 +363,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     # Update visibleItems list and trigger a `visibilityChanged` event
     # if an item changed its visibility
+
     updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
       visibilityChanged = false
 
@@ -322,16 +389,18 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
       visibilityChanged
 
+
     # Remove the whole list from DOM
+
     dispose: =>
-      #console.debug 'CollectionView#dispose', @, 'disposed?', @disposed 
+      #console.debug 'CollectionView#dispose', @, 'disposed?', @disposed
       return if @disposed
 
       # Dispose all item views
       view.dispose() for own cid, view of @viewsByCid
 
       # Remove jQuery object, item view cache and reference to collection
-      properties = '$listElement viewsByCid visibleItems'.split(' ')
+      properties = '$list viewsByCid visibleItems'.split(' ')
       delete @[prop] for prop in properties
 
       # Self-disposal
