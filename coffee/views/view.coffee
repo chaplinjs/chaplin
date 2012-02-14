@@ -7,10 +7,19 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
     # Mixin a Subscriber
     _(View.prototype).defaults Subscriber
 
+    # View container element
+    # Set this property in a derived class to specify the container element.
+    # The view is automatically appended to the container element
+    # when it’s rendered.
+    containerSelector: null
+    $container: null
+
+
     initialize: ->
       #console.debug 'View#initialize', @
 
       # Listen for disposal of the model
+      # If the model is disposed, automatically dispose the associated view
       if @model or @collection
         @modelBind 'dispose', @dispose
 
@@ -188,9 +197,14 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         html = template @getTemplateData()
 
         # Replace HTML
-        # This is a workaround for an apparent issue with jQuery 1.7's innerShiv feature
+        # This is a workaround for an apparent issue with jQuery 1.7’s innerShiv feature
         # Using @$el.html(html) caused issues with HTML5-only tags in IE7 and IE8
         @$el.empty().append html
+
+      # Automatically append to DOM if the container element is set
+      # TODO: Sometimes it’s better to do this at the end of a specific render method
+      if @$container
+        @$container.append @el
 
       # Return this
       @
@@ -228,5 +242,5 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
       #console.debug 'View#dispose', @, 'finished'
       @disposed = true
 
-      # Your're frozen when your heart's not open
+      # Your're frozen when your heart’s not open
       Object.freeze? @
