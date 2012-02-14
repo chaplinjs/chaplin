@@ -12,6 +12,7 @@ define(['lib/utils', 'views/view'], function(utils, View) {
     function CollectionView() {
       this.dispose = __bind(this.dispose, this);
       this.renderAllItems = __bind(this.renderAllItems, this);
+      this.showHideFallback = __bind(this.showHideFallback, this);
       this.itemsResetted = __bind(this.itemsResetted, this);
       this.itemRemoved = __bind(this.itemRemoved, this);
       this.itemAdded = __bind(this.itemAdded, this);
@@ -24,15 +25,26 @@ define(['lib/utils', 'views/view'], function(utils, View) {
 
     CollectionView.prototype.viewsByCid = null;
 
-    CollectionView.prototype.$listElement = null;
+    CollectionView.prototype.listSelector = null;
+
+    CollectionView.prototype.$list = null;
+
+    CollectionView.prototype.fallbackSelector = null;
+
+    CollectionView.prototype.$fallback = null;
 
     CollectionView.prototype.itemSelector = null;
 
     CollectionView.prototype.visibleItems = null;
 
+    CollectionView.prototype.getView = function() {
+      throw new Error('CollectionView#getView must be overridden');
+    };
+
     CollectionView.prototype.initialize = function(options) {
       if (options == null) options = {};
       CollectionView.__super__.initialize.apply(this, arguments);
+      console.debug('CollectionView#initialize', this, this.collection, options);
       _(options).defaults({
         render: true,
         renderItems: true,
@@ -40,13 +52,13 @@ define(['lib/utils', 'views/view'], function(utils, View) {
       });
       this.viewsByCid = {};
       this.visibleItems = [];
-      this.addModelListeners();
+      this.addCollectionListeners();
       if (options.filterer) this.filter(options.filterer);
       if (options.render) this.render();
       if (options.renderItems) return this.renderAllItems();
     };
 
-    CollectionView.prototype.addModelListeners = function() {
+    CollectionView.prototype.addCollectionListeners = function() {
       this.modelBind('loadStart', this.showLoadingIndicator);
       this.modelBind('load', this.hideLoadingIndicator);
       this.modelBind('add', this.itemAdded);
@@ -74,6 +86,30 @@ define(['lib/utils', 'views/view'], function(utils, View) {
 
     CollectionView.prototype.itemsResetted = function() {
       return this.renderAllItems();
+    };
+
+    CollectionView.prototype.render = function() {
+      CollectionView.__super__.render.apply(this, arguments);
+      this.$list = this.listSelector ? this.$(this.listSelector) : this.$el;
+      return this.initFallback();
+    };
+
+    CollectionView.prototype.initFallback = function() {
+      var f, isDeferred;
+      if (!this.fallbackSelector) return;
+      this.$fallback = this.$(this.fallbackSelector);
+      f = 'function';
+      isDeferred = typeof this.collection.done === f && typeof this.collection.state === f;
+      if (!isDeferred) return;
+      this.bind('visibilityChange', this.showHideFallback);
+      return this.collection.done(this.showHideFallback);
+    };
+
+    CollectionView.prototype.showHideFallback = function() {
+      var empty;
+      console.debug('CollectionView#showHideFallback', this, this.visibleItems, this.collection);
+      empty = this.visibleItems.length === 0 && this.collection.state() === 'resolved';
+      return this.$fallback.css('display', empty ? 'block' : 'none');
     };
 
     CollectionView.prototype.renderAllItems = function(options) {
@@ -128,10 +164,6 @@ define(['lib/utils', 'views/view'], function(utils, View) {
       return this.trigger('visibilityChange', this.visibleItems);
     };
 
-    CollectionView.prototype.getView = function() {
-      throw new Error('CollectionView#getView must be overridden');
-    };
-
     CollectionView.prototype.renderAndInsertItem = function(item, index) {
       var view;
       view = this.renderItem(item);
@@ -155,13 +187,13 @@ define(['lib/utils', 'views/view'], function(utils, View) {
       if (animationDuration == null) animationDuration = this.animationDuration;
       position = typeof index === 'number' ? index : this.collection.indexOf(item);
       included = this.filterer ? this.filterer(item, position) : true;
-      $viewEl = $(view.el);
+      $viewEl = view.$el;
       if (included) {
         if (animationDuration) $viewEl.css('opacity', 0);
       } else {
         $viewEl.css('display', 'none');
       }
-      $list = this.$listElement || this.$el;
+      $list = this.$list;
       children = $list.children(this.itemSelector);
       if (position === 0) {
         $list.prepend($viewEl);
@@ -220,7 +252,7 @@ define(['lib/utils', 'views/view'], function(utils, View) {
         view = _ref[cid];
         view.dispose();
       }
-      properties = '$listElement viewsByCid visibleItems'.split(' ');
+      properties = '$list viewsByCid visibleItems'.split(' ');
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];

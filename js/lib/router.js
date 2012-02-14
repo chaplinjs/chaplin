@@ -12,7 +12,8 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
 
     Router.prototype.registerRoutes = function() {
       this.match('', 'likes#index');
-      return this.match('likes/:id', 'likes#show');
+      this.match('likes/:id', 'likes#show');
+      return this.match('posts', 'posts#index');
     };
 
     Router.prototype.startHistory = function() {
@@ -32,7 +33,6 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
     Router.prototype.follow = function(path, params) {
       var handler, _i, _len, _ref;
       if (params == null) params = {};
-      console.debug('Router#follow', path, params);
       path = path.replace(/^(\/#|\/)/, '');
       _ref = Backbone.history.handlers;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

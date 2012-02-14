@@ -65,14 +65,14 @@ body {
 
 /* Likes view */
 
-#likes-list, #likes-list li {
+#likes ol, #likes li {
 	margin-left: 0;
 	padding-left: 0;
 }
 
 .like {
-	list-style-type: none;
 	border-top: 1px solid gray;
+	list-style-type: none;
 }
 
 .like:first-child {
@@ -108,4 +108,51 @@ body {
 
 .fb-like {
 	margin: 1em 0;
+}
+
+/* Posts view */
+
+#posts ol, #posts li {
+	margin-left: 0;
+	padding-left: 0;
+}
+
+.post {
+	border-top: 1px solid gray;
+	list-style-type: none;
+}
+
+.post:first-child {
+	border-top: 0 none;
+}
+
+.post .message {
+	font-style: italic;
+}
+
+.post .picture {
+	float: left;
+	margin: 0;
+}
+
+.post .link {
+	overflow: hidden;
+}
+
+.post h2, .post .description {
+	margin-left: 150px;
+}
+
+.post h2 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-weight: 1em;
+}
+
+.post .description {
+	margin-top: 0.5em;
+}
+
+.post .stats {
+
 }

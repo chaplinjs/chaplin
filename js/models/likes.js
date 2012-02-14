@@ -11,7 +11,6 @@ define(['mediator', 'models/collection', 'models/like'], function(mediator, Coll
 
     function Likes() {
       this.processLikes = __bind(this.processLikes, this);
-      this.getLikes = __bind(this.getLikes, this);
       Likes.__super__.constructor.apply(this, arguments);
     }
 
@@ -22,9 +21,7 @@ define(['mediator', 'models/collection', 'models/like'], function(mediator, Coll
       _(this).extend($.Deferred());
       this.getLikes();
       this.subscribeEvent('login', this.getLikes);
-      return this.subscribeEvent('logout', function() {
-        return this.reset();
-      });
+      return this.subscribeEvent('logout', this.reset);
     };
 
     Likes.prototype.getLikes = function() {
@@ -38,7 +35,6 @@ define(['mediator', 'models/collection', 'models/like'], function(mediator, Coll
     };
 
     Likes.prototype.processLikes = function(response) {
-      if (!(response && response.data)) return;
       this.trigger('load');
       this.reset(response && response.data ? response.data : []);
       return this.resolve();

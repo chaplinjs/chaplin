@@ -47,10 +47,8 @@ define(['mediator'], function(mediator) {
     Route.prototype.handler = function(path, options) {
       var params;
       if (options == null) options = {};
-      console.debug('Route#handler', this, path, options);
       params = this.buildParams(path);
       params.navigate = options.navigate === true;
-      console.debug('\tstartup', 'controller:', this.controller, 'action:', this.action, 'params:', params, 'navigate:', params.navigate);
       return mediator.publish('!startupController', this.controller, this.action, params);
     };
 

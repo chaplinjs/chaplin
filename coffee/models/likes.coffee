@@ -14,9 +14,9 @@ define ['mediator', 'models/collection', 'models/like'], (mediator, Collection, 
 
       @getLikes()
       @subscribeEvent 'login', @getLikes
-      @subscribeEvent 'logout', -> @reset()
+      @subscribeEvent 'logout', @reset
 
-    getLikes: =>
+    getLikes: ->
       #console.debug 'Likes#getLikes'
 
       user = mediator.user
@@ -30,13 +30,12 @@ define ['mediator', 'models/collection', 'models/like'], (mediator, Collection, 
 
     processLikes: (response) =>
       #console.debug 'Likes#processLikes', response, response.data
-      return unless response and response.data
 
       # Trigger before updating the collection to hide the loading spinner
       @trigger 'load'
 
-      # Update the list
+      # Update the collection
       @reset(if response and response.data then response.data else [])
 
-      # Resolve the deferred
+      # Resolve the Deferred
       @resolve()

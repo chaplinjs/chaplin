@@ -20,10 +20,13 @@ define(['views/collection_view', 'views/compact_like_view', 'text!templates/like
 
     LikesView.prototype.containerSelector = '#content-container';
 
+    LikesView.prototype.listSelector = 'ol';
+
+    LikesView.prototype.fallbackSelector = '.fallback';
+
     LikesView.prototype.initialize = function() {
       LikesView.__super__.initialize.apply(this, arguments);
-      this.subscribeEvent('loginStatus', this.loginStatus);
-      return this.bind('visibilityChange', this.visibilityChangeHandler);
+      return this.subscribeEvent('loginStatus', this.loginStatus);
     };
 
     LikesView.prototype.getView = function(item) {
@@ -34,19 +37,6 @@ define(['views/collection_view', 'views/compact_like_view', 'text!templates/like
 
     LikesView.prototype.loginStatus = function(loginStatus) {
       return this.$('.login-note').css('display', loginStatus ? 'none' : 'block');
-    };
-
-    LikesView.prototype.visibilityChangeHandler = function(visibleItems) {
-      var empty;
-      empty = visibleItems.length === 0 && this.collection.state() === 'resolved';
-      return this.$fallback.css('display', empty ? 'block' : 'none');
-    };
-
-    LikesView.prototype.render = function() {
-      LikesView.__super__.render.apply(this, arguments);
-      this.$container.append(this.el);
-      this.$listElement = $('#likes-list');
-      return this.$fallback = this.$('.fallback');
     };
 
     return LikesView;

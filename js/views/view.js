@@ -17,6 +17,10 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     _(View.prototype).defaults(Subscriber);
 
+    View.prototype.containerSelector = null;
+
+    View.prototype.$container = null;
+
     View.prototype.initialize = function() {
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
       if (this.containerSelector) {
@@ -147,6 +151,7 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         html = template(this.getTemplateData());
         this.$el.empty().append(html);
       }
+      if (this.$container) this.$container.append(this.el);
       return this;
     };
 

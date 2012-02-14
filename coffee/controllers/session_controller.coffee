@@ -68,6 +68,7 @@ define ['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     # Try to get an existing session from one of the login providers
 
     getSession: ->
+      #console.debug 'SessionController#getSession'
       @loadSDKs()
       for name, serviceProvider of SessionController.serviceProviders
         serviceProvider.done serviceProvider.getLoginStatus

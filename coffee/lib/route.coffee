@@ -50,7 +50,7 @@ define ['mediator'], (mediator)->
 
     # The handler which is called by Backbone.History when the route matched
     handler: (path, options = {}) =>
-      console.debug 'Route#handler', @, path, options
+      #console.debug 'Route#handler', @, path, options
 
       # Build params hash
       params = @buildParams path
@@ -59,7 +59,7 @@ define ['mediator'], (mediator)->
       params.navigate = options.navigate is true
 
       # Startup the module controller
-      console.debug '\tstartup', 'controller:', @controller, 'action:', @action, 'params:', params, 'navigate:', params.navigate
+      #console.debug '\tstartup', 'controller:', @controller, 'action:', @action, 'params:', params, 'navigate:', params.navigate
       mediator.publish '!startupController', @controller, @action, params
 
     # Create a proper Rails-like params hash, not an array like Backbone

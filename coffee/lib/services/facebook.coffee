@@ -4,13 +4,21 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
 
   class Facebook extends ServiceProvider
 
-    # Note: This is an app id for the Facebook app moviepilot.com
+    # Note: This is the app ID for the Facebook app of moviepilot.com
+    # You might change this to your own application ID.
     facebookAppId = '215662575119216'
+
+    # The permissions we’re asking for.
+    # See https://developers.facebook.com/docs/reference/api/permissions/
+    # We want to read the user’s likes, that’s all.
     scope = 'user_likes'
 
     name: 'facebook'
 
+    # Login status at Facebook
     status: null
+
+    # The current session API access token
     accessToken: null
 
     constructor: ->
@@ -42,7 +50,7 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
       # Register load handler
       window.fbAsyncInit = @sdkLoadHandler
 
-      # No success callback, there's fbAsyncInit
+      # No success callback, there’s fbAsyncInit
       utils.loadLib 'http://connect.facebook.net/en_US/all.js', null, @reject
 
     # The main callback for the Facebook SDK
@@ -110,6 +118,7 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
     # Callback for the initial FB.getLoginStatus call
 
     loginStatusHandler: (response) =>
+      #console.debug 'Facebook#loginStatusHandler', response
       @saveAuthResponse response
       authResponse = response.authResponse
       if authResponse
@@ -235,7 +244,7 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
         #console.debug 'Facebook#postToGraph callback', response
         callback response if callback
 
-    # Post a message to the user's stream
+    # Post a message to the user’s stream
 
     postToStream: (data, callback) ->
       #console.debug 'Facebook.postToStream', data

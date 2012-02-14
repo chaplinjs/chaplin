@@ -16,6 +16,7 @@ define ['lib/subscriber'], (Subscriber) ->
       # TODO: Remove an item if a 'dispose' events bubbles and it wasn't removed before?
 
     # Adds a collection atomically, i.e. throws no event until all members have been added
+
     addAtomic: (models, options = {}) ->
       return unless models.length
       options.silent = true
@@ -30,6 +31,7 @@ define ['lib/subscriber'], (Subscriber) ->
     # options:
     #   deep: Boolean flag to specify whether existing models should be updated
     #         with new values
+
     update: (newList, options = {}) ->
       #console.debug 'Collection#update', 'deep?', options.deep
 
@@ -84,5 +86,5 @@ define ['lib/subscriber'], (Subscriber) ->
       #console.debug 'Collection#dispose', @, 'finished'
       @disposed = true
 
-      # Your're frozen when your heart's not open
+      # Your're frozen when your heart’s not open
       Object.freeze? @
