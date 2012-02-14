@@ -2,11 +2,11 @@
 
 ## Introduction
 
-This is an example JavaScript application architecture using the popular Backbone.js library. The code is derived from Moviepilot.com, a larger single-page JavaScript application.
+This is an example JavaScript application architecture using the popular Backbone.js library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page JavaScript application.
 
 ## Motivation
 
-While developing web applications like [moviepilot.com](http://moviepilot.com/) and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a full-fledged framework for single-page applications. Yet it’s often used for this purpose.
+While developing web applications like moviepilot.com and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a full-fledged framework for single-page applications. Yet it’s often used for this purpose.
 
 To promote the discussion on JavaScript applications, we decided to open-source and document our application structure. This example application is mostly derived and generalized from the moviepilot.com codebase.
 
@@ -68,7 +68,7 @@ After successful login, your Facebook likes are fetched from the Open Graph and 
 
 The following chapters will discuss the core objects and classes of our application structure.
 
-## `Application`
+## Application
 
 The root object of the JavaScript application is just called `Application`. In practise, you might choose a more meaningful name. `Application` is merely a bootstrapper which starts up three other core modules:
 
@@ -78,7 +78,7 @@ The root object of the JavaScript application is just called `Application`. In p
 * `Router`
 
 
-## `mediator` and Publish/Subscribe
+## mediator and Publish/Subscribe
 
 In this sample application we’re using RequireJS (AMD modules) to load all dependencies of a JavaScript file on demand. However, the core libraries this application relies upon are not loaded using RequireJS, they are loaded with normal `script` elements synchronously. You might want to [wrap](https://github.com/geddesign/wrap.js) jQuery, Backbone, Underscore and Handlebars as RequireJS modules to get the full AMD experience.
 
@@ -86,14 +86,9 @@ While a script might load another object it depends upon or a class (constructor
 
 Modules communicate and share data using the `mediator`. That’s just a simple object with some properties:
 
-<dl>
-  <dt>`user`</dt>
-  <dd>If there’s a logged-in user, the user object. `null` if not logged in.</dd>
-  <dt>`router`</dt>
-  <dd>The router which maps URLs to controllers.</dd>
-  <dt>`subscribe`, `unsubscribe`, `publish`</dt>
-  <dd>Methods for global Publish/Subscribe</dd>
-</dl>
+* `user`– If there’s a logged-in user, the user object. `null` if not logged in.
+* `router` – The router which maps URLs to controllers.
+* `subscribe`, `unsubscribe`, `publish` – Methods for global Publish/Subscribe
 
 [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) (Pub/Sub) is a versatile pattern to ensure loose coupling of application modules. To inform other modules that something happened, a module doesn’t send messages directly (i.e. calling methods of specific objects). Instead, it publishes a message to a central channel without having to know who is listening. Other application modules might subscribe to these messages and react upon them.
 
@@ -114,7 +109,7 @@ mediator.publish 'login', user
 
 The second and all following arguments are passed as arguments to the handler functions.
 
-## `Router` and `Route`
+## Router and Route
 
 The `Router` in this example application does not inherit from Backbone’s `Router`. In fact it’s an implementation of its own with several advantages over the standard Backbone `Router`.
 
@@ -134,16 +129,16 @@ In our concept, a controller is the place where a model and associated views are
 
 There may be plenty of controllers for specific replaceable application modules, but few persistent meta-controllers with special views.
 
-### `ApplicationController`
+### ApplicationController
 
 The application controller instantiates common models/collections and views which are active the whole time (header, sidebars, footer and so on). Most importantly, it instantiates the `ApplicationView`.
 
-### `ApplicationView`
+### ApplicationView
 
 Between the router and the controllers, there’s the `ApplicationView` as a dispatcher. It allows switching between user interface modules by starting up specific controllers. To show a specific module, an app-wide `!startupController` event is published:
 
 ```
-mediator.publish '!startupController', '*controllerName*', '*controllerAction*', optionalParams
+mediator.publish '!startupController', 'controllerName', 'controllerAction', optionalParams
 ```
 
 The `ApplicationView` handles the `!startupController` event. It creates a controller instance, calls the controller action and may perform a transition from the current to the new controller.
@@ -200,7 +195,7 @@ We don’t use the `events` hash and the `delegateEvents` method to register use
 
 We don’t use `@model.bind()` directly. We have `@modelBind()` which records the subscription so the tie can be cut automatically on view disposal. When using Backbone’s naked `bind`, you have to deregister the handler manually to clear the reference from the model to the view.
 
-### `CollectionView`
+### CollectionView
 
 On moviepilot.com, `CollectionView` is one of the main workhorses. It’s responsible for displaying most of the collections. For every item in a collection, it instantiates a given item view and inserts it into the DOM. It reacts to collection change events (`add`, `remove` and `reset`) and provides basic filtering and caching of views.
 
@@ -317,7 +312,7 @@ The Publish/Subscribe pattern is the most important glue in our application beca
 
 By releasing this code into the public, we’d like to start a community discussion on top-level application architecture. “Application” means everything above simple routing, individual models, views and their binding.
 
-Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todos example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code. In addition, we could not use many of Backbone’s features on moviepilot.com and were forced to re-implement others. For us, Backbone got usable by deriving, extending or even replacing its classes. To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture.
+Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todos example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code. In addition, we could not use many of Backbone’s features on moviepilot.com and were forced to re-implement others. For us, Backbone got usable by deriving, extending or even replacing its classes. To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this well-known limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture.
 
 This example structure replaces the Backbone `Router` completely because it’s likely to become the kitchen sink of a Backbone application. Instead we’re using a routing approach similar to Rails. Our router looks like `routes.rb` in a Rails application. Our advice is to separate routing from the actual code which instantiates models and views. For this purpose, we chose to introduce controllers. Further, an application needs to separate the business logic from application state management and view management. For handling top-level UI changes, we introduced the `ApplicationView`.
 
