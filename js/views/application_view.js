@@ -61,13 +61,18 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       currentController = this.currentController || null;
       if (this.currentController) currentView = this.currentController.view;
       scrollTo(0, 0);
-      if (currentView && currentView.containerSelector) {
-        $(currentView.containerSelector).css('display', 'none');
+      if (currentView && currentView.$container) {
+        currentView.$container.css('display', 'none');
       }
-      if (currentController) currentController.dispose();
+      if (currentController) {
+        if (typeof currentController.dispose !== 'function') {
+          throw new Error("ApplicationView#controllerLoaded: dispose method not found on " + currentControllerName + " controller");
+        }
+        currentController.dispose(params, controllerName);
+      }
       controller = new ControllerConstructor();
       if (typeof controller.startup !== 'function') {
-        throw new Error("ApplicationView#controllerLoaded: action " + action + " not found on " + controllerName + " controller");
+        throw new Error("ApplicationView#controllerLoaded: startup method not found on " + controllerName + " controller");
       }
       controller.startup(params, currentControllerName);
       if (typeof controller[action] !== 'function') {
@@ -75,8 +80,8 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       }
       controller[action](params, currentControllerName);
       view = controller.view;
-      if (view && view.containerSelector) {
-        $(view.containerSelector).css({
+      if (view && view.$container) {
+        view.$container.css({
           display: 'block',
           opacity: 1
         });
@@ -95,7 +100,6 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       var controller, historyURL, params;
       controller = this.currentController;
       params = this.currentParams;
-      console.debug('ApplicationView#adjustURL', controller, params);
       if (typeof controller.historyURL === 'function') {
         historyURL = controller.historyURL(params);
       } else if (typeof controller.historyURL === 'string') {
@@ -104,7 +108,6 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
         throw new Error("ApplicationView#adjustURL: controller for " + controllerName + " does not provide a historyURL");
       }
       if (params.navigate) mediator.router.navigate(historyURL);
-      console.debug("ApplicationView#adjustURL historyURL: '" + historyURL + "'");
       return this.url = "/" + historyURL;
     };
 

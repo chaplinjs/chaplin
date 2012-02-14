@@ -4,6 +4,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
   class ApplicationView # Do not inherit from View
 
+    # Set your application name here so
+    # the document title is set properly to
+    # “Site title – Controller title” (see adjustTitle)
     siteTitle = 'Architecture Example'
 
     previousController: null
@@ -77,15 +80,16 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # when current and new controllers and params match
       params.forceStartup = false unless params.forceStartup is true
 
-      # Check if the desired controller is already active, compare the IDs
+      # Check if the desired controller is already active
       sameController = not params.forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
-        # Deep parameters check is not nice but the only way for now
+        # Deep parameters check is not nice but the simplest way for now
         (not @currentParams or _(params).isEqual(@currentParams))
 
       #console.debug 'ApplicationView#startupController sameController?', sameController
 
+      # Stop if it’s the same controller/action with the same params
       if sameController
         #console.debug "ApplicationView#startupController: #{controllerName}##{action} already active with same parameters"
         return
@@ -95,10 +99,12 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       require ['controllers/' + controllerFileName],
         _(@controllerLoaded).bind(@, controllerName, action, params)
 
+    # Handler for the controller lazy-loading
+
     controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
       #console.debug 'ApplicationView#controllerLoaded', controllerName, action, params, ControllerConstructor
 
-      # Shortcuts
+      # Shortcuts for the old controller
       currentControllerName = @currentControllerName or null
       currentController     = @currentController     or null
       currentView           = @currentController.view if @currentController
@@ -106,23 +112,24 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Jump to the top of the page
       scrollTo 0, 0
 
-      # Hide current view
-      if currentView and currentView.containerSelector
-        #console.debug 'ApplicationView: Hide current view'
-        $(currentView.containerSelector).css 'display', 'none'
+      # Hide the container element of the current view
+      if currentView and currentView.$container
+        currentView.$container.css 'display', 'none'
 
+      # Dispose the current controller
       if currentController
-        # Dispose the current controller
-        currentController.dispose()
+        unless typeof currentController.dispose is 'function'
+          throw new Error "ApplicationView#controllerLoaded: dispose method not found on #{currentControllerName} controller"
+        # Passing the params and the new controller name
+        currentController.dispose params, controllerName
 
       # Initialize the new controller
-      #console.debug 'ApplicationView#startupController: new controller()'
       controller = new ControllerConstructor()
 
       # Call the startup method
-      #console.debug 'ApplicationView#startupController: controller.startup()'
       unless typeof controller.startup is 'function'
-        throw new Error "ApplicationView#controllerLoaded: action #{action} not found on #{controllerName} controller"
+        throw new Error "ApplicationView#controllerLoaded: startup method not found on #{controllerName} controller"
+      # Passing the params and the old controller name
       controller.startup params, currentControllerName
 
       # Call the specific controller action
@@ -130,13 +137,10 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         throw new Error "ApplicationView#controllerLoaded: action #{action} not found on #{controllerName} controller"
       controller[action] params, currentControllerName
 
-      # Show the new view
+      # Show the container element of the new view
       view = controller.view
-      if view and view.containerSelector
-        #console.debug 'ApplicationView#startupController: fade in new view', $(view.containerSelector)
-        $(view.containerSelector).css
-          display: 'block'
-          opacity: 1
+      if view and view.$container
+        view.$container.css display: 'block', opacity: 1
 
       # Save the new controller
       @previousController    = currentControllerName
@@ -165,7 +169,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       controller = @currentController
       params     = @currentParams
 
-      console.debug 'ApplicationView#adjustURL', controller, params
+      #console.debug 'ApplicationView#adjustURL', controller, params
 
       if typeof controller.historyURL is 'function'
         # If the property is a function, call it
@@ -182,14 +186,15 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         mediator.router.navigate historyURL
 
       # Save the URL
-      console.debug "ApplicationView#adjustURL historyURL: '#{historyURL}'"
       @url = "/#{historyURL}"
 
-    # Change the document title
+    # Change the document title. Get the title from the title property
+    # of the params or of the current controller
 
     adjustTitle: ->
+      # You might change this if you want the opposite order of
+      # the controller and site titles
       title = siteTitle
-      # Get the title from the params or the current controller
       subtitle = @currentParams.title or @currentController.title
       title += " \u2013 #{subtitle}" if subtitle
       # Internet Explorer < 9 workaround
@@ -198,6 +203,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
     # After the first controller has been started, remove all accessible content
     # so the DOM is less complex and images and video do not lie in the background
+
     removeFallbackContent: =>
       # Hide the accessible fallback and the loading screen
       $('#startup-loading, .accessible-fallback').remove()
@@ -260,7 +266,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
       e.preventDefault() if result
 
-    # Not only A elements might act as links, every element might have
+    # Not only A elements might act as internal links,
+    # every element might have:
     # class="go-to" data-href="/something"
 
     goToHandler: (e) ->
@@ -273,7 +280,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       path = $(el).data('href')
       return unless path
 
-      # Call the 
+      # Call the
       result = mediator.router.follow path, navigate: true
       #console.debug '\tfollow result', result
 
