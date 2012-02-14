@@ -323,7 +323,7 @@ Last but not least, you will need to think about memory management and garbage c
 Apparently, other projects experienced the same Backbone shortcomings and took a similar approach to build an application framework on top of Backbone. See for example:
 
 * [Thorax](http://walmartlabs.github.com/thorax/)
-* [Marionette](https://github.com/derickbailey/backbone.marionette)
+* [Marionette](http://derickbailey.github.com/backbone.marionette/)
 
 ## Authors
 
