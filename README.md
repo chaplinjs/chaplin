@@ -1,16 +1,18 @@
 # Sample Backbone Application Architecture
 
-_An example application architecture using Backbone.js._
+## Introduction
 
-## History and Motivation
+This is an example JavaScript application architecture using the popular Backbone.js library. The code is derived from Moviepilot.com, a larger single-page JavaScript application.
 
-While developing JavaScript applications like [moviepilot.com](http://moviepilot.com/) and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a framework for single-page applications. Yet it’s often used for this purpose.
+## Motivation
+
+While developing web applications like [moviepilot.com](http://moviepilot.com/) and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a full-fledged framework for single-page applications. Yet it’s often used for this purpose.
 
 To promote the discussion on JavaScript applications, we decided to open-source and document our application structure. This example application is mostly derived and generalized from the moviepilot.com codebase.
 
-This project does not intend to provide a ready-to-use all-purpose library. It’s an example how a real-world application structure might look like. Consider it as a scaffold which needs to be adapted to the needs of a specific application.
+This project does not intend to provide a ready-to-use library. It’s an example how a real-world application structure might look like. Consider it as a scaffold which needs to be adapted to the needs of a specific application.
 
-This structure is just a snapshot of our ongoing efforts. It’s not ideal, set in stone or flawless. In fact there are several open issues so your feedback is appreciated!
+This structure is just a snapshot of our ongoing efforts. Just like Moviepilot.com, we’re evolving the structure over the time. It’s not all-purpose or flawless. In fact there are several open issues so your feedback is appreciated!
 
 ## Key Features
 
@@ -20,9 +22,9 @@ This structure is just a snapshot of our ongoing efforts. It’s not ideal, set 
 * Controllers for managing individual UI views
 * Rails-style routes which map URLs to controller actions
 * An application view as dispatcher and view manager
-* Model, Collection and View additions for memory-saving object disposal
-* A Collection with additional manipulation methods for smarter change events
-* A CollectionView for easy and intelligent list rendering
+* Model, collection and view additions for memory-saving object disposal
+* A collection with additional manipulation methods for smarter change events
+* A collection view for easy and intelligent list rendering
 
 
 ## Technology Stack
@@ -41,7 +43,6 @@ In our real-world applications, we’re using several tools for compiling and pa
 
 This example application uses the following JavaScript libraries:
 
-
 * [RequireJS](http://requirejs.org/) for lazy-loading of scripts and dependency management,
 * [jQuery](http://jquery.com/) for DOM scripting and Ajax,
 * [Underscore](http://documentcloud.github.com/underscore/) as a data processing and functional helper,
@@ -53,9 +54,13 @@ This example application uses the following JavaScript libraries:
 
 The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
-This example uses the same Facebook Application ID as moviepilot.com, so you will be asked to grant access rights to the moviepilot.com Facebook App. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js` if you don’t trust moviepilot.com.
+Fir simplicity, this example uses the Facebook application ID of moviepilot.com. On login, you will be asked to grant access rights to the moviepilot.com Facebook app. This example app will not post anything to Facebook on your behalf or publish/submit your personal data. You’re free to [revoke access rights](https://www.facebook.com/settings/?tab=applications) at any time. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js` if you don’t trust moviepilot.com. 
 
-The Facebook login only works if the JavaScript app runs on a domain which matches the Facebook app. That is, is has to be run on `*.moviepilot.com`. Start a local web server, point the document root to the app folder and add a line like `127.0.0.1 example.moviepilot.com` to your [hosts file](http://en.wikipedia.org/wiki/Hosts_(file)). Then you’re able to *http://example.moviepilot.com* in your browser and log in with Facebook.
+The Facebook login only works if the app runs on a domain which matches the Facebook app. That is, is has to be run on a subdomain of `moviepilot.com`. To access the application, follow these steps:
+
+* Add a line like `127.0.0.1   example.moviepilot.com` to your [hosts file](http://en.wikipedia.org/wiki/Hosts_(file)).
+* Start a local web server (like nginx for example), point the document root to the app folder.
+* Then you’re able to access *http://example.moviepilot.com/* in your browser and log in with Facebook.
 
 After successful login, your Facebook likes are fetched from the Open Graph and displayed as a list. You might click a list entry to see more details.
 
@@ -75,9 +80,11 @@ The root object of the JavaScript application is just called `Application`. In p
 
 ## `mediator` and Publish/Subscribe
 
-In this sample application we’re using RequireJS to load all dependencies of a JavaScript file. While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible. 
+In this sample application we’re using RequireJS (AMD modules) to load all dependencies of a JavaScript file on demand. However, the core libraries this application relies upon are not loaded using RequireJS, they are loaded with normal `script` elements synchronously. You might want to [wrap](https://github.com/geddesign/wrap.js) jQuery, Backbone, Underscore and Handlebars as RequireJS modules to get the full AMD experience.
 
-Modules communicate and share data using the `mediator`. That’s a simple object with some properties:
+While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible. 
+
+Modules communicate and share data using the `mediator`. That’s just a simple object with some properties:
 
 <dl>
   <dt>`user`</dt>
@@ -90,7 +97,7 @@ Modules communicate and share data using the `mediator`. That’s a simple objec
 
 [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) (Pub/Sub) is a versatile pattern to ensure loose coupling of application modules. To inform other modules that something happened, a module doesn’t send messages directly (i.e. calling methods of specific objects). Instead, it publishes a message to a central channel without having to know who is listening. Other application modules might subscribe to these messages and react upon them.
 
-For simplicity, we borrow the functionality from the `Backbone.Events` mixin. The `subscribe`, `unsubscribe` and `publish` methods are simply aliases for `trigger`, `bind` and `unbind` of the `Backbone.Events`.
+For simplicity, we borrow the functionality from the `Backbone.Events` mixin. The `subscribe`, `unsubscribe` and `publish` methods are simply aliases for `trigger`, `bind` and `unbind` of the `Backbone.Events` mixin.
 
 For example, several modules are interested in the user login event and subscribe to the `login` message. In practice, they load `mediator` as a dependency and register a callback function for the `login` event:
 
