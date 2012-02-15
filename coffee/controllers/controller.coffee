@@ -30,12 +30,9 @@ define ['lib/subscriber'], (Subscriber) ->
       #console.debug 'Controller#dispose', @
 
       # Dispose models, collections and views
-      if @model
-        @model.dispose() # Also disposes associated views
-      else if @collection
-        @collection.dispose() # Also disposes associated collection views
-      else if @view
-        @view.dispose()
+      @model.dispose() if @model # Also disposes associated views
+      @collection.dispose() if @collection # Also disposes associated views
+      @view.dispose() if @view # Just in case it wasn't disposed indirectly
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()

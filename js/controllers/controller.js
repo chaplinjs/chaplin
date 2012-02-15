@@ -28,13 +28,9 @@ define(['lib/subscriber'], function(Subscriber) {
     Controller.prototype.dispose = function() {
       var prop, properties, _i, _len;
       if (this.disposed) return;
-      if (this.model) {
-        this.model.dispose();
-      } else if (this.collection) {
-        this.collection.dispose();
-      } else if (this.view) {
-        this.view.dispose();
-      }
+      if (this.model) this.model.dispose();
+      if (this.collection) this.collection.dispose();
+      if (this.view) this.view.dispose();
       this.unsubscribeAllEvents();
       properties = 'model collection view currentId'.split(' ');
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
