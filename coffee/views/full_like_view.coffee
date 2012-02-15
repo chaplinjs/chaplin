@@ -9,27 +9,24 @@ define ['mediator', 'views/view', 'text!templates/full_like.hbs'], (mediator, Vi
 
     id: 'like'
     containerSelector: '#content-container'
+    autoRender: true
 
     initialize: ->
       super
-      console.debug 'FullLikeView#initialize'
+      #console.debug 'FullLikeView#initialize'
 
-      # Render initially
-      @render()
       # Render again when the model is resolved
-      @model.done @render
+      @model.done @render if @model.state() isnt 'resolved'
 
     # Rendering
 
     render: ->
       super
-      console.debug 'FullLikeView#render'
-
-      # Append to DOM
-      @$container.append @el
+      #console.debug 'FullLikeView#render'
 
       # Parse Facebook widgets
-      user = mediator.user
-      provider = user.get 'provider'
-      if provider.name is 'facebook'
-        provider.parse @el
+      if @model.state() is 'resolved'
+        user = mediator.user
+        provider = user.get 'provider'
+        if provider.name is 'facebook'
+          provider.parse @el

@@ -18,21 +18,21 @@ define(['mediator', 'views/view', 'text!templates/full_like.hbs'], function(medi
 
     FullLikeView.prototype.containerSelector = '#content-container';
 
+    FullLikeView.prototype.autoRender = true;
+
     FullLikeView.prototype.initialize = function() {
       FullLikeView.__super__.initialize.apply(this, arguments);
-      console.debug('FullLikeView#initialize');
-      this.render();
-      return this.model.done(this.render);
+      if (this.model.state() !== 'resolved') return this.model.done(this.render);
     };
 
     FullLikeView.prototype.render = function() {
       var provider, user;
       FullLikeView.__super__.render.apply(this, arguments);
-      console.debug('FullLikeView#render');
-      this.$container.append(this.el);
-      user = mediator.user;
-      provider = user.get('provider');
-      if (provider.name === 'facebook') return provider.parse(this.el);
+      if (this.model.state() === 'resolved') {
+        user = mediator.user;
+        provider = user.get('provider');
+        if (provider.name === 'facebook') return provider.parse(this.el);
+      }
     };
 
     return FullLikeView;
