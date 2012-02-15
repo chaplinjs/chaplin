@@ -1,4 +1,4 @@
-define ['views/collection_view', 'views/post_view', 'text!templates/posts.hbs'], (CollectionView, PostView, template) ->
+define ['mediator', 'views/collection_view', 'views/post_view', 'text!templates/posts.hbs'], (mediator, CollectionView, PostView, template) ->
 
   'use strict'
 
@@ -14,7 +14,19 @@ define ['views/collection_view', 'views/post_view', 'text!templates/posts.hbs'],
     listSelector: 'ol' # Append the item views to this element
     fallbackSelector: '.fallback'
 
+    initialize: ->
+      super # Will render the list itself and all items
+      @subscribeEvent 'loginStatus', @showHideLoginNote
+
     # The most important method a class inheriting from CollectionView must overwrite.
     getView: (item) ->
       # Instantiate an item view
       new PostView model: item
+
+    # Show/hide a login appeal if not logged in
+    showHideLoginNote: ->
+      @$('.login-note').css 'display', if mediator.user then 'none' else 'block'
+
+    render: ->
+      super
+      @showHideLoginNote()

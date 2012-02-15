@@ -1,4 +1,4 @@
-define ['views/collection_view', 'views/compact_like_view', 'text!templates/likes.hbs'], (CollectionView, CompactLikeView, template) ->
+define ['mediator', 'views/collection_view', 'views/compact_like_view', 'text!templates/likes.hbs'], (mediator, CollectionView, CompactLikeView, template) ->
 
   'use strict'
 
@@ -13,11 +13,10 @@ define ['views/collection_view', 'views/compact_like_view', 'text!templates/like
     containerSelector: '#content-container'
     listSelector: 'ol' # Append the item views to this element
     fallbackSelector: '.fallback'
-    
+
     initialize: ->
       super # Will render the list itself and all items
-
-      @subscribeEvent 'loginStatus', @loginStatus
+      @subscribeEvent 'loginStatus', @showHideLoginNote
 
     # The most important method a class inheriting from CollectionView must overwrite.
     getView: (item) ->
@@ -25,5 +24,9 @@ define ['views/collection_view', 'views/compact_like_view', 'text!templates/like
       new CompactLikeView model: item
 
     # Show/hide a login appeal if not logged in
-    loginStatus: (loginStatus) ->
-      @$('.login-note').css 'display', if loginStatus then 'none' else 'block'
+    showHideLoginNote: ->
+      @$('.login-note').css 'display', if mediator.user then 'none' else 'block'
+
+    render: ->
+      super
+      @showHideLoginNote()
