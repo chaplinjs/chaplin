@@ -238,13 +238,15 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       #console.debug '\thref »' + href + '«'
       #console.debug '\thostname »' + hostname + '«'
       return unless href and hostname
-
       currentHostname = location.hostname.replace('.', '\\.')
       hostnameRegExp = new RegExp("#{currentHostname}$", 'i')
       external = not hostnameRegExp.test(hostname)
       #console.debug '\texternal?', external
       if external
         # Open external links normally
+        # You might want to enforce opening in a new tab here:
+        #e.preventDefault()
+        #window.open href
         return
 
       @openInternalLink e
