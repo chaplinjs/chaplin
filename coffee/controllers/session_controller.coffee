@@ -46,10 +46,6 @@ define ['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       # Determine the logged-in state
       @getSession()
 
-      # In this demo, we always sow the
-      @showLoginView()
-
-
 
     # Load the JavaScript SDKs of all service providers
 
@@ -78,6 +74,7 @@ define ['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     showLoginView: ->
       #console.debug 'SessionController#showLoginView'
+      return if @loginView
       @loadSDKs()
       @loginView = new LoginView serviceProviders: SessionController.serviceProviders
 
@@ -167,6 +164,9 @@ define ['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
       # Discard the login info
       @serviceProviderName = null
+
+      # Show the login view again
+      @showLoginView()
 
       mediator.publish 'loginStatus', false
 

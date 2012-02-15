@@ -38,8 +38,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     };
 
     SessionController.prototype.startup = function() {
-      this.getSession();
-      return this.showLoginView();
+      return this.getSession();
     };
 
     SessionController.prototype.loadSDKs = function() {
@@ -72,6 +71,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     };
 
     SessionController.prototype.showLoginView = function() {
+      if (this.loginView) return;
       this.loadSDKs();
       return this.loginView = new LoginView({
         serviceProviders: SessionController.serviceProviders
@@ -123,6 +123,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
         mediator.user = null;
       }
       this.serviceProviderName = null;
+      this.showLoginView();
       return mediator.publish('loginStatus', false);
     };
 
