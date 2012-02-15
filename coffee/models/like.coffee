@@ -16,7 +16,7 @@ define ['mediator', 'models/model'], (mediator, Model) ->
         @getLike()
 
     getLike: ->
-      console.debug 'Like#getLike'
+      #console.debug 'Like#getLike'
 
       user = mediator.user
       return unless user
@@ -25,11 +25,11 @@ define ['mediator', 'models/model'], (mediator, Model) ->
       return unless provider.name is 'facebook'
 
       @trigger 'loadStart'
-      console.debug 'getInfo', @id, @processLike
+      #console.debug 'getInfo', @id, @processLike
       provider.getInfo @id, @processLike
 
     processLike: (response) =>
-      console.debug 'Like#processLike', response
+      #console.debug 'Like#processLike', response
 
       @trigger 'load'
       @set response

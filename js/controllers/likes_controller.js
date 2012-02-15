@@ -28,7 +28,6 @@ define(['controllers/controller', 'models/likes', 'models/like', 'views/likes_vi
     };
 
     LikesController.prototype.show = function(params) {
-      console.debug('LikesController#show');
       this.model = new Like({
         id: params.id
       }, {

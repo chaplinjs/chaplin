@@ -44,7 +44,6 @@ define(['lib/utils', 'views/view'], function(utils, View) {
     CollectionView.prototype.initialize = function(options) {
       if (options == null) options = {};
       CollectionView.__super__.initialize.apply(this, arguments);
-      console.debug('CollectionView#initialize', this, this.collection, options);
       _(options).defaults({
         render: true,
         renderItems: true,
@@ -101,13 +100,11 @@ define(['lib/utils', 'views/view'], function(utils, View) {
       f = 'function';
       isDeferred = typeof this.collection.done === f && typeof this.collection.state === f;
       if (!isDeferred) return;
-      this.bind('visibilityChange', this.showHideFallback);
-      return this.collection.done(this.showHideFallback);
+      return this.bind('visibilityChange', this.showHideFallback);
     };
 
     CollectionView.prototype.showHideFallback = function() {
       var empty;
-      console.debug('CollectionView#showHideFallback', this, this.visibleItems, this.collection);
       empty = this.visibleItems.length === 0 && this.collection.state() === 'resolved';
       return this.$fallback.css('display', empty ? 'block' : 'none');
     };
@@ -219,7 +216,6 @@ define(['lib/utils', 'views/view'], function(utils, View) {
     };
 
     CollectionView.prototype.removeView = function(cid, view) {
-      if (!view) return;
       view.dispose();
       return delete this.viewsByCid[cid];
     };

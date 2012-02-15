@@ -24,18 +24,15 @@ define(['mediator', 'models/model'], function(mediator, Model) {
 
     Like.prototype.getLike = function() {
       var provider, user;
-      console.debug('Like#getLike');
       user = mediator.user;
       if (!user) return;
       provider = user.get('provider');
       if (provider.name !== 'facebook') return;
       this.trigger('loadStart');
-      console.debug('getInfo', this.id, this.processLike);
       return provider.getInfo(this.id, this.processLike);
     };
 
     Like.prototype.processLike = function(response) {
-      console.debug('Like#processLike', response);
       this.trigger('load');
       this.set(response);
       return this.resolve();
