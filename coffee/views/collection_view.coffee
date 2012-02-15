@@ -47,7 +47,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     initialize: (options = {}) ->
       super
-      console.debug 'CollectionView#initialize', @, @collection, options
+      #console.debug 'CollectionView#initialize', @, @collection, options
 
       # Default options
       _(options).defaults
@@ -136,6 +136,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     initFallback: ->
       return unless @fallbackSelector
 
+      #console.debug 'CollectionView#initFallback', @, @el, @el.parentNode
+
       # Set the $fallback property
       @$fallback = @$(@fallbackSelector)
 
@@ -148,14 +150,10 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # Listen for visible items changes
       @bind 'visibilityChange', @showHideFallback
 
-      # Register a done handler on the collection
-      # TODO: How to dispose this reference?
-      @collection.done @showHideFallback
-
     # Show or hide the fallback when the visible items change
 
     showHideFallback: =>
-      console.debug 'CollectionView#showHideFallback', @, @visibleItems, @collection
+      #console.debug 'CollectionView#showHideFallback', @, 'visibleItems', @visibleItems, 'collection', @collection
       # Show fallback message if no item is visible and
       # the collection Deferred has been resolved
       empty = @visibleItems.length is 0 and @collection.state() is 'resolved'
@@ -348,11 +346,6 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     removeView: (cid, view) ->
       #console.debug 'CollectionView#removeView', cid, view
-
-      # TODO: How can that happen?
-      unless view
-        #console.error 'CollectionView#removeView called without a view', @, cid, view
-        return
 
       # Dispose the view
       view.dispose()
