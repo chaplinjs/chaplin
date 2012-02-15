@@ -8,12 +8,11 @@ define ['mediator', 'views/view', 'text!templates/sidebar.hbs'], (mediator, View
     @template = template
 
     id: 'sidebar'
-
     containerSelector: '#sidebar-container'
+    autoRender: true
 
     initialize: ->
       super
-      @render()
       @subscribeEvent 'loginStatus', @loginStatusHandler
       @subscribeEvent 'userData', @render
 
@@ -24,10 +23,3 @@ define ['mediator', 'views/view', 'text!templates/sidebar.hbs'], (mediator, View
       else
         @model = null
       @render()
-
-    render: ->
-      super
-      #console.debug 'SidebarView#render'
-
-      # Append to DOM
-      @$container.append @el

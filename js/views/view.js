@@ -9,23 +9,46 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     __extends(View, _super);
 
-    function View() {
-      this.dispose = __bind(this.dispose, this);
-      this.render = __bind(this.render, this);
-      View.__super__.constructor.apply(this, arguments);
-    }
-
     _(View.prototype).defaults(Subscriber);
+
+    View.prototype.autoRender = false;
 
     View.prototype.containerSelector = null;
 
     View.prototype.$container = null;
 
-    View.prototype.initialize = function() {
+    function View() {
+      this.dispose = __bind(this.dispose, this);
+      this.render = __bind(this.render, this);
+      var instance, wrapMethod;
+      instance = this;
+      wrapMethod = function(name) {
+        var func;
+        func = instance[name];
+        return instance[name] = function() {
+          func.apply(instance, arguments);
+          return instance["after" + (utils.upcase(name))].apply(instance, arguments);
+        };
+      };
+      wrapMethod('initialize');
+      wrapMethod('render');
+      View.__super__.constructor.apply(this, arguments);
+    }
+
+    View.prototype.initialize = function(options) {
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
-      if (this.containerSelector) {
+      if (options && options.container) {
+        return this.$container = $(container);
+      } else if (this.containerSelector) {
         return this.$container = $(this.containerSelector);
       }
+    };
+
+    View.prototype.afterInitialize = function(options) {
+      var byDefault, byOption;
+      byOption = options && options.autoRender === true;
+      byDefault = this.autoRender && !byOption;
+      if (byOption || byDefault) return this.render();
     };
 
     View.prototype.delegateEvents = function() {};
@@ -53,7 +76,6 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         }
         handler = third;
       } else {
-        console.trace();
         throw new TypeError('View#delegate: only two or three arguments are allowed');
       }
       if (typeof handler !== 'function') {
@@ -127,14 +149,11 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     };
 
     View.prototype.getTemplateData = function() {
-      var modelAttributes, templateData,
-        _this = this;
+      var modelAttributes, templateData;
       modelAttributes = this.model && this.model.getAttributes();
       templateData = modelAttributes ? utils.beget(modelAttributes) : {};
       if (this.model && typeof this.model.state === 'function') {
-        templateData.resolved = function() {
-          return _this.model.state() === 'resolved';
-        };
+        templateData.resolved = this.model.state() === 'resolved';
       }
       return templateData;
     };
@@ -151,7 +170,14 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         html = template(this.getTemplateData());
         this.$el.empty().append(html);
       }
-      if (this.$container) this.$container.append(this.el);
+      return this;
+    };
+
+    View.prototype.afterRender = function() {
+      if (this.$container) {
+        this.$container.append(this.el);
+        this.trigger('addedToDOM');
+      }
       return this;
     };
 

@@ -20,9 +20,10 @@ define(['mediator', 'views/view', 'text!templates/sidebar.hbs'], function(mediat
 
     SidebarView.prototype.containerSelector = '#sidebar-container';
 
+    SidebarView.prototype.autoRender = true;
+
     SidebarView.prototype.initialize = function() {
       SidebarView.__super__.initialize.apply(this, arguments);
-      this.render();
       this.subscribeEvent('loginStatus', this.loginStatusHandler);
       return this.subscribeEvent('userData', this.render);
     };
@@ -34,11 +35,6 @@ define(['mediator', 'views/view', 'text!templates/sidebar.hbs'], function(mediat
         this.model = null;
       }
       return this.render();
-    };
-
-    SidebarView.prototype.render = function() {
-      SidebarView.__super__.render.apply(this, arguments);
-      return this.$container.append(this.el);
     };
 
     return SidebarView;

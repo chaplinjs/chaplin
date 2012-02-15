@@ -8,18 +8,10 @@ define ['views/view', 'text!templates/navigation.hbs'], (View, template) ->
     @template: template
 
     id: 'navigation'
-
     containerSelector: '#navigation-container'
+    autoRender: true
 
     initialize: ->
       super
       #console.debug 'NavigationView#initialize'
       @subscribeEvent 'startupController', @render
-      @render()
-
-    render: ->
-      #console.debug 'NavigationView#render', @el
-      super
-      
-      # Append to DOM
-      @$container.append @el

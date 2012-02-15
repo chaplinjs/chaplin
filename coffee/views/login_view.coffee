@@ -8,30 +8,28 @@ define ['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], (med
     @template = template
 
     id: 'login'
-
     containerSelector: '#sidebar-container'
+    autoRender: true
 
+    # Expects the serviceProviders in the options
     initialize: (options) ->
       super
-
-      @render()
-      # Re-render on login/logout
-      @subscribeEvent 'loginStatus', @render
-
+      #console.debug 'LoginView#initialize', @el, @$el, options, options.serviceProviders
       @initButtons options.serviceProviders
 
     # In this project we currently only have one service provider and therefore
     # one button. But this should allow for different service providers.
 
     initButtons: (serviceProviders) ->
+      #console.debug 'LoginView#initButtons', serviceProviders
 
       for serviceProviderName, serviceProvider of serviceProviders
 
         buttonSelector = ".#{serviceProviderName}"
         @$(buttonSelector).addClass('service-loading')
 
-        login = _(@loginWith).bind(@, serviceProviderName, serviceProvider)
-        @delegate 'click', buttonSelector, login
+        loginHandler = _(@loginWith).bind(@, serviceProviderName, serviceProvider)
+        @delegate 'click', buttonSelector, loginHandler
 
         loaded = _(@serviceProviderLoaded).bind(@, serviceProviderName, serviceProvider)
         serviceProvider.done loaded
@@ -40,6 +38,7 @@ define ['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], (med
         serviceProvider.fail failed
 
     loginWith: (serviceProviderName, serviceProvider, e) ->
+      #console.debug 'LoginView#loginWith', serviceProviderName, serviceProvider
       e.preventDefault()
       return unless serviceProvider.isLoaded()
       mediator.publish 'login:pickService', serviceProviderName
@@ -56,9 +55,3 @@ define ['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], (med
         .addClass('service-unavailable')
         .attr('disabled', true)
         .attr('title', "Error connecting. Please check whether you are blocking #{utils.upcase(serviceProviderName)}.")
-
-    render: ->
-      super
-
-      # Append to DOM
-      @$container.append @el

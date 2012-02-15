@@ -7,16 +7,52 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
     # Mixin a Subscriber
     _(View.prototype).defaults Subscriber
 
+    # Automatic rendering
+    # Flag whether to render the view automatically on initialization.
+    # As an alternative you might pass a `render` option to the constructor.
+    autoRender: false
+
+    # Automatic appending to DOM
     # View container element
-    # Set this property in a derived class to specify the container element.
-    # The view is automatically appended to the container element
-    # when it’s rendered.
+    # Set this property in a derived class to specify to selector
+    # of the container element. The view is automatically appended
+    # to the container when it’s rendered.
+    # As an alternative you might pass a `container` option to the constructor.
     containerSelector: null
     $container: null
 
 
-    initialize: ->
-      #console.debug 'View#initialize', @
+    constructor: ->
+      #console.debug 'View#constructor', @
+
+      # Wrap `initialize` and `render` in order to call `afterInitialize` and `afterRender`
+      instance = @
+      wrapMethod = (name) ->
+        # TODO: This isn’t so nice because it creates wrappers on each
+        # instance which leads to many function objects.
+        # A better way would be using Object.getPrototypeOf to look for a
+        # prototype in the chain which has a overriding method.
+        # For now, get the method using the prototype chain and
+        # wrap it on the instance.
+        func = instance[name]
+        # Create a method on the instance which wraps the inherited
+        instance[name] = ->
+          #console.debug 'View#' + name + ' wrapper', @
+          # Call the original method
+          func.apply instance, arguments
+          # Call the corresponding `after~` method
+          instance["after#{utils.upcase(name)}"].apply instance, arguments
+
+      wrapMethod 'initialize'
+      wrapMethod 'render'
+
+      # Finally call Backbone’s constructor
+      super
+
+
+    initialize: (options) ->
+      #console.debug 'View#initialize', @, 'options', options
+      # No super call here, Backbone’s `initialize` is a no-op
 
       # Listen for disposal of the model
       # If the model is disposed, automatically dispose the associated view
@@ -24,15 +60,29 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         @modelBind 'dispose', @dispose
 
       # Create a shortcut to the container element
-      if @containerSelector
+      # The view will be automatically appended to the container when rendered
+      if options and options.container
+        @$container = $(container)
+      else if @containerSelector
         @$container = $(@containerSelector)
+
+    # This method is called after a specific `initialize` of a derived class
+
+    afterInitialize: (options) ->
+      #console.debug 'View#afterInitialize', @, 'options', options
+
+      # Render automatically if set by options or instance property
+      # and the option do not override it
+      byOption = options and options.autoRender is true
+      byDefault = @autoRender and not byOption
+      @render() if byOption or byDefault
 
 
     # Make delegateEvents defunct, it is not used in our approach
     # but is called by Backbone internally
 
     delegateEvents: ->
-
+      # Noop
 
     # Setup a simple one-way model-view binding
     # Pass changed values from model to specific elements in the view
@@ -69,7 +119,6 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         throw new TypeError 'View#delegate: second argument must be a string' if typeof selector isnt 'string'
         handler = third
       else
-        console.trace()
         throw new TypeError 'View#delegate: only two or three arguments are allowed'
 
       throw new TypeError 'View#delegate: handler argument must be function' if typeof handler isnt 'function'
@@ -160,11 +209,9 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
       else
         {}
 
-      # If the model is a Deferred, add a helper function
-      # to get the Deferred state
+      # If the model is a Deferred, add a flag to get the Deferred state
       if @model and typeof @model.state is 'function'
-        templateData.resolved = =>
-          @model.state() is 'resolved'
+        templateData.resolved = @model.state() is 'resolved'
 
       templateData
 
@@ -172,7 +219,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
     # Always bind it to the view instance
 
     render: =>
-      #console.debug "View#render", @, "\n\tel: #{@el}\n\tmodel: #{@model}\n\tdisposed: #{@disposed}"
+      #console.debug "View#render\n\t", @, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
 
       return if @disposed
 
@@ -201,13 +248,24 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         # Using @$el.html(html) caused issues with HTML5-only tags in IE7 and IE8
         @$el.empty().append html
 
+      # Return this
+      @
+
+    # This method is called after a specific `render` of a derived class
+
+    afterRender: ->
+      #console.debug 'View#afterRender', @
+
       # Automatically append to DOM if the container element is set
-      # TODO: Sometimes it’s better to do this at the end of a specific render method
       if @$container
+        #console.debug '\tappend to DOM'
         @$container.append @el
+        # Trigger an event
+        @trigger 'addedToDOM'
 
       # Return this
       @
+
 
     # Default event handler to prevent browser default
     preventDefault: (e) ->

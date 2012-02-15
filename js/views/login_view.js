@@ -18,22 +18,22 @@ define(['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], func
 
     LoginView.prototype.containerSelector = '#sidebar-container';
 
+    LoginView.prototype.autoRender = true;
+
     LoginView.prototype.initialize = function(options) {
       LoginView.__super__.initialize.apply(this, arguments);
-      this.render();
-      this.subscribeEvent('loginStatus', this.render);
       return this.initButtons(options.serviceProviders);
     };
 
     LoginView.prototype.initButtons = function(serviceProviders) {
-      var buttonSelector, failed, loaded, login, serviceProvider, serviceProviderName, _results;
+      var buttonSelector, failed, loaded, loginHandler, serviceProvider, serviceProviderName, _results;
       _results = [];
       for (serviceProviderName in serviceProviders) {
         serviceProvider = serviceProviders[serviceProviderName];
         buttonSelector = "." + serviceProviderName;
         this.$(buttonSelector).addClass('service-loading');
-        login = _(this.loginWith).bind(this, serviceProviderName, serviceProvider);
-        this.delegate('click', buttonSelector, login);
+        loginHandler = _(this.loginWith).bind(this, serviceProviderName, serviceProvider);
+        this.delegate('click', buttonSelector, loginHandler);
         loaded = _(this.serviceProviderLoaded).bind(this, serviceProviderName, serviceProvider);
         serviceProvider.done(loaded);
         failed = _(this.serviceProviderFailed).bind(this, serviceProviderName, serviceProvider);
@@ -55,11 +55,6 @@ define(['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], func
 
     LoginView.prototype.serviceProviderFailed = function(serviceProviderName) {
       return this.$("." + serviceProviderName).removeClass('service-loading').addClass('service-unavailable').attr('disabled', true).attr('title', "Error connecting. Please check whether you are blocking " + (utils.upcase(serviceProviderName)) + ".");
-    };
-
-    LoginView.prototype.render = function() {
-      LoginView.__super__.render.apply(this, arguments);
-      return this.$container.append(this.el);
     };
 
     return LoginView;

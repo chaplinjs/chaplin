@@ -18,15 +18,11 @@ define(['views/view', 'text!templates/navigation.hbs'], function(View, template)
 
     NavigationView.prototype.containerSelector = '#navigation-container';
 
+    NavigationView.prototype.autoRender = true;
+
     NavigationView.prototype.initialize = function() {
       NavigationView.__super__.initialize.apply(this, arguments);
-      this.subscribeEvent('startupController', this.render);
-      return this.render();
-    };
-
-    NavigationView.prototype.render = function() {
-      NavigationView.__super__.render.apply(this, arguments);
-      return this.$container.append(this.el);
+      return this.subscribeEvent('startupController', this.render);
     };
 
     return NavigationView;
