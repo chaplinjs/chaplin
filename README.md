@@ -16,16 +16,17 @@ This structure is just a snapshot of our ongoing efforts. Just like Moviepilot.c
 
 ## Key Features
 
-
+* CoffeeScript class hierarchies as well as object composition
 * Module encapsulation and lazy-loading using RequireJS
 * Cross-module communication using the Mediator and Publish/Subscribe patterns
 * Controllers for managing individual UI views
 * Rails-style routes which map URLs to controller actions
 * An application view as dispatcher and view manager
-* Model, collection and view additions for memory-saving object disposal
+* Extended model, view and collection classes to reduce repetition and enforce conventions
+* Strict memory management and object disposal
 * A collection with additional manipulation methods for smarter change events
 * A collection view for easy and intelligent list rendering
-
+* Client-side authentication using service providers like Facebook, Google and Twitter
 
 ## Technology Stack
 
