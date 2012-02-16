@@ -27,14 +27,14 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
     # Connect an address with a controller action
     # Don’t use Backbone’s Router#route, directly create a Backbone.history route instead
 
-    match: (expression, target, options = {}) ->
-      #console.debug 'Router#match', expression, controller
+    match: (pattern, target, options = {}) ->
+      #console.debug 'Router#match', pattern, target
 
       # Create a Backbone history instance (singleton)
       Backbone.history or= new Backbone.History
 
       # Create a route
-      route = new Route expression, target, options
+      route = new Route pattern, target, options
       #console.debug 'created route', route
 
       # Register the route at the Backbone History instance

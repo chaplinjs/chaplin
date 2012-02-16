@@ -26,8 +26,10 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       this.openLink = __bind(this.openLink, this);
       this.removeFallbackContent = __bind(this.removeFallbackContent, this);
       this.startupController = __bind(this.startupController, this);
+      this.matchRoute = __bind(this.matchRoute, this);
       this.logout = __bind(this.logout, this);
       this.login = __bind(this.login, this);      if (!mediator.user) this.logout();
+      mediator.subscribe('matchRoute', this.matchRoute);
       mediator.subscribe('!startupController', this.startupController);
       mediator.subscribe('login', this.login);
       mediator.subscribe('logout', this.logout);
@@ -41,6 +43,13 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
 
     ApplicationView.prototype.logout = function() {
       return $(document.body).removeClass('logged-in').addClass('logged-out');
+    };
+
+    ApplicationView.prototype.matchRoute = function(route, params) {
+      var action, controllerName;
+      controllerName = route.controller;
+      action = route.action;
+      return this.startupController(controllerName, action, params);
     };
 
     ApplicationView.prototype.startupController = function(controllerName, action, params) {

@@ -22,11 +22,11 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
       });
     };
 
-    Router.prototype.match = function(expression, target, options) {
+    Router.prototype.match = function(pattern, target, options) {
       var route;
       if (options == null) options = {};
       Backbone.history || (Backbone.history = new Backbone.History);
-      route = new Route(expression, target, options);
+      route = new Route(pattern, target, options);
       return Backbone.history.route(route, route.handler);
     };
 

@@ -6,18 +6,21 @@ define ['mediator'], (mediator)->
 
     @reservedParams: 'path navigate'.split(' ')
 
-    constructor: (expression, target, @options = {}) ->
+    constructor: (pattern, target, @options = {}) ->
       #console.debug 'Router#constructor'
+
+      # Save the raw pattern
+      @pattern = pattern
 
       # Separate target into controller and controller action
       [@controller, @action] = target.split('#')
 
       # Replace :parameters, collecting their names
       @paramNames = []
-      expression = expression.replace /:(\w+)/g, @addParamName
+      pattern = pattern.replace /:(\w+)/g, @addParamName
 
       # Create the actual regular expression
-      @regExp = new RegExp '^' + expression + '(?=\\?|$)' # End or query string
+      @regExp = new RegExp '^' + pattern + '(?=\\?|$)' # End or begin of query string
 
     addParamName: (match, paramName) =>
       # Test if parameter name is reserved
@@ -58,19 +61,18 @@ define ['mediator'], (mediator)->
       # Only change the URL if explicitly stated
       params.navigate = options.navigate is true
 
-      # Startup the module controller
-      #console.debug '\tstartup', 'controller:', @controller, 'action:', @action, 'params:', params, 'navigate:', params.navigate
-      mediator.publish '!startupController', @controller, @action, params
+      # Publish a global routeMatch event passing the route and the params
+      mediator.publish 'matchRoute', @, params
 
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` argument is optional
     buildParams: (path, matches) ->
       #console.debug 'Route#buildParams', 'path', path, 'matches', matches
 
+      params = {}
       matches or= @regExp.exec path
 
-      # Build the hash using the paramNames and the matches
-      params = {}
+      # Fill the hash using the paramNames and the matches
       for match, index in matches.slice(1)
         paramName = @paramNames[index]
         params[paramName] = match

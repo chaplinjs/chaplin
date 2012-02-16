@@ -8,15 +8,16 @@ define(['mediator'], function(mediator) {
 
     Route.reservedParams = 'path navigate'.split(' ');
 
-    function Route(expression, target, options) {
+    function Route(pattern, target, options) {
       var _ref;
       this.options = options != null ? options : {};
       this.handler = __bind(this.handler, this);
       this.addParamName = __bind(this.addParamName, this);
+      this.pattern = pattern;
       _ref = target.split('#'), this.controller = _ref[0], this.action = _ref[1];
       this.paramNames = [];
-      expression = expression.replace(/:(\w+)/g, this.addParamName);
-      this.regExp = new RegExp('^' + expression + '(?=\\?|$)');
+      pattern = pattern.replace(/:(\w+)/g, this.addParamName);
+      this.regExp = new RegExp('^' + pattern + '(?=\\?|$)');
     }
 
     Route.prototype.addParamName = function(match, paramName) {
@@ -49,13 +50,13 @@ define(['mediator'], function(mediator) {
       if (options == null) options = {};
       params = this.buildParams(path);
       params.navigate = options.navigate === true;
-      return mediator.publish('!startupController', this.controller, this.action, params);
+      return mediator.publish('matchRoute', this, params);
     };
 
     Route.prototype.buildParams = function(path, matches) {
       var index, match, paramName, params, _len, _ref;
-      matches || (matches = this.regExp.exec(path));
       params = {};
+      matches || (matches = this.regExp.exec(path));
       _ref = matches.slice(1);
       for (index = 0, _len = _ref.length; index < _len; index++) {
         match = _ref[index];

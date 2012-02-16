@@ -25,6 +25,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       @logout() unless mediator.user
 
       # Listen to global events
+      mediator.subscribe 'matchRoute', @matchRoute
       mediator.subscribe '!startupController', @startupController
       mediator.subscribe 'login', @login
       mediator.subscribe 'logout', @logout
@@ -32,7 +33,10 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
       @addGlobalHandlers()
 
+
+    #
     # Handlers for user login / logout
+    #
 
     # Handler for the global login event
 
@@ -54,8 +58,18 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         .addClass('logged-out')
 
 
-    # Controller management - starting controllers, showing and hiding views
+    #
+    # Controller management
+    # Starting controllers, showing and hiding views
+    #
 
+    # Handler for the global matchRoute event
+
+    matchRoute: (route, params) =>
+      #console.debug 'ApplicationView#matchRoute', route, params
+      controllerName = route.controller
+      action = route.action
+      @startupController controllerName, action, params
 
     # Handler for the global !startupController event
     #
@@ -68,8 +82,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     #   4. Show the new view
 
     startupController: (controllerName, action = 'index', params = {}) =>
-      #console.debug 'ApplicationView#startupController\n\t' +
-      #  "#{@currentControllerName}##{@currentAction} > #{controllerName}##{action} params #{params}"
+      #console.debug "ApplicationView#startupController\t#{@currentControllerName}##{@currentAction} > #{controllerName}##{action}\tparams", params
 
       # Set default flags
 
@@ -201,6 +214,10 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       setTimeout (-> document.title = title), 50
 
 
+    #
+    # Fallback content
+    #
+
     # After the first controller has been started, remove all accessible content
     # so the DOM is less complex and images and video do not lie in the background
 
@@ -211,6 +228,10 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Remove the handler after the first startupController event
       mediator.unsubscribe 'startupController', @removeFallbackContent
 
+
+    #
+    # Event handling
+    #
 
     # Global event handlers
 
