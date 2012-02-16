@@ -6,7 +6,7 @@ define(['mediator'], function(mediator) {
   var Route;
   return Route = (function() {
 
-    Route.reservedParams = 'path navigate'.split(' ');
+    Route.reservedParams = 'path changeURL'.split(' ');
 
     function Route(pattern, target, options) {
       var _ref;
@@ -29,17 +29,16 @@ define(['mediator'], function(mediator) {
     };
 
     Route.prototype.test = function(path) {
-      var constraint, constraints, matches, params, type, _ref;
-      matches = this.regExp.exec(path);
-      if (!matches) return false;
+      var constraint, constraints, matched, name, params;
+      matched = this.regExp.test(path);
+      if (!matched) return false;
       constraints = this.options.constraints;
       if (constraints) {
-        params = this.buildParams(path, matches);
-        _ref = this.constraints;
-        for (type in _ref) {
-          if (!__hasProp.call(_ref, type)) continue;
-          constraint = _ref[type];
-          if (!constraint.test(params[type])) return false;
+        params = this.extractParams(path);
+        for (name in constraints) {
+          if (!__hasProp.call(constraints, name)) continue;
+          constraint = constraints[name];
+          if (!constraint.test(params[name])) return false;
         }
       }
       return true;
@@ -47,23 +46,29 @@ define(['mediator'], function(mediator) {
 
     Route.prototype.handler = function(path, options) {
       var params;
-      if (options == null) options = {};
-      params = this.buildParams(path);
-      params.navigate = options.navigate === true;
+      params = this.buildParams(path, options);
       return mediator.publish('matchRoute', this, params);
     };
 
-    Route.prototype.buildParams = function(path, matches) {
-      var index, match, paramName, params, _len, _ref;
+    Route.prototype.buildParams = function(path, options) {
+      var params;
+      params = this.extractParams(path);
+      _(params).extend(this.options.params);
+      params.changeURL = Boolean(options && options.changeURL);
+      params.path = path;
+      return params;
+    };
+
+    Route.prototype.extractParams = function(path) {
+      var index, match, matches, paramName, params, _len, _ref;
       params = {};
-      matches || (matches = this.regExp.exec(path));
+      matches = this.regExp.exec(path);
       _ref = matches.slice(1);
       for (index = 0, _len = _ref.length; index < _len; index++) {
         match = _ref[index];
         paramName = this.paramNames[index];
         params[paramName] = match;
       }
-      params.path = matches[0];
       return params;
     };
 

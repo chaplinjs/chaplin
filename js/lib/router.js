@@ -6,7 +6,7 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
   return Router = (function() {
 
     function Router() {
-      this.follow = __bind(this.follow, this);      this.registerRoutes();
+      this.route = __bind(this.route, this);      this.registerRoutes();
       this.startHistory();
     }
 
@@ -30,22 +30,23 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
       return Backbone.history.route(route, route.handler);
     };
 
-    Router.prototype.follow = function(path, params) {
+    Router.prototype.route = function(path) {
       var handler, _i, _len, _ref;
-      if (params == null) params = {};
       path = path.replace(/^(\/#|\/)/, '');
       _ref = Backbone.history.handlers;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         handler = _ref[_i];
         if (handler.route.test(path)) {
-          handler.callback(path, params);
+          handler.callback(path, {
+            changeURL: true
+          });
           return true;
         }
       }
       return false;
     };
 
-    Router.prototype.navigate = function(url) {
+    Router.prototype.changeURL = function(url) {
       return Backbone.history.navigate(url, {
         trigger: false
       });

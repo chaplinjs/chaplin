@@ -2,7 +2,7 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
 
   'use strict'
 
-  class Router
+  class Router # This class does not inherit from Backbone’s router
 
     constructor: ->
       @registerRoutes()
@@ -25,7 +25,7 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
       Backbone.history.start pushState: true
 
     # Connect an address with a controller action
-    # Don’t use Backbone’s Router#route, directly create a Backbone.history route instead
+    # Directly create a Backbone.history route
 
     match: (pattern, target, options = {}) ->
       #console.debug 'Router#match', pattern, target
@@ -42,13 +42,13 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
 
     # Route a given URL path manually, return whether a route matched
 
-    follow: (path, params = {}) =>
-      #console.debug 'Router#follow', path, params
-
+    route: (path) =>
+      #console.debug 'Router#route', path, params
+      # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
       for handler in Backbone.history.handlers
         if handler.route.test(path)
-          handler.callback path, params
+          handler.callback path, changeURL: true
           return true
       return false
 
@@ -56,6 +56,6 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
     # Do not trigger any routes (which is Backbone’s
     # default behavior, but added for clarity)
 
-    navigate: (url) ->
+    changeURL: (url) ->
       #console.debug 'Router#navigate', url
       Backbone.history.navigate url, trigger: false

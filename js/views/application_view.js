@@ -56,7 +56,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       var controllerFileName, sameController;
       if (action == null) action = 'index';
       if (params == null) params = {};
-      if (params.navigate !== false) params.navigate = true;
+      if (params.changeURL !== false) params.changeURL = true;
       if (params.forceStartup !== true) params.forceStartup = false;
       sameController = !params.forceStartup && this.currentControllerName === controllerName && this.currentAction === action && (!this.currentParams || _(params).isEqual(this.currentParams));
       if (sameController) return;
@@ -98,6 +98,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       this.previousController = currentControllerName;
       this.currentControllerName = controllerName;
       this.currentController = controller;
+      this.currentAction = action;
       this.currentView = view;
       this.currentParams = params;
       this.adjustURL();
@@ -116,8 +117,8 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       } else {
         throw new Error("ApplicationView#adjustURL: controller for " + controllerName + " does not provide a historyURL");
       }
-      if (params.navigate) mediator.router.navigate(historyURL);
-      return this.url = "/" + historyURL;
+      if (params.changeURL) mediator.router.changeURL(historyURL);
+      return this.url = historyURL;
     };
 
     ApplicationView.prototype.adjustTitle = function() {
@@ -160,9 +161,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       el = e.currentTarget;
       path = el.pathname;
       if (!path) return;
-      result = mediator.router.follow(path, {
-        navigate: true
-      });
+      result = mediator.router.route(path);
       if (result) return e.preventDefault();
     };
 
@@ -172,9 +171,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       if (e.nodeName === 'A') return;
       path = $(el).data('href');
       if (!path) return;
-      result = mediator.router.follow(path, {
-        navigate: true
-      });
+      result = mediator.router.route(path);
       if (result) return e.preventDefault();
     };
 

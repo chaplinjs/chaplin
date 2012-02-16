@@ -87,7 +87,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Set default flags
 
       # Whether to update the URL after controller startup
-      params.navigate = true unless params.navigate is false
+      # Default to true unless explicitly set to false
+      params.changeURL = true unless params.changeURL is false
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
@@ -159,6 +160,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       @previousController    = currentControllerName
       @currentControllerName = controllerName
       @currentController     = controller
+      @currentAction         = action
       @currentView           = view
       @currentParams         = params
 
@@ -195,11 +197,12 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         throw new Error "ApplicationView#adjustURL: controller for #{controllerName} does not provide a historyURL"
 
       # Pass to the router to actually change the current URL
-      if params.navigate
-        mediator.router.navigate historyURL
+      # (call history.pushState)
+      if params.changeURL
+        mediator.router.changeURL historyURL
 
       # Save the URL
-      @url = "/#{historyURL}"
+      @url = historyURL
 
     # Change the document title. Get the title from the title property
     # of the params or of the current controller
@@ -284,7 +287,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       return unless path
 
       # Pass to the router. Returns true if the URL could be routed.
-      result = mediator.router.follow path, navigate: true
+      result = mediator.router.route path
       #console.debug '\tfollow result', result
 
       e.preventDefault() if result
@@ -303,8 +306,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       path = $(el).data('href')
       return unless path
 
-      # Call the
-      result = mediator.router.follow path, navigate: true
+      # Pass to the router. Returns true if the URL could be routed.
+      result = mediator.router.route path
       #console.debug '\tfollow result', result
 
       e.preventDefault() if result

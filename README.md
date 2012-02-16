@@ -55,7 +55,7 @@ This example application uses the following JavaScript libraries:
 
 The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
-For simplicity, this example uses the Facebook application ID of moviepilot.com. On login, you will be asked to grant access rights to the moviepilot.com Facebook app. This example app will not post anything to Facebook on your behalf or publish/submit your personal data. You’re free to [revoke access rights](https://www.facebook.com/settings/?tab=applications) at any time. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js` if you don’t trust moviepilot.com. 
+For simplicity, this example uses the Facebook application ID of moviepilot.com. On login, you will be asked to grant access rights to the moviepilot.com Facebook app. This example app will not post anything to Facebook on your behalf or publish/submit your personal data. You’re free to [revoke access rights](https://www.facebook.com/settings/?tab=applications) at any time. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js` if you don’t trust moviepilot.com.
 
 The Facebook login only works if the app runs on a domain which matches the Facebook app. That is, is has to be run on a subdomain of `moviepilot.com`. To access the application, follow these steps:
 
@@ -83,7 +83,7 @@ The root object of the JavaScript application is just called `Application`. In p
 
 In this sample application we’re using RequireJS (AMD modules) to load all dependencies of a JavaScript file on demand. However, the core libraries this application relies upon are not loaded using RequireJS, they are loaded with normal `script` elements synchronously. You might want to [wrap](https://github.com/geddesign/wrap.js) jQuery, Backbone, Underscore and Handlebars as RequireJS modules to get the full AMD experience.
 
-While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible. 
+While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible.
 
 Modules communicate and share data using the `mediator`. That’s just a simple object with some properties:
 
@@ -122,7 +122,13 @@ Our `Router` does not have a `route` method, but a `match` method to create rout
 @match 'likes/:id', 'likes#show'
 ```
 
-`match` works much like the Ruby on Rails counterpart since it creates a proper `params` hash instead of an array like Backbone’s standard router does. If a route matches, the corresponding `Route` object just publishes a `!startupController` event passing the controller name, the controller action and the parameter hash. Additional fixed parameters may be passed from the `match` call to the controller.
+`match` works much like the Ruby on Rails counterpart since it creates a proper `params` hash. If a route matches, the corresponding `Route` object publishes a `matchRoute` event passing the route instance and the parameter hash.
+
+Additional fixed parameters and parameter constraints may be specified in the `match` call:
+
+```
+@match 'likes/:id', 'likes#show', constraints: { id: /^\d+$/ }, params: { foo: 'bar' }
+```
 
 ## The Controllers
 
@@ -204,10 +210,10 @@ The current `CollectionView` implementation is quite simple and could be improve
 
 ## Fat Models and Views
 
-Following Backbone’s design that models/collection can fetch themselves from the server or other stores, most of our fetching code is in the model/collection. On moviepilot.com the actual API calls are located in separate modules, but the whole processing and updating logic resides in the model/collection. Model/collections may fetch themselves on initialization without receiving a call to do so. 
+Following Backbone’s design that models/collection can fetch themselves from the server or other stores, most of our fetching code is in the model/collection. On moviepilot.com the actual API calls are located in separate modules, but the whole processing and updating logic resides in the model/collection. Model/collections may fetch themselves on initialization without receiving a call to do so.
 
 Likewise, our views are quite independent. Most of them render themselves on instantiation, on model attribute change or on global events. They might event destroy themselves independently.
-  
+
 As a consequence, our controllers are quite skinny. In most cases, they just instantiate the model/collection an its associated view passing the necessary data. Then the model/collection and the view will handle the rest themselves.
 
 There’s no specific reason for this decision, it’s merely a convention on where to put fetching and rendering code – your mileage may vary.
