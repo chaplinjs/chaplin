@@ -2,17 +2,7 @@
 
 ## Introduction
 
-This is an example JavaScript application architecture using the popular Backbone.js library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page JavaScript application.
-
-## Motivation
-
-While developing web applications like moviepilot.com and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a full-fledged framework for single-page applications. Yet it’s often used for this purpose.
-
-To promote the discussion on JavaScript applications, we decided to open-source and document our application structure. This example application is mostly derived and generalized from the moviepilot.com codebase.
-
-This project does not intend to provide a ready-to-use library. It’s an example how a real-world application structure might look like. Consider it as a scaffold which needs to be adapted to the needs of a specific application.
-
-This structure is just a snapshot of our ongoing efforts. Just like Moviepilot.com, we’re evolving the structure over the time. It’s not all-purpose or flawless. In fact there are several open issues so your feedback is appreciated!
+This is an example architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
 ## Key Features
 
@@ -22,11 +12,21 @@ This structure is just a snapshot of our ongoing efforts. Just like Moviepilot.c
 * Controllers for managing individual UI views
 * Rails-style routes which map URLs to controller actions
 * An application view as dispatcher and view manager
-* Extended model, view and collection classes to reduce repetition and enforce conventions
+* Extended model, view and collection classes to avoid repetition and enforce conventions
 * Strict memory management and object disposal
 * A collection with additional manipulation methods for smarter change events
 * A collection view for easy and intelligent list rendering
 * Client-side authentication using service providers like Facebook, Google and Twitter
+
+## Motivation
+
+While developing web applications like [moviepilot.com](http://moviepilot.com/) and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a [framework](http://stackoverflow.com/questions/148747/what-is-the-difference-between-a-framework-and-a-library) for single-page applications. Yet it’s often used for this purpose.
+
+To promote the discussion on JavaScript applications, we decided to open-source and document the our application structure. The example application in this repository is mostly derived and generalized from the moviepilot.com codebase.
+
+This project does not intend to provide a ready-to-use library. It’s an example how a real-world application structure might look like. Consider it as a scaffold which needs to be adapted to the needs of a specific application.
+
+The structure is a snapshot of our ongoing efforts. Just like moviepilot.com, we’re evolving the structure over the time. It’s not all-purpose nor flawless. In fact there are several open issues so your feedback is appreciated!
 
 ## Technology Stack
 
