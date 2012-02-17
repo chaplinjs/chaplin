@@ -339,7 +339,7 @@ Apparently, other projects experienced the same Backbone shortcomings and took a
 * [Thorax](http://walmartlabs.github.com/thorax/)
 * [Marionette](http://derickbailey.github.com/backbone.marionette/)
 
-## Authors
+## The Cast
 
 This software was mostly written by:
 
@@ -352,6 +352,8 @@ With major input and contributions from:
 * Rin Räuber (9elements) – [@rinpaku](http://twitter.com/rinpaku) – [rin-raeuber.com](http://rin-raeuber.com/)
 * Wojtek Gorecki (9elements) – [@newmetl](http://twitter.com/newmetl)
 * Jan Monschke (9elements) – [@thedeftone](http://twitter.com/thedeftone)
+
+## The Producers
 
 The architecture was derived from [moviepilot.com](http://moviepilot.com/), a project by Moviepilot with support from 9elements.
 
