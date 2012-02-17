@@ -1,8 +1,12 @@
-# Sample Backbone Application Architecture
+# Chaplin
+
+*A Sample Application Architecture Using Backbone.js*
+
+![Modern Times](http://s3.amazonaws.com/imgly_production/3344801/original.jpg)
 
 ## Introduction
 
-This is an example architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
+Chaplin is an example architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
 ## Key Features
 
@@ -22,27 +26,25 @@ This is an example architecture for JavaScript applications using the [Backbone.
 
 While developing web applications like [moviepilot.com](http://moviepilot.com/) and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a [framework](http://stackoverflow.com/questions/148747/what-is-the-difference-between-a-framework-and-a-library) for single-page applications. Yet it’s often used for this purpose.
 
-To promote the discussion on JavaScript applications, we decided to open-source and document the our application structure. The example application in this repository is mostly derived and generalized from the moviepilot.com codebase.
+To promote the discussion on JavaScript applications, we decided to open-source and document our application architecture. Chaplin is mostly derived and generalized from the moviepilot.com codebase.
 
-This project does not intend to provide a ready-to-use library. It’s an example how a real-world application structure might look like. Consider it as a scaffold which needs to be adapted to the needs of a specific application.
+Chaplin does not intend to provide an all-purpose, ready-to-use library. It’s an example how a real-world application structure might look like. Consider it as a scaffold which needs to be adapted to the needs of a specific application.
 
-The structure is a snapshot of our ongoing efforts. Just like moviepilot.com, we’re evolving the structure over the time. It’s not all-purpose nor flawless. In fact there are several open issues so your feedback is appreciated!
+This repository is a snapshot of our ongoing efforts. We’re evolving the structure of moviepilot.com over the time and we’re using Chaplin as a testbed and playground. Of course this architecture is not flawless. In fact there are several open issues so your feedback is appreciated!
 
 ## Technology Stack
 
-For simplicity reasons, this sample application is plain HTML, CSS and JavaScript. However, the JavaScripts are written in the [CoffeeScript](http://coffeescript.org/) meta-language. Most `.coffee` files contain CoffeeScript “class” declarations.
+For simplicity reasons, Chaplin consists of plain HTML, CSS and JavaScript. However, the JavaScripts are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. Most `.coffee` files contain CoffeeScript “class” declarations. In this repository, you will find _both_ the original CoffeeScripts and the compiled JavaScripts. So there is no need to compile the CoffeeScripts in order to start the demo.
 
-The CoffeeScript files can been translated to JavaScript using this command:
+If you would like to modify the CoffeeScripts, you can translate them JavaScript using the CoffeeScript compiler. After installing CoffeeScript, you might run this command:
 
 ```
 coffee --bare --output coffee/ js/
 ```
 
-In this repository, you will find both the original CoffeeScripts and the compiled JavaScripts.
+In our real-world applications, we’re using several tools for compiling and packaging scripts, stylesheets and templates. On moviepilot.com, we’re using the [Ruby on Rails 3.2 asset pipeline](http://guides.rubyonrails.org/asset_pipeline.html) together with Node.js to compile CoffeeScripts, Sass/Compass stylesheets as well as Handlebars templates on the server. On salon.io, we’re using [Brunch](http://brunch.io/) which is based on Node.js. Since this example isn’t about building and deployment, it has no such dependencies.
 
-In our real-world applications, we’re using several tools for compiling and packaging scripts, stylesheets and templates. On moviepilot.com, we’re using the Ruby on Rails asset pipeline together with Node.js to compile CoffeeScripts, Sass/Compass stylesheets as well as Handlebars templates on the server. On Salon.io, we’re using [Brunch](http://brunch.io/) which is based on Node.js. Since this example isn’t about building and deployment, it has no such dependencies.
-
-This example application uses the following JavaScript libraries:
+The example application uses the following JavaScript libraries:
 
 * [RequireJS](http://requirejs.org/) for lazy-loading of scripts and dependency management,
 * [jQuery](http://jquery.com/) for DOM scripting and Ajax,
@@ -52,6 +54,9 @@ This example application uses the following JavaScript libraries:
 
 
 ## The Example Application: Facebook Likes Browser
+
+While traditional site login using e-mail and password is still around, single sign-on gained popularity
+It’s common that user authentication
 
 The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
@@ -64,6 +69,8 @@ The Facebook login only works if the app runs on a domain which matches the Face
 * Then you’re able to access *http://example.moviepilot.com/* in your browser and log in with Facebook.
 
 After successful login, your Facebook likes are fetched from the Open Graph and displayed as a list. You might click a list entry to see more details.
+
+Besides the likes browsers, there’s a second screen which displays some latest posts on the moviepilot.com Facebook page. This is just another controller in order to demonstrate the change between controllers with proper routing and cleanup.
 
 ## The Architecture in Detail
 
@@ -79,7 +86,7 @@ The root object of the JavaScript application is just called `Application`. In p
 * `Router`
 
 
-## mediator and Publish/Subscribe
+## Mediator and Publish/Subscribe
 
 In this sample application we’re using RequireJS (AMD modules) to load all dependencies of a JavaScript file on demand. However, the core libraries this application relies upon are not loaded using RequireJS, they are loaded with normal `script` elements synchronously. You might want to [wrap](https://github.com/geddesign/wrap.js) jQuery, Backbone, Underscore and Handlebars as RequireJS modules to get the full AMD experience.
 
@@ -210,7 +217,7 @@ The current `CollectionView` implementation is quite simple and could be improve
 
 ## Fat Models and Views
 
-Following Backbone’s design that models/collection can fetch themselves from the server or other stores, most of our fetching code is in the model/collection. On moviepilot.com the actual API calls are located in separate modules, but the whole processing and updating logic resides in the model/collection. Model/collections may fetch themselves on initialization without receiving a call to do so.
+Following Backbone’s design that models/collection can fetch themselves from the server or other stores, most of our fetching code is in the model/collection. On moviepilot.com, the actual API calls are located in separate modules, but the whole processing and updating logic resides in the model/collection. Model/collections may fetch themselves on initialization without receiving a call to do so.
 
 Likewise, our views are quite independent. Most of them render themselves on instantiation, on model attribute change or on global events. They might event destroy themselves independently.
 
@@ -275,7 +282,7 @@ This isn’t the best solution but acceptable for now since this doesn’t occur
 
 ## Memory Management and Object Disposal
 
-One of the core concerns of this application architecture is a proper memory management. It seems there isn’t a broad discussion about garbage collection in JavaScript applications, but in fact it’s an important topic. Backbone provides little out of the box so we implemented it by hand: Every controller, model, collection and view cleans up after itself.
+One of the core concerns of this architecture is a proper memory management. It seems there isn’t a broad discussion about garbage collection in JavaScript applications, but in fact it’s an important topic. Backbone provides little out of the box so we implemented it by hand: Every controller, model, collection and view cleans up after itself.
 
 Event handling creates references between objects. If a view listens for model changes, the model has a reference to a view method in its `_callbacks` list. View methods are often bound to the view instance using `_.bind()`, CoffeeScript’s `=>` or such. When you register a `change` handler which is bound to the view, the view will remain in memory even if it was already detached from the DOM. The garbage collector can’t free their memory because of this reference.
 
@@ -319,9 +326,9 @@ The Publish/Subscribe pattern is the most important glue in our application beca
 
 By releasing this code into the public, we’d like to start a community discussion on top-level application architecture. “Application” means everything above simple routing, individual models, views and their binding.
 
-Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todo list example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code. In addition, we could not use many of Backbone’s features on moviepilot.com and were forced to re-implement others. For us, Backbone got usable by deriving, extending or even replacing its classes. To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this well-known limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture.
+Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todo list example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code. In addition, we could not use many of Backbone’s features on moviepilot.com and were forced to re-implement others. For us, Backbone got usable by deriving, extending or even replacing its classes. To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this deliberate limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture.
 
-This example structure replaces the Backbone `Router` completely because it’s likely to become the kitchen sink of a Backbone application. Instead we’re using a routing approach similar to Rails. Our router looks like `routes.rb` in a Rails application. Our advice is to separate routing from the actual code which instantiates models and views. For this purpose, we chose to introduce controllers. Further, an application needs to separate the business logic from application state management and view management. For handling top-level UI changes, we introduced the `ApplicationView`.
+The Chaplin structure replaces the Backbone `Router` completely because it’s likely to become the kitchen sink of a Backbone application. Instead we’re using a routing approach similar to Rails. Our router looks like `routes.rb` in a Rails application. Our advice is to separate routing from the actual code which instantiates models and views. For this purpose, we chose to introduce controllers. Further, an application needs to separate the business logic from application state management and view management. For handling top-level UI changes, we introduced the `ApplicationView`.
 
 Due to the asynchronous nature of JavaScript Web applications, much glue is necessary to handle dependencies. We can recommend the techniques we chose: Publish/Subscribe, Deferreds and additional functional magic to wrap, accumulate and defer methods calls.
 
