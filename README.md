@@ -2,7 +2,7 @@
 
 *A Sample Application Architecture Using Backbone.js*
 
-![Modern Times](http://s3.amazonaws.com/imgly_production/3344801/original.jpg)
+![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
 ## Introduction
 
