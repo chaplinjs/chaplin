@@ -52,7 +52,6 @@ The example application uses the following JavaScript libraries:
 * [Backbone](http://documentcloud.github.com/backbone/) for models, views, routing and history management,
 * [Handlebars](http://handlebarsjs.com/) for view templates.
 
-
 ## The Example Application: Facebook Likes Browser
 
 While traditional site login using e-mail and password is still around, single sign-on gained popularity
@@ -71,6 +70,8 @@ The Facebook login only works if the app runs on a domain which matches the Face
 After successful login, your Facebook likes are fetched from the Open Graph and displayed as a list. You might click a list entry to see more details.
 
 Besides the likes browsers, there’s a second screen which displays some latest posts on the moviepilot.com Facebook page. This is just another controller in order to demonstrate the change between controllers with proper routing and cleanup.
+
+![Machine](http://img.ly/system/uploads/003/362/032/original_machine.jpg)
 
 ## The Architecture in Detail
 
@@ -225,6 +226,7 @@ As a consequence, our controllers are quite skinny. In most cases, they just ins
 
 There’s no specific reason for this decision, it’s merely a convention on where to put fetching and rendering code – your mileage may vary.
 
+![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
 
 ## Event Handling Overview
 
@@ -321,6 +323,8 @@ This functionality can be found in `utils.wrapAccumulators` and `utils.createAcc
 As mentioned above, Publish/Subscribe is a powerful pattern to promote loose coupling of application modules. Our implementation using `Backbone.Events` is totally simply but highly beneficial.
 
 The Publish/Subscribe pattern is the most important glue in our application because it’s used for most of the cross-module interaction.
+
+![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
 ## Conclusions
 
