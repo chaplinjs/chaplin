@@ -7,6 +7,15 @@ body {
 
 /* Scaffold */
 
+h1 {
+	margin: 0.5em 0;
+	font-size: 1.4em;
+}
+
+h2 {
+	font-size: 1.3em;
+}
+
 #startup-loading {
 	position: absolute;
 	top: 2em;
@@ -14,7 +23,7 @@ body {
 }
 
 #page-container {
-	border: 1px solid black;
+	border: 1px solid #ccc;
 	float: left;
 	width: 100%;
 }
@@ -39,7 +48,7 @@ body {
 	width: 58%;
 	min-height: 400px;
 	border-style: none solid;
-	border-color: gray;
+	border-color: #ccc;
 	border-width: 1px;
 }
 
