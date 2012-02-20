@@ -79,11 +79,11 @@ After successful login, your Facebook likes are fetched from the Open Graph and 
 
 Besides the likes browsers, there’s a second screen which displays some latest posts on the moviepilot.com Facebook page. This is just another controller in order to demonstrate the change between controllers with proper routing and cleanup.
 
-![Machine](http://img.ly/system/uploads/003/362/032/original_machine.jpg)
-
 ## The Architecture in Detail
 
 The following chapters will discuss the core objects and classes of our application structure.
+
+![Machine](http://img.ly/system/uploads/003/362/032/original_machine.jpg)
 
 ## Application
 
