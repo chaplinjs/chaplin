@@ -164,7 +164,7 @@ mediator.publish '!startupController', 'controllerName', 'controllerAction', opt
 
 The `ApplicationView` handles the `!startupController` event. It creates a controller instance, calls the controller action and may perform a transition from the current to the new controller.
 
-In addition, the `ApplicationView` changes the interface chrome on application-wide events like `login` and `logout`. It also handles the activation of application-internal links. That is, you just have to use a normal `&lt;a href="/foo"&gt;` element to link to another application module.
+In addition, the `ApplicationView` changes the interface chrome on application-wide events like `login` and `logout`. It also handles the activation of application-internal links. That is, you just have to use a normal `<a href="/foo">` element to link to another application module.
 
 ### Specific Module Controllers
 
