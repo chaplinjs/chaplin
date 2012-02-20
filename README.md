@@ -39,10 +39,8 @@ For simplicity reasons, Chaplin consists of plain HTML, CSS and JavaScript. Howe
 If you would like to modify the CoffeeScripts, you can translate them JavaScript using the CoffeeScript compiler. After installing CoffeeScript, you might run this command:
 
 ```
-coffee --bare --output coffee/ js/
+coffee --bare --output js/ coffee/
 ```
-
-In our real-world applications, we’re using several tools for compiling and packaging scripts, stylesheets and templates. On moviepilot.com, we’re using the [Ruby on Rails 3.2 asset pipeline](http://guides.rubyonrails.org/asset_pipeline.html) together with Node.js to compile CoffeeScripts, Sass/Compass stylesheets as well as Handlebars templates on the server. On salon.io, we’re using [Brunch](http://brunch.io/) which is based on Node.js. Since this example isn’t about building and deployment, it has no such dependencies.
 
 The example application uses the following JavaScript libraries:
 
@@ -51,6 +49,16 @@ The example application uses the following JavaScript libraries:
 * [Underscore](http://documentcloud.github.com/underscore/) as a data processing and functional helper,
 * [Backbone](http://documentcloud.github.com/backbone/) for models, views, routing and history management,
 * [Handlebars](http://handlebarsjs.com/) for view templates.
+
+We’re using RequireJS to define AMD modules and load JavaScript files automatically. However, the mentioned core libraries are not loaded using RequireJS, they are loaded with normal `script` elements synchronously. You might want to [wrap](https://github.com/geddesign/wrap.js) jQuery, Backbone, Underscore and Handlebars as RequireJS modules to get the full AMD experience.
+
+In our real-world applications, we’re using several tools for compiling and packaging scripts, stylesheets and templates. On moviepilot.com, we’re using the [Ruby on Rails 3.2 asset pipeline](http://guides.rubyonrails.org/asset_pipeline.html) together with Node.js to compile CoffeeScripts, Sass/Compass stylesheets as well as Handlebars templates on the server. On salon.io, we’re using [Brunch](http://brunch.io/) which is based on Node.js.
+
+Since this example isn’t about building and deployment, it has no such dependencies. Nevertheless RequireJS allows to [pre-build a package](http://requirejs.org/docs/optimization.html) with the initial modules. You might build a bootstrap package by running this command in the `/js` directory:
+
+```
+r.js -o name=application out=built.js paths.text=vendor/require-text-1.0.6 baseUrl=.
+```
 
 ## The Example Application: Facebook Likes Browser
 
@@ -89,9 +97,7 @@ The root object of the JavaScript application is just called `Application`. In p
 
 ## Mediator and Publish/Subscribe
 
-In this sample application we’re using RequireJS (AMD modules) to load all dependencies of a JavaScript file on demand. However, the core libraries this application relies upon are not loaded using RequireJS, they are loaded with normal `script` elements synchronously. You might want to [wrap](https://github.com/geddesign/wrap.js) jQuery, Backbone, Underscore and Handlebars as RequireJS modules to get the full AMD experience.
-
-While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible.
+In this sample application we’re using RequireJS to load JavaScript files on demand. While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible.
 
 Modules communicate and share data using the `mediator`. That’s just a simple object with some properties:
 
