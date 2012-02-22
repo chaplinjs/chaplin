@@ -7,9 +7,9 @@ define(function() {
   mediator.router = null;
   _(mediator).defaults(Backbone.Events);
   mediator._callbacks = null;
-  mediator.subscribe = Backbone.Events.on;
-  mediator.unsubscribe = Backbone.Events.off;
-  mediator.publish = Backbone.Events.trigger;
+  mediator.subscribe = mediator.on = Backbone.Events.on;
+  mediator.unsubscribe = mediator.off = Backbone.Events.off;
+  mediator.publish = mediator.trigger = Backbone.Events.trigger;
   if (Object.defineProperties) {
     desc = {
       writable: false

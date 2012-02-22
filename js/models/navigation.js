@@ -16,7 +16,7 @@ define(['models/model'], function(Model) {
       items: [
         {
           href: '/',
-          title: 'Your Likes'
+          title: 'Likes Browser'
         }, {
           href: '/posts',
           title: 'Wall Posts'

@@ -22,9 +22,9 @@ define ->
   mediator._callbacks  = null
 
   # Create Publish/Subscribe aliases
-  mediator.subscribe   = Backbone.Events.on
-  mediator.unsubscribe = Backbone.Events.off
-  mediator.publish     = Backbone.Events.trigger
+  mediator.subscribe   = mediator.on      = Backbone.Events.on
+  mediator.unsubscribe = mediator.off     = Backbone.Events.off
+  mediator.publish     = mediator.trigger = Backbone.Events.trigger
 
   # Make subscribe, unsubscribe and publish properties readonly
   if Object.defineProperties
