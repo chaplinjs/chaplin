@@ -1,8 +1,6 @@
-# Chaplin
+![Chaplin](http://s3.amazonaws.com/imgly_production/3401027/original.png)
 
 *A Sample Application Architecture Using Backbone.js*
-
-![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
 ## Introduction
 
@@ -23,6 +21,8 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 * Client-side authentication using service providers like Facebook, Google and Twitter
 
 ## Motivation
+
+![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
 While developing web applications like [moviepilot.com](http://moviepilot.com/) and [salon.io](http://salon.io/), we felt the need for conventions on how to structure Backbone applications. While Backbone is fine at what it’s doing, it’s not a [framework](http://stackoverflow.com/questions/148747/what-is-the-difference-between-a-framework-and-a-library) for single-page applications. Yet it’s often used for this purpose.
 
@@ -232,9 +232,9 @@ As a consequence, our controllers are quite skinny. In most cases, they just ins
 
 There’s no specific reason for this decision, it’s merely a convention on where to put fetching and rendering code – your mileage may vary.
 
-![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
-
 ## Event Handling Overview
+
+![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
 
 For models and views, there are several wrapper methods for event handler registration. In contrast to the direct methods they will save memory because the handlers will be removed correctly once the model or view is disposed.
 
@@ -330,9 +330,9 @@ As mentioned above, Publish/Subscribe is a powerful pattern to promote loose cou
 
 The Publish/Subscribe pattern is the most important glue in our application because it’s used for most of the cross-module interaction.
 
-![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
-
 ## Conclusions
+
+![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
 By releasing this code into the public, we’d like to start a community discussion on top-level application architecture. “Application” means everything above simple routing, individual models, views and their binding.
 
