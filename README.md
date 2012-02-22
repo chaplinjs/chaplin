@@ -1,6 +1,6 @@
 ![Chaplin](http://s3.amazonaws.com/imgly_production/3401027/original.png)
 
-*A Sample Application Architecture Using Backbone.js*
+# A Sample Application Architecture Using Backbone.js
 
 ## Introduction
 
