@@ -6,7 +6,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
   return ApplicationView = (function() {
     var siteTitle;
 
-    siteTitle = 'Architecture Example';
+    siteTitle = 'Chaplin Example Application';
 
     ApplicationView.prototype.previousController = null;
 
