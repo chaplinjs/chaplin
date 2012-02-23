@@ -4,9 +4,9 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
 
   class Facebook extends ServiceProvider
 
-    # Note: This is the app ID for the Facebook app of moviepilot.com
+    # Note: This is the app ID for an example Facebook app.
     # You might change this to your own application ID.
-    facebookAppId = '215662575119216'
+    facebookAppId = '115149731946795'
 
     # The permissions we’re asking for.
     # See https://developers.facebook.com/docs/reference/api/permissions/

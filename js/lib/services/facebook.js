@@ -10,7 +10,7 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
 
     __extends(Facebook, _super);
 
-    facebookAppId = '215662575119216';
+    facebookAppId = '115149731946795';
 
     scope = 'user_likes';
 

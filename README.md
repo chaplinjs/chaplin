@@ -67,13 +67,13 @@ It’s common that user authentication
 
 The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
-For simplicity, this example uses the Facebook application ID of moviepilot.com. On login, you will be asked to grant access rights to the moviepilot.com Facebook app. This example app will not post anything to Facebook on your behalf or publish/submit your personal data. You’re free to [revoke access rights](https://www.facebook.com/settings/?tab=applications) at any time. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js` if you don’t trust moviepilot.com.
+This example uses a Facebook application named “Chaplin Example App”. On login, you will be asked to grant access rights to this Facebook app. Of course this app will not post anything to Facebook on your behalf or publish/submit your personal data. You’re free to [revoke access rights](https://www.facebook.com/settings/?tab=applications) at any time. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js`.
 
-The Facebook login only works if the app runs on a domain which matches the Facebook app. That is, is has to be run on a subdomain of `moviepilot.com`. To access the application, follow these steps:
+The Facebook login only works if the app runs on the (nonexistent) domain `chaplin.moviepilot.com`. To access the application, follow these steps:
 
-* Add a line like `127.0.0.1   example.moviepilot.com` to your [hosts file](http://en.wikipedia.org/wiki/Hosts_(file)).
-* Start a local web server (like nginx for example), point the document root to the app folder.
-* Then you’re able to access *http://example.moviepilot.com/* in your browser and log in with Facebook.
+* Add a line like `127.0.0.1   chaplin.moviepilot.com` to your [hosts file](http://en.wikipedia.org/wiki/Hosts_(file)).
+* Start a simple local HTTP server (like nginx for example), point the document root to the app folder.
+* Then you’re able to access *http://chaplin.moviepilot.com/* in your browser and log in with Facebook.
 
 After successful login, your Facebook likes are fetched from the Open Graph and displayed as a list. You might click a list entry to see more details.
 
