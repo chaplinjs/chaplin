@@ -7,7 +7,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     # Set your application name here so
     # the document title is set properly to
     # “Site title – Controller title” (see adjustTitle)
-    siteTitle = 'Architecture Example'
+    siteTitle = 'Chaplin Example Application'
 
     previousController: null
 
