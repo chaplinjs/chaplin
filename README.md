@@ -62,10 +62,7 @@ r.js -o name=application out=built.js paths.text=vendor/require-text-1.0.6 baseU
 
 ## The Example Application: Facebook Likes Browser
 
-While traditional site login using e-mail and password is still around, single sign-on gained popularity
-It’s common that user authentication
-
-The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
+While traditional site login using e-mail and password is still around, single sign-on gained popularity. The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is just a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
 This example uses a Facebook application named “Chaplin Example App”. On login, you will be asked to grant access rights to this Facebook app. Of course this app will not post anything to Facebook on your behalf or publish/submit your personal data. You’re free to [revoke access rights](https://www.facebook.com/settings/?tab=applications) at any time. You might easily [create your own Facebook App](https://developers.facebook.com/apps) and change the app ID in `facebook.coffee`/`facebook.js`.
 
@@ -208,7 +205,7 @@ Models and collections are Publish/Subscribe event subscribers by using the `Sub
 
 Our `View` class is a highly extended and adapted Backbone `View`. All views inherit from this class to avoid repetition.
 
-Views may subscribe to Publish/Subscribe and model/collection events in a manner which allows proper disposal. They have a standard `render` method which renders a Handlebars template into the view’s root element (`@el`). The input data for the template is provided by the `getTemplateData`. By default, this method just returns an object which delegates to the model attributes. Views might override the method to process the raw model data for the view.
+Views may subscribe to Publish/Subscribe and model/collection events in a manner which allows proper disposal. They have a standard `render` method which renders a Handlebars template into the view’s root element (`@el`). The input data for the template is provided by `getTemplateData`. By default, this method just returns an object which delegates to the model attributes. Views might override the method to process the raw model data for the view.
 
 There are several differences to standard Backbone views:
 
@@ -300,7 +297,7 @@ This disposal process is quite complex and many objects needs a custom `dispose`
 
 ## Application Glue and Dependency Management
 
-Most processes in a client-side JavaScript application run asynchronously. Most applications are communicating with different external APIs. API bridges are established on demand and of course all API calls are asynchronous. Lazy-loading code and content is a key to perfomance. Therefore, handling asynchronous dependencies was one of the biggest challenges for us. We’re using the following techniques to handle dependencies, from bottom-level to top-level.
+Most processes in a client-side JavaScript application run asynchronously. It is quite common that an applications is communicating with different external APIs. API bridges are established on demand and of course all API calls are asynchronous. Lazy-loading code and content is a key to perfomance. Therefore, handling asynchronous dependencies was one of the biggest challenges for us. We’re using the following techniques to handle dependencies, from bottom-level to top-level.
 
 ### Backbone Events
 
