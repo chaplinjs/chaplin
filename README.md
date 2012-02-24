@@ -356,12 +356,14 @@ This software was mostly written by:
 * Mathias Schäfer ([9elements](http://9elements.com/)) – [mathias.schaefer@9elements.com](mailto:mathias.schaefer@9elements.com) – [@molily](https://twitter.com/molily) – [molily.de](http://molily.de/)
 * Johannes Emerich (Moviepilot) – [@knuton](https://twitter.com/knuton) – [johannes.emerich.de](http://johannes.emerich.de/)
 
-With major input and contributions from:
+With input and contributions from:
 
 * Nico Hagenburger – [@hagenburger](http://twitter.com/hagenburger) – [hagenburger.net](http://www.hagenburger.net/)
 * Rin Räuber (9elements) – [@rinpaku](http://twitter.com/rinpaku) – [rin-raeuber.com](http://rin-raeuber.com/)
 * Wojtek Gorecki (9elements) – [@newmetl](http://twitter.com/newmetl)
-* Jan Monschke (9elements) – [@thedeftone](http://twitter.com/thedeftone)
+* Jan Monscke (9elements) – [@thedeftone](http://twitter.com/thedeftone)
+* Jan Varwig (9elements) – [@agento](http://twitter.com/agento) – [jan.varwig.org](http://jan.varwig.org/)
+* Luis Merino (Moviepilot) – [@rendez](http://twitter.com/rendez)
 
 ## The Producers
 
