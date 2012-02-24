@@ -353,7 +353,7 @@ Apparently, other projects experienced the same Backbone shortcomings and took a
 
 This software was mostly written by:
 
-* Mathias Schäfer ([9elements](http://9elements.com/)) – [@molily](https://twitter.com/molily) – [molily.de](http://molily.de/)
+* Mathias Schäfer ([9elements](http://9elements.com/)) – [mathias.schaefer@9elements.com](mailto:mathias.schaefer@9elements.com) – [@molily](https://twitter.com/molily) – [molily.de](http://molily.de/)
 * Johannes Emerich (Moviepilot) – [@knuton](https://twitter.com/knuton) – [johannes.emerich.de](http://johannes.emerich.de/)
 
 With major input and contributions from:
