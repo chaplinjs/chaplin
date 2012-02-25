@@ -1,3 +1,34 @@
 - Persistent controllers with aren't disposed
+
+  On moviepilot.com, all controllers are instantiated once in the ApplicationController
+  and reused during application runtime. They just have startup and teardown methods.
+  So they might be able *not* to dispose the model and views in case the new controller
+  is the same controller. For example, the user visits the URL
+  /movies/9040-the-avengers/1234-some-article and switches to
+  /movies/9040-the-avengers/5678-another-article which are both handled by the same
+  controller. So the controller does not dispose all collections and views but merely
+  updates the article model.
+
+  In Chaplin, controllers are instantiated and disposed with every URL change.
+  So it’s not possible to reuse existing the objects. The only way would be to persist
+  these objects on the mediator. But is this the best solution?
+
 - Controller transition example
-- Should the controller add views to the DOM? Should the views have a containerSelector? IMHO the controller should not directly do DOM operations. Only something like attachView using a containerSelector stored elsewhere.
+
+  Often you want a transition between two screens of the application. We had this
+  once on moviepilot.com but this made the controller startup process way more
+  complex and inconsistent.
+
+  Currently the old controller with its models and views is disposed completely,
+  afterwards the new controller is instantiated and its views are rendered.
+  This structure doesn’t allow multiple views to be visible at the same
+  time. Maybe we can find good solution here.
+  
+- Better view management and sub-view nesting
+
+  Creating views in controllers and sub-views in views requires much code and
+  they have to be disposed manually.
+
+  There should be a conventional mechanism to create views so they might
+  be adressed in a consistent way and might be automatically disposed
+  (I think Thorax and Marionette provide good solutions for that).
