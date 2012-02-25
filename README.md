@@ -165,7 +165,7 @@ In addition, the `ApplicationView` changes the interface chrome on application-w
 
 ### Specific Module Controllers
 
-By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show` and so on. These actions are called by `ApplicationView` when a route matches. In addition to specific actions, a controller might provide a `startup` method which is called before a specific action.
+By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show` and so on. These actions are called by `ApplicationView` when a route matches. In addition to specific actions, a controller might provide a `initialize` method which is called before a specific action.
 
 For example, this is the stripped-down `LikesController`:
 
@@ -180,7 +180,7 @@ define ['controllers/controller', 'models/likes', 'models/like', 'views/likes_vi
     historyURL: (params) ->
       if params.id then "likes/#{params.id}" else ''
 
-    # startup method is empty here
+    # initialize method is empty here
 
     index: (params) ->
       @collection = new Likes()

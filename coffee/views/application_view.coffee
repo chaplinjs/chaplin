@@ -78,7 +78,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     #   1. Test if it’s a new controller/action with new params
     #   1. Hide the old view
     #   2. Destroy the old controller
-    #   3. Instantiate and startup up the new controller
+    #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
 
     startupController: (controllerName, action = 'index', params = {}) =>
@@ -140,11 +140,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Initialize the new controller
       controller = new ControllerConstructor()
 
-      # Call the startup method
-      unless typeof controller.startup is 'function'
-        throw new Error "ApplicationView#controllerLoaded: startup method not found on #{controllerName} controller"
+      # Call the initialize method
       # Passing the params and the old controller name
-      controller.startup params, currentControllerName
+      controller.initialize params, currentControllerName
 
       # Call the specific controller action
       unless typeof controller[action] is 'function'

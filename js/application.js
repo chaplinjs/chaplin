@@ -4,17 +4,14 @@ define(['mediator', 'controllers/session_controller', 'controllers/application_c
   var Application;
   Application = {
     initialize: function() {
-      this.startupControllers();
-      return this.startupRouter();
+      this.initControllers();
+      return this.initRouter();
     },
-    startupControllers: function() {
-      var applicationController, sessionController;
-      sessionController = new SessionController();
-      sessionController.startup();
-      applicationController = new ApplicationController();
-      return applicationController.startup();
+    initControllers: function() {
+      new SessionController();
+      return new ApplicationController();
     },
-    startupRouter: function() {
+    initRouter: function() {
       mediator.router = new Router();
       return typeof Object.defineProperty === "function" ? Object.defineProperty(mediator, 'router', {
         writable: false

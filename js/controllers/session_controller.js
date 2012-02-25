@@ -34,10 +34,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       this.subscribeEvent('userData', this.userData);
       this.subscribeEvent('!showLogin', this.showLoginView);
       this.subscribeEvent('!login', this.triggerLogin);
-      return this.subscribeEvent('!logout', this.triggerLogout);
-    };
-
-    SessionController.prototype.startup = function() {
+      this.subscribeEvent('!logout', this.triggerLogout);
       return this.getSession();
     };
 

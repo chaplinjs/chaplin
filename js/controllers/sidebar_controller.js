@@ -12,7 +12,7 @@ define(['controllers/controller', 'views/sidebar_view'], function(Controller, Si
       NavigationController.__super__.constructor.apply(this, arguments);
     }
 
-    NavigationController.prototype.startup = function() {
+    NavigationController.prototype.initialize = function() {
       return this.view = new SidebarView();
     };
 

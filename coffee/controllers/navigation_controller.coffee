@@ -4,8 +4,8 @@ define ['controllers/controller', 'models/navigation', 'views/navigation_view'],
 
   class NavigationController extends Controller
 
-    startup: ->
+    initialize: ->
       super
-      #console.debug 'NavigationController#startup'
+      #console.debug 'NavigationController#initialize'
       @model = new Navigation()
       @view = new NavigationView model: @model

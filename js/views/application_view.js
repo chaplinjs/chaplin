@@ -80,10 +80,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
         currentController.dispose(params, controllerName);
       }
       controller = new ControllerConstructor();
-      if (typeof controller.startup !== 'function') {
-        throw new Error("ApplicationView#controllerLoaded: startup method not found on " + controllerName + " controller");
-      }
-      controller.startup(params, currentControllerName);
+      controller.initialize(params, currentControllerName);
       if (typeof controller[action] !== 'function') {
         throw new Error("ApplicationView#controllerLoaded: action " + action + " not found on " + controllerName + " controller");
       }

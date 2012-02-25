@@ -17,8 +17,6 @@ define ['lib/subscriber'], (Subscriber) ->
 
     initialize: ->
 
-    startup: ->
-
     #
     # Disposal
     #

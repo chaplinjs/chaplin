@@ -12,21 +12,18 @@ define(['controllers/controller', 'views/application_view', 'controllers/navigat
       ApplicationController.__super__.constructor.apply(this, arguments);
     }
 
-    ApplicationController.prototype.startup = function() {
-      this.startupApplication();
-      return this.startupSidebars();
+    ApplicationController.prototype.initialize = function() {
+      this.initApplicationView();
+      return this.initSidebars();
     };
 
-    ApplicationController.prototype.startupApplication = function() {
+    ApplicationController.prototype.initApplicationView = function() {
       return new ApplicationView();
     };
 
-    ApplicationController.prototype.startupSidebars = function() {
-      var navigationController, sidebarController;
-      navigationController = new NavigationController();
-      navigationController.startup();
-      sidebarController = new SidebarController();
-      return sidebarController.startup();
+    ApplicationController.prototype.initSidebars = function() {
+      new NavigationController();
+      return new SidebarController();
     };
 
     return ApplicationController;

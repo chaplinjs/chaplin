@@ -21,8 +21,6 @@ define(['lib/subscriber'], function(Subscriber) {
 
     Controller.prototype.initialize = function() {};
 
-    Controller.prototype.startup = function() {};
-
     Controller.prototype.disposed = false;
 
     Controller.prototype.dispose = function() {

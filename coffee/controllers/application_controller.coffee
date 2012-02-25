@@ -4,18 +4,14 @@ define ['controllers/controller', 'views/application_view', 'controllers/navigat
 
   class ApplicationController extends Controller
 
-    startup: ->
-      @startupApplication()
-      @startupSidebars()
+    initialize: ->
+      @initApplicationView()
+      @initSidebars()
 
-    startupApplication: ->
+    initApplicationView: ->
       new ApplicationView()
 
-    startupSidebars: ->
-
-      navigationController = new NavigationController()
-      navigationController.startup()
-
-      sidebarController = new SidebarController()
-      sidebarController.startup()
+    initSidebars: ->
+      new NavigationController()
+      new SidebarController()
 

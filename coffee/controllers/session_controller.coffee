@@ -39,10 +39,6 @@ define ['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       # Initiate logout
       @subscribeEvent '!logout', @triggerLogout
 
-
-    startup: ->
-      #console.debug 'SessionController#startup'
-
       # Determine the logged-in state
       @getSession()
 

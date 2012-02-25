@@ -4,6 +4,6 @@ define ['controllers/controller', 'views/sidebar_view'], (Controller, SidebarVie
 
   class NavigationController extends Controller
 
-    startup: ->
+    initialize: ->
       @view = new SidebarView()
 
