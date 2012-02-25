@@ -349,6 +349,7 @@ define ['mediator'], (mediator) ->
     # Call the given function `func` when the global event `eventType` occurs.
     # Defaults to 'login', so the `func` is called when the user has successfully logged in.
     # When the function is called, `this` points to the given `context`.
+    # You may pass a `loginContext` for the UI context where the login was triggered.
 
     afterLogin: (context, func, eventType = 'login', args...) ->
       #console.debug 'utils.afterLogin', context, func, eventType, args
@@ -365,11 +366,23 @@ define ['mediator'], (mediator) ->
 
         mediator.subscribe eventType, loginHandler
 
+    deferMethodsUntilLogin: (obj, methods, eventType = 'login') ->
+      #console.debug 'utils.deferMethodsUntilLogin', arguments...
+
+      methods = [methods] if typeof methods is 'string'
+
+      for name in methods
+        func = obj[name]
+        unless typeof func is 'function'
+          throw new TypeError "utils.deferMethodsUntilLogin: method #{name} not found"
+        #console.debug '\twrap', obj, name
+        obj[name] = _(utils.afterLogin).bind null, obj, func, eventType
+
     # Delegates to afterLogin, but triggers the login dialog if the user isn't logged in
     # and calls preventDefault if an event object is passed.
 
-    ensureLogin: (context, func, eventType = 'login', args...) ->
-      #console.debug 'utils.ensureLogin', context, func, args
+    ensureLogin: (context, func, loginContext, eventType = 'login', args...) ->
+      #console.debug 'utils.ensureLogin', context, func, loginContext, args
       utils.afterLogin context, func, eventType, args...
 
       unless mediator.user
@@ -378,18 +391,19 @@ define ['mediator'], (mediator) ->
           e.preventDefault()
 
         # Start login process
-        mediator.publish '!showLogin'
+        mediator.publish '!showLogin', loginContext
 
     # Wrap methods which need a logged-in user.
     # Trigger the login when they are called and there is no user.
     # Arguments:
     # `obj`: The object whose methods should be wrapped
     # `methods`: A string or an array of strings with method names
+    # `loginContext`: object with login context information, should have a `description` property
     # `eventType`: The global PubSub event the actual method call will wait for.
     #              Defaults to 'login'.
 
-    ensureLoginForMethods: (obj, methods, eventType = 'login') ->
-      #console.debug 'utils.ensureLoginForMethods', obj, methods
+    ensureLoginForMethods: (obj, methods, loginContext, eventType = 'login') ->
+      #console.debug 'utils.ensureLoginForMethods', obj, methods, loginContext
 
       # Transform a single method string into a list
       methods = [methods] if typeof methods is 'string'
@@ -398,8 +412,9 @@ define ['mediator'], (mediator) ->
         func = obj[name]
         unless typeof func is 'function'
           throw new TypeError "utils.ensureLoginForMethods: method #{name} not found"
-        #console.debug '\twrap', obj, name
-        obj[name] = _(utils.ensureLogin).bind null, obj, func, eventType
+        #console.debug '\twrap', obj, name, loginContext
+        obj[name] = _(utils.ensureLogin).bind null, obj, func, loginContext, eventType
+
 
 
   # Seal the utils object

@@ -326,19 +326,34 @@ define(['mediator'], function(mediator) {
         return mediator.subscribe(eventType, loginHandler);
       }
     },
+    deferMethodsUntilLogin: function(obj, methods, eventType) {
+      var func, name, _i, _len, _results;
+      if (eventType == null) eventType = 'login';
+      if (typeof methods === 'string') methods = [methods];
+      _results = [];
+      for (_i = 0, _len = methods.length; _i < _len; _i++) {
+        name = methods[_i];
+        func = obj[name];
+        if (typeof func !== 'function') {
+          throw new TypeError("utils.deferMethodsUntilLogin: method " + name + " not found");
+        }
+        _results.push(obj[name] = _(utils.afterLogin).bind(null, obj, func, eventType));
+      }
+      return _results;
+    },
     ensureLogin: function() {
-      var args, context, e, eventType, func;
-      context = arguments[0], func = arguments[1], eventType = arguments[2], args = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
+      var args, context, e, eventType, func, loginContext;
+      context = arguments[0], func = arguments[1], loginContext = arguments[2], eventType = arguments[3], args = 5 <= arguments.length ? __slice.call(arguments, 4) : [];
       if (eventType == null) eventType = 'login';
       utils.afterLogin.apply(utils, [context, func, eventType].concat(__slice.call(args)));
       if (!mediator.user) {
         if ((e = args[0]) && typeof e.preventDefault === 'function') {
           e.preventDefault();
         }
-        return mediator.publish('!showLogin');
+        return mediator.publish('!showLogin', loginContext);
       }
     },
-    ensureLoginForMethods: function(obj, methods, eventType) {
+    ensureLoginForMethods: function(obj, methods, loginContext, eventType) {
       var func, name, _i, _len, _results;
       if (eventType == null) eventType = 'login';
       if (typeof methods === 'string') methods = [methods];
@@ -349,7 +364,7 @@ define(['mediator'], function(mediator) {
         if (typeof func !== 'function') {
           throw new TypeError("utils.ensureLoginForMethods: method " + name + " not found");
         }
-        _results.push(obj[name] = _(utils.ensureLogin).bind(null, obj, func, eventType));
+        _results.push(obj[name] = _(utils.ensureLogin).bind(null, obj, func, loginContext, eventType));
       }
       return _results;
     }
