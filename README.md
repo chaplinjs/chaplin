@@ -6,7 +6,26 @@
 
 Chaplin is an example architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-## Key Features
+* [Key Features](#toc-key-featurs)
+* [Motivation](#toc-motivation)
+* [Technology Stack](#toc-tchnology-stack)
+* [The Example Application](#toc-example-application)
+* [The Architecture in Detail](#toc-architcture-in-detail)
+* [Application](#toc-application)
+* [Mediator and Publish/Subscribe](#toc-mediator-and-pub-sub)
+* [Router and Route](#toc-router-and-route)
+* [The Controllers](#toc-controllers)
+* [Models and Collections](#toc-models-and-collections)
+* [Views](#toc-views)
+* [Fat Models and Views](#toc-fat-models-and-views)
+* [Event Handling Overview](#toc-event-handling)
+* [Memory Management and Object Disposal](#toc-memory-management)
+* [Application Glue and Dependency Management](#toc-application-glue)
+* [Conclusions](#toc-conclusions)
+* [The Cast](#toc-cast)
+* [The Producers](#toc-producers)
+
+## <span id="toc-key-features">Key Features</span>
 
 * CoffeeScript class hierarchies as well as object composition
 * Module encapsulation and lazy-loading using RequireJS
@@ -20,7 +39,7 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 * A collection view for easy and intelligent list rendering
 * Client-side authentication using service providers like Facebook, Google and Twitter
 
-## Motivation
+## <span id="toc-motivation">Motivation</span>
 
 ![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
@@ -32,7 +51,7 @@ Chaplin does not intend to provide an all-purpose, ready-to-use library. It’s 
 
 This repository is a snapshot of our ongoing efforts. We’re evolving the structure of moviepilot.com over the time and we’re using Chaplin as a testbed and playground. Of course this architecture is not flawless. In fact there are several open issues so your feedback is appreciated!
 
-## Technology Stack
+## <span id="toc-technology-stack">Technology Stack</span>
 
 For simplicity reasons, Chaplin consists of plain HTML, CSS and JavaScript. However, the JavaScripts are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. Most `.coffee` files contain CoffeeScript “class” declarations. In this repository, you will find _both_ the original CoffeeScripts and the compiled JavaScripts. So there is no need to compile the CoffeeScripts in order to start the demo.
 
@@ -60,7 +79,7 @@ Since this example isn’t about building and deployment, it has no such depende
 r.js -o name=application out=built.js paths.text=vendor/require-text-1.0.6 baseUrl=.
 ```
 
-## The Example Application: Facebook Likes Browser
+## <span id="toc-example-application">The Example Application: Facebook Likes Browser</span>
 
 While traditional site login using e-mail and password is still around, single sign-on gained popularity. The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is just a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
@@ -76,13 +95,13 @@ After successful login, your Facebook likes are fetched from the Open Graph and 
 
 Besides the likes browsers, there’s a second screen which displays some latest posts on the moviepilot.com Facebook page. This is just another controller in order to demonstrate the change between controllers with proper routing and cleanup.
 
-## The Architecture in Detail
+## <span id="toc-architecture-in-detail">The Architecture in Detail</span>
 
 The following chapters will discuss the core objects and classes of our application structure.
 
 ![Machine](http://img.ly/system/uploads/003/362/032/original_machine.jpg)
 
-## Application
+## <span id="toc-application">Application</span>
 
 The root object of the JavaScript application is just called `Application`. In practise, you might choose a more meaningful name. `Application` is merely a bootstrapper which starts up three other core modules:
 
@@ -92,7 +111,7 @@ The root object of the JavaScript application is just called `Application`. In p
 * `Router`
 
 
-## Mediator and Publish/Subscribe
+## <span id="toc-mediator-and-pub-sub">Mediator and Publish/Subscribe</span>
 
 In this sample application we’re using RequireJS to load JavaScript files on demand. While a script might load another object it depends upon or a class (constructor) it inherits from, it normally does not have access to the actual instances. Most objects are encapsulated and not publicly accessible.
 
@@ -121,7 +140,7 @@ mediator.publish 'login', user
 
 The second and all following arguments are passed as arguments to the handler functions.
 
-## Router and Route
+## <span id="toc-router-and-route">Router and Route</span>
 
 The `Router` in this example application does not inherit from Backbone’s `Router`. In fact it’s an implementation of its own with several advantages over the standard Backbone `Router`.
 
@@ -141,7 +160,7 @@ Additional fixed parameters and parameter constraints may be specified in the `m
 @match 'likes/:id', 'likes#show', constraints: { id: /^\d+$/ }, params: { foo: 'bar' }
 ```
 
-## The Controllers
+## <span id="toc-controllers">The Controllers</span>
 
 In our concept, a controller is the place where a model and associated views are instantiated. A controller is also in charge of model and view disposal once another controller takes over. Typically, a controller represents a screen of the application. There can be one current controller.
 
@@ -193,7 +212,7 @@ define ['controllers/controller', 'models/likes', 'models/like', 'views/likes_vi
 
 A typical controller has one model or collection and one associated view. They should be stored in the `model`/`collection` and `view` instance properties so they are disposed automatically on controller disposal.
 
-## Models and Collections
+## <span id="toc-models-and-collections">Models and Collections</span>
 
 We extended the standard Backbone models and collections with some new methods. `dispose` is the destructor for cleaning up. Our `Collection` also has `addAtomic` for adding several items while fireing a `reset` event, and `update` for updating a collection while fireing several `add`/`remove` events instead of a single `reset` event.
 
@@ -201,7 +220,7 @@ Using these `Model` and `Collection` classes, we create a hierarchy of CoffeeScr
 
 Models and collections are Publish/Subscribe event subscribers by using the `Subscriber` mixin. We do not register their methods directly as listeners using `mediator.subscribe`. Instead, we use `subscribeEvent` which records the subscription so it might be removed again on model/collection disposal. It’s crucial to remove all external references to model/collection methods to allow them to be garbage collected.
 
-## Views
+## <span id="toc-views">Views</span>
 
 Our `View` class is a highly extended and adapted Backbone `View`. All views inherit from this class to avoid repetition.
 
@@ -219,7 +238,7 @@ On moviepilot.com, `CollectionView` is one of the main workhorses. It’s respon
 
 The current `CollectionView` implementation is quite simple and could be improved in many ways, for example with regard to filtering, fallback content and loading indicators. Nevertheless the `CollectionView` is an essential piece. Rendering collections on the UI would be painful without it since Backbone does not provide a clean mechanism to render collections.
 
-## Fat Models and Views
+## <span id="toc-fat-models-and-views">Fat Models and Views</span>
 
 Following Backbone’s design that models/collection can fetch themselves from the server or other stores, most of our fetching code is in the model/collection. On moviepilot.com, the actual API calls are located in separate modules, but the whole processing and updating logic resides in the model/collection. Model/collections may fetch themselves on initialization without receiving a call to do so.
 
@@ -229,7 +248,7 @@ As a consequence, our controllers are quite skinny. In most cases, they just ins
 
 There’s no specific reason for this decision, it’s merely a convention on where to put fetching and rendering code – your mileage may vary.
 
-## Event Handling Overview
+## <span id="toc-event-handling">Event Handling Overview</span>
 
 ![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
 
@@ -285,7 +304,7 @@ In addition, `delegate` automatically binds the handler to the view object, so `
 
 This isn’t the best solution but acceptable for now since this doesn’t occur frequently in our application.
 
-## Memory Management and Object Disposal
+## <span id="toc-memory-management">Memory Management and Object Disposal</span>
 
 One of the core concerns of this architecture is a proper memory management. It seems there isn’t a broad discussion about garbage collection in JavaScript applications, but in fact it’s an important topic. Backbone provides little out of the box so we implemented it by hand: Every controller, model, collection and view cleans up after itself.
 
@@ -295,7 +314,7 @@ Before a new controller takes over and the user interface changes, the `dispose`
 
 This disposal process is quite complex and many objects needs a custom `dispose` method. But this is the least we could do. In Internet Explorer, moviepilot.com gets slow and memory consumption rises after several module changes despite all these efforts.
 
-## Application Glue and Dependency Management
+## <span id="toc-application-glue">Application Glue and Dependency Management</span>
 
 Most processes in a client-side JavaScript application run asynchronously. It is quite common that an applications is communicating with different external APIs. API bridges are established on demand and of course all API calls are asynchronous. Lazy-loading code and content is a key to perfomance. Therefore, handling asynchronous dependencies was one of the biggest challenges for us. We’re using the following techniques to handle dependencies, from bottom-level to top-level.
 
@@ -327,7 +346,7 @@ As mentioned above, Publish/Subscribe is a powerful pattern to promote loose cou
 
 The Publish/Subscribe pattern is the most important glue in our application because it’s used for most of the cross-module interaction.
 
-## Conclusions
+## <span id="toc-conclusions">Conclusions</span>
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
@@ -346,7 +365,7 @@ Apparently, other projects experienced the same Backbone shortcomings and took a
 * [Thorax](http://walmartlabs.github.com/thorax/)
 * [Marionette](http://derickbailey.github.com/backbone.marionette/)
 
-## The Cast
+## <span id="toc-cast">The Cast</span>
 
 This software was mostly written by:
 
@@ -360,9 +379,10 @@ With input and contributions from:
 * Wojtek Gorecki (9elements) – [@newmetl](http://twitter.com/newmetl)
 * Jan Monscke (9elements) – [@thedeftone](http://twitter.com/thedeftone)
 * Jan Varwig (9elements) – [@agento](http://twitter.com/agento) – [jan.varwig.org](http://jan.varwig.org/)
+* Patrick Schneider (9elements) – [@padschneider](http://twitter.com/padschneider) – [padschneider.com](http://padschneider.com/)
 * Luis Merino (Moviepilot) – [@rendez](http://twitter.com/rendez)
 
-## The Producers
+## <span id="toc-producers">The Producers</span>
 
 The architecture was derived from [moviepilot.com](http://moviepilot.com/), a project by Moviepilot with support from 9elements.
 
@@ -371,4 +391,3 @@ Find out more about Moviepilot: [About Moviepilot.com](http://moviepilot.com/abo
 Find out more about 9elements: [9elements.com](http://9elements.com/), [IO 9elements](http://9elements.com/io/)
 
 Check out more open-source projects by Moviepilot and 9elements: [github.com/moviepilot](https://github.com/moviepilot) and [github.com/9elements](https://github.com/9elements).
-* Patrick Schneider (9elements) – [@padschneider](http://twitter.com/padschneider) – [padschneider.com](http://padschneider.com/)
