@@ -8,9 +8,9 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 
 * [Key Features](#toc-key-featurs)
 * [Motivation](#toc-motivation)
-* [Technology Stack](#toc-tchnology-stack)
+* [Technology Stack](#toc-technology-stack)
 * [The Example Application](#toc-example-application)
-* [The Architecture in Detail](#toc-architcture-in-detail)
+* [The Architecture in Detail](#toc-architecture-in-detail)
 * [Application](#toc-application)
 * [Mediator and Publish/Subscribe](#toc-mediator-and-pub-sub)
 * [Router and Route](#toc-router-and-route)
