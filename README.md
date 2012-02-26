@@ -371,3 +371,4 @@ Find out more about Moviepilot: [About Moviepilot.com](http://moviepilot.com/abo
 Find out more about 9elements: [9elements.com](http://9elements.com/), [IO 9elements](http://9elements.com/io/)
 
 Check out more open-source projects by Moviepilot and 9elements: [github.com/moviepilot](https://github.com/moviepilot) and [github.com/9elements](https://github.com/9elements).
+* Patrick Schneider (9elements) – [@padschneider](http://twitter.com/padschneider) – [padschneider.com](http://padschneider.com/)
