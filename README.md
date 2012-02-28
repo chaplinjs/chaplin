@@ -6,7 +6,7 @@
 
 Chaplin is an example architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-* [Key Features](#toc-key-featurs)
+* [Key Features](#toc-key-features)
 * [Motivation](#toc-motivation)
 * [Technology Stack](#toc-technology-stack)
 * [The Example Application](#toc-example-application)
