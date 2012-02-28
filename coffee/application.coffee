@@ -9,10 +9,11 @@ define ['mediator', 'controllers/session_controller', 'controllers/application_c
     initialize: ->
       @initControllers()
       @initRouter()
+      return
 
     # Instantiate meta-controllers
     initControllers: ->
-      # At the moment, do not safe the references.
+      # At the moment, do not save the references.
       # They might be safed as instance properties or directly on the mediator.
       # Normally, controllers can communicate with each other via Pub/Sub.
       new SessionController()
@@ -27,6 +28,7 @@ define ['mediator', 'controllers/session_controller', 'controllers/application_c
       # Make router property readonly
       Object.defineProperty? mediator, 'router', writable: false
 
-  Application.initialize()
+  # Freeze the object
+  Object.freeze? Application
 
   Application

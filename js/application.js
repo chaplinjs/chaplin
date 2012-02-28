@@ -5,7 +5,7 @@ define(['mediator', 'controllers/session_controller', 'controllers/application_c
   Application = {
     initialize: function() {
       this.initControllers();
-      return this.initRouter();
+      this.initRouter();
     },
     initControllers: function() {
       new SessionController();
@@ -18,6 +18,6 @@ define(['mediator', 'controllers/session_controller', 'controllers/application_c
       }) : void 0;
     }
   };
-  Application.initialize();
+  if (typeof Object.freeze === "function") Object.freeze(Application);
   return Application;
 });

@@ -1,5 +1,4 @@
 define ->
-
   'use strict'
 
   # The mediator is the objects all others modules use to
@@ -32,6 +31,7 @@ define ->
     Object.defineProperties mediator, subscribe: desc, unsubscribe: desc, publish: desc
 
   # Seal the mediator object
+  # (extensible: false for the mediator, configurable: false for its properties)
   Object.seal? mediator
 
   # Return mediator

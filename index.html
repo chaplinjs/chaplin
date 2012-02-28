@@ -49,7 +49,9 @@ require.config({
     // For easier development, disable browser caching:
     urlArgs: 'bust=' +  (new Date()).getTime()
 });
-require(['application']);
+require(['application'], function (Application) {
+  Application.initialize();
+});
 </script>
 
 </body>
