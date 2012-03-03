@@ -161,7 +161,7 @@ define ['mediator'], (mediator) ->
       Either:
       - A string with a method name e.g. 'method'
       - An array of strings e.g. ['method1', 'method2']
-      - An object with methods e.g. { method: -> alert('resolved!') }
+      - An object with methods e.g. {method: -> alert('resolved!')}
 
     host (optional)
       If you pass an array of strings in the `methods` parameter the methods

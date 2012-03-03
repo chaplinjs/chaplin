@@ -14,5 +14,5 @@ define ['controllers/controller', 'models/likes', 'models/like', 'views/likes_vi
 
     show: (params) ->
       #console.debug 'LikesController#show'
-      @model = new Like { id: params.id }, { loadDetails: true }
+      @model = new Like {id: params.id}, {loadDetails: true}
       @view = new FullLikeView model: @model

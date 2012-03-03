@@ -6,6 +6,6 @@ define ['models/model'], (Model) ->
     
     defaults:
       items: [
-        { href: '/', title: 'Likes Browser' }
-        { href: '/posts', title: 'Wall Posts' }
+        {href: '/', title: 'Likes Browser'}
+        {href: '/posts', title: 'Wall Posts'}
       ]

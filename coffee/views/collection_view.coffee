@@ -325,7 +325,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
       # Fade the view in if it was made transparent before
       if animationDuration and included
-        $viewEl.animate { opacity: 1 }, animationDuration
+        $viewEl.animate {opacity: 1}, animationDuration
 
 
     # Remove the view for an item

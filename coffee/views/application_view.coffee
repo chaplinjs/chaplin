@@ -261,7 +261,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       #console.debug '\thostname »' + hostname + '«'
       return unless href and hostname
       currentHostname = location.hostname.replace('.', '\\.')
-      hostnameRegExp = new RegExp("#{currentHostname}$", 'i')
+      hostnameRegExp = ///#{currentHostname}$///i
       external = not hostnameRegExp.test(hostname)
       #console.debug '\texternal?', external
       if external
