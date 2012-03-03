@@ -268,8 +268,8 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
 
 
     # Default event handler to prevent browser default
-    preventDefault: (e) ->
-      e.preventDefault() if e and e.preventDefault
+    preventDefault: (event) ->
+      event.preventDefault() if event and event.preventDefault
 
 
     #

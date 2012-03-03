@@ -245,9 +245,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
     # Handle all clicks on A elements and try to route them internally
 
-    openLink: (e) =>
+    openLink: (event) =>
       #console.debug 'AppView#openLink'
-      el = e.currentTarget
+      el = event.currentTarget
 
       # Handle empty href
       hrefAttr = el.getAttribute 'href'
@@ -267,18 +267,18 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       if external
         # Open external links normally
         # You might want to enforce opening in a new tab here:
-        #e.preventDefault()
+        #event.preventDefault()
         #window.open href
         return
 
-      @openInternalLink e
+      @openInternalLink event
 
     # Try to route a click on a link internally
 
-    openInternalLink: (e) ->
+    openInternalLink: (event) ->
       #console.debug 'AppView#openInternalLink'
-      e.preventDefault()
-      el = e.currentTarget
+      event.preventDefault()
+      el = event.currentTarget
 
       path = el.pathname
       #console.debug '\tpath »' + path + '«'
@@ -288,18 +288,18 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       result = mediator.router.route path
       #console.debug '\tfollow result', result
 
-      e.preventDefault() if result
+      event.preventDefault() if result
 
     # Not only A elements might act as internal links,
     # every element might have:
     # class="go-to" data-href="/something"
 
-    goToHandler: (e) ->
-      el = e.currentTarget
-      #console.debug 'AppView#goToHandler', el, e.nodeName, $(el).data('href')
+    goToHandler: (event) ->
+      el = event.currentTarget
+      #console.debug 'AppView#goToHandler', el, event.nodeName, $(el).data('href')
 
       # Do not handle A elements
-      return if e.nodeName is 'A'
+      return if event.nodeName is 'A'
 
       path = $(el).data('href')
       return unless path
@@ -308,12 +308,12 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       result = mediator.router.route path
       #console.debug '\tfollow result', result
 
-      e.preventDefault() if result
+      event.preventDefault() if result
 
     # Handle clicks on the logout button
 
-    logoutButtonClick: (e) ->
-      e.preventDefault()
+    logoutButtonClick: (event) ->
+      event.preventDefault()
 
       # Publish a global !logout event
       mediator.publish '!logout'

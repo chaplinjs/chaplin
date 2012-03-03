@@ -137,9 +137,9 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       return $(document).delegate('#logout-button', 'click', this.logoutButtonClick).delegate('.go-to', 'click', this.goToHandler).delegate('a', 'click', this.openLink);
     };
 
-    ApplicationView.prototype.openLink = function(e) {
+    ApplicationView.prototype.openLink = function(event) {
       var currentHostname, el, external, hostname, hostnameRegExp, href, hrefAttr;
-      el = e.currentTarget;
+      el = event.currentTarget;
       hrefAttr = el.getAttribute('href');
       if (hrefAttr === '' || /^#/.test(hrefAttr)) return;
       href = el.href;
@@ -149,31 +149,31 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       hostnameRegExp = new RegExp("" + currentHostname + "$", 'i');
       external = !hostnameRegExp.test(hostname);
       if (external) return;
-      return this.openInternalLink(e);
+      return this.openInternalLink(event);
     };
 
-    ApplicationView.prototype.openInternalLink = function(e) {
+    ApplicationView.prototype.openInternalLink = function(event) {
       var el, path, result;
-      e.preventDefault();
-      el = e.currentTarget;
+      event.preventDefault();
+      el = event.currentTarget;
       path = el.pathname;
       if (!path) return;
       result = mediator.router.route(path);
-      if (result) return e.preventDefault();
+      if (result) return event.preventDefault();
     };
 
-    ApplicationView.prototype.goToHandler = function(e) {
+    ApplicationView.prototype.goToHandler = function(event) {
       var el, path, result;
-      el = e.currentTarget;
-      if (e.nodeName === 'A') return;
+      el = event.currentTarget;
+      if (event.nodeName === 'A') return;
       path = $(el).data('href');
       if (!path) return;
       result = mediator.router.route(path);
-      if (result) return e.preventDefault();
+      if (result) return event.preventDefault();
     };
 
-    ApplicationView.prototype.logoutButtonClick = function(e) {
-      e.preventDefault();
+    ApplicationView.prototype.logoutButtonClick = function(event) {
+      event.preventDefault();
       return mediator.publish('!logout');
     };
 

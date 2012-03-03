@@ -181,8 +181,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
       return this;
     };
 
-    View.prototype.preventDefault = function(e) {
-      if (e && e.preventDefault) return e.preventDefault();
+    View.prototype.preventDefault = function(event) {
+      if (event && event.preventDefault) return event.preventDefault();
     };
 
     View.prototype.disposed = false;
