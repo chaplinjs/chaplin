@@ -1,4 +1,6 @@
-define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) ->
+define [
+  'lib/utils', 'lib/subscriber', 'lib/view_helper'
+], (utils, Subscriber) ->
 
   'use strict'
 

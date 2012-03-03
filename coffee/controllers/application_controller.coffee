@@ -1,4 +1,7 @@
-define ['controllers/controller', 'views/application_view', 'controllers/navigation_controller', 'controllers/sidebar_controller'], (Controller, ApplicationView, NavigationController, SidebarController) ->
+define [
+  'controllers/controller', 'views/application_view',
+  'controllers/navigation_controller', 'controllers/sidebar_controller'
+], (Controller, ApplicationView, NavigationController, SidebarController) ->
 
   'use strict'
 

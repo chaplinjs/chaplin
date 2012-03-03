@@ -1,4 +1,6 @@
-define ['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], (mediator, utils, View, template) ->
+define [
+  'mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'
+], (mediator, utils, View, template) ->
 
   'use strict'
 
