@@ -47,17 +47,17 @@ define(['lib/utils', 'lib/subscriber'], function(utils, Subscriber) {
   
         if response
           # Publish successful login
-          mediator.publish 'loginSuccessful', provider: @, loginContext: loginContext
+          mediator.publish 'loginSuccessful', provider: this, loginContext: loginContext
   
           # Publish the session
           mediator.publish 'serviceProviderSession',
-            provider: @
+            provider: this
             userId: response.userId
             accessToken: response.accessToken
             # etc.
   
         else
-          mediator.publish 'loginFail', provider: @, loginContext: loginContext
+          mediator.publish 'loginFail', provider: this, loginContext: loginContext
   
       getLoginStatus: (callback = @loginStatusHandler, force = false) ->
         someSDK.getLoginStatus callback, force
@@ -65,7 +65,7 @@ define(['lib/utils', 'lib/subscriber'], function(utils, Subscriber) {
       loginStatusHandler: (response) =>
         return unless response
         mediator.publish 'serviceProviderSession',
-          provider: @
+          provider: this
           userId: response.userId
           accessToken: response.accessToken
           # etc.

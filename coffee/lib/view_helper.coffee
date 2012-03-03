@@ -28,9 +28,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
   # Choose block by user login status
   Handlebars.registerHelper 'if_logged_in', (options) ->
     if mediator.user
-      options.fn(@)
+      options.fn(this)
     else
-      options.inverse(@)
+      options.inverse(this)
 
   #
   # Map helpers
@@ -39,7 +39,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
   # Make 'with' behave a little more mustachey
   Handlebars.registerHelper 'with', (context, options) ->
     if not context or Handlebars.Utils.isEmpty context
-      options.inverse(@)
+      options.inverse(this)
     else
       options.fn(context)
 

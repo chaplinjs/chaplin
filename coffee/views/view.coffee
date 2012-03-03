@@ -23,10 +23,10 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
 
 
     constructor: ->
-      #console.debug 'View#constructor', @
+      #console.debug 'View#constructor', this
 
       # Wrap `initialize` and `render` in order to call `afterInitialize` and `afterRender`
-      instance = @
+      instance = this
       wrapMethod = (name) ->
         # TODO: This isn’t so nice because it creates wrappers on each
         # instance which leads to many function objects.
@@ -37,7 +37,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         func = instance[name]
         # Create a method on the instance which wraps the inherited
         instance[name] = ->
-          #console.debug 'View#' + name + ' wrapper', @
+          #console.debug 'View#' + name + ' wrapper', this
           # Call the original method
           func.apply instance, arguments
           # Call the corresponding `after~` method
@@ -51,7 +51,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
 
 
     initialize: (options) ->
-      #console.debug 'View#initialize', @, 'options', options
+      #console.debug 'View#initialize', this, 'options', options
       # No super call here, Backbone’s `initialize` is a no-op
 
       # Listen for disposal of the model
@@ -69,7 +69,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
     # This method is called after a specific `initialize` of a derived class
 
     afterInitialize: (options) ->
-      #console.debug 'View#afterInitialize', @, 'options', options
+      #console.debug 'View#afterInitialize', this, 'options', options
 
       # Render automatically if set by options or instance property
       # and the option do not override it
@@ -127,7 +127,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
       eventType += ".delegate#{@cid}"
 
       # Bind the handler to the view
-      handler = _(handler).bind(@)
+      handler = _(handler).bind(this)
 
       if selector
         # Register handler
@@ -219,7 +219,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
     # Always bind it to the view instance
 
     render: =>
-      #console.debug "View#render\n\t", @, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
+      #console.debug "View#render\n\t", this, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
 
       return if @disposed
 
@@ -249,12 +249,12 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         @$el.empty().append html
 
       # Return this
-      @
+      this
 
     # This method is called after a specific `render` of a derived class
 
     afterRender: ->
-      #console.debug 'View#afterRender', @
+      #console.debug 'View#afterRender', this
 
       # Automatically append to DOM if the container element is set
       if @$container
@@ -264,7 +264,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
         @trigger 'addedToDOM'
 
       # Return this
-      @
+      this
 
 
     # Default event handler to prevent browser default
@@ -280,7 +280,7 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
 
     dispose: =>
       return if @disposed
-      #console.debug 'View#dispose', @
+      #console.debug 'View#dispose', this
 
       # Unbind all model handlers
       @modelUnbindAll()
@@ -297,8 +297,8 @@ define ['lib/utils', 'lib/subscriber', 'lib/view_helper'], (utils, Subscriber) -
       delete @[prop] for prop in properties
 
       # Finished
-      #console.debug 'View#dispose', @, 'finished'
+      #console.debug 'View#dispose', this, 'finished'
       @disposed = true
 
       # Your're frozen when your heart’s not open
-      Object.freeze? @
+      Object.freeze? this

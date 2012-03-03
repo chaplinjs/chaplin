@@ -34,7 +34,7 @@ define ['mediator'], (mediator)->
     # Test if the route matches to a path (called by Backbone.History#loadUrl)
 
     test: (path) ->
-      #console.debug 'Route#test', @, "path »#{path}«", typeof path
+      #console.debug 'Route#test', this, "path »#{path}«", typeof path
 
       # Test the main RegExp
       matched = @regExp.test path
@@ -54,13 +54,13 @@ define ['mediator'], (mediator)->
     # It is also called by Router#follow which might pass options
 
     handler: (path, options) =>
-      #console.debug 'Route#handler', @, path, options
+      #console.debug 'Route#handler', this, path, options
 
       # Build params hash
       params = @buildParams path, options
 
       # Publish a global routeMatch event passing the route and the params
-      mediator.publish 'matchRoute', @, params
+      mediator.publish 'matchRoute', this, params
 
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` and `additionalParams` arguments are optional

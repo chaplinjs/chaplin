@@ -26,12 +26,12 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
       #console.debug 'Facebook#constructor'
 
       utils.deferMethods
-        deferred: @
+        deferred: this
         methods: ['parse', 'subscribe', 'postToGraph', 'getAccumulatedInfo', 'getInfo']
         onDeferral: @loadSDK
 
       # Bundle comment count calls into one request
-      utils.wrapAccumulators @, ['getAccumulatedInfo']
+      utils.wrapAccumulators this, ['getAccumulatedInfo']
 
       @subscribeEvent 'loginAbort', @loginAbort
       @subscribeEvent 'logout', @logout
@@ -147,12 +147,12 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
       authResponse = response.authResponse
 
       if authResponse
-        mediator.publish 'loginSuccessful', provider: @, loginContext: loginContext
+        mediator.publish 'loginSuccessful', provider: this, loginContext: loginContext
         @publishSession authResponse
         @getUserData()
 
       else
-        mediator.publish 'loginAbort', provider: @, loginContext: loginContext
+        mediator.publish 'loginAbort', provider: this, loginContext: loginContext
 
         # Get the login status again (forced) because the user might be logged in anyway
         # This might happen when the user grants access to the app but closes
@@ -165,7 +165,7 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
     publishSession: (authResponse) ->
       #console.debug 'Facebook#publishSession', authResponse
       mediator.publish 'serviceProviderSession',
-        provider: @
+        provider: this
         userId: authResponse.userID
         accessToken: authResponse.accessToken
 
@@ -176,14 +176,14 @@ define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, ut
       authResponse = response.authResponse
 
       if authResponse
-        mediator.publish 'loginSuccessful', provider: @, loginContext: loginContext
-        mediator.publish 'loginSuccessfulThoughAborted', provider: @, loginContext: loginContext
+        mediator.publish 'loginSuccessful', provider: this, loginContext: loginContext
+        mediator.publish 'loginSuccessfulThoughAborted', provider: this, loginContext: loginContext
 
         @publishSession authResponse
 
       else
         # Login failed ultimately
-        mediator.publish 'loginFail', provider: @, loginContext: loginContext
+        mediator.publish 'loginFail', provider: this, loginContext: loginContext
 
 
     # Handler for the FB auth.logout event
