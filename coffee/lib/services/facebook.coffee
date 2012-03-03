@@ -1,4 +1,6 @@
-define ['mediator', 'lib/utils', 'lib/services/service_provider'], (mediator, utils, ServiceProvider) ->
+define [
+  'mediator', 'lib/utils', 'lib/services/service_provider'
+], (mediator, utils, ServiceProvider) ->
 
   'use strict'
 

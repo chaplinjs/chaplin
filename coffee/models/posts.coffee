@@ -1,4 +1,6 @@
-define ['mediator', 'models/collection', 'models/post'], (mediator, Collection, Post) ->
+define [
+  'mediator', 'models/collection', 'models/post'
+], (mediator, Collection, Post) ->
 
   'use strict'
 

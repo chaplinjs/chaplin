@@ -1,4 +1,6 @@
-define ['controllers/controller', 'views/sidebar_view'], (Controller, SidebarView) ->
+define [
+  'controllers/controller', 'views/sidebar_view'
+], (Controller, SidebarView) ->
 
   'use strict'
 

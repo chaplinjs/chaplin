@@ -1,4 +1,7 @@
-define ['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/services/facebook', 'views/login_view'], (mediator, utils, User, Controller, Facebook, LoginView) ->
+define [
+  'mediator', 'lib/utils', 'models/user', 'controllers/controller',
+  'lib/services/facebook', 'views/login_view'
+], (mediator, utils, User, Controller, Facebook, LoginView) ->
 
   'use strict'
 

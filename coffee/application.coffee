@@ -1,4 +1,7 @@
-define ['mediator', 'controllers/session_controller', 'controllers/application_controller', 'lib/router'], (mediator, SessionController, ApplicationController, Router) ->
+define [
+  'mediator', 'controllers/session_controller',
+  'controllers/application_controller', 'lib/router'
+], (mediator, SessionController, ApplicationController, Router) ->
 
   'use strict'
 

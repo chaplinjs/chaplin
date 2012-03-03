@@ -1,4 +1,6 @@
-define ['mediator', 'views/view', 'text!templates/full_like.hbs'], (mediator, View, template) ->
+define [
+  'mediator', 'views/view', 'text!templates/full_like.hbs'
+], (mediator, View, template) ->
 
   'use strict'
 
