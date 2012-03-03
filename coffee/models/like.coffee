@@ -11,7 +11,7 @@ define ['mediator', 'models/model'], (mediator, Model) ->
       if options and options.loadDetails
 
         # Mixin a Deferred
-        _(@).extend $.Deferred()
+        _(this).extend $.Deferred()
 
         @getLike()
 

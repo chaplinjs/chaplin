@@ -17,7 +17,7 @@ define ['mediator'], (mediator) ->
       return if _(handlers).include handler
       handlers.push handler
       # Register global handler
-      mediator.subscribe type, handler, @
+      mediator.subscribe type, handler, this
 
     unsubscribeEvent: (type, handler) ->
       return unless @globalSubscriptions

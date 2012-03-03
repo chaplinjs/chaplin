@@ -74,17 +74,17 @@ define ['lib/subscriber'], (Subscriber) ->
 
     dispose: ->
       return if @disposed
-      #console.debug 'Collection#dispose', @
+      #console.debug 'Collection#dispose', this
 
       # Fire an event to notify associated views
-      @trigger 'dispose', @
+      @trigger 'dispose', this
 
       # Empty the list silently, but do not dispose all models since they might be referenced elsewhere
       @reset [], silent: true
 
       # Finished
-      #console.debug 'Collection#dispose', @, 'finished'
+      #console.debug 'Collection#dispose', this, 'finished'
       @disposed = true
 
       # Your're frozen when your heart’s not open
-      Object.freeze? @
+      Object.freeze? this

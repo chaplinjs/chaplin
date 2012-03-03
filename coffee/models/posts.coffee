@@ -10,7 +10,7 @@ define ['mediator', 'models/collection', 'models/post'], (mediator, Collection, 
       super
 
       # Mixin a Deferred
-      _(@).extend $.Deferred()
+      _(this).extend $.Deferred()
 
       @getPosts()
       @subscribeEvent 'login', @getPosts

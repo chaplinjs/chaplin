@@ -47,7 +47,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     initialize: (options = {}) ->
       super
-      #console.debug 'CollectionView#initialize', @, @collection, options
+      #console.debug 'CollectionView#initialize', this, @collection, options
 
       # Default options
       _(options).defaults
@@ -99,19 +99,19 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # When an item is added, create a new view and insert it
 
     itemAdded: (item, collection, options = {}) =>
-      #console.debug 'CollectionView#itemAdded', @, item.cid, item
+      #console.debug 'CollectionView#itemAdded', this, item.cid, item
       @renderAndInsertItem item, options.at
 
     # When an item is removed, remove the corresponding view from DOM and caches
 
     itemRemoved: (item) =>
-      #console.debug 'CollectionView#itemRemoved', @, item.cid, item
+      #console.debug 'CollectionView#itemRemoved', this, item.cid, item
       @removeViewForItem item
 
     # When all items are resetted, render all anew
 
     itemsResetted: =>
-      #console.debug 'CollectionView#itemsResetted', @, @collection.length, @collection.models
+      #console.debug 'CollectionView#itemsResetted', this, @collection.length, @collection.models
       @renderAllItems()
 
 
@@ -119,7 +119,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     render: ->
       super
-      #console.debug 'CollectionView#render', @, @collection
+      #console.debug 'CollectionView#render', this, @collection
 
       # Set the $list property
       @$list = if @listSelector then @$(@listSelector) else @$el
@@ -136,7 +136,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     initFallback: ->
       return unless @fallbackSelector
 
-      #console.debug 'CollectionView#initFallback', @, @el, @el.parentNode
+      #console.debug 'CollectionView#initFallback', this, @el, @el.parentNode
 
       # Set the $fallback property
       @$fallback = @$(@fallbackSelector)
@@ -153,7 +153,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # Show or hide the fallback when the visible items change
 
     showHideFallback: =>
-      #console.debug 'CollectionView#showHideFallback', @, 'visibleItems', @visibleItems, 'collection', @collection
+      #console.debug 'CollectionView#showHideFallback', this, 'visibleItems', @visibleItems, 'collection', @collection
       # Show fallback message if no item is visible and
       # the collection Deferred has been resolved
       empty = @visibleItems.length is 0 and @collection.state() is 'resolved'
@@ -218,7 +218,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # Hides all items for which the iterator returns false.
 
     filter: (filterer) ->
-      #console.debug 'CollectionView#filter', @, @collection
+      #console.debug 'CollectionView#filter', this, @collection
 
       # Save the new filterer function
       @filterer = filterer
@@ -331,7 +331,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # Remove the view for an item
 
     removeViewForItem: (item) ->
-      #console.debug 'CollectionView#removeViewForItem', @, item
+      #console.debug 'CollectionView#removeViewForItem', this, item
 
       # Remove item from visibleItems list
       @updateVisibleItems item, false
@@ -386,7 +386,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # Remove the whole list from DOM
 
     dispose: =>
-      #console.debug 'CollectionView#dispose', @, 'disposed?', @disposed
+      #console.debug 'CollectionView#dispose', this, 'disposed?', @disposed
       return if @disposed
 
       # Dispose all item views
