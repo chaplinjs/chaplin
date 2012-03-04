@@ -3,8 +3,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
   'use strict'
 
   # General class for rendering Collections. Inherit from this class and
-  # overwrite at least getView. getView gets an item model and should instantiate
-  # a corresponding item view.
+  # overwrite at least getView. getView gets an item model
+  # and should instantiate a corresponding item view.
 
   class CollectionView extends View
 
@@ -144,7 +144,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # The collection has to be a deferred in order that
       # the fallback can be shown properly
       f = 'function'
-      isDeferred = typeof @collection.done is f and typeof @collection.state is f
+      isDeferred = (typeof @collection.done is f and
+        typeof @collection.state is f)
       return unless isDeferred
 
       # Listen for visible items changes
@@ -214,7 +215,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
         @trigger 'visibilityChange', @visibleItems
 
 
-    # Applies a filter to the collection. Expects an interator function as parameter.
+    # Applies a filter to the collection.
+    # Expects an interator function as parameter.
     # Hides all items for which the iterator returns false.
 
     filter: (filterer) ->
@@ -283,7 +285,10 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       #console.debug 'CollectionView#insertView', item, view, index
 
       # Get the insertion offset
-      position = if typeof index is 'number' then index else @collection.indexOf(item)
+      position = if typeof index is 'number'
+        index
+      else
+        @collection.indexOf(item)
       #console.debug '\titem', item.id, 'position', position, 'length', @collection.length
 
       # Is the item included in the filter?

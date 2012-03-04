@@ -20,7 +20,7 @@ define ['mediator'], (mediator)->
       pattern = pattern.replace /:(\w+)/g, @addParamName
 
       # Create the actual regular expression
-      @regExp = ///^#{pattern}(?=\\?|$)///  # End or begin of query string
+      @regExp = ///^#{pattern}(?=\?|$)///  # End or begin of query string
 
     addParamName: (match, paramName) =>
       # Test if parameter name is reserved

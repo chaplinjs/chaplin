@@ -13,9 +13,11 @@ define ['lib/subscriber'], (Subscriber) ->
     #initialize: ->
       #console.debug 'Collection#initialize'
       #super
-      # TODO: Remove an item if a 'dispose' events bubbles and it wasn't removed before?
+      # TODO: Remove an item if a 'dispose' events bubbles and
+      # it wasn't removed before?
 
-    # Adds a collection atomically, i.e. throws no event until all members have been added
+    # Adds a collection atomically, i.e. throws no event until
+    # all members have been added
 
     addAtomic: (models, options = {}) ->
       return unless models.length
@@ -53,7 +55,8 @@ define ['lib/subscriber'], (Subscriber) ->
             @remove model
           i--
 
-      # Only add/update list if ID fingerprints differ or update is deep (member attributes)
+      # Only add/update list if ID fingerprints differ or update
+      # is deep (member attributes)
       unless fingerPrint is newFingerPrint and not options.deep
         # Add item which are not yet in the list
         for model, i in newList
@@ -79,7 +82,8 @@ define ['lib/subscriber'], (Subscriber) ->
       # Fire an event to notify associated views
       @trigger 'dispose', this
 
-      # Empty the list silently, but do not dispose all models since they might be referenced elsewhere
+      # Empty the list silently, but do not dispose all models since
+      # they might be referenced elsewhere
       @reset [], silent: true
 
       # Finished

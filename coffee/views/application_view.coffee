@@ -111,7 +111,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Fetch the new controller, then go on
       controllerFileName = utils.underscorize(controllerName) + '_controller'
       require ['controllers/' + controllerFileName],
-        _(@controllerLoaded).bind(@, controllerName, action, params)
+        _(@controllerLoaded).bind(this, controllerName, action, params)
 
     # Handler for the controller lazy-loading
 
@@ -133,7 +133,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Dispose the current controller
       if currentController
         unless typeof currentController.dispose is 'function'
-          throw new Error "ApplicationView#controllerLoaded: dispose method not found on #{currentControllerName} controller"
+          throw new Error "ApplicationView#controllerLoaded: dispose method
+ not found on #{currentControllerName} controller"
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
 
@@ -146,7 +147,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
       # Call the specific controller action
       unless typeof controller[action] is 'function'
-        throw new Error "ApplicationView#controllerLoaded: action #{action} not found on #{controllerName} controller"
+        throw new Error "ApplicationView#controllerLoaded: action #{action}
+ not found on #{controllerName} controller"
       controller[action] params, currentControllerName
 
       # Show the container element of the new view
@@ -168,12 +170,14 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Change the document title to match the current controller
       @adjustTitle()
 
-      # We're done! Publish a global startupController event with these parameters:
+      # We're done! Publish a global startupController event
+      # with these parameters:
       # - name of the new controller
       # - params for the new controllre
       # - name of the old controller
       #console.debug 'ApplicationView#startupController: publish startupController', @currentControllerName, @currentParams, @previousController
-      mediator.publish 'startupController', @currentControllerName, @currentParams, @previousController
+      mediator.publish 'startupController', @currentControllerName,
+        @currentParams, @previousController
 
     # Change the URL to the new controller using the Backbone Router
 
@@ -192,7 +196,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         historyURL = controller.historyURL
 
       else
-        throw new Error "ApplicationView#adjustURL: controller for #{controllerName} does not provide a historyURL"
+        throw new Error "ApplicationView#adjustURL: controller for
+ #{controllerName} does not provide a historyURL"
 
       # Pass to the router to actually change the current URL
       # (call history.pushState)
@@ -219,8 +224,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     # Fallback content
     #
 
-    # After the first controller has been started, remove all accessible content
-    # so the DOM is less complex and images and video do not lie in the background
+    # After the first controller has been started, remove all accessible
+    # content so the DOM is less complex and images and video do not lie
+    # in the background
 
     removeFallbackContent: =>
       # Hide the accessible fallback and the loading screen

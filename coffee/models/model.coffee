@@ -32,7 +32,10 @@ define ['lib/subscriber'], (Subscriber) ->
       @unsubscribeAllEvents()
 
       # Remove the collection reference, attributes and event handlers
-      properties = 'collection attributes _escapedAttributes _previousAttributes _callbacks'.split(' ')
+      properties = [
+        'collection', 'attributes', '_escapedAttributes',
+        '_previousAttributes', '_callbacks'
+      ]
       delete @[prop] for prop in properties
 
       # Finished

@@ -27,7 +27,8 @@ define [
     constructor: ->
       #console.debug 'View#constructor', this
 
-      # Wrap `initialize` and `render` in order to call `afterInitialize` and `afterRender`
+      # Wrap `initialize` and `render` in order to call `afterInitialize`
+      # and `afterRender`
       instance = this
       wrapMethod = (name) ->
         # TODO: This isn’t so nice because it creates wrappers on each
@@ -111,19 +112,22 @@ define [
     #   @delegate('click', 'button.confirm', @confirm)
 
     delegate: (eventType, second, third) ->
-
-      throw new TypeError 'View#delegate: first argument must be a string' if typeof eventType isnt 'string'
+      if typeof eventType isnt 'string'
+        throw new TypeError 'View#delegate: first argument must be a string'
 
       if arguments.length is 2
         handler = second
       else if arguments.length is 3
         selector = second
-        throw new TypeError 'View#delegate: second argument must be a string' if typeof selector isnt 'string'
+        if typeof selector isnt 'string'
+          throw new TypeError 'View#delegate: second argument must be a string'
         handler = third
       else
-        throw new TypeError 'View#delegate: only two or three arguments are allowed'
-
-      throw new TypeError 'View#delegate: handler argument must be function' if typeof handler isnt 'function'
+        throw new TypeError 'View#delegate: only two or three arguments are 
+allowed'
+      
+      if typeof handler isnt 'function'
+        throw new TypeError 'View#delegate: handler argument must be function'
 
       # Add an event namespace
       eventType += ".delegate#{@cid}"
@@ -171,7 +175,8 @@ define [
       if typeof type isnt 'string'
         throw new TypeError 'View#modelUnbind: type argument must be string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelUnbind: handler argument must be function'
+        throw new TypeError 'View#modelUnbind: handler argument must be
+ function'
       return unless @modelBindings
       handlers = @modelBindings[type]
       if handlers
@@ -227,10 +232,11 @@ define [
 
       # Template compilation
 
-      # In the end, you will want to precompile the templates to JavaScript functions
-      # on the server-side and just load the compiled JavaScript code.
-      # In this demo, we load the template as a string, compile it on the client-side
-      # and store it on the view constructor as a static property.
+      # In the end, you will want to precompile the templates to JavaScript
+      # functions on the server-side and just load the compiled JavaScript
+      # code. In this demo, we load the template as a string, compile it
+      # on the client-side and store it on the view constructor as a
+      # static property.
 
       template = @constructor.template
       #console.debug "\ttemplate: #{typeof template}"
@@ -246,8 +252,10 @@ define [
         html = template @getTemplateData()
 
         # Replace HTML
-        # This is a workaround for an apparent issue with jQuery 1.7’s innerShiv feature
-        # Using @$el.html(html) caused issues with HTML5-only tags in IE7 and IE8
+        # This is a workaround for an apparent issue with jQuery 1.7’s
+        # innerShiv feature
+        # Using @$el.html(html) caused issues with HTML5-only tags in IE7
+        # and IE8
         @$el.empty().append html
 
       # Return this
@@ -290,12 +298,16 @@ define [
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
-      # Remove the topmost element from DOM. This also removes all event handlers from
-      # the element and all its children.
+      # Remove the topmost element from DOM. This also removes all event
+      # handlers from the element and all its children.
       @$el.remove()
 
-      # Remove element references, options, model/collection references and event handlers
-      properties = 'el $el $container options model collection _callbacks'.split(' ')
+      # Remove element references, options, model/collection references
+      # and event handlers
+      properties = [
+        'el', '$el', '$container', 'options', 'model',
+        'collection', '_callbacks'
+      ]
       delete @[prop] for prop in properties
 
       # Finished

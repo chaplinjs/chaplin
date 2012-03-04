@@ -29,7 +29,9 @@ define [
 
       utils.deferMethods
         deferred: this
-        methods: ['parse', 'subscribe', 'postToGraph', 'getAccumulatedInfo', 'getInfo']
+        methods: [
+          'parse', 'subscribe', 'postToGraph', 'getAccumulatedInfo', 'getInfo'
+        ]
         onDeferral: @loadSDK
 
       # Bundle comment count calls into one request
@@ -131,14 +133,15 @@ define [
 
 
     # Open the Facebook login popup
-    # loginContext: object with context information where the user triggered the login
+    # loginContext: object with context information where the
+    # user triggered the login
     #   Attributes:
     #   description - string
     #   model - optional model e.g. a topic the user wants to subscribe to
 
     triggerLogin: (loginContext) =>
       #console.debug 'Facebook#triggerLogin', loginContext
-      FB.login _(@loginHandler).bind(@, loginContext), scope: scope
+      FB.login _(@loginHandler).bind(this, loginContext), scope: scope
 
     # Callback for FB.login
 
@@ -149,16 +152,17 @@ define [
       authResponse = response.authResponse
 
       if authResponse
-        mediator.publish 'loginSuccessful', provider: this, loginContext: loginContext
+        mediator.publish 'loginSuccessful', {provider: this, loginContext}
         @publishSession authResponse
         @getUserData()
 
       else
-        mediator.publish 'loginAbort', provider: this, loginContext: loginContext
+        mediator.publish 'loginAbort', {provider: this, loginContext}
 
-        # Get the login status again (forced) because the user might be logged in anyway
-        # This might happen when the user grants access to the app but closes
-        # the second page of the auth dialog which asks for Extended Permissions.
+        # Get the login status again (forced) because the user might be
+        # logged in anyway. This might happen when the user grants access
+        # to the app but closes the second page of the auth dialog which
+        # asks for Extended Permissions.
         @getLoginStatus @publishAbortionResult, true
 
 
@@ -178,8 +182,10 @@ define [
       authResponse = response.authResponse
 
       if authResponse
-        mediator.publish 'loginSuccessful', provider: this, loginContext: loginContext
-        mediator.publish 'loginSuccessfulThoughAborted', provider: this, loginContext: loginContext
+        mediator.publish 'loginSuccessful', {provider: this, loginContext}
+        mediator.publish 'loginSuccessfulThoughAborted', {
+          provider: this, loginContext
+        }
 
         @publishSession authResponse
 

@@ -75,7 +75,8 @@ define [
       #console.debug 'SessionController#showLoginView'
       return if @loginView
       @loadSDKs()
-      @loginView = new LoginView serviceProviders: SessionController.serviceProviders
+      @loginView = new LoginView
+        serviceProviders: SessionController.serviceProviders
 
     hideLoginView: ->
       #console.debug 'SessionController#hideLoginView'

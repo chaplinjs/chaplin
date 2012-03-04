@@ -25,7 +25,7 @@ define(['lib/subscriber'], function(Subscriber) {
       if (this.disposed) return;
       this.trigger('dispose', this);
       this.unsubscribeAllEvents();
-      properties = 'collection attributes _escapedAttributes _previousAttributes _callbacks'.split(' ');
+      properties = ['collection', 'attributes', '_escapedAttributes', '_previousAttributes', '_callbacks'];
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];

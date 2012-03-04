@@ -17,7 +17,7 @@ define(['mediator'], function(mediator) {
       _ref = target.split('#'), this.controller = _ref[0], this.action = _ref[1];
       this.paramNames = [];
       pattern = pattern.replace(/:(\w+)/g, this.addParamName);
-      this.regExp = RegExp("^" + pattern + "(?=\\\\?|$)");
+      this.regExp = RegExp("^" + pattern + "(?=\\?|$)");
     }
 
     Route.prototype.addParamName = function(match, paramName) {

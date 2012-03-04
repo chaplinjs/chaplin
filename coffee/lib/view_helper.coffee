@@ -10,7 +10,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
   Handlebars.registerHelper 'partial', (partialName, options) ->
     new Handlebars.SafeString(
-      Handlebars.VM.invokePartial(Handlebars.partials[partialName], partialName, options.hash)
+      Handlebars.VM.invokePartial(
+        Handlebars.partials[partialName], partialName, options.hash
+      )
     )
 
   #
@@ -48,11 +50,11 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     inverse = options.inverse
     options.inverse = options.fn
     options.fn = inverse
-    Handlebars.helpers.with.call(@, context, options)
+    Handlebars.helpers.with.call(this, context, options)
 
   # Evaluate block with context being current user
   Handlebars.registerHelper 'with_user', (options) ->
     context = mediator.user or {}
-    Handlebars.helpers.with.call(@, context, options)
+    Handlebars.helpers.with.call(this, context, options)
 
   null

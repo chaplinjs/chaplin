@@ -76,7 +76,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         }
         handler = third;
       } else {
-        throw new TypeError('View#delegate: only two or three arguments are allowed');
+        throw new TypeError('View#delegate: only two or three arguments are \
+allowed');
       }
       if (typeof handler !== 'function') {
         throw new TypeError('View#delegate: handler argument must be function');
@@ -117,7 +118,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         throw new TypeError('View#modelUnbind: type argument must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelUnbind: handler argument must be function');
+        throw new TypeError('View#modelUnbind: handler argument must be\
+ function');
       }
       if (!this.modelBindings) return;
       handlers = this.modelBindings[type];
@@ -193,7 +195,7 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
       this.modelUnbindAll();
       this.unsubscribeAllEvents();
       this.$el.remove();
-      properties = 'el $el $container options model collection _callbacks'.split(' ');
+      properties = ['el', '$el', '$container', 'options', 'model', 'collection', '_callbacks'];
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];

@@ -39,7 +39,7 @@ define(['lib/utils', 'lib/subscriber'], function(utils, Subscriber) {
   
       # Trigger login popup
       triggerLogin: (loginContext) ->
-        callback = _(@loginHandler).bind(@, @loginHandler)
+        callback = _(@loginHandler).bind(this, @loginHandler)
         someSDK.login callback
   
       # Callback for the login popup
@@ -47,7 +47,8 @@ define(['lib/utils', 'lib/subscriber'], function(utils, Subscriber) {
   
         if response
           # Publish successful login
-          mediator.publish 'loginSuccessful', provider: this, loginContext: loginContext
+          mediator.publish 'loginSuccessful',
+            provider: this, loginContext: loginContext
   
           # Publish the session
           mediator.publish 'serviceProviderSession',

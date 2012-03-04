@@ -6,7 +6,8 @@ define [
 
   class LoginView extends View
 
-    # This is a workaround. In the end you might want to used precompiled templates.
+    # This is a workaround.
+    # In the end you might want to used precompiled templates.
     @template = template
 
     id: 'login'
@@ -30,13 +31,19 @@ define [
         buttonSelector = ".#{serviceProviderName}"
         @$(buttonSelector).addClass('service-loading')
 
-        loginHandler = _(@loginWith).bind(@, serviceProviderName, serviceProvider)
+        loginHandler = _(@loginWith).bind(
+          this, serviceProviderName, serviceProvider
+        )
         @delegate 'click', buttonSelector, loginHandler
 
-        loaded = _(@serviceProviderLoaded).bind(@, serviceProviderName, serviceProvider)
+        loaded = _(@serviceProviderLoaded).bind(
+          this, serviceProviderName, serviceProvider
+        )
         serviceProvider.done loaded
 
-        failed = _(@serviceProviderFailed).bind(@, serviceProviderName, serviceProvider)
+        failed = _(@serviceProviderFailed).bind(
+          this, serviceProviderName, serviceProvider
+        )
         serviceProvider.fail failed
 
     loginWith: (serviceProviderName, serviceProvider, e) ->
@@ -56,4 +63,5 @@ define [
         .removeClass('service-loading')
         .addClass('service-unavailable')
         .attr('disabled', true)
-        .attr('title', "Error connecting. Please check whether you are blocking #{utils.upcase(serviceProviderName)}.")
+        .attr('title', "Error connecting. Please check whether you are
+ blocking #{utils.upcase(serviceProviderName)}.")
