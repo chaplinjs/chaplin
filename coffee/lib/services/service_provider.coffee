@@ -1,9 +1,7 @@
 define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
-
   'use strict'
 
   class ServiceProvider
-
     # Mixin a Subscriber
     _(ServiceProvider.prototype).defaults Subscriber
 

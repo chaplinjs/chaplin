@@ -1,11 +1,9 @@
 define [
   'controllers/controller', 'models/posts', 'views/posts_view'
 ], (Controller, Posts, PostsView) ->
-
   'use strict'
 
   class PostsController extends Controller
-
     historyURL: 'posts'
 
     index: (params) ->

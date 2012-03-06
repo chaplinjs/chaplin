@@ -2,7 +2,6 @@ define [
   'mediator', 'views/collection_view', 'views/post_view',
   'text!templates/posts.hbs'
 ], (mediator, CollectionView, PostView, template) ->
-
   'use strict'
 
   class PostsView extends CollectionView

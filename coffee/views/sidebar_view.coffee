@@ -1,7 +1,6 @@
 define [
   'mediator', 'views/view', 'text!templates/sidebar.hbs'
 ], (mediator, View, template) ->
-
   'use strict'
 
   class SidebarView extends View

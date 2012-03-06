@@ -5,7 +5,6 @@ define [
   'use strict'
 
   class NavigationController extends Controller
-
     initialize: ->
       super
       #console.debug 'NavigationController#initialize'

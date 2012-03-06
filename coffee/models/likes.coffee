@@ -1,11 +1,9 @@
 define [
   'mediator', 'models/collection', 'models/like'
 ], (mediator, Collection, Like) ->
-
   'use strict'
 
   class Likes extends Collection
-
     model: Like
 
     initialize: ->

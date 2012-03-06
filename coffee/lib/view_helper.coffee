@@ -4,9 +4,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
   # Registers several Handlebars helpers
 
-  #
   # Partials
-  #
+  # --------
 
   Handlebars.registerHelper 'partial', (partialName, options) ->
     new Handlebars.SafeString(
@@ -15,17 +14,15 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       )
     )
 
-  #
   # Generators
-  #
+  # ----------
 
   # Facebook image URLs
   Handlebars.registerHelper 'fb_img_url', (fbId, type) ->
     new Handlebars.SafeString utils.facebookImageURL(fbId, type)
 
-  #
   # Conditional evaluation
-  #
+  # ----------------------
 
   # Choose block by user login status
   Handlebars.registerHelper 'if_logged_in', (options) ->
@@ -34,9 +31,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     else
       options.inverse(this)
 
-  #
   # Map helpers
-  #
+  # -----------
 
   # Make 'with' behave a little more mustachey
   Handlebars.registerHelper 'with', (context, options) ->

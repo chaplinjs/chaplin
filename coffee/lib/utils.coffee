@@ -3,20 +3,16 @@ define ['mediator'], (mediator) ->
   'use strict'
 
   utils =
-
-    #
     # Object Helpers
-    #
+    # --------------
 
     beget: (obj) ->
       ctor = ->
       ctor:: = obj
       new ctor
 
-
-    #
     # String Helpers
-    #
+    # --------------
 
     # camel-case-helper > camelCaseHelper
     camelize: do ->
@@ -38,10 +34,8 @@ define ['mediator'], (mediator) ->
       (string) ->
         string.replace regexp, underscorizer
 
-
-    #
     # Facebook image helper
-    #
+    # ---------------------
 
     facebookImageURL: (fbId, type = 'square') ->
       # Create query string
@@ -54,10 +48,8 @@ define ['mediator'], (mediator) ->
 
       "https://graph.facebook.com/#{fbId}/picture?#{$.param(params)}"
 
-
-    #
     # Persistent data storage
-    #
+    # -----------------------
 
     # sessionStorage with session cookie fallback
     # sessionStorage(key) gets the value for 'key'
@@ -89,9 +81,9 @@ define ['mediator'], (mediator) ->
         (key) -> utils.expireCookie(key)
 
     # Cookie fallback
+    # ---------------
 
     # Get a cookie by its name
-
     getCookie: (key) ->
       keyPosition = document.cookie.indexOf "#{key}="
       return false if keyPosition is -1
@@ -108,12 +100,10 @@ define ['mediator'], (mediator) ->
     expireCookie: (key) ->
       document.cookie = "#{key}=nil; expires=#{(new Date).toGMTString()}"
 
-
     # Load additonal JavaScripts
     # We don’t use jQuery here because jQuery does not attach an error
     # handler to the script. In jQuery, a proper error handler only works
     # for same-origin scripts which can be loaded via XHR.
-
     loadLib: (url, success, error, timeout = 7500) ->
       #console.debug 'utils.loadLib', url
       head = document.head or document.getElementsByTagName('head')[0] or
@@ -146,10 +136,8 @@ define ['mediator'], (mediator) ->
       timeoutHandle = setTimeout script.onerror, timeout
       head.insertBefore script, head.firstChild
 
-
-    #
     # Functional helpers for handling asynchronous dependancies and I/O
-    #
+    # -----------------------------------------------------------------
 
     ###
     Wrap methods so they can be called before a deferred is resolved.
@@ -206,7 +194,6 @@ define ['mediator'], (mediator) ->
       with their wrappers.
 
     ###
-
     deferMethods: (options) ->
       # Process options
       deferred = options.deferred
@@ -251,7 +238,6 @@ found on host #{host}"
     # to determine the this `this` binding of the original function.
     # Defaults to `deferred`. The optional `onDeferral` function to after
     # original function is registered as a done callback.
-
     createDeferredFunction: (deferred, func, context = deferred, onDeferral) ->
       #console.debug 'utils.createWrappedFunction', 'deferred:', deferred, 'func:', func, 'context:', context, 'onDeferral:', onDeferral
       # Return a wrapper function
@@ -272,9 +258,7 @@ found on host #{host}"
           if typeof onDeferral is 'function'
             onDeferral.apply context
 
-
     # Accumulators
-
     accumulator:
       collectedData: {}
       handles: {}
@@ -289,7 +273,6 @@ found on host #{host}"
     #   the object the methods are read from and written to
     # methods
     #   zero or more names (strings) of methods (object members) to be wrapped
-
     wrapAccumulators: (obj, methods) ->
       # Replace methods
       for name in methods
@@ -370,14 +353,12 @@ found on host #{host}"
         # Firefox' latency arguments
         acc.handles[id] = setTimeout (-> handler()), acc.interval
 
-
     # Call the given function `func` when the global event `eventType` occurs.
     # Defaults to 'login', so the `func` is called when
     # the user has successfully logged in.
     # When the function is called, `this` points to the given `context`.
     # You may pass a `loginContext` for the UI context where
     # the login was triggered.
-
     afterLogin: (context, func, eventType = 'login', args...) ->
       #console.debug 'utils.afterLogin', context, func, eventType, args
       if mediator.user
@@ -409,7 +390,6 @@ not found"
     # Delegates to afterLogin, but triggers the login dialog if the user
     # isn't logged in
     # and calls preventDefault if an event object is passed.
-
     ensureLogin: (context, func, loginContext, eventType = 'login', args...) ->
       #console.debug 'utils.ensureLogin', context, func, loginContext, args
       utils.afterLogin context, func, eventType, args...
@@ -432,7 +412,6 @@ not found"
     #                 a `description` property
     # `eventType`: The global PubSub event the actual method call will wait for.
     #              Defaults to 'login'.
-
     ensureLoginForMethods: (obj, methods, loginContext, eventType = 'login') ->
       #console.debug 'utils.ensureLoginForMethods', obj, methods, loginContext
 
@@ -448,8 +427,6 @@ not found"
         obj[name] = _(utils.ensureLogin).bind(
           null, obj, func, loginContext, eventType
         )
-
-
 
   # Seal the utils object
   Object.seal? utils

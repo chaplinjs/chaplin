@@ -1,12 +1,9 @@
 define ['lib/subscriber'], (Subscriber) ->
-
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
   # in order to add some functionality
-
   class Collection extends Backbone.Collection
-
     # Mixin a Subscriber
     _(Collection.prototype).defaults Subscriber
 
@@ -33,7 +30,6 @@ define ['lib/subscriber'], (Subscriber) ->
     # options:
     #   deep: Boolean flag to specify whether existing models should be updated
     #         with new values
-
     update: (newList, options = {}) ->
       #console.debug 'Collection#update', 'deep?', options.deep
 
@@ -69,9 +65,8 @@ define ['lib/subscriber'], (Subscriber) ->
             #console.debug '\tinsert', model.id, 'at', i
             @add model, at: i
 
-    #
     # Disposal
-    #
+    # --------
 
     disposed: false
 

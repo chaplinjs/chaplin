@@ -1,12 +1,9 @@
 define ['mediator'], (mediator) ->
-
   'use strict'
 
   # Add functionality to subscribe to global Publish/Subscribe events
   # so they can be removed afterwards when disposing the object
-
   Subscriber =
-
     # The subscriptions storage
     globalSubscriptions: null
 

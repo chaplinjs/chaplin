@@ -1,5 +1,4 @@
 define ['mediator', 'models/model'], (mediator, Model) ->
-
   'use strict'
 
   class Post extends Model

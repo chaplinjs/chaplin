@@ -1,7 +1,6 @@
 define [
   'lib/utils', 'lib/subscriber', 'lib/view_helper'
 ], (utils, Subscriber) ->
-
   'use strict'
 
   class View extends Backbone.View
@@ -22,7 +21,6 @@ define [
     # As an alternative you might pass a `container` option to the constructor.
     containerSelector: null
     $container: null
-
 
     constructor: ->
       #console.debug 'View#constructor', this
@@ -52,7 +50,6 @@ define [
       # Finally call Backbone’s constructor
       super
 
-
     initialize: (options) ->
       #console.debug 'View#initialize', this, 'options', options
       # No super call here, Backbone’s `initialize` is a no-op
@@ -70,7 +67,6 @@ define [
         @$container = $(@containerSelector)
 
     # This method is called after a specific `initialize` of a derived class
-
     afterInitialize: (options) ->
       #console.debug 'View#afterInitialize', this, 'options', options
 
@@ -80,25 +76,20 @@ define [
       byDefault = @autoRender and not byOption
       @render() if byOption or byDefault
 
-
     # Make delegateEvents defunct, it is not used in our approach
     # but is called by Backbone internally
-
     delegateEvents: ->
       # Noop
 
     # Setup a simple one-way model-view binding
     # Pass changed values from model to specific elements in the view
-
     pass: (eventType, selector) ->
       model = @model or @collection
       @modelBind eventType, (model, val) =>
         @$(selector).html(val)
 
-
-    #
     # User input event handling
-    #
+    # -------------------------
 
     # Event handling using event delegation
     # Register a handler for a specific event type
@@ -110,7 +101,6 @@ define [
     #   delegate(eventType, selector, handler)
     #   e.g.
     #   @delegate('click', 'button.confirm', @confirm)
-
     delegate: (eventType, second, third) ->
       if typeof eventType isnt 'string'
         throw new TypeError 'View#delegate: first argument must be a string'
@@ -147,15 +137,12 @@ allowed'
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
 
-
-    #
     # Model binding
-    #
+    # -------------
 
     # The following implementation resembles subscriber.coffee
 
     # Bind to a model event
-
     modelBind: (type, handler) ->
       if typeof type isnt 'string'
         throw new TypeError 'View#modelBind: type argument must be string'
@@ -170,7 +157,6 @@ allowed'
       model.bind type, handler
 
     # Unbind from a model event
-
     modelUnbind: (type, handler) ->
       if typeof type isnt 'string'
         throw new TypeError 'View#modelUnbind: type argument must be string'
@@ -188,7 +174,6 @@ allowed'
       model.unbind type, handler
 
     # Unbind all recorded global handlers
-
     modelUnbindAll: () ->
       return unless @modelBindings
       model = @model or @collection
@@ -198,13 +183,10 @@ allowed'
           model.unbind type, handler
       @modelBindings = null
 
-
-    #
     # Rendering
-    #
+    # ---------
 
     # Get attributes from model or collection
-
     getTemplateData: ->
 
       modelAttributes = @model and @model.getAttributes()
@@ -224,7 +206,6 @@ allowed'
 
     # Main render function
     # Always bind it to the view instance
-
     render: =>
       #console.debug "View#render\n\t", this, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
 
@@ -276,15 +257,12 @@ allowed'
       # Return this
       this
 
-
     # Default event handler to prevent browser default
     preventDefault: (event) ->
       event.preventDefault() if event and event.preventDefault
 
-
-    #
     # Disposal
-    #
+    # --------
 
     disposed: false
 

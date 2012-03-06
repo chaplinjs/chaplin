@@ -1,9 +1,7 @@
-define ['mediator'], (mediator)->
-
+define ['mediator'], (mediator) ->
   'use strict'
 
   class Route
-
     @reservedParams: 'path changeURL'.split(' ')
 
     constructor: (pattern, target, @options = {}) ->
@@ -32,7 +30,6 @@ define ['mediator'], (mediator)->
       '([\\w-]+)'
 
     # Test if the route matches to a path (called by Backbone.History#loadUrl)
-
     test: (path) ->
       #console.debug 'Route#test', this, "path »#{path}«", typeof path
 
@@ -52,7 +49,6 @@ define ['mediator'], (mediator)->
 
     # The handler which is called by Backbone.History when the route matched.
     # It is also called by Router#follow which might pass options
-
     handler: (path, options) =>
       #console.debug 'Route#handler', this, path, options
 
@@ -64,7 +60,6 @@ define ['mediator'], (mediator)->
 
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` and `additionalParams` arguments are optional
-
     buildParams: (path, options) ->
       #console.debug 'Route#buildParams', path, options
 
@@ -80,11 +75,9 @@ define ['mediator'], (mediator)->
 
       # Add a param with the whole path match
       params.path = path
-
       params
 
     # Extract parameters from the URL
-
     extractParams: (path) ->
       params = {}
 

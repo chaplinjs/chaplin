@@ -1,11 +1,9 @@
 define [
   'mediator', 'models/collection', 'models/post'
 ], (mediator, Collection, Post) ->
-
   'use strict'
 
   class Posts extends Collection
-
     model: Post
 
     initialize: ->

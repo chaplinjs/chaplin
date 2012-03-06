@@ -1,11 +1,9 @@
 define [
   'mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'
 ], (mediator, utils, View, template) ->
-
   'use strict'
 
   class LoginView extends View
-
     # This is a workaround.
     # In the end you might want to used precompiled templates.
     @template = template
@@ -22,7 +20,6 @@ define [
 
     # In this project we currently only have one service provider and therefore
     # one button. But this should allow for different service providers.
-
     initButtons: (serviceProviders) ->
       #console.debug 'LoginView#initButtons', serviceProviders
 

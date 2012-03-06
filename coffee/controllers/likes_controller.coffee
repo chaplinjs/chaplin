@@ -2,11 +2,9 @@ define [
   'controllers/controller', 'models/likes', 'models/like',
   'views/likes_view', 'views/full_like_view'
 ], (Controller, Likes, Like, LikesView, FullLikeView) ->
-
   'use strict'
 
   class LikesController extends Controller
-
     historyURL: (params) ->
       if params.id then "likes/#{params.id}" else ''
       

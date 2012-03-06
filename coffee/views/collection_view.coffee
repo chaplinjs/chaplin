@@ -1,11 +1,9 @@
 define ['lib/utils', 'views/view'], (utils, View) ->
-
   'use strict'
 
   # General class for rendering Collections. Inherit from this class and
   # overwrite at least getView. getView gets an item model
   # and should instantiate a corresponding item view.
-
   class CollectionView extends View
 
     # Animation duration when adding new items (set to 0 to disable fade in)
@@ -17,13 +15,11 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # The list element the item views are actually appended to.
     # If empty, $el is used.
     # Set the selector property in the derived class to use a specific element.
-
     listSelector: null
     $list: null
 
     # Selector for a fallback element which is shown if the collection is empty.
     # Set the selector property in the derived class to use a specific element.
-
     fallbackSelector: null
     $fallback: null
 
@@ -34,16 +30,13 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     # Track a list of the visible views
     visibleItems: null
 
-
     # Returns an instance of the view class
     # This method has to be overridden by a derived class.
     # This is not simply a property with a constructor so that
     # several item view constructors are possible depending
     # on the item model type.
-
     getView: ->
       throw new Error 'CollectionView#getView must be overridden'
-
 
     initialize: (options = {}) ->
       super
@@ -71,9 +64,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # Render all items initially
       @renderAllItems() if options.renderItems
 
-
     # Binding of collection listeners
-
     addCollectionListeners: ->
       @modelBind 'loadStart', @showLoadingIndicator
       @modelBind 'load',      @hideLoadingIndicator
@@ -81,9 +72,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       @modelBind 'remove',    @itemRemoved
       @modelBind 'reset',     @itemsResetted
 
-
     # Generic loading indicator
-
     showLoadingIndicator: =>
       # Only show the loading indicator if the collection is empty
       # (otherwise the pagination should show a loading indicator)
@@ -93,30 +82,25 @@ define ['lib/utils', 'views/view'], (utils, View) ->
     hideLoadingIndicator: =>
       @$('.loading').css 'display', 'none'
 
-
     # Adding / Removing
+    # -----------------
 
     # When an item is added, create a new view and insert it
-
     itemAdded: (item, collection, options = {}) =>
       #console.debug 'CollectionView#itemAdded', this, item.cid, item
       @renderAndInsertItem item, options.at
 
     # When an item is removed, remove the corresponding view from DOM and caches
-
     itemRemoved: (item) =>
       #console.debug 'CollectionView#itemRemoved', this, item.cid, item
       @removeViewForItem item
 
     # When all items are resetted, render all anew
-
     itemsResetted: =>
       #console.debug 'CollectionView#itemsResetted', this, @collection.length, @collection.models
       @renderAllItems()
 
-
     # Main render method (should be called only once)
-
     render: ->
       super
       #console.debug 'CollectionView#render', this, @collection
@@ -126,13 +110,11 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
       @initFallback()
 
-
     #
     # Fallback message when the collection is empty
     #
 
     # Initialize the fallback
-
     initFallback: ->
       return unless @fallbackSelector
 
@@ -152,7 +134,6 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       @bind 'visibilityChange', @showHideFallback
 
     # Show or hide the fallback when the visible items change
-
     showHideFallback: =>
       #console.debug 'CollectionView#showHideFallback', this, 'visibleItems', @visibleItems, 'collection', @collection
       # Show fallback message if no item is visible and
@@ -160,10 +141,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       empty = @visibleItems.length is 0 and @collection.state() is 'resolved'
       @$fallback.css 'display', if empty then 'block' else 'none'
 
-
     # Render and insert all items
     # Accepts the options `shuffle` (Boolean) and `limit` (Number)
-
     renderAllItems: (options = {}) =>
 
       items = @collection.models
@@ -214,11 +193,9 @@ define ['lib/utils', 'views/view'], (utils, View) ->
         #console.debug 'CollectionView#renderAllItems', 'visibleItems', @visibleItems.length
         @trigger 'visibilityChange', @visibleItems
 
-
     # Applies a filter to the collection.
     # Expects an interator function as parameter.
     # Hides all items for which the iterator returns false.
-
     filter: (filterer) ->
       #console.debug 'CollectionView#filter', this, @collection
 
@@ -249,18 +226,14 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       #console.debug 'CollectionView#filter', 'visibleItems', @visibleItems.length
       @trigger 'visibilityChange', @visibleItems
 
-
     # Render the view for an item
-
     renderAndInsertItem: (item, index) ->
       #console.debug 'CollectionView#renderAndInsertItem', item.cid, item
 
       view = @renderItem item
       @insertView item, view, index
 
-
     # Instantiate and render an item using the viewsByCid hash as a cache
-
     renderItem: (item) ->
       #console.debug 'CollectionView#renderItem', item.cid, item
 
@@ -278,9 +251,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
       view
 
-
     # Inserts a view into the list at the proper position
-
     insertView: (item, view, index = null, animationDuration = @animationDuration) ->
       #console.debug 'CollectionView#insertView', item, view, index
 
@@ -332,9 +303,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       if animationDuration and included
         $viewEl.animate {opacity: 1}, animationDuration
 
-
     # Remove the view for an item
-
     removeViewForItem: (item) ->
       #console.debug 'CollectionView#removeViewForItem', this, item
 
@@ -346,9 +315,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
       @removeView item.cid, view
 
-
     # Remove a view
-
     removeView: (cid, view) ->
       #console.debug 'CollectionView#removeView', cid, view
 
@@ -358,10 +325,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # Remove the view from the hash table
       delete @viewsByCid[cid]
 
-
     # Update visibleItems list and trigger a `visibilityChanged` event
     # if an item changed its visibility
-
     updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
       visibilityChanged = false
 
@@ -387,9 +352,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
       visibilityChanged
 
-
     # Remove the whole list from DOM
-
     dispose: =>
       #console.debug 'CollectionView#dispose', this, 'disposed?', @disposed
       return if @disposed

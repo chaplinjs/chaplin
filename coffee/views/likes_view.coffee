@@ -2,11 +2,9 @@ define [
   'mediator', 'views/collection_view', 'views/compact_like_view',
   'text!templates/likes.hbs'
 ], (mediator, CollectionView, CompactLikeView, template) ->
-
   'use strict'
 
   class LikesView extends CollectionView
-
     # This is a workaround.
     # In the end you might want to used precompiled templates.
     @template: template

@@ -33,7 +33,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
       @addGlobalHandlers()
 
-
     #
     # Handlers for user login / logout
     #
@@ -56,7 +55,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         # Switch login state classes
         .removeClass('logged-in')
         .addClass('logged-out')
-
 
     #
     # Controller management
@@ -219,7 +217,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
 
-
     #
     # Fallback content
     #
@@ -234,7 +231,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
       # Remove the handler after the first startupController event
       mediator.unsubscribe 'startupController', @removeFallbackContent
-
 
     #
     # Event handling

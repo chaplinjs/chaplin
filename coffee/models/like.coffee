@@ -1,9 +1,7 @@
 define ['mediator', 'models/model'], (mediator, Model) ->
-
   'use strict'
 
   class Like extends Model
-
     initialize: (attributes, options) ->
       super
       #console.debug 'Like#initialize', attributes, options

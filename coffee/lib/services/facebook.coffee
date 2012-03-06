@@ -1,11 +1,9 @@
 define [
   'mediator', 'lib/utils', 'lib/services/service_provider'
 ], (mediator, utils, ServiceProvider) ->
-
   'use strict'
 
   class Facebook extends ServiceProvider
-
     # Note: This is the app ID for an example Facebook app.
     # You might change this to your own application ID.
     facebookAppId = '115149731946795'
@@ -44,7 +42,6 @@ define [
       # TODO unsubscribe
 
     # Load the JavaScript SDK asynchronously
-
     loadSDK: ->
       #console.debug 'Facebook#loadSDK'
 
@@ -58,7 +55,6 @@ define [
       utils.loadLib 'http://connect.facebook.net/en_US/all.js', null, @reject
 
     # The main callback for the Facebook SDK
-
     sdkLoadHandler: =>
       #console.debug 'Facebook#sdkLoadHandler'
 
@@ -82,7 +78,6 @@ define [
       @resolve()
 
     # Register handlers for several events
-
     registerHandlers: ->
       # Listen to logout on the Facebook
       @subscribe 'auth.logout', @facebookLogout
@@ -92,13 +87,11 @@ define [
       @subscribe 'comment.create', @processComment
 
     # Check whether the Facebook SDK has been loaded
-
     isLoaded: ->
       Boolean window.FB and FB.login
 
     # Save the current login status and the access token
     # (if logged in and connected with app)
-
     saveAuthResponse: (response) =>
       #console.debug 'Facebook#saveAuthResponse', response
       @status = response.status
@@ -108,19 +101,15 @@ define [
       else
         @accessToken = null
 
-    #
     # Get the Facebook login status, delegates to FB.getLoginStatus
     #
     # This actually determines a) whether the user is logged in at Facebook
     # and b) whether the user has authorized the app
-    #
-
     getLoginStatus: (callback = @loginStatusHandler, force = false) =>
       #console.debug 'Facebook#getLoginStatus', @state()
       FB.getLoginStatus callback, force
 
     # Callback for the initial FB.getLoginStatus call
-
     loginStatusHandler: (response) =>
       #console.debug 'Facebook#loginStatusHandler', response
       @saveAuthResponse response
@@ -131,20 +120,17 @@ define [
       else
         mediator.publish 'logout'
 
-
     # Open the Facebook login popup
     # loginContext: object with context information where the
     # user triggered the login
     #   Attributes:
     #   description - string
     #   model - optional model e.g. a topic the user wants to subscribe to
-
     triggerLogin: (loginContext) =>
       #console.debug 'Facebook#triggerLogin', loginContext
-      FB.login _(@loginHandler).bind(this, loginContext), scope: scope
+      FB.login _(@loginHandler).bind(this, loginContext), {scope}
 
     # Callback for FB.login
-
     loginHandler: (loginContext, response) =>
       #console.debug 'Facebook#loginHandler', loginContext, response
 
@@ -165,9 +151,7 @@ define [
         # asks for Extended Permissions.
         @getLoginStatus @publishAbortionResult, true
 
-
     # Publish the Facebook session
-
     publishSession: (authResponse) ->
       #console.debug 'Facebook#publishSession', authResponse
       mediator.publish 'serviceProviderSession',
@@ -176,7 +160,6 @@ define [
         accessToken: authResponse.accessToken
 
     # Check login status after abort and publish success or failure
-
     publishAbortionResult: (response) =>
       @saveAuthResponse response
       authResponse = response.authResponse
@@ -191,11 +174,9 @@ define [
 
       else
         # Login failed ultimately
-        mediator.publish 'loginFail', provider: this, loginContext: loginContext
-
+        mediator.publish 'loginFail', {provider: this, loginContext}
 
     # Handler for the FB auth.logout event
-
     facebookLogout: (response) =>
       #console.debug 'Facebook#facebookLogout', response
 
@@ -203,17 +184,13 @@ define [
       # So just overwrite the current status.
       @saveAuthResponse response
 
-
     # Handler for the global logout event
-
     logout: ->
       # Clear the status properties
       @status = @accessToken = null
 
-    #
     # Handlers for like and comment events
-    #
-
+    # ------------------------------------
     processLike: (url) =>
       #console.debug 'Facebook#processLike', url
       mediator.publish 'facebookLike', url
@@ -222,18 +199,16 @@ define [
       #console.debug 'Facebook#processComment', comment, comment.href
       mediator.publish 'facebookComment', comment.href
 
-
     #
     # Parsing of Facebook social plugins
-    #
+    # ----------------------------------
 
     parse: (el) ->
       FB.XFBML.parse(el)
 
-
     #
     # Helper for subscribing to SDK events
-    #
+    # ------------------------------------
 
     subscribe: (eventType, handler) ->
       FB.Event.subscribe eventType, handler
@@ -243,24 +218,21 @@ define [
 
     #
     # Graph Querying
-    #
+    # --------------
 
     # Deferred wrapper for posting to the open graph
-
     postToGraph: (ogResource, data, callback) ->
       FB.api ogResource, 'post', data, (response) ->
         #console.debug 'Facebook#postToGraph callback', response
         callback response if callback
 
     # Post a message to the user’s stream
-
     postToStream: (data, callback) ->
       #console.debug 'Facebook.postToStream', data
       @postToGraph '/me/feed', data, callback
 
     # Get the info for the given URLs
     # Pass a string or an array of strings along with a callback function
-
     getAccumulatedInfo: (urls, callback) ->
       #console.debug 'Facebook#getAccumulatedInfo', urls, callback
       urls = [urls] if typeof urls == 'string'
@@ -273,14 +245,11 @@ define [
 
     # Get information for node in the FB graph
     # `id` might be a FB node ID or a normal URL
-
     getInfo: (id, callback) ->
       FB.api id, callback
 
-
-    #
     # Fetch additional user data from Facebook (name, gender etc.)
-    #
+    # ------------------------------------------------------------
 
     getUserData: ->
       #console.debug 'Facebook#getUserData'
