@@ -105,7 +105,7 @@ define(['mediator'], function(mediator) {
       script = document.createElement('script');
       script.async = 'async';
       script.src = url;
-      onload = script.onload = script.onreadystatechange = function(_, aborted) {
+      onload = function(_, aborted) {
         if (aborted == null) aborted = false;
         if (!(aborted || !script.readyState || script.readyState === 'complete')) {
           return;
@@ -116,6 +116,7 @@ define(['mediator'], function(mediator) {
         script = void 0;
         if (success && !aborted) return success();
       };
+      script.onload = script.onreadystatechange = onload;
       script.onerror = function() {
         onload(null, true);
         if (error) return error();
@@ -138,7 +139,7 @@ define(['mediator'], function(mediator) {
           Either:
           - A string with a method name e.g. 'method'
           - An array of strings e.g. ['method1', 'method2']
-          - An object with methods e.g. { method: -> alert('resolved!') }
+          - An object with methods e.g. {method: -> alert('resolved!')}
     
         host (optional)
           If you pass an array of strings in the `methods` parameter the methods
@@ -150,9 +151,10 @@ define(['mediator'], function(mediator) {
     
         onDeferral (optional)
           An additional callback function which is invoked when the method is called
-          and the Deferred isn't resolved yet. After the method is registered as a done
-          handler on the Deferred, this callback is invoked. This can be used to trigger
-          the resolving of the Deferred.
+          and the Deferred isn't resolved yet.
+          After the method is registered as a done handler on the Deferred,
+          this callback is invoked. This can be used to trigger the resolving
+          of the Deferred.
     
         Examples:
     
@@ -164,13 +166,17 @@ define(['mediator'], function(mediator) {
           Read all methods from the hash def.specialMethods and
           create wrapped methods with the same names at def.
     
-        deferMethods(deferred: def, methods: def.specialMethods, target: def.specialMethods)
+        deferMethods(
+          deferred: def, methods: def.specialMethods, target: def.specialMethods
+        )
           Read all methods from the object def.specialMethods and
-          create wrapped methods at def.specialMethods, overwriting the existing ones.
+          create wrapped methods at def.specialMethods,
+          overwriting the existing ones.
     
         deferMethods(deferred: def, host: obj, methods: ['foo', 'bar'])
           Wrap the methods obj.foo and obj.bar so all calls to them are postponed
-          until def is resolved. obj.foo and obj.bar are overwritten with their wrappers.
+          until def is resolved. obj.foo and obj.bar are overwritten
+          with their wrappers.
     */
     deferMethods: function(options) {
       var deferred, func, host, methods, methodsHash, name, onDeferral, target, _i, _len, _results;

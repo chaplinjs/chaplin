@@ -3,20 +3,16 @@ define ['mediator'], (mediator) ->
   'use strict'
 
   utils =
-
-    #
     # Object Helpers
-    #
+    # --------------
 
     beget: (obj) ->
       ctor = ->
       ctor:: = obj
       new ctor
 
-
-    #
     # String Helpers
-    #
+    # --------------
 
     # camel-case-helper > camelCaseHelper
     camelize: do ->
@@ -38,10 +34,8 @@ define ['mediator'], (mediator) ->
       (string) ->
         string.replace regexp, underscorizer
 
-
-    #
     # Facebook image helper
-    #
+    # ---------------------
 
     facebookImageURL: (fbId, type = 'square') ->
       # Create query string
@@ -54,17 +48,15 @@ define ['mediator'], (mediator) ->
 
       "https://graph.facebook.com/#{fbId}/picture?#{$.param(params)}"
 
-
-    #
     # Persistent data storage
-    #
+    # -----------------------
 
     # sessionStorage with session cookie fallback
     # sessionStorage(key) gets the value for 'key'
     # sessionStorage(key, value) set the value for 'key'
-
     sessionStorage: do ->
-      if window.sessionStorage and sessionStorage.getItem and sessionStorage.setItem and sessionStorage.removeItem
+      if window.sessionStorage and sessionStorage.getItem and
+      sessionStorage.setItem and sessionStorage.removeItem
         (key, value) ->
           if typeof value is 'undefined'
             value = sessionStorage.getItem(key)
@@ -82,15 +74,16 @@ define ['mediator'], (mediator) ->
 
     # sessionStorageRemove(key) removes the storage entry for 'key'
     sessionStorageRemove: do ->
-      if window.sessionStorage and sessionStorage.getItem and sessionStorage.setItem and sessionStorage.removeItem
+      if window.sessionStorage and sessionStorage.getItem and
+      sessionStorage.setItem and sessionStorage.removeItem
         (key) -> sessionStorage.removeItem(key)
       else
         (key) -> utils.expireCookie(key)
 
     # Cookie fallback
+    # ---------------
 
     # Get a cookie by its name
-
     getCookie: (key) ->
       keyPosition = document.cookie.indexOf "#{key}="
       return false if keyPosition is -1
@@ -107,21 +100,21 @@ define ['mediator'], (mediator) ->
     expireCookie: (key) ->
       document.cookie = "#{key}=nil; expires=#{(new Date).toGMTString()}"
 
-
     # Load additonal JavaScripts
     # We don’t use jQuery here because jQuery does not attach an error
     # handler to the script. In jQuery, a proper error handler only works
     # for same-origin scripts which can be loaded via XHR.
-
     loadLib: (url, success, error, timeout = 7500) ->
       #console.debug 'utils.loadLib', url
-      head = document.head or document.getElementsByTagName('head')[0] or document.documentElement
+      head = document.head or document.getElementsByTagName('head')[0] or
+      document.documentElement
       script = document.createElement 'script'
       script.async = 'async'
       script.src   = url
 
-      onload = script.onload = script.onreadystatechange = (_, aborted = false) ->
-        return unless aborted or not script.readyState or script.readyState is 'complete'
+      onload = (_, aborted = false) ->
+        return unless (aborted or
+        not script.readyState or script.readyState is 'complete')
 
         clearTimeout timeoutHandle
 
@@ -133,6 +126,8 @@ define ['mediator'], (mediator) ->
 
         success() if success and not aborted
 
+      script.onload = script.onreadystatechange = onload
+
       # This is what jQuery is missing
       script.onerror = ->
         onload null, true
@@ -141,10 +136,8 @@ define ['mediator'], (mediator) ->
       timeoutHandle = setTimeout script.onerror, timeout
       head.insertBefore script, head.firstChild
 
-
-    #
     # Functional helpers for handling asynchronous dependancies and I/O
-    #
+    # -----------------------------------------------------------------
 
     ###
     Wrap methods so they can be called before a deferred is resolved.
@@ -161,7 +154,7 @@ define ['mediator'], (mediator) ->
       Either:
       - A string with a method name e.g. 'method'
       - An array of strings e.g. ['method1', 'method2']
-      - An object with methods e.g. { method: -> alert('resolved!') }
+      - An object with methods e.g. {method: -> alert('resolved!')}
 
     host (optional)
       If you pass an array of strings in the `methods` parameter the methods
@@ -173,9 +166,10 @@ define ['mediator'], (mediator) ->
 
     onDeferral (optional)
       An additional callback function which is invoked when the method is called
-      and the Deferred isn't resolved yet. After the method is registered as a done
-      handler on the Deferred, this callback is invoked. This can be used to trigger
-      the resolving of the Deferred.
+      and the Deferred isn't resolved yet.
+      After the method is registered as a done handler on the Deferred,
+      this callback is invoked. This can be used to trigger the resolving
+      of the Deferred.
 
     Examples:
 
@@ -187,16 +181,19 @@ define ['mediator'], (mediator) ->
       Read all methods from the hash def.specialMethods and
       create wrapped methods with the same names at def.
 
-    deferMethods(deferred: def, methods: def.specialMethods, target: def.specialMethods)
+    deferMethods(
+      deferred: def, methods: def.specialMethods, target: def.specialMethods
+    )
       Read all methods from the object def.specialMethods and
-      create wrapped methods at def.specialMethods, overwriting the existing ones.
+      create wrapped methods at def.specialMethods,
+      overwriting the existing ones.
 
     deferMethods(deferred: def, host: obj, methods: ['foo', 'bar'])
       Wrap the methods obj.foo and obj.bar so all calls to them are postponed
-      until def is resolved. obj.foo and obj.bar are overwritten with their wrappers.
+      until def is resolved. obj.foo and obj.bar are overwritten
+      with their wrappers.
 
     ###
-
     deferMethods: (options) ->
       # Process options
       deferred = options.deferred
@@ -219,7 +216,8 @@ define ['mediator'], (mediator) ->
         for name in methods
           func = host[name]
           unless typeof func is 'function'
-            throw new TypeError "utils.deferMethods: method #{name} not found on host #{host}"
+            throw new TypeError "utils.deferMethods: method #{name} not 
+found on host #{host}"
           methodsHash[name] = func
 
       else
@@ -231,13 +229,15 @@ define ['mediator'], (mediator) ->
         # Ignore non-function properties
         continue unless typeof func is 'function'
         # Replace method with wrapper
-        target[name] = utils.createDeferredFunction deferred, func, target, onDeferral
+        target[name] = utils.createDeferredFunction(
+          deferred, func, target, onDeferral
+        )
 
-    # Creates a function which wraps `func` and defers calls to it until the given `deferred` is resolved.
-    # Pass an optional `context` to determine the this `this` binding of the original function.
-    # Defaults to `deferred`.
-    # The optional `onDeferral` function to after original function is registered as a done callback.
-
+    # Creates a function which wraps `func` and defers calls to
+    # it until the given `deferred` is resolved. Pass an optional `context`
+    # to determine the this `this` binding of the original function.
+    # Defaults to `deferred`. The optional `onDeferral` function to after
+    # original function is registered as a done callback.
     createDeferredFunction: (deferred, func, context = deferred, onDeferral) ->
       #console.debug 'utils.createWrappedFunction', 'deferred:', deferred, 'func:', func, 'context:', context, 'onDeferral:', onDeferral
       # Return a wrapper function
@@ -258,9 +258,7 @@ define ['mediator'], (mediator) ->
           if typeof onDeferral is 'function'
             onDeferral.apply context
 
-
     # Accumulators
-
     accumulator:
       collectedData: {}
       handles: {}
@@ -269,12 +267,12 @@ define ['mediator'], (mediator) ->
       errorHandlers: {}
       interval: 2000
 
-    # Turns methods into accumulators, collecting calls and sending them out in intervals
+    # Turns methods into accumulators, collecting calls and sending
+    # them out in intervals
     # obj
     #   the object the methods are read from and written to
     # methods
     #   zero or more names (strings) of methods (object members) to be wrapped
-
     wrapAccumulators: (obj, methods) ->
       # Replace methods
       for name in methods
@@ -288,9 +286,11 @@ define ['mediator'], (mediator) ->
       $(window).unload =>
         handler(async: false) for name, handler of utils.accumulator.handlers
 
-    # Returns an accumulator for the given 'func' with the parameter list (data, success, error, options)
+    # Returns an accumulator for the given 'func' with the
+    # parameter list (data, success, error, options)
     createAccumulator: (name, func, context) ->
-      # Create a unique ID for the function, save it as a property of the function object
+      # Create a unique ID for the function, save it as a
+      # property of the function object
       unless id = func.__uniqueID
         id = func.__uniqueID = name + String(Math.random()).replace('.', '')
 
@@ -321,9 +321,14 @@ define ['mediator'], (mediator) ->
         #console.debug 'accumulator', name, id, 'success:', success, 'error:', error
 
         # Store data, success and error handlers
-        acc.collectedData[id]   = (acc.collectedData[id]   or []).concat(data)    if data
-        acc.successHandlers[id] = (acc.successHandlers[id] or []).concat(success) if success
-        acc.errorHandlers[id]   = (acc.errorHandlers[id]   or []).concat(error)   if error
+        if data
+          acc.collectedData[id] = (acc.collectedData[id] or []).concat(data)
+        if success
+          acc.successHandlers[id] = (
+            acc.successHandlers[id] or []
+          ).concat(success)
+        if error
+          acc.errorHandlers[id] = (acc.errorHandlers[id] or []).concat(error)
 
         # Set timeout if not already set
         return if acc.handles[id]
@@ -332,7 +337,9 @@ define ['mediator'], (mediator) ->
           #console.debug 'createAccumulator: handler fired'
           return unless collectedData = acc.collectedData[id]
           # Call the original function
-          args = [collectedData, accumulatedSuccess, accumulatedError].concat(rest)
+          args = [
+            collectedData, accumulatedSuccess, accumulatedError
+          ].concat(rest)
           func.apply context, args
           # Clear timeout
           clearTimeout acc.handles[id]
@@ -342,15 +349,16 @@ define ['mediator'], (mediator) ->
 
         # Save the handler
         acc.handlers[id] = handler
-        # Wrap handler in additional function to ignore Firefox' latency arguments
+        # Wrap handler in additional function to ignore
+        # Firefox' latency arguments
         acc.handles[id] = setTimeout (-> handler()), acc.interval
 
-
     # Call the given function `func` when the global event `eventType` occurs.
-    # Defaults to 'login', so the `func` is called when the user has successfully logged in.
+    # Defaults to 'login', so the `func` is called when
+    # the user has successfully logged in.
     # When the function is called, `this` points to the given `context`.
-    # You may pass a `loginContext` for the UI context where the login was triggered.
-
+    # You may pass a `loginContext` for the UI context where
+    # the login was triggered.
     afterLogin: (context, func, eventType = 'login', args...) ->
       #console.debug 'utils.afterLogin', context, func, eventType, args
       if mediator.user
@@ -374,19 +382,21 @@ define ['mediator'], (mediator) ->
       for name in methods
         func = obj[name]
         unless typeof func is 'function'
-          throw new TypeError "utils.deferMethodsUntilLogin: method #{name} not found"
+          throw new TypeError "utils.deferMethodsUntilLogin: method #{name} 
+not found"
         #console.debug '\twrap', obj, name
         obj[name] = _(utils.afterLogin).bind null, obj, func, eventType
 
-    # Delegates to afterLogin, but triggers the login dialog if the user isn't logged in
+    # Delegates to afterLogin, but triggers the login dialog if the user
+    # isn't logged in
     # and calls preventDefault if an event object is passed.
-
     ensureLogin: (context, func, loginContext, eventType = 'login', args...) ->
       #console.debug 'utils.ensureLogin', context, func, loginContext, args
       utils.afterLogin context, func, eventType, args...
 
       unless mediator.user
-        # If an event is passed to the original function, prevent the default action
+        # If an event is passed to the original function, prevent the
+        # default action
         if (e = args[0]) and typeof e.preventDefault is 'function'
           e.preventDefault()
 
@@ -398,10 +408,10 @@ define ['mediator'], (mediator) ->
     # Arguments:
     # `obj`: The object whose methods should be wrapped
     # `methods`: A string or an array of strings with method names
-    # `loginContext`: object with login context information, should have a `description` property
+    # `loginContext`: object with login context information, should have
+    #                 a `description` property
     # `eventType`: The global PubSub event the actual method call will wait for.
     #              Defaults to 'login'.
-
     ensureLoginForMethods: (obj, methods, loginContext, eventType = 'login') ->
       #console.debug 'utils.ensureLoginForMethods', obj, methods, loginContext
 
@@ -411,11 +421,12 @@ define ['mediator'], (mediator) ->
       for name in methods
         func = obj[name]
         unless typeof func is 'function'
-          throw new TypeError "utils.ensureLoginForMethods: method #{name} not found"
+          throw new TypeError "utils.ensureLoginForMethods: method #{name} 
+not found"
         #console.debug '\twrap', obj, name, loginContext
-        obj[name] = _(utils.ensureLogin).bind null, obj, func, loginContext, eventType
-
-
+        obj[name] = _(utils.ensureLogin).bind(
+          null, obj, func, loginContext, eventType
+        )
 
   # Seal the utils object
   Object.seal? utils

@@ -28,7 +28,8 @@ define ->
   # Make subscribe, unsubscribe and publish properties readonly
   if Object.defineProperties
     desc = writable: false
-    Object.defineProperties mediator, subscribe: desc, unsubscribe: desc, publish: desc
+    Object.defineProperties mediator,
+      subscribe: desc, unsubscribe: desc, publish: desc
 
   # Seal the mediator object
   # (extensible: false for the mediator, configurable: false for its properties)

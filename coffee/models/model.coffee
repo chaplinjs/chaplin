@@ -1,23 +1,18 @@
 define ['lib/subscriber'], (Subscriber) ->
-
   'use strict'
 
   class Model extends Backbone.Model
-
     # Mixin a Subscriber
     _(Model.prototype).defaults Subscriber
-
 
     # This method is used to get the attributes for the view template
     # and might be overwritten by decorators which cannot create a
     # proper `attributes` getter due to ECMAScript 3 limits.
-
     getAttributes: ->
       @attributes
 
-    #
     # Disposal
-    #
+    # --------
 
     disposed: false
 
@@ -32,7 +27,10 @@ define ['lib/subscriber'], (Subscriber) ->
       @unsubscribeAllEvents()
 
       # Remove the collection reference, attributes and event handlers
-      properties = 'collection attributes _escapedAttributes _previousAttributes _callbacks'.split(' ')
+      properties = [
+        'collection', 'attributes', '_escapedAttributes',
+        '_previousAttributes', '_callbacks'
+      ]
       delete @[prop] for prop in properties
 
       # Finished

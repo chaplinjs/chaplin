@@ -146,7 +146,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       hostname = el.hostname;
       if (!(href && hostname)) return;
       currentHostname = location.hostname.replace('.', '\\.');
-      hostnameRegExp = new RegExp("" + currentHostname + "$", 'i');
+      hostnameRegExp = RegExp("" + currentHostname + "$", "i");
       external = !hostnameRegExp.test(hostname);
       if (external) return;
       return this.openInternalLink(event);

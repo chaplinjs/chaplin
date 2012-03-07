@@ -2,11 +2,9 @@ define [
   'mediator', 'lib/utils', 'models/user', 'controllers/controller',
   'lib/services/facebook', 'views/login_view'
 ], (mediator, utils, User, Controller, Facebook, LoginView) ->
-
   'use strict'
 
   class SessionController extends Controller
-
     # Service provider instances as static properties
     # This just hardcoded here to avoid async loading of service providers.
     # In the end you might want to do this.
@@ -45,37 +43,31 @@ define [
       # Determine the logged-in state
       @getSession()
 
-
     # Load the JavaScript SDKs of all service providers
-
     loadSDKs: ->
       for name, serviceProvider of SessionController.serviceProviders
         serviceProvider.loadSDK()
 
     # Instantiate the user with the given data
-
     createUser: (userData) ->
       #console.debug 'SessinController#createUser', userData
       user = new User userData
       mediator.user = user
 
-
     # Try to get an existing session from one of the login providers
-
     getSession: ->
       #console.debug 'SessionController#getSession'
       @loadSDKs()
       for name, serviceProvider of SessionController.serviceProviders
         serviceProvider.done serviceProvider.getLoginStatus
 
-
     # Handler for the global !showLoginView event
-
     showLoginView: ->
       #console.debug 'SessionController#showLoginView'
       return if @loginView
       @loadSDKs()
-      @loginView = new LoginView serviceProviders: SessionController.serviceProviders
+      @loginView = new LoginView
+        serviceProviders: SessionController.serviceProviders
 
     hideLoginView: ->
       #console.debug 'SessionController#hideLoginView'
@@ -83,10 +75,8 @@ define [
       @loginView.dispose()
       @loginView = null
 
-
     # Handler for the global !login event
     # Delegate the login to the selected service provider
-
     triggerLogin: (serviceProviderName) =>
       serviceProvider = SessionController.serviceProviders[serviceProviderName]
       #console.debug 'SessionController#triggerLogin', serviceProviderName, serviceProvider
@@ -102,15 +92,11 @@ define [
       # Delegate to service provider
       serviceProvider.triggerLogin()
 
-
     # Handler for the global loginAttempt event
-
     loginAttempt: =>
       #console.debug 'SessionController#loginAttempt'
 
-
     # Handler for the global serviceProviderSession event
-
     serviceProviderSession: (session) =>
       # Save the session provider used for login
       @serviceProviderName = session.provider.name
@@ -127,9 +113,7 @@ define [
 
       @publishLogin()
 
-
     # Publish an event to notify all application components of the login
-
     publishLogin: ->
       #console.debug 'SessionController#publishLogin', mediator.user
 
@@ -139,18 +123,15 @@ define [
       mediator.publish 'login', mediator.user
       mediator.publish 'loginStatus', true
 
-    #
     # Logout
-    #
+    # ------
 
     # Handler for the global !logout event
-
     triggerLogout: ->
       # Just publish a logout event for now
       mediator.publish 'logout'
 
     # Handler for the global logout event
-
     logout: =>
       #console.debug 'SessionController#logout'
 
@@ -169,9 +150,8 @@ define [
 
       mediator.publish 'loginStatus', false
 
-    #
     # Handler for the global userData event
-    #
+    # -------------------------------------
 
     userData: (data) ->
       #console.debug 'SessionController#userData', data

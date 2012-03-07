@@ -1,10 +1,9 @@
 define ['views/view', 'text!templates/navigation.hbs'], (View, template) ->
-
   'use strict'
 
   class NavigationView extends View
-
-    # This is a workaround. In the end you might want to used precompiled templates.
+    # This is a workaround.
+    # In the end you might want to used precompiled templates.
     @template: template
 
     id: 'navigation'

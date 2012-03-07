@@ -4,26 +4,25 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
   # Registers several Handlebars helpers
 
-  #
   # Partials
-  #
+  # --------
 
   Handlebars.registerHelper 'partial', (partialName, options) ->
     new Handlebars.SafeString(
-      Handlebars.VM.invokePartial(Handlebars.partials[partialName], partialName, options.hash)
+      Handlebars.VM.invokePartial(
+        Handlebars.partials[partialName], partialName, options.hash
+      )
     )
 
-  #
   # Generators
-  #
+  # ----------
 
   # Facebook image URLs
   Handlebars.registerHelper 'fb_img_url', (fbId, type) ->
     new Handlebars.SafeString utils.facebookImageURL(fbId, type)
 
-  #
   # Conditional evaluation
-  #
+  # ----------------------
 
   # Choose block by user login status
   Handlebars.registerHelper 'if_logged_in', (options) ->
@@ -32,9 +31,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     else
       options.inverse(this)
 
-  #
   # Map helpers
-  #
+  # -----------
 
   # Make 'with' behave a little more mustachey
   Handlebars.registerHelper 'with', (context, options) ->
@@ -48,11 +46,11 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     inverse = options.inverse
     options.inverse = options.fn
     options.fn = inverse
-    Handlebars.helpers.with.call(@, context, options)
+    Handlebars.helpers.with.call(this, context, options)
 
   # Evaluate block with context being current user
   Handlebars.registerHelper 'with_user', (options) ->
     context = mediator.user or {}
-    Handlebars.helpers.with.call(@, context, options)
+    Handlebars.helpers.with.call(this, context, options)
 
   null

@@ -2,13 +2,11 @@ define [
   'mediator', 'controllers/session_controller',
   'controllers/application_controller', 'lib/router'
 ], (mediator, SessionController, ApplicationController, Router) ->
-
   'use strict'
 
   # The application bootstrapper.
   # In practise you might choose a more meaningful name.
   Application =
-
     initialize: ->
       @initControllers()
       @initRouter()

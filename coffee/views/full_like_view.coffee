@@ -1,12 +1,11 @@
 define [
   'mediator', 'views/view', 'text!templates/full_like.hbs'
 ], (mediator, View, template) ->
-
   'use strict'
 
   class FullLikeView extends View
-
-    # This is a workaround. In the end you might want to used precompiled templates.
+    # This is a workaround.
+    # In the end you might want to used precompiled templates.
     @template = template
 
     id: 'like'
@@ -21,7 +20,6 @@ define [
       @model.done @render if @model.state() isnt 'resolved'
 
     # Rendering
-
     render: ->
       super
       #console.debug 'FullLikeView#render'
