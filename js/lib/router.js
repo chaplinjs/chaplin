@@ -1,26 +1,17 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-define(['mediator', 'lib/route'], function(mediator, Route) {
+define(['mediator', 'lib/route', 'routes'], function(mediator, Route, registerRoutes) {
   'use strict';
   var Router;
   return Router = (function() {
 
     function Router() {
-      this.route = __bind(this.route, this);      this.registerRoutes();
-      this.startHistory();
-    }
-
-    Router.prototype.registerRoutes = function() {
-      this.match('', 'likes#index');
-      this.match('likes/:id', 'likes#show');
-      return this.match('posts', 'posts#index');
-    };
-
-    Router.prototype.startHistory = function() {
-      return Backbone.history.start({
+      this.route = __bind(this.route, this);
+      this.match = __bind(this.match, this);      registerRoutes(this.match);
+      Backbone.history.start({
         pushState: true
       });
-    };
+    }
 
     Router.prototype.match = function(pattern, target, options) {
       var route;
