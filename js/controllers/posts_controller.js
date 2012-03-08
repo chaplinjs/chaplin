@@ -12,6 +12,8 @@ define(['controllers/controller', 'models/posts', 'views/posts_view'], function(
       PostsController.__super__.constructor.apply(this, arguments);
     }
 
+    PostsController.prototype.title = 'Facebook Wall Posts';
+
     PostsController.prototype.historyURL = 'posts';
 
     PostsController.prototype.index = function(params) {

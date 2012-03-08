@@ -5,6 +5,7 @@ define [
   'use strict'
 
   class LikesController extends Controller
+    title: 'Your Likes'
     historyURL: (params) ->
       if params.id then "likes/#{params.id}" else ''
       

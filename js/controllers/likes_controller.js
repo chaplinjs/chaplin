@@ -12,6 +12,8 @@ define(['controllers/controller', 'models/likes', 'models/like', 'views/likes_vi
       LikesController.__super__.constructor.apply(this, arguments);
     }
 
+    LikesController.prototype.title = 'Your Likes';
+
     LikesController.prototype.historyURL = function(params) {
       if (params.id) {
         return "likes/" + params.id;

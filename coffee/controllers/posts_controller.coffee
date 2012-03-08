@@ -4,6 +4,7 @@ define [
   'use strict'
 
   class PostsController extends Controller
+    title: 'Facebook Wall Posts'
     historyURL: 'posts'
 
     index: (params) ->
