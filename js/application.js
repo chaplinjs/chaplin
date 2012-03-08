@@ -1,5 +1,5 @@
 
-define(['mediator', 'controllers/session_controller', 'controllers/application_controller', 'lib/router'], function(mediator, SessionController, ApplicationController, Router) {
+define(['mediator', 'lib/support', 'controllers/session_controller', 'controllers/application_controller', 'lib/router'], function(mediator, support, SessionController, ApplicationController, Router) {
   'use strict';
   var Application;
   Application = {
@@ -13,11 +13,13 @@ define(['mediator', 'controllers/session_controller', 'controllers/application_c
     },
     initRouter: function() {
       mediator.router = new Router();
-      return typeof Object.defineProperty === "function" ? Object.defineProperty(mediator, 'router', {
-        writable: false,
-        configurable: false,
-        enumerable: true
-      }) : void 0;
+      if (support.propertyDescriptors) {
+        return Object.defineProperty(mediator, 'router', {
+          writable: false,
+          configurable: false,
+          enumerable: true
+        });
+      }
     }
   };
   if (typeof Object.freeze === "function") Object.freeze(Application);

@@ -1,5 +1,5 @@
 
-define(function() {
+define(['lib/support'], function(support) {
   'use strict';
   var descriptorsSupported, mediator, privateUser, readonlyDescriptor;
   mediator = {};
@@ -8,17 +8,7 @@ define(function() {
     configurable: false,
     enumerable: true
   };
-  descriptorsSupported = (function() {
-    if (!(Object.defineProperty && Object.defineProperties)) return false;
-    try {
-      Object.defineProperty({}, 'foo', {
-        value: 'bar'
-      });
-      return true;
-    } catch (error) {
-      return false;
-    }
-  })();
+  descriptorsSupported = support.propertyDescriptors;
   mediator.user = null;
   if (descriptorsSupported) {
     privateUser = null;

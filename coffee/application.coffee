@@ -1,7 +1,8 @@
 define [
-  'mediator', 'controllers/session_controller',
-  'controllers/application_controller', 'lib/router'
-], (mediator, SessionController, ApplicationController, Router) ->
+  'mediator', 'lib/support',
+  'controllers/session_controller', 'controllers/application_controller',
+  'lib/router'
+], (mediator, support, SessionController, ApplicationController, Router) ->
   'use strict'
 
   # The application bootstrapper.
@@ -27,10 +28,9 @@ define [
       mediator.router = new Router()
 
       # Make the router property readonly and non-configurable
-      Object.defineProperty? mediator, 'router',
-        writable: false
-        configurable: false
-        enumerable: true
+      if support.propertyDescriptors
+        Object.defineProperty mediator, 'router',
+          writable: false, configurable: false, enumerable: true
 
   # Freeze the object
   Object.freeze? Application

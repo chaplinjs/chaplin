@@ -1,4 +1,4 @@
-define ->
+define ['lib/support'], (support) ->
   'use strict'
 
   # Mediator object
@@ -18,16 +18,7 @@ define ->
 
   # Descriptor for readonly, non-configurable properties
   readonlyDescriptor = writable: false, configurable: false, enumerable: true
-
-  # Test for defineProperty support
-  # (IE 8 knows the method but will throw an exception)
-  descriptorsSupported = do ->
-    return false unless Object.defineProperty and Object.defineProperties
-    try
-      Object.defineProperty {}, 'foo', value: 'bar'
-      return true
-    catch error
-      return false
+  descriptorsSupported = support.propertyDescriptors
 
   # Current user
   # ------------
