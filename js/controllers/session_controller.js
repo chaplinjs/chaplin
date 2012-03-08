@@ -50,7 +50,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     SessionController.prototype.createUser = function(userData) {
       var user;
       user = new User(userData);
-      return mediator.user = user;
+      return mediator.setUser(user);
     };
 
     SessionController.prototype.getSession = function() {

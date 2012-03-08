@@ -48,7 +48,7 @@ define [
     # Instantiate the user with the given data
     createUser: (userData) ->
       user = new User userData
-      mediator.user = user
+      mediator.setUser user
 
     # Try to get an existing session from one of the login providers
     getSession: ->
