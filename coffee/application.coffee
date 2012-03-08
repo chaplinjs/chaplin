@@ -16,7 +16,7 @@ define [
     initControllers: ->
       # At the moment, do not save the references.
       # They might be safed as instance properties or directly on the mediator.
-      # Normally, controllers can communicate with each other via Pub/Sub.
+      # Normally, controllers should communicate with each other via Pub/Sub.
       new SessionController()
       new ApplicationController()
 
@@ -26,8 +26,11 @@ define [
       # the AppView needs to access it synchronously.
       mediator.router = new Router()
 
-      # Make router property readonly
-      Object.defineProperty? mediator, 'router', writable: false
+      # Make the router property readonly and non-configurable
+      Object.defineProperty? mediator, 'router',
+        writable: false
+        configurable: false
+        enumerable: true
 
   # Freeze the object
   Object.freeze? Application

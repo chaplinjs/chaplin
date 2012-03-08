@@ -14,7 +14,9 @@ define(['mediator', 'controllers/session_controller', 'controllers/application_c
     initRouter: function() {
       mediator.router = new Router();
       return typeof Object.defineProperty === "function" ? Object.defineProperty(mediator, 'router', {
-        writable: false
+        writable: false,
+        configurable: false,
+        enumerable: true
       }) : void 0;
     }
   };
