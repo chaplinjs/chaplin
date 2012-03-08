@@ -12,5 +12,4 @@ define ['views/view', 'text!templates/navigation.hbs'], (View, template) ->
 
     initialize: ->
       super
-      #console.debug 'NavigationView#initialize'
       @subscribeEvent 'startupController', @render

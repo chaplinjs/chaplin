@@ -8,8 +8,6 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
     loading: false
 
     constructor: ->
-      #console.debug 'ServiceProvider#constructor'
-
       # Mixin a Deferred
       _(this).extend $.Deferred()
 

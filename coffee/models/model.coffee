@@ -18,7 +18,6 @@ define ['lib/subscriber'], (Subscriber) ->
 
     dispose: ->
       return if @disposed
-      #console.debug 'Model#dispose', this
 
       # Fire an event to notify associated collections and views
       @trigger 'dispose', this
@@ -34,7 +33,6 @@ define ['lib/subscriber'], (Subscriber) ->
       delete @[prop] for prop in properties
 
       # Finished
-      #console.debug 'Model#dispose', this, 'finished'
       @disposed = true
 
       # Your're frozen when your heart’s not open

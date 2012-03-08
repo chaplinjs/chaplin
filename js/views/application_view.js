@@ -11,8 +11,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
     function ApplicationView() {
       this.openLink = __bind(this.openLink, this);
       this.removeFallbackContent = __bind(this.removeFallbackContent, this);
-      this.updateBodyClasses = __bind(this.updateBodyClasses, this);      console.debug('ApplicationView#constructor');
-      mediator.subscribe('login', this.updateBodyClasses);
+      this.updateBodyClasses = __bind(this.updateBodyClasses, this);      mediator.subscribe('login', this.updateBodyClasses);
       mediator.subscribe('logout', this.updateBodyClasses);
       mediator.subscribe('beforeControllerDispose', this.hideOldView);
       mediator.subscribe('startupController', this.showNewView);
@@ -42,7 +41,6 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
 
     ApplicationView.prototype.adjustTitle = function(info) {
       var subtitle, title;
-      console.debug('ApplicationView#adjustTitle', info);
       title = siteTitle;
       subtitle = info.controller.title;
       if (subtitle) title = "" + subtitle + " \u2013 " + title;

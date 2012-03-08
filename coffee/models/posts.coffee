@@ -17,8 +17,6 @@ define [
       @subscribeEvent 'logout', @reset
 
     getPosts: ->
-      #console.debug 'Posts#getPosts'
-
       user = mediator.user
       return unless user
 
@@ -29,8 +27,6 @@ define [
       provider.getInfo '/158352134203230/feed', @processPosts
 
     processPosts: (response) =>
-      #console.debug 'Posts#processPosts', response, response.data
-
       # Trigger before updating the collection to hide the loading spinner
       @trigger 'load'
 

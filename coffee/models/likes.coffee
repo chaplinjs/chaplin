@@ -17,8 +17,6 @@ define [
       @subscribeEvent 'logout', @reset
 
     getLikes: ->
-      #console.debug 'Likes#getLikes'
-
       user = mediator.user
       return unless user
 
@@ -29,8 +27,6 @@ define [
       provider.getInfo '/me/likes', @processLikes
 
     processLikes: (response) =>
-      #console.debug 'Likes#processLikes', response, response.data
-
       # Trigger before updating the collection to hide the loading spinner
       @trigger 'load'
 

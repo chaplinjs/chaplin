@@ -9,7 +9,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     siteTitle = 'Chaplin Example Application'
 
     constructor: ->
-      console.debug 'ApplicationView#constructor'
       # Listen to global events
       mediator.subscribe 'login', @updateBodyClasses
       mediator.subscribe 'logout', @updateBodyClasses
@@ -45,7 +44,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
     adjustTitle: (info) ->
-      console.debug 'ApplicationView#adjustTitle', info
       title = siteTitle
       subtitle = info.controller.title
       title = "#{subtitle} \u2013 #{title}" if subtitle

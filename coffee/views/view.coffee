@@ -23,8 +23,6 @@ define [
     $container: null
 
     constructor: ->
-      #console.debug 'View#constructor', this
-
       # Wrap `initialize` and `render` in order to call `afterInitialize`
       # and `afterRender`
       instance = this
@@ -38,7 +36,6 @@ define [
         func = instance[name]
         # Create a method on the instance which wraps the inherited
         instance[name] = ->
-          #console.debug 'View#' + name + ' wrapper', this
           # Call the original method
           func.apply instance, arguments
           # Call the corresponding `after~` method
@@ -51,7 +48,6 @@ define [
       super
 
     initialize: (options) ->
-      #console.debug 'View#initialize', this, 'options', options
       # No super call here, Backbone’s `initialize` is a no-op
 
       # Listen for disposal of the model
@@ -68,8 +64,6 @@ define [
 
     # This method is called after a specific `initialize` of a derived class
     afterInitialize: (options) ->
-      #console.debug 'View#afterInitialize', this, 'options', options
-
       # Render automatically if set by options or instance property
       # and the option do not override it
       byOption = options and options.autoRender is true
@@ -207,8 +201,6 @@ allowed'
     # Main render function
     # Always bind it to the view instance
     render: =>
-      #console.debug "View#render\n\t", this, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
-
       return if @disposed
 
       # Template compilation
@@ -220,7 +212,6 @@ allowed'
       # static property.
 
       template = @constructor.template
-      #console.debug "\ttemplate: #{typeof template}"
 
       if typeof template is 'string'
         template = Handlebars.compile template
@@ -245,11 +236,8 @@ allowed'
     # This method is called after a specific `render` of a derived class
 
     afterRender: ->
-      #console.debug 'View#afterRender', this
-
       # Automatically append to DOM if the container element is set
       if @$container
-        #console.debug '\tappend to DOM'
         @$container.append @el
         # Trigger an event
         @trigger 'addedToDOM'
@@ -268,7 +256,6 @@ allowed'
 
     dispose: =>
       return if @disposed
-      #console.debug 'View#dispose', this
 
       # Unbind all model handlers
       @modelUnbindAll()
@@ -289,7 +276,6 @@ allowed'
       delete @[prop] for prop in properties
 
       # Finished
-      #console.debug 'View#dispose', this, 'finished'
       @disposed = true
 
       # Your're frozen when your heart’s not open
