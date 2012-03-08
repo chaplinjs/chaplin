@@ -21,10 +21,7 @@ define [
     serviceProviderName: null
 
     initialize: ->
-      #console.debug 'SessionController#initialize'
-
       # Login flow events
-      @subscribeEvent 'loginAttempt', @loginAttempt
       @subscribeEvent 'serviceProviderSession', @serviceProviderSession
 
       # Handle login
@@ -43,34 +40,30 @@ define [
       # Determine the logged-in state
       @getSession()
 
-    # Load the JavaScript SDKs of all service providers
-    loadSDKs: ->
+    # Load the libraries of all service providers
+    loadServiceProviders: ->
       for name, serviceProvider of SessionController.serviceProviders
-        serviceProvider.loadSDK()
+        serviceProvider.load()
 
     # Instantiate the user with the given data
     createUser: (userData) ->
-      #console.debug 'SessinController#createUser', userData
       user = new User userData
       mediator.user = user
 
     # Try to get an existing session from one of the login providers
     getSession: ->
-      #console.debug 'SessionController#getSession'
-      @loadSDKs()
+      @loadServiceProviders()
       for name, serviceProvider of SessionController.serviceProviders
         serviceProvider.done serviceProvider.getLoginStatus
 
     # Handler for the global !showLoginView event
     showLoginView: ->
-      #console.debug 'SessionController#showLoginView'
       return if @loginView
-      @loadSDKs()
+      @loadServiceProviders()
       @loginView = new LoginView
         serviceProviders: SessionController.serviceProviders
 
     hideLoginView: ->
-      #console.debug 'SessionController#hideLoginView'
       return unless @loginView
       @loginView.dispose()
       @loginView = null
@@ -79,9 +72,8 @@ define [
     # Delegate the login to the selected service provider
     triggerLogin: (serviceProviderName) =>
       serviceProvider = SessionController.serviceProviders[serviceProviderName]
-      #console.debug 'SessionController#triggerLogin', serviceProviderName, serviceProvider
 
-      # Publish an event in case the provider SDK could not be loaded
+      # Publish an event in case the provider library could not be loaded
       unless serviceProvider.isLoaded()
         mediator.publish 'serviceProviderMissing', serviceProviderName
         return
@@ -92,16 +84,10 @@ define [
       # Delegate to service provider
       serviceProvider.triggerLogin()
 
-    # Handler for the global loginAttempt event
-    loginAttempt: =>
-      #console.debug 'SessionController#loginAttempt'
-
     # Handler for the global serviceProviderSession event
     serviceProviderSession: (session) =>
       # Save the session provider used for login
       @serviceProviderName = session.provider.name
-
-      #console.debug 'SessionController#serviceProviderSession', session, @serviceProviderName
 
       # Hide the login view
       @hideLoginView()
@@ -115,8 +101,6 @@ define [
 
     # Publish an event to notify all application components of the login
     publishLogin: ->
-      #console.debug 'SessionController#publishLogin', mediator.user
-
       @loginStatusDetermined = true
 
       # Publish a global login event passing the user
@@ -133,14 +117,12 @@ define [
 
     # Handler for the global logout event
     logout: =>
-      #console.debug 'SessionController#logout'
-
       @loginStatusDetermined = true
 
       if mediator.user
         # Dispose the user model
         mediator.user.dispose()
-        mediator.user = null
+        mediator.setUser null
 
       # Discard the login info
       @serviceProviderName = null
@@ -154,7 +136,6 @@ define [
     # -------------------------------------
 
     userData: (data) ->
-      #console.debug 'SessionController#userData', data
       mediator.user.set data
 
   # This controller has no custom dispose method since we expect it to

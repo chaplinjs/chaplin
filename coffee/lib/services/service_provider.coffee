@@ -16,29 +16,29 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
       utils.deferMethods
         deferred: this
         methods: ['triggerLogin', 'getLoginStatus']
-        onDeferral: @loadSDK
+        onDeferral: @load
 
   ###
 
     Standard methods and their signatures:
 
-    loadSDK: ->
+    load: ->
       # Load a script like this:
-      utils.loadLib 'http://example.org/foo.js', @sdkLoadHandler, @reject
+      utils.loadLib 'http://example.org/foo.js', @loadHandler, @reject
 
-    sdkLoadHandler: =>
-      # Init the SDK, then resolve
-      someSDK.init(foo: 'bar')
+    loadHandler: =>
+      # Init the library, then resolve
+      ServiceProviderLibrary.init(foo: 'bar')
       @resolve()
 
     isLoaded: ->
       # Return a Boolean
-      Boolean window.someSDK and someSDK.login
+      Boolean window.ServiceProviderLibrary and ServiceProviderLibrary.login
 
     # Trigger login popup
     triggerLogin: (loginContext) ->
       callback = _(@loginHandler).bind(this, @loginHandler)
-      someSDK.login callback
+      ServiceProviderLibrary.login callback
 
     # Callback for the login popup
     loginHandler: (loginContext, response) =>
@@ -59,7 +59,7 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
         mediator.publish 'loginFail', provider: this, loginContext: loginContext
 
     getLoginStatus: (callback = @loginStatusHandler, force = false) ->
-      someSDK.getLoginStatus callback, force
+      ServiceProviderLibrary.getLoginStatus callback, force
 
     loginStatusHandler: (response) =>
       return unless response
