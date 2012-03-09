@@ -64,6 +64,7 @@ define(['lib/subscriber'], function(Subscriber) {
     Collection.prototype.dispose = function() {
       if (this.disposed) return;
       this.trigger('dispose', this);
+      this.unsubscribeAllEvents();
       this.reset([], {
         silent: true
       });
