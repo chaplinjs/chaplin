@@ -66,16 +66,10 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
       currentController = this.currentController || null;
       if (currentController) {
         mediator.publish('beforeControllerDispose', currentController);
-        if (typeof currentController.dispose !== 'function') {
-          throw new Error("ApplicationView#controllerLoaded: dispose method not found on " + currentControllerName + " controller");
-        }
         currentController.dispose(params, controllerName);
       }
       controller = new ControllerConstructor();
       controller.initialize(params, currentControllerName);
-      if (typeof controller[action] !== 'function') {
-        throw new Error("ApplicationController#controllerLoaded: action " + action + " not found on " + controllerName + " controller");
-      }
       controller[action](params, currentControllerName);
       this.previousControllerName = currentControllerName;
       this.currentControllerName = controllerName;

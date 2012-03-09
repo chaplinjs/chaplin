@@ -94,9 +94,6 @@ define [
       if currentController
         # Notify the rest of the world beforehand
         mediator.publish 'beforeControllerDispose', currentController
-        unless typeof currentController.dispose is 'function'
-          throw new Error "ApplicationView#controllerLoaded: dispose method
- not found on #{currentControllerName} controller"
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
 
@@ -109,9 +106,6 @@ define [
 
       # Call the specific controller action
       # Passing the params and the old controller name
-      unless typeof controller[action] is 'function'
-        throw new Error "ApplicationController#controllerLoaded: action
- #{action} not found on #{controllerName} controller"
       controller[action] params, currentControllerName
 
       # Save the new controller

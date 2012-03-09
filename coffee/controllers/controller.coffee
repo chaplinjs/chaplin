@@ -10,6 +10,12 @@ define ['lib/subscriber'], (Subscriber) ->
     view: null
     currentId: null
 
+    # You should set a title property and a historyURL property or method
+    # on the inheriting controller class. Like this:
+    # title: 'foo'
+    # historyURL: 'foo'
+    # historyURL: ->
+
     constructor: ->
       @initialize()
 
