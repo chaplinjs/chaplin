@@ -10,7 +10,9 @@ define(['mediator', 'models/collection', 'models/post'], function(mediator, Coll
     __extends(Posts, _super);
 
     function Posts() {
+      this.logout = __bind(this.logout, this);
       this.processPosts = __bind(this.processPosts, this);
+      this.fetch = __bind(this.fetch, this);
       Posts.__super__.constructor.apply(this, arguments);
     }
 
@@ -18,20 +20,20 @@ define(['mediator', 'models/collection', 'models/post'], function(mediator, Coll
 
     Posts.prototype.initialize = function() {
       Posts.__super__.initialize.apply(this, arguments);
-      _(this).extend($.Deferred());
-      this.getPosts();
-      this.subscribeEvent('login', this.getPosts);
-      return this.subscribeEvent('logout', this.reset);
+      this.initDeferred();
+      this.subscribeEvent('login', this.fetch);
+      this.subscribeEvent('logout', this.logout);
+      return this.fetch();
     };
 
-    Posts.prototype.getPosts = function() {
-      var provider, user;
+    Posts.prototype.fetch = function() {
+      var facebook, user;
       user = mediator.user;
       if (!user) return;
-      provider = user.get('provider');
-      if (provider.name !== 'facebook') return;
+      facebook = user.get('provider');
+      if (facebook.name !== 'facebook') return;
       this.trigger('loadStart');
-      return provider.getInfo('/158352134203230/feed', this.processPosts);
+      return facebook.getInfo('/158352134203230/feed', this.processPosts);
     };
 
     Posts.prototype.processPosts = function(response) {
@@ -43,6 +45,11 @@ define(['mediator', 'models/collection', 'models/post'], function(mediator, Coll
       });
       this.reset(posts);
       return this.resolve();
+    };
+
+    Posts.prototype.logout = function() {
+      this.initDeferred();
+      return this.reset();
     };
 
     return Posts;

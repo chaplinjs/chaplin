@@ -10,7 +10,9 @@ define(['mediator', 'models/collection', 'models/like'], function(mediator, Coll
     __extends(Likes, _super);
 
     function Likes() {
+      this.logout = __bind(this.logout, this);
       this.processLikes = __bind(this.processLikes, this);
+      this.fetch = __bind(this.fetch, this);
       Likes.__super__.constructor.apply(this, arguments);
     }
 
@@ -18,26 +20,31 @@ define(['mediator', 'models/collection', 'models/like'], function(mediator, Coll
 
     Likes.prototype.initialize = function() {
       Likes.__super__.initialize.apply(this, arguments);
-      _(this).extend($.Deferred());
-      this.getLikes();
-      this.subscribeEvent('login', this.getLikes);
-      return this.subscribeEvent('logout', this.reset);
+      this.initDeferred();
+      this.subscribeEvent('login', this.fetch);
+      this.subscribeEvent('logout', this.logout);
+      return this.fetch();
     };
 
-    Likes.prototype.getLikes = function() {
-      var provider, user;
+    Likes.prototype.fetch = function() {
+      var facebook, user;
       user = mediator.user;
       if (!user) return;
-      provider = user.get('provider');
-      if (provider.name !== 'facebook') return;
+      facebook = user.get('provider');
+      if (facebook.name !== 'facebook') return;
       this.trigger('loadStart');
-      return provider.getInfo('/me/likes', this.processLikes);
+      return facebook.getInfo('/me/likes', this.processLikes);
     };
 
     Likes.prototype.processLikes = function(response) {
       this.trigger('load');
       this.reset(response && response.data ? response.data : []);
       return this.resolve();
+    };
+
+    Likes.prototype.logout = function() {
+      this.initDeferred();
+      return this.reset();
     };
 
     return Likes;

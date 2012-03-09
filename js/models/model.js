@@ -14,6 +14,10 @@ define(['lib/subscriber'], function(Subscriber) {
 
     _(Model.prototype).defaults(Subscriber);
 
+    Model.prototype.initDeferred = function() {
+      return _(this).extend($.Deferred());
+    };
+
     Model.prototype.getAttributes = function() {
       return this.attributes;
     };

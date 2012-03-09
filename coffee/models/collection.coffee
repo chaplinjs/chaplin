@@ -12,9 +12,14 @@ define ['lib/subscriber'], (Subscriber) ->
       # TODO: Remove an item if a 'dispose' events bubbles and
       # it wasn't removed before?
 
+    # Creates a new deferred and mixes it into the collection
+    # This method can be called multiple times to reset the
+    # status of the Deferred to 'pending'.
+    initDeferred: ->
+      _(this).extend $.Deferred()
+
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
-
     addAtomic: (models, options = {}) ->
       return unless models.length
       options.silent = true

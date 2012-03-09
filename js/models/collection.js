@@ -14,6 +14,10 @@ define(['lib/subscriber'], function(Subscriber) {
 
     _(Collection.prototype).defaults(Subscriber);
 
+    Collection.prototype.initDeferred = function() {
+      return _(this).extend($.Deferred());
+    };
+
     Collection.prototype.addAtomic = function(models, options) {
       var batch_direction, model;
       if (options == null) options = {};

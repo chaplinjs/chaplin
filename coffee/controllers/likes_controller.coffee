@@ -8,7 +8,7 @@ define [
     title: 'Your Likes'
     historyURL: (params) ->
       if params.id then "likes/#{params.id}" else ''
-      
+
     index: (params) ->
       @collection = new Likes()
       @view = new LikesView collection: @collection
