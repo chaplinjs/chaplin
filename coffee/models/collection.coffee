@@ -74,6 +74,9 @@ define ['lib/subscriber'], (Subscriber) ->
       # Fire an event to notify associated views
       @trigger 'dispose', this
 
+      # Unbind all global event handlers
+      @unsubscribeAllEvents()
+
       # Empty the list silently, but do not dispose all models since
       # they might be referenced elsewhere
       @reset [], silent: true
