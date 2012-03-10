@@ -38,7 +38,7 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
 
     # Route a given URL path manually, return whether a route matched
     route: (path) =>
-      #console.debug 'Router#route', path, params
+      #console.debug 'Router#route', path
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
       for handler in Backbone.history.handlers
