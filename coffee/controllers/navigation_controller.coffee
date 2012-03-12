@@ -7,5 +7,6 @@ define [
   class NavigationController extends Controller
     initialize: ->
       super
+      #console.debug 'NavigationController#initialize'
       @model = new Navigation()
       @view = new NavigationView model: @model

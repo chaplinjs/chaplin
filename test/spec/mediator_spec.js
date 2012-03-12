@@ -25,7 +25,7 @@ define(['mediator'], function (mediator) {
       if (!Object.getOwnPropertyDescriptor) return;
       ['subscribe', 'unsubscribe', 'publish'].forEach(function (property) {
         var desc = Object.getOwnPropertyDescriptor(mediator, property);
-        //console.debug(property, desc, desc.writable);
+        console.debug(property, desc, desc.writable);
         expect(desc.writable).toBe(false);
       });
     });

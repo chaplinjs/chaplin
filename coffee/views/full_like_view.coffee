@@ -14,6 +14,7 @@ define [
 
     initialize: ->
       super
+      #console.debug 'FullLikeView#initialize'
 
       # Render again when the model is resolved
       @model.done @render if @model.state() isnt 'resolved'
@@ -21,6 +22,7 @@ define [
     # Rendering
     render: ->
       super
+      #console.debug 'FullLikeView#render'
 
       # Parse Facebook widgets
       if @model.state() is 'resolved'

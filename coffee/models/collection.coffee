@@ -8,6 +8,7 @@ define ['lib/subscriber'], (Subscriber) ->
     _(Collection.prototype).defaults Subscriber
 
     #initialize: ->
+      #console.debug 'Collection#initialize'
       #super
       # TODO: Remove an item if a 'dispose' events bubbles and
       # it wasn't removed before?
@@ -35,9 +36,12 @@ define ['lib/subscriber'], (Subscriber) ->
     #   deep: Boolean flag to specify whether existing models should be updated
     #         with new values
     update: (newList, options = {}) ->
+      #console.debug 'Collection#update', 'deep?', options.deep
+
       fingerPrint = @pluck('id').join()
       ids = _(newList).pluck('id')
       newFingerPrint = ids.join()
+      #console.debug '\t' + fingerPrint + '\n\t' + newFingerPrint + '\n\t' + (fingerPrint is newFingerPrint)
 
       # Only execute removal if ID fingerprints differ
       unless fingerPrint is newFingerPrint
@@ -48,6 +52,7 @@ define ['lib/subscriber'], (Subscriber) ->
         while i >= 0
           model = @models[i]
           unless _ids.include model.id
+            #console.debug '\tremove', model.id
             @remove model
           i--
 
@@ -59,8 +64,10 @@ define ['lib/subscriber'], (Subscriber) ->
           preexistent = @get model.id
           if preexistent
             continue unless options.deep
+            #console.debug '\update', preexistent.id
             preexistent.set model
           else
+            #console.debug '\tinsert', model.id, 'at', i
             @add model, at: i
 
     # Disposal
@@ -70,6 +77,7 @@ define ['lib/subscriber'], (Subscriber) ->
 
     dispose: ->
       return if @disposed
+      #console.debug 'Collection#dispose', this
 
       # Fire an event to notify associated views
       @trigger 'dispose', this
@@ -82,6 +90,7 @@ define ['lib/subscriber'], (Subscriber) ->
       @reset [], silent: true
 
       # Finished
+      #console.debug 'Collection#dispose', this, 'finished'
       @disposed = true
 
       # Your're frozen when your heart’s not open

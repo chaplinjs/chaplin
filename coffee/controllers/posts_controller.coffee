@@ -8,5 +8,6 @@ define [
     historyURL: 'posts'
 
     index: (params) ->
+      #console.debug 'PostsController#index'
       @collection = new Posts()
       @view = new PostsView collection: @collection

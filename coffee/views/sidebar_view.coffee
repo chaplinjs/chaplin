@@ -19,6 +19,7 @@ define [
       @subscribeEvent 'userData', @render
 
     loginStatusHandler: (loggedIn) =>
+      #console.debug 'SidebarView#loginStatusHandler', loggedIn
       if loggedIn
         @model = mediator.user
       else
