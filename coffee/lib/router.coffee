@@ -24,6 +24,8 @@ define ['mediator', 'lib/route', 'routes'], (mediator, Route, registerRoutes) ->
     # accepted an absolute URL with a leading slash (e.g. /foo)
     # and passes the changeURL param to the callback function
     route: (path) =>
+      #console.debug 'Router#route', path
+
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
       for handler in Backbone.history.handlers
