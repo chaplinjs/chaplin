@@ -5,11 +5,12 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
     # Set your application name here so
     # the document title is set properly to
-    # “Site title – Controller title” (see adjustTitle)
+    # “Controller title – Site title” (see adjustTitle)
     siteTitle = 'Chaplin Example Application'
 
     constructor: ->
       console.debug 'ApplicationView#constructor'
+
       # Listen to global events
       mediator.subscribe 'login', @updateBodyClasses
       mediator.subscribe 'logout', @updateBodyClasses
