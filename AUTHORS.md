@@ -14,6 +14,7 @@ With input and contributions from:
 * Jan Varwig (9elements) – [@agento](http://twitter.com/agento) – [jan.varwig.org](http://jan.varwig.org/)
 * Patrick Schneider (9elements) – [@padschneider](http://twitter.com/padschneider) – [padschneider.com](http://padschneider.com/)
 * Luis Merino (Moviepilot) – [@rendez](http://twitter.com/rendez)
+* Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
 
 [See all Github contributors](https://github.com/moviepilot/chaplin/contributors)
 
