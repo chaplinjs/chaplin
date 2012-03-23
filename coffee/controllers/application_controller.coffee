@@ -21,6 +21,7 @@ define [
     url: null
 
     initialize: ->
+      # Listen to global events
       mediator.subscribe 'matchRoute', @matchRoute
       mediator.subscribe '!startupController', @startupController
 
@@ -31,9 +32,13 @@ define [
     # -----------------------------------
 
     initApplicationView: ->
+      # Do not save the instance reference for now
+      # since the modules purely communicate via Pub/Sub
       new ApplicationView()
 
     initSidebars: ->
+      # Do not save the instance references for now
+      # since the modules purely communicate via Pub/Sub
       new NavigationController()
       new SidebarController()
 
@@ -51,7 +56,7 @@ define [
     #
     #   1. Test if it’s a new controller/action with new params
     #   1. Hide the old view
-    #   2. Destroy the old controller
+    #   2. Dispose the old controller
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
@@ -61,19 +66,19 @@ define [
       # Whether to update the URL after controller startup
       # Default to true unless explicitly set to false
       if params.changeURL isnt false
-       params.changeURL = true
+        params.changeURL = true
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
       if params.forceStartup isnt true
-       params.forceStartup = false
+        params.forceStartup = false
 
       # Check if the desired controller is already active
       isSameController = not params.forceStartup and
-       @currentControllerName is controllerName and
-       @currentAction is action and
-       # Deep parameters check is not nice but the simplest way for now
-       (not @currentParams or _(params).isEqual(@currentParams))
+        @currentControllerName is controllerName and
+        @currentAction is action and
+        # Deep parameters check is not nice but the simplest way for now
+        (not @currentParams or _(params).isEqual(@currentParams))
 
       # Stop if it’s the same controller/action with the same params
       return if isSameController
@@ -117,7 +122,7 @@ define [
 
       @adjustURL controller, params
 
-      # We're done!
+      # We're done! Spread the word!
       mediator.publish 'startupController',
         controller: @currentController
         controllerName: @currentControllerName
