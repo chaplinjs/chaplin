@@ -26,6 +26,7 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
       this.processLike = __bind(this.processLike, this);
       this.facebookLogout = __bind(this.facebookLogout, this);
       this.publishAbortionResult = __bind(this.publishAbortionResult, this);
+      this.loginAbort = __bind(this.loginAbort, this);
       this.loginHandler = __bind(this.loginHandler, this);
       this.triggerLogin = __bind(this.triggerLogin, this);
       this.loginStatusHandler = __bind(this.loginStatusHandler, this);
@@ -139,6 +140,10 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
         userId: authResponse.userID,
         accessToken: authResponse.accessToken
       });
+    };
+
+    Facebook.prototype.loginAbort = function() {
+      return this.getLoginStatus(this.publishAbortionResult, true);
     };
 
     Facebook.prototype.publishAbortionResult = function(response) {

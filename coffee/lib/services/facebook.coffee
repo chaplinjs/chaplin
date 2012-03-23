@@ -146,6 +146,11 @@ define [
         userId: authResponse.userID
         accessToken: authResponse.accessToken
 
+    # Handler for the global loginAbort event
+    # Get the login status again (forced) because the user might be logged in anyway
+    loginAbort: =>
+      @getLoginStatus @publishAbortionResult, true
+
     # Check login status after abort and publish success or failure
     publishAbortionResult: (response) =>
       @saveAuthResponse response
