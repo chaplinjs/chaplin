@@ -87,9 +87,9 @@ define ['lib/utils', 'views/view'], (utils, View) ->
 
     # When an item is added, create a new view and insert it
     itemAdded: (item, collection, options = {}) =>
-      #console.debug 'CollectionView#itemAdded', this, item.cid, item
-      @renderAndInsertItem item, options.at
-
+      #console.debug 'CollectionView#itemAdded', @, item.cid, item
+      @renderAndInsertItem item, options.index
+    
     # When an item is removed, remove the corresponding view from DOM and caches
     itemRemoved: (item) =>
       #console.debug 'CollectionView#itemRemoved', this, item.cid, item
