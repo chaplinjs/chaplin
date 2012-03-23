@@ -362,6 +362,9 @@ define(['mediator'], function(mediator) {
       }
       return _results;
     },
+    modifierKeyPressed: function(e) {
+      return e.shiftKey || e.altKey || e.ctrlKey || e.metaKey;
+    },
     facebookImageURL: function(fbId, type) {
       var accessToken, params;
       if (type == null) type = 'square';

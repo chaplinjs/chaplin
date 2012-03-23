@@ -9,7 +9,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     siteTitle = 'Chaplin Example Application'
 
     constructor: ->
-      console.debug 'ApplicationView#constructor'
+      #console.debug 'ApplicationView#constructor'
 
       # Listen to global events
       mediator.subscribe 'login', @updateBodyClasses
@@ -30,29 +30,28 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       # Jump to the top of the page
       scrollTo 0, 0
 
-      # Hide the container element of the current view
+      # Hide the current view
       view = controller.view
-      if view and view.$container
-        view.$container.css 'display', 'none'
+      if view
+        view.$el.css 'display', 'none'
 
     # Handler for the global startupController event
-    # Show the container element of the new view
-    showNewView: (info) ->
-      view = info.controller.view
-      if view and view.$container
-        view.$container.css display: 'block', opacity: 1
+    # Show the new view
+    showNewView: (context) ->
+      view = context.controller.view
+      if view
+        view.$el.css display: 'block', opacity: 1, visibility: 'visible'
 
     # Handler for the global startupController event
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
-    adjustTitle: (info) ->
-      console.debug 'ApplicationView#adjustTitle', info
+    adjustTitle: (context) ->
+      #console.debug 'ApplicationView#adjustTitle', info
       title = siteTitle
-      subtitle = info.controller.title
+      subtitle = context.controller.title
       title = "#{subtitle} \u2013 #{title}" if subtitle
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
-
 
     # Logged-in / logged-out classes for the body element
     # ---------------------------------------------------
@@ -60,7 +59,9 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     updateBodyClasses: =>
       body = $(document.body)
       loggedIn = Boolean mediator.user
-      body.toggleClass('logged-out', loggedIn).toggleClass('logged-in', loggedIn)
+      body
+        .toggleClass('logged-out', loggedIn)
+        .toggleClass('logged-in', loggedIn)
 
     # Fallback content
     # ----------------
@@ -68,7 +69,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     # After the first controller has been started, remove all accessible
     # content so the DOM is less complex and images and video do not lie
     # in the background
-
     removeFallbackContent: =>
       # Hide fallback content and the loading screens
       $('.accessible-fallback').remove()
@@ -87,8 +87,8 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
         .delegate('a', 'click', @openLink)
 
     # Handle all clicks on A elements and try to route them internally
-
     openLink: (event) =>
+      return if utils.modifierKeyPressed(event)
       el = event.currentTarget
 
       # Handle empty href
@@ -112,7 +112,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       @openInternalLink event
 
     # Try to route a click on a link internally
-
     openInternalLink: (event) ->
       event.preventDefault()
       el = event.currentTarget
@@ -128,7 +127,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     # Not only A elements might act as internal links,
     # every element might have:
     # class="go-to" data-href="/something"
-
     goToHandler: (event) ->
       el = event.currentTarget
 
@@ -143,8 +141,10 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
 
       event.preventDefault() if result
 
-    # Handle clicks on the logout button
+    # Important application-wide DOM event handlers
+    # ---------------------------------------------
 
+    # Handle clicks on the logout button
     logoutButtonClick: (event) ->
       event.preventDefault()
 

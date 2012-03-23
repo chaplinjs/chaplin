@@ -11,8 +11,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
     function ApplicationView() {
       this.openLink = __bind(this.openLink, this);
       this.removeFallbackContent = __bind(this.removeFallbackContent, this);
-      this.updateBodyClasses = __bind(this.updateBodyClasses, this);      console.debug('ApplicationView#constructor');
-      mediator.subscribe('login', this.updateBodyClasses);
+      this.updateBodyClasses = __bind(this.updateBodyClasses, this);      mediator.subscribe('login', this.updateBodyClasses);
       mediator.subscribe('logout', this.updateBodyClasses);
       mediator.subscribe('beforeControllerDispose', this.hideOldView);
       mediator.subscribe('startupController', this.showNewView);
@@ -26,25 +25,25 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       var view;
       scrollTo(0, 0);
       view = controller.view;
-      if (view && view.$container) return view.$container.css('display', 'none');
+      if (view) return view.$el.css('display', 'none');
     };
 
-    ApplicationView.prototype.showNewView = function(info) {
+    ApplicationView.prototype.showNewView = function(context) {
       var view;
-      view = info.controller.view;
-      if (view && view.$container) {
-        return view.$container.css({
+      view = context.controller.view;
+      if (view) {
+        return view.$el.css({
           display: 'block',
-          opacity: 1
+          opacity: 1,
+          visibility: 'visible'
         });
       }
     };
 
-    ApplicationView.prototype.adjustTitle = function(info) {
+    ApplicationView.prototype.adjustTitle = function(context) {
       var subtitle, title;
-      console.debug('ApplicationView#adjustTitle', info);
       title = siteTitle;
-      subtitle = info.controller.title;
+      subtitle = context.controller.title;
       if (subtitle) title = "" + subtitle + " \u2013 " + title;
       return setTimeout((function() {
         return document.title = title;
@@ -69,6 +68,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
 
     ApplicationView.prototype.openLink = function(event) {
       var currentHostname, el, external, hostname, hostnameRegExp, href, hrefAttr;
+      if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       hrefAttr = el.getAttribute('href');
       if (hrefAttr === '' || /^#/.test(hrefAttr)) return;

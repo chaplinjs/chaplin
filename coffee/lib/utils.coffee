@@ -94,7 +94,7 @@ define ['mediator'], (mediator) ->
     loadLib: (url, success, error, timeout = 7500) ->
       #console.debug 'utils.loadLib', url
       head = document.head or document.getElementsByTagName('head')[0] or
-      document.documentElement
+        document.documentElement
       script = document.createElement 'script'
       script.async = 'async'
       script.src   = url
@@ -414,6 +414,13 @@ not found"
         obj[name] = _(utils.ensureLogin).bind(
           null, obj, func, loginContext, eventType
         )
+
+    # Event handling helpers
+    # ----------------------
+
+    # Returns whether a modifier key is pressed during a keypress or mouse click
+    modifierKeyPressed: (e) ->
+      e.shiftKey or e.altKey or e.ctrlKey or e.metaKey
 
     # Facebook image helper
     # ---------------------
