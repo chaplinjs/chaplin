@@ -76,8 +76,7 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         }
         handler = third;
       } else {
-        throw new TypeError('View#delegate: only two or three arguments are \
-allowed');
+        throw new TypeError('View#delegate: two or three arguments are allowed');
       }
       if (typeof handler !== 'function') {
         throw new TypeError('View#delegate: handler argument must be function');
@@ -95,59 +94,53 @@ allowed');
       return this.$el.unbind(".delegate" + this.cid);
     };
 
+    View.prototype._modelBindings = null;
+
     View.prototype.modelBind = function(type, handler) {
       var handlers, model, _base;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelBind: type argument must be string');
+        throw new TypeError('View#modelBind: type must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelBind: handler argument must be function');
+        throw new TypeError('View#modelBind: handler must be function');
       }
       model = this.model || this.collection;
-      if (!model) return;
-      this.modelBindings || (this.modelBindings = {});
-      handlers = (_base = this.modelBindings)[type] || (_base[type] = []);
+      if (!model) {
+        throw new TypeError('View#modelBind: no model or collection set');
+      }
+      this._modelBindings || (this._modelBindings = {});
+      handlers = (_base = this._modelBindings)[type] || (_base[type] = []);
       if (_(handlers).include(handler)) return;
       handlers.push(handler);
-      return model.bind(type, handler);
+      return model.on(type, handler, this);
     };
 
     View.prototype.modelUnbind = function(type, handler) {
       var handlers, index, model;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelUnbind: type argument must be string');
+        throw new TypeError('View#modelUnbind: type must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelUnbind: handler argument must be\
- function');
+        throw new TypeError('View#modelUnbind: handler must be function');
       }
-      if (!this.modelBindings) return;
-      handlers = this.modelBindings[type];
+      if (!this._modelBindings) return;
+      handlers = this._modelBindings[type];
       if (handlers) {
         index = _(handlers).indexOf(handler);
         if (index > -1) handlers.splice(index, 1);
-        if (handlers.length === 0) delete this.modelBindings[type];
+        if (handlers.length === 0) delete this._modelBindings[type];
       }
       model = this.model || this.collection;
       if (!model) return;
-      return model.unbind(type, handler);
+      return model.off(type, handler);
     };
 
     View.prototype.modelUnbindAll = function() {
-      var handler, handlers, model, type, _i, _len, _ref;
-      if (!this.modelBindings) return;
+      var model;
+      this._modelBindings = null;
       model = this.model || this.collection;
       if (!model) return;
-      _ref = this.modelBindings;
-      for (type in _ref) {
-        if (!__hasProp.call(_ref, type)) continue;
-        handlers = _ref[type];
-        for (_i = 0, _len = handlers.length; _i < _len; _i++) {
-          handler = handlers[_i];
-          model.unbind(type, handler);
-        }
-      }
-      return this.modelBindings = null;
+      return model.off(null, null, this);
     };
 
     View.prototype.getTemplateData = function() {
@@ -192,10 +185,11 @@ allowed');
     View.prototype.dispose = function() {
       var prop, properties, _i, _len;
       if (this.disposed) return;
-      this.modelUnbindAll();
       this.unsubscribeAllEvents();
+      this.modelUnbindAll();
+      this.off();
       this.$el.remove();
-      properties = ['el', '$el', '$container', 'options', 'model', 'collection', '_callbacks'];
+      properties = ['el', '$el', '$container', 'options', 'model', 'collection'];
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];

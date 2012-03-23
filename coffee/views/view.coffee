@@ -113,9 +113,8 @@ define [
           throw new TypeError 'View#delegate: second argument must be a string'
         handler = third
       else
-        throw new TypeError 'View#delegate: only two or three arguments are 
-allowed'
-      
+        throw new TypeError 'View#delegate: two or three arguments are allowed'
+
       if typeof handler isnt 'function'
         throw new TypeError 'View#delegate: handler argument must be function'
 
@@ -138,50 +137,66 @@ allowed'
       @$el.unbind ".delegate#{@cid}"
 
     # Model binding
-    # -------------
-
     # The following implementation resembles subscriber.coffee
+    # --------------------------------------------------------
+
+    # The handler store
+    _modelBindings: null
 
     # Bind to a model event
     modelBind: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'View#modelBind: type argument must be string'
+        throw new TypeError 'View#modelBind: type must be string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelBind: handler argument must be function'
+        throw new TypeError 'View#modelBind: handler must be function'
+
+      # Get model/collection reference
       model = @model or @collection
-      return unless model
-      @modelBindings or= {}
-      handlers = @modelBindings[type] or= []
+      unless model
+        throw new TypeError 'View#modelBind: no model or collection set'
+
+      # Add to store
+      @_modelBindings or= {}
+      handlers = @_modelBindings[type] or= []
+      # Ensure that a handler isn’t registered twice
       return if _(handlers).include handler
       handlers.push handler
-      model.bind type, handler
+
+      # Register model handler, force context to the view
+      model.on type, handler, @
 
     # Unbind from a model event
+
     modelUnbind: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'View#modelUnbind: type argument must be string'
+        throw new TypeError 'View#modelUnbind: type must be string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelUnbind: handler argument must be
- function'
-      return unless @modelBindings
-      handlers = @modelBindings[type]
+        throw new TypeError 'View#modelUnbind: handler must be function'
+
+      # Remove from store
+      return unless @_modelBindings
+      handlers = @_modelBindings[type]
       if handlers
         index = _(handlers).indexOf handler
         handlers.splice index, 1 if index > -1
-        delete @modelBindings[type] if handlers.length is 0
-      model = @model or @collection
-      return unless model
-      model.unbind type, handler
+        delete @_modelBindings[type] if handlers.length is 0
 
-    # Unbind all recorded global handlers
-    modelUnbindAll: () ->
-      return unless @modelBindings
+      # Get model/collection reference
       model = @model or @collection
       return unless model
-      for own type, handlers of @modelBindings
-        for handler in handlers
-          model.unbind type, handler
-      @modelBindings = null
+
+      # Remove model handler
+      model.off type, handler
+
+    # Unbind all recorded model event handlers
+    modelUnbindAll: () ->
+      # Clear store
+      @_modelBindings = null
+
+      # Remove all handlers with a context of this view
+      model = @model or @collection
+      return unless model
+      model.off null, null, @
 
     # Rendering
     # ---------
@@ -270,21 +285,22 @@ allowed'
       return if @disposed
       #console.debug 'View#dispose', this
 
+      # Unbind handlers of global events
+      @unsubscribeAllEvents()
+
       # Unbind all model handlers
       @modelUnbindAll()
 
-      # Unbind handlers of global events
-      @unsubscribeAllEvents()
+      # Remove all event handlers
+      @off()
 
       # Remove the topmost element from DOM. This also removes all event
       # handlers from the element and all its children.
       @$el.remove()
 
-      # Remove element references, options, model/collection references
-      # and event handlers
+      # Remove element references, options and model/collection references
       properties = [
-        'el', '$el', '$container', 'options', 'model',
-        'collection', '_callbacks'
+        'el', '$el', '$container', 'options', 'model', 'collection'
       ]
       delete @[prop] for prop in properties
 

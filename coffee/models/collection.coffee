@@ -85,9 +85,18 @@ define ['lib/subscriber'], (Subscriber) ->
       # Unbind all global event handlers
       @unsubscribeAllEvents()
 
+      # Remove all event handlers
+      @off()
+
       # Empty the list silently, but do not dispose all models since
       # they might be referenced elsewhere
       @reset [], silent: true
+
+      # Remove model constructor reference and model lists
+      properties = [
+        'model', 'models', '_byId', '_byCid'
+      ]
+      delete @[prop] for prop in properties
 
       # Finished
       #console.debug 'Collection#dispose', this, 'finished'

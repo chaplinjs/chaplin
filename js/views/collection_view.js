@@ -248,7 +248,7 @@ define(['lib/utils', 'views/view'], function(utils, View) {
         view = _ref[cid];
         view.dispose();
       }
-      properties = '$list viewsByCid visibleItems'.split(' ');
+      properties = ['$list', '$fallback', 'viewsByCid', 'visibleItems'];
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];

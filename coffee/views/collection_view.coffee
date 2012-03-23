@@ -360,8 +360,10 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       # Dispose all item views
       view.dispose() for own cid, view of @viewsByCid
 
-      # Remove jQuery object, item view cache and reference to collection
-      properties = '$list viewsByCid visibleItems'.split(' ')
+      # Remove jQuery objects, item view cache and visible items list
+      properties = [
+        '$list', '$fallback', 'viewsByCid', 'visibleItems'
+      ]
       delete @[prop] for prop in properties
 
       # Self-disposal

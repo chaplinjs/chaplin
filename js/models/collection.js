@@ -66,12 +66,19 @@ define(['lib/subscriber'], function(Subscriber) {
     Collection.prototype.disposed = false;
 
     Collection.prototype.dispose = function() {
+      var prop, properties, _i, _len;
       if (this.disposed) return;
       this.trigger('dispose', this);
       this.unsubscribeAllEvents();
+      this.off();
       this.reset([], {
         silent: true
       });
+      properties = ['model', 'models', '_byId', '_byCid'];
+      for (_i = 0, _len = properties.length; _i < _len; _i++) {
+        prop = properties[_i];
+        delete this[prop];
+      }
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
