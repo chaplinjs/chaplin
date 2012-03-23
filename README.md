@@ -22,6 +22,7 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 * [Memory Management and Object Disposal](#toc-memory-management)
 * [Application Glue and Dependency Management](#toc-application-glue)
 * [Conclusions](#toc-conclusions)
+* [Changelog](https://github.com/moviepilot/chaplin/blob/master/CHANGELOG.md)
 * [The Cast](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-cast)
 * [The Producers](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-producers)
 
