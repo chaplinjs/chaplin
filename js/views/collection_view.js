@@ -76,7 +76,7 @@ define(['lib/utils', 'views/view'], function(utils, View) {
 
     CollectionView.prototype.itemAdded = function(item, collection, options) {
       if (options == null) options = {};
-      return this.renderAndInsertItem(item, options.at);
+      return this.renderAndInsertItem(item, options.index);
     };
 
     CollectionView.prototype.itemRemoved = function(item) {
