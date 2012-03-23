@@ -3,20 +3,20 @@ var __hasProp = Object.prototype.hasOwnProperty,
 
 define(['controllers/controller', 'views/sidebar_view'], function(Controller, SidebarView) {
   'use strict';
-  var NavigationController;
-  return NavigationController = (function(_super) {
+  var SidebarController;
+  return SidebarController = (function(_super) {
 
-    __extends(NavigationController, _super);
+    __extends(SidebarController, _super);
 
-    function NavigationController() {
-      NavigationController.__super__.constructor.apply(this, arguments);
+    function SidebarController() {
+      SidebarController.__super__.constructor.apply(this, arguments);
     }
 
-    NavigationController.prototype.initialize = function() {
+    SidebarController.prototype.initialize = function() {
       return this.view = new SidebarView();
     };
 
-    return NavigationController;
+    return SidebarController;
 
   })(Controller);
 });

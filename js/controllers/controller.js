@@ -1,4 +1,5 @@
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __hasProp = Object.prototype.hasOwnProperty;
 
 define(['lib/subscriber'], function(Subscriber) {
   'use strict';
@@ -6,10 +7,6 @@ define(['lib/subscriber'], function(Subscriber) {
   return Controller = (function() {
 
     _(Controller.prototype).extend(Subscriber);
-
-    Controller.prototype.model = null;
-
-    Controller.prototype.collection = null;
 
     Controller.prototype.view = null;
 
@@ -24,13 +21,18 @@ define(['lib/subscriber'], function(Subscriber) {
     Controller.prototype.disposed = false;
 
     Controller.prototype.dispose = function() {
-      var prop, properties, _i, _len;
+      var obj, prop, properties, _i, _len;
       if (this.disposed) return;
-      if (this.model) this.model.dispose();
-      if (this.collection) this.collection.dispose();
-      if (this.view) this.view.dispose();
+      for (prop in this) {
+        if (!__hasProp.call(this, prop)) continue;
+        obj = this[prop];
+        if (obj && typeof obj.dispose === 'function') {
+          obj.dispose();
+          delete this[prop];
+        }
+      }
       this.unsubscribeAllEvents();
-      properties = 'model collection view currentId'.split(' ');
+      properties = ['currentId'];
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];

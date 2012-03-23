@@ -14,9 +14,9 @@ define(['controllers/controller', 'models/navigation', 'views/navigation_view'],
 
     NavigationController.prototype.initialize = function() {
       NavigationController.__super__.initialize.apply(this, arguments);
-      this.model = new Navigation();
+      this.navigation = new Navigation();
       return this.view = new NavigationView({
-        model: this.model
+        model: this.navigation
       });
     };
 

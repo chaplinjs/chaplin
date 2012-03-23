@@ -23,20 +23,20 @@ define(['controllers/controller', 'models/likes', 'models/like', 'views/likes_vi
     };
 
     LikesController.prototype.index = function(params) {
-      this.collection = new Likes();
+      this.likes = new Likes();
       return this.view = new LikesView({
-        collection: this.collection
+        collection: this.likes
       });
     };
 
     LikesController.prototype.show = function(params) {
-      this.model = new Like({
+      this.like = new Like({
         id: params.id
       }, {
         loadDetails: true
       });
       return this.view = new FullLikeView({
-        model: this.model
+        model: this.like
       });
     };
 

@@ -17,9 +17,9 @@ define(['controllers/controller', 'models/posts', 'views/posts_view'], function(
     PostsController.prototype.historyURL = 'posts';
 
     PostsController.prototype.index = function(params) {
-      this.collection = new Posts();
+      this.posts = new Posts();
       return this.view = new PostsView({
-        collection: this.collection
+        collection: this.posts
       });
     };
 

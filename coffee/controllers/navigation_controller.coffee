@@ -5,8 +5,9 @@ define [
   'use strict'
 
   class NavigationController extends Controller
+
     initialize: ->
       super
       #console.debug 'NavigationController#initialize'
-      @model = new Navigation()
-      @view = new NavigationView model: @model
+      @navigation = new Navigation()
+      @view = new NavigationView model: @navigation

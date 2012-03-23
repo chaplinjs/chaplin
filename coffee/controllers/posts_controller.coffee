@@ -4,10 +4,11 @@ define [
   'use strict'
 
   class PostsController extends Controller
+
     title: 'Facebook Wall Posts'
     historyURL: 'posts'
 
     index: (params) ->
       #console.debug 'PostsController#index'
-      @collection = new Posts()
-      @view = new PostsView collection: @collection
+      @posts = new Posts()
+      @view = new PostsView collection: @posts

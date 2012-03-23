@@ -6,8 +6,6 @@ define ['lib/subscriber'], (Subscriber) ->
     # Mixin a Subscriber
     _(Controller.prototype).extend Subscriber
 
-    model: null
-    collection: null
     view: null
     currentId: null
 
@@ -32,16 +30,18 @@ define ['lib/subscriber'], (Subscriber) ->
       return if @disposed
       #console.debug 'Controller#dispose', this
 
-      # Dispose models, collections and views
-      @model.dispose() if @model # Also disposes associated views
-      @collection.dispose() if @collection # Also disposes associated views
-      @view.dispose() if @view # Just in case it wasn't disposed indirectly
+      # Dispose and delete all members which are disposable
+      for own prop of this
+        obj = @[prop]
+        if obj and typeof obj.dispose is 'function'
+          obj.dispose()
+          delete @[prop]
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
-      # Remove model, collection and view references
-      properties = 'model collection view currentId'.split(' ')
+      # Remove currentId
+      properties = ['currentId']
       delete @[prop] for prop in properties
 
       # Finished
