@@ -46,7 +46,8 @@ require.config({
       text: 'vendor/require-text-1.0.7'
     },
     waitSeconds: 1,
-    // For easier development, disable browser caching:
+    // For easier development, disable browser caching
+    // Of course, this should be removed in a production environment
     urlArgs: 'bust=' +  (new Date()).getTime()
 });
 require(['application'], function (Application) {
