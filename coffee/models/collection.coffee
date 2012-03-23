@@ -1,4 +1,4 @@
-define ['lib/subscriber'], (Subscriber) ->
+define ['lib/subscriber', 'lib/sync_machine'], (Subscriber, SyncMachine) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
@@ -13,6 +13,10 @@ define ['lib/subscriber'], (Subscriber) ->
     # status of the Deferred to 'pending'.
     initDeferred: ->
       _(this).extend $.Deferred()
+
+    # Mixin a synchronization state machine
+    initSyncMachine: ->
+      _(this).extend SyncMachine
 
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added

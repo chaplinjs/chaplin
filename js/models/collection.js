@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['lib/subscriber'], function(Subscriber) {
+define(['lib/subscriber', 'lib/sync_machine'], function(Subscriber, SyncMachine) {
   'use strict';
   var Collection;
   return Collection = (function(_super) {
@@ -16,6 +16,10 @@ define(['lib/subscriber'], function(Subscriber) {
 
     Collection.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());
+    };
+
+    Collection.prototype.initSyncMachine = function() {
+      return _(this).extend(SyncMachine);
     };
 
     Collection.prototype.addAtomic = function(models, options) {
