@@ -9,7 +9,7 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     __extends(View, _super);
 
-    _(View.prototype).defaults(Subscriber);
+    _(View.prototype).extend(Subscriber);
 
     View.prototype.autoRender = false;
 

@@ -12,7 +12,7 @@ define(['lib/subscriber'], function(Subscriber) {
       Model.__super__.constructor.apply(this, arguments);
     }
 
-    _(Model.prototype).defaults(Subscriber);
+    _(Model.prototype).extend(Subscriber);
 
     Model.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());

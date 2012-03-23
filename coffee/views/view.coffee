@@ -6,7 +6,7 @@ define [
   class View extends Backbone.View
 
     # Mixin a Subscriber
-    _(View.prototype).defaults Subscriber
+    _(View.prototype).extend Subscriber
 
     # Automatic rendering
     # Flag whether to render the view automatically on initialization.

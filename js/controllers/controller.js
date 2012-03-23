@@ -5,7 +5,7 @@ define(['lib/subscriber'], function(Subscriber) {
   var Controller;
   return Controller = (function() {
 
-    _(Controller.prototype).defaults(Subscriber);
+    _(Controller.prototype).extend(Subscriber);
 
     Controller.prototype.model = null;
 

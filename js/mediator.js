@@ -34,7 +34,7 @@ define(['lib/support'], function(support) {
     Object.defineProperty(mediator, 'setUser', readonlyDescriptor);
   }
   mediator.router = null;
-  _(mediator).defaults(Backbone.Events);
+  _(mediator).extend(Backbone.Events);
   mediator._callbacks = null;
   mediator.subscribe = mediator.on = Backbone.Events.on;
   mediator.unsubscribe = mediator.off = Backbone.Events.off;

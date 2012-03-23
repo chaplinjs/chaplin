@@ -4,7 +4,7 @@ define(['lib/utils', 'lib/subscriber'], function(utils, Subscriber) {
   var ServiceProvider;
   return ServiceProvider = (function() {
 
-    _(ServiceProvider.prototype).defaults(Subscriber);
+    _(ServiceProvider.prototype).extend(Subscriber);
 
     ServiceProvider.prototype.loading = false;
 

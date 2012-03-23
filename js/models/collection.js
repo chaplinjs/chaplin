@@ -12,7 +12,7 @@ define(['lib/subscriber'], function(Subscriber) {
       Collection.__super__.constructor.apply(this, arguments);
     }
 
-    _(Collection.prototype).defaults(Subscriber);
+    _(Collection.prototype).extend(Subscriber);
 
     Collection.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());

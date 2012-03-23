@@ -54,7 +54,7 @@ define ['lib/support'], (support) ->
   mediator.router = null
 
   # Include Backbone event methods for global Publish/Subscribe
-  _(mediator).defaults Backbone.Events
+  _(mediator).extend Backbone.Events
 
   # Initialize an empty callback list (so we might seal the object)
   mediator._callbacks  = null

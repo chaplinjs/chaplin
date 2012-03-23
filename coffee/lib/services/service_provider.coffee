@@ -3,7 +3,7 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
 
   class ServiceProvider
     # Mixin a Subscriber
-    _(ServiceProvider.prototype).defaults Subscriber
+    _(ServiceProvider.prototype).extend Subscriber
 
     loading: false
 

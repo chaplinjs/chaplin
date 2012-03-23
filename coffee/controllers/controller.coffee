@@ -2,8 +2,9 @@ define ['lib/subscriber'], (Subscriber) ->
   'use strict'
 
   class Controller
+
     # Mixin a Subscriber
-    _(Controller.prototype).defaults Subscriber
+    _(Controller.prototype).extend Subscriber
 
     model: null
     collection: null

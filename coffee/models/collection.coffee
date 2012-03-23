@@ -4,14 +4,9 @@ define ['lib/subscriber'], (Subscriber) ->
   # Abstract class which extends the standard Backbone collection
   # in order to add some functionality
   class Collection extends Backbone.Collection
-    # Mixin a Subscriber
-    _(Collection.prototype).defaults Subscriber
 
-    #initialize: ->
-      #console.debug 'Collection#initialize'
-      #super
-      # TODO: Remove an item if a 'dispose' events bubbles and
-      # it wasn't removed before?
+    # Mixin a Subscriber
+    _(Collection.prototype).extend Subscriber
 
     # Creates a new deferred and mixes it into the collection
     # This method can be called multiple times to reset the
