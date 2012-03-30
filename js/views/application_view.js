@@ -112,7 +112,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       } else if (typeof controller.historyURL === 'string') {
         historyURL = controller.historyURL;
       } else {
-        throw new Error("ApplicationView#adjustURL: controller for " + controllerName + " does not provide a historyURL");
+        throw new Error("ApplicationView#adjustURL: controller for " + this.currentControllerName + " does not provide a historyURL");
       }
       if (params.changeURL) mediator.router.changeURL(historyURL);
       return this.url = historyURL;
