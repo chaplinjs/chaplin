@@ -139,7 +139,7 @@ define [
         url = controller.historyURL
       else
         throw new Error "ApplicationController#adjustURL: controller for
- #{controllerName} does not provide a historyURL"
+ #{@currentControllerName} does not provide a historyURL"
 
       # Pass to the router to actually change the current URL
       if params.changeURL

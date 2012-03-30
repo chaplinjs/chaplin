@@ -92,7 +92,7 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
       } else if (typeof controller.historyURL === 'string') {
         url = controller.historyURL;
       } else {
-        throw new Error("ApplicationController#adjustURL: controller for " + controllerName + " does not provide a historyURL");
+        throw new Error("ApplicationController#adjustURL: controller for " + this.currentControllerName + " does not provide a historyURL");
       }
       if (params.changeURL) mediator.router.changeURL(url);
       return this.url = url;
