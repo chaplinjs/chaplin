@@ -1,22 +1,31 @@
-define ['mediator', 'lib/route', 'routes'], (mediator, Route, registerRoutes) ->
+define ['mediator', 'lib/route'], (mediator, Route) ->
   'use strict'
 
   class Router # This class does not inherit from Backbone’s router
+
     constructor: ->
-      registerRoutes @match
-      # Start the Backbone History to start routing
+      # Create a Backbone.History instance
+      @createHistory()
+
+    createHistory: ->
+      Backbone.history or= new Backbone.History
+
+    startHistory: ->
+      # Start the Backbone.History instance to start routing
+      # This should be called after all routes have been registered
       Backbone.history.start pushState: true
 
+    stopHistory: ->
+      Backbone.history.stop()
+
     # Connect an address with a controller action
-    # Directly create a Backbone.history route
+    # Directly create a route on the Backbone.History instance
     match: (pattern, target, options = {}) =>
-      # Create a Backbone history instance (singleton)
-      Backbone.history or= new Backbone.History
 
       # Create a route
       route = new Route pattern, target, options
 
-      # Register the route at the Backbone History instance
+      # Register the route at the Backbone.History instance
       Backbone.history.route route, route.handler
 
     # Route a given URL path manually, return whether a route matched

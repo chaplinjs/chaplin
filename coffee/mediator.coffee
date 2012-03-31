@@ -16,14 +16,27 @@ define ['lib/support'], (support) ->
 
   mediator = {}
 
-  # Descriptor for readonly, non-configurable properties
-  readonlyDescriptor = writable: false, configurable: false, enumerable: true
+  # Shortcut flag for proper ES5 property descriptor support
   descriptorsSupported = support.propertyDescriptors
+  # Descriptor for read-only, non-configurable properties
+  readonlyDescriptor = writable: false, configurable: false, enumerable: true
+  # Helper method to make a property readonly
+  defineProperty = (obj, prop, descriptor) ->
+    if descriptorsSupported
+      Object.defineProperty obj, prop, descriptor
+  readonly = (obj, prop) ->
+    defineProperty obj, prop, readonlyDescriptor
+
 
   # Current user
   # ------------
 
   mediator.user = null
+
+  # In browsers which support ECMAScript 5 property descriptors,
+  # the user property isn’t settable directly, but it’s a read-only
+  # getter property. For safety, you have to use the setUser method
+  # to set mediator.user
 
   # Overwrite the user property with a getter and a no-op setter.
   # The actual user is saved as a private variable.
@@ -44,14 +57,31 @@ define ['lib/support'], (support) ->
       # Change the public property
       mediator.user = user
 
-  # Make the setUser method readonly
-  if descriptorsSupported
-    Object.defineProperty mediator, 'setUser', readonlyDescriptor
+  # Make the setUser method read-only
+  readonly mediator, 'setUser'
 
   # The Router
   # ----------
 
   mediator.router = null
+
+  # In browsers which support ECMAScript 5 property descriptors,
+  # the router might be set once with the setRouter method.
+  # For safety, the router property is set to read-only
+  # after it is set.
+
+  # Set the router once
+  mediator.setRouter = (router) ->
+    throw new Error 'Router already set' if mediator.router
+    mediator.router = router
+    # Make the router property readonly
+    readonly mediator, 'router'
+
+  # Make the setRouter method readonly
+  readonly mediator, 'setRouter'
+
+  # Publish / Subscribe
+  # -------------------
 
   # Include Backbone event methods for global Publish/Subscribe
   _(mediator).extend Backbone.Events

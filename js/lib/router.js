@@ -1,22 +1,32 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-define(['mediator', 'lib/route', 'routes'], function(mediator, Route, registerRoutes) {
+define(['mediator', 'lib/route'], function(mediator, Route) {
   'use strict';
   var Router;
   return Router = (function() {
 
     function Router() {
       this.route = __bind(this.route, this);
-      this.match = __bind(this.match, this);      registerRoutes(this.match);
-      Backbone.history.start({
+      this.match = __bind(this.match, this);      this.createHistory();
+    }
+
+    Router.prototype.createHistory = function() {
+      return Backbone.history || (Backbone.history = new Backbone.History);
+    };
+
+    Router.prototype.startHistory = function() {
+      return Backbone.history.start({
         pushState: true
       });
-    }
+    };
+
+    Router.prototype.stopHistory = function() {
+      return Backbone.history.stop();
+    };
 
     Router.prototype.match = function(pattern, target, options) {
       var route;
       if (options == null) options = {};
-      Backbone.history || (Backbone.history = new Backbone.History);
       route = new Route(pattern, target, options);
       return Backbone.history.route(route, route.handler);
     };

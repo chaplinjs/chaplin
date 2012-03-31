@@ -31,16 +31,16 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
       mediator.subscribe('matchRoute', this.matchRoute);
       mediator.subscribe('!startupController', this.startupController);
       this.initApplicationView();
-      return this.initSidebars();
+      return this.initCommonControllers();
     };
 
     ApplicationController.prototype.initApplicationView = function() {
-      return new ApplicationView();
+      return this.view = new ApplicationView();
     };
 
-    ApplicationController.prototype.initSidebars = function() {
-      new NavigationController();
-      return new SidebarController();
+    ApplicationController.prototype.initCommonControllers = function() {
+      this.navigationController = new NavigationController();
+      return this.sidebarController = new SidebarController();
     };
 
     ApplicationController.prototype.matchRoute = function(route, params) {

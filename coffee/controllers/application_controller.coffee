@@ -26,21 +26,21 @@ define [
       mediator.subscribe '!startupController', @startupController
 
       @initApplicationView()
-      @initSidebars()
+      @initCommonControllers()
 
     # Start common controllers and views
     # -----------------------------------
 
     initApplicationView: ->
-      # Do not save the instance reference for now
-      # since the modules purely communicate via Pub/Sub
-      new ApplicationView()
+      # Save the reference for testing introspection only.
+      # Module should communicate with each other via Pub/Sub.
+      @view = new ApplicationView()
 
-    initSidebars: ->
-      # Do not save the instance references for now
-      # since the modules purely communicate via Pub/Sub
-      new NavigationController()
-      new SidebarController()
+    initCommonControllers: ->
+      # Save the reference for testing introspection only.
+      # Module should communicate with each other via Pub/Sub.
+      @navigationController = new NavigationController()
+      @sidebarController = new SidebarController()
 
     # Controller management
     # Starting and disposing controllers

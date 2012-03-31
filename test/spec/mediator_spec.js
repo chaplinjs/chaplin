@@ -7,6 +7,11 @@ define(['mediator'], function (mediator) {
       expect(typeof mediator).toEqual('object');
     });
 
+    it('should be sealed', function () {
+      if (!Object.isSealed) return;
+      expect(Object.isSealed(mediator)).toBe(true);
+    });
+
     it('should have a router which is null', function () {
       expect(mediator.router).toBeNull();
     });
@@ -15,17 +20,44 @@ define(['mediator'], function (mediator) {
       expect(mediator.user).toBeNull();
     });
 
+    it('should have a readonly user', function () {
+      if (!Object.defineProperty) return;
+      
+      expect(function () {
+        mediator.user = 'foo';
+      }).toThrow();
+    });
+
+    it('should have a setUser method', function () {
+      expect(typeof mediator.setUser).toEqual('function');
+    });
+
+    it('should have a user after calling setUser', function () {
+      var user = {};
+      mediator.setUser(user);
+      expect(mediator.user).toBe(user);
+    });
+
     it('should have Pub/Sub methods', function () {
       expect(typeof mediator.subscribe).toEqual('function');
       expect(typeof mediator.unsubscribe).toEqual('function');
       expect(typeof mediator.publish).toEqual('function');
     });
 
-    it('should have non-writable Pub/Sub methods', function () {
+    it('should have readonly Pub/Sub methods', function () {
+      if (!Object.defineProperty) return;
+      
+      var methods = ['subscribe', 'unsubscribe', 'publish'];
+      
+      methods.forEach(function (property) {
+        expect(function () {
+          mediator[property] = 'foo';
+        }).toThrow();
+      });
+
       if (!Object.getOwnPropertyDescriptor) return;
-      ['subscribe', 'unsubscribe', 'publish'].forEach(function (property) {
+      methods.forEach(function (property) {
         var desc = Object.getOwnPropertyDescriptor(mediator, property);
-        console.debug(property, desc, desc.writable);
         expect(desc.writable).toBe(false);
       });
     });

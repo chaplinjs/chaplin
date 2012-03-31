@@ -1,14 +1,20 @@
 
 define(['lib/support'], function(support) {
   'use strict';
-  var descriptorsSupported, mediator, privateUser, readonlyDescriptor;
+  var defineProperty, descriptorsSupported, mediator, privateUser, readonly, readonlyDescriptor;
   mediator = {};
+  descriptorsSupported = support.propertyDescriptors;
   readonlyDescriptor = {
     writable: false,
     configurable: false,
     enumerable: true
   };
-  descriptorsSupported = support.propertyDescriptors;
+  defineProperty = function(obj, prop, descriptor) {
+    if (descriptorsSupported) return Object.defineProperty(obj, prop, descriptor);
+  };
+  readonly = function(obj, prop) {
+    return defineProperty(obj, prop, readonlyDescriptor);
+  };
   mediator.user = null;
   if (descriptorsSupported) {
     privateUser = null;
@@ -30,10 +36,14 @@ define(['lib/support'], function(support) {
       return mediator.user = user;
     }
   };
-  if (descriptorsSupported) {
-    Object.defineProperty(mediator, 'setUser', readonlyDescriptor);
-  }
+  readonly(mediator, 'setUser');
   mediator.router = null;
+  mediator.setRouter = function(router) {
+    if (mediator.router) throw new Error('Router already set');
+    mediator.router = router;
+    return readonly(mediator, 'router');
+  };
+  readonly(mediator, 'setRouter');
   _(mediator).extend(Backbone.Events);
   mediator._callbacks = null;
   mediator.subscribe = mediator.on = Backbone.Events.on;
