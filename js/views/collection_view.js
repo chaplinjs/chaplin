@@ -23,8 +23,6 @@ define(['lib/utils', 'views/view'], function(utils, View) {
 
     CollectionView.prototype.animationDuration = 500;
 
-    CollectionView.prototype.viewsByCid = null;
-
     CollectionView.prototype.listSelector = null;
 
     CollectionView.prototype.$list = null;
@@ -34,6 +32,8 @@ define(['lib/utils', 'views/view'], function(utils, View) {
     CollectionView.prototype.$fallback = null;
 
     CollectionView.prototype.itemSelector = null;
+
+    CollectionView.prototype.viewsByCid = null;
 
     CollectionView.prototype.visibleItems = null;
 
@@ -109,14 +109,9 @@ define(['lib/utils', 'views/view'], function(utils, View) {
       return this.$fallback.css('display', empty ? 'block' : 'none');
     };
 
-    CollectionView.prototype.renderAllItems = function(options) {
+    CollectionView.prototype.renderAllItems = function() {
       var cid, index, item, items, remainingViewsByCid, view, _i, _len, _len2, _ref;
-      if (options == null) options = {};
       items = this.collection.models;
-      if (options.shuffle) {
-        items = MovieExplorer.utils.shuffle(this.collection.models);
-      }
-      if (options.limit) items = items.slice(0, options.limit);
       this.visibleItems = [];
       remainingViewsByCid = {};
       for (_i = 0, _len = items.length; _i < _len; _i++) {
