@@ -6,26 +6,32 @@ define ['lib/utils', 'views/view'], (utils, View) ->
   # and should instantiate a corresponding item view.
   class CollectionView extends View
 
+    # Configuration options which may be set in derived classes
+
     # Animation duration when adding new items (set to 0 to disable fade in)
     animationDuration: 500
-
-    # Hash which saves all item views by CID
-    viewsByCid: null
 
     # The list element the item views are actually appended to.
     # If empty, $el is used.
     # Set the selector property in the derived class to use a specific element.
     listSelector: null
+    # The actual element reference which is filled using listSelector
     $list: null
 
     # Selector for a fallback element which is shown if the collection is empty.
     # Set the selector property in the derived class to use a specific element.
     fallbackSelector: null
+    # The actual element reference which is filled using fallbackSelector
     $fallback: null
 
     # Selector which identifies child elements belonging to collection
     # All children are seen as belonging to collection if not present
     itemSelector: null
+
+    # View lists
+
+    # Hash which saves all item views by CID
+    viewsByCid: null
 
     # Track a list of the visible views
     visibleItems: null
@@ -43,6 +49,8 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       #console.debug 'CollectionView#initialize', this, @collection, options
 
       # Default options
+      # These are not in the options property on so derived classes
+      # may override them when calling super
       _(options).defaults
         render: true      # Render the view immediately per default
         renderItems: true # Render all items immediately per default
