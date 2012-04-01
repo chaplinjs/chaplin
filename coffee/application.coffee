@@ -8,7 +8,10 @@ define [
   # The application bootstrapper.
   # In practise you might choose a more meaningful name.
   Application =
+
     initialize: ->
+      #console.debug 'Application#initialize'
+
       @initControllers()
       @initRouter()
 
