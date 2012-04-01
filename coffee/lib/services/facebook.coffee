@@ -4,8 +4,10 @@ define [
   'use strict'
 
   class Facebook extends ServiceProvider
-    # Note: This is the app ID for an example Facebook app.
+    
+    # Note: This is the ID for an example Facebook app.
     # You might change this to your own application ID.
+    # See https://developers.facebook.com/apps
     facebookAppId = '115149731946795'
 
     # The permissions we’re asking for.
