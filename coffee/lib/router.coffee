@@ -30,7 +30,7 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
 
     # Route a given URL path manually, return whether a route matched
     # This looks quite like Backbone.History::loadUrl but it
-    # accepted an absolute URL with a leading slash (e.g. /foo)
+    # accepts an absolute URL with a leading slash (e.g. /foo)
     # and passes the changeURL param to the callback function
     route: (path) =>
       #console.debug 'Router#route', path
