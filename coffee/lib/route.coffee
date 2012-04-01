@@ -55,7 +55,7 @@ define ['mediator'], (mediator) ->
       # Build params hash
       params = @buildParams path, options
 
-      # Publish a global routeMatch event passing the route and the params
+      # Publish a global matchRoute event passing the route and the params
       mediator.publish 'matchRoute', this, params
 
     # Create a proper Rails-like params hash, not an array like Backbone
