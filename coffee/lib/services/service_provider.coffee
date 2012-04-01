@@ -2,7 +2,7 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
   'use strict'
 
   class ServiceProvider
-    
+
     # Mixin a Subscriber
     _(ServiceProvider.prototype).extend Subscriber
 
@@ -18,6 +18,24 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
         deferred: this
         methods: ['triggerLogin', 'getLoginStatus']
         onDeferral: @load
+
+    # Disposal
+    # --------
+
+    disposed: false
+
+    dispose: ->
+      return if @disposed
+
+      # Unbind handlers of global events
+      @unsubscribeAllEvents()
+
+      # Finished
+      #console.debug 'ServiceProvider#dispose', this, 'finished'
+      @disposed = true
+
+      # You're frozen when your heart’s not open
+      Object.freeze? this
 
   ###
 
