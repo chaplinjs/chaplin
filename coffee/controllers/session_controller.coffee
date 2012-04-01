@@ -63,11 +63,6 @@ define [
       @loginView = new LoginView
         serviceProviders: SessionController.serviceProviders
 
-    hideLoginView: ->
-      return unless @loginView
-      @loginView.dispose()
-      @loginView = null
-
     # Handler for the global !login event
     # Delegate the login to the selected service provider
     triggerLogin: (serviceProviderName) =>
@@ -90,7 +85,7 @@ define [
       @serviceProviderName = session.provider.name
 
       # Hide the login view
-      @hideLoginView()
+      @disposeLoginView()
 
       # Transform session into user attributes and create a user
       session.id = session.userId
@@ -119,10 +114,7 @@ define [
     logout: =>
       @loginStatusDetermined = true
 
-      if mediator.user
-        # Dispose the user model
-        mediator.user.dispose()
-        mediator.setUser null
+      @disposeUser()
 
       # Discard the login info
       @serviceProviderName = null
@@ -138,5 +130,25 @@ define [
     userData: (data) ->
       mediator.user.set data
 
-  # This controller has no custom dispose method since we expect it to
-  # remain active during the whole application lifecycle.
+    # Disposal
+    # --------
+
+    disposeLoginView: ->
+      return unless @loginView
+      @loginView.dispose()
+      @loginView = null
+
+    disposeUser: ->
+      return unless mediator.user
+      # Dispose the user model
+      mediator.user.dispose()
+      # Nullify property on the mediator
+      mediator.setUser null
+
+    dispose: ->
+      return if @disposed
+      # Dispose the login view
+      @disposeLoginView()
+      # Dispose the service providers
+      serviceProvider.dispose() for serviceProvider in @serviceProviders
+      super

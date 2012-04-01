@@ -73,12 +73,6 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       });
     };
 
-    SessionController.prototype.hideLoginView = function() {
-      if (!this.loginView) return;
-      this.loginView.dispose();
-      return this.loginView = null;
-    };
-
     SessionController.prototype.triggerLogin = function(serviceProviderName) {
       var serviceProvider;
       serviceProvider = SessionController.serviceProviders[serviceProviderName];
@@ -92,7 +86,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     SessionController.prototype.serviceProviderSession = function(session) {
       this.serviceProviderName = session.provider.name;
-      this.hideLoginView();
+      this.disposeLoginView();
       session.id = session.userId;
       delete session.userId;
       this.createUser(session);
@@ -111,10 +105,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     SessionController.prototype.logout = function() {
       this.loginStatusDetermined = true;
-      if (mediator.user) {
-        mediator.user.dispose();
-        mediator.setUser(null);
-      }
+      this.disposeUser();
       this.serviceProviderName = null;
       this.showLoginView();
       return mediator.publish('loginStatus', false);
@@ -122,6 +113,30 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     SessionController.prototype.userData = function(data) {
       return mediator.user.set(data);
+    };
+
+    SessionController.prototype.disposeLoginView = function() {
+      if (!this.loginView) return;
+      this.loginView.dispose();
+      return this.loginView = null;
+    };
+
+    SessionController.prototype.disposeUser = function() {
+      if (!mediator.user) return;
+      mediator.user.dispose();
+      return mediator.setUser(null);
+    };
+
+    SessionController.prototype.dispose = function() {
+      var serviceProvider, _i, _len, _ref;
+      if (this.disposed) return;
+      this.disposeLoginView();
+      _ref = this.serviceProviders;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        serviceProvider = _ref[_i];
+        serviceProvider.dispose();
+      }
+      return SessionController.__super__.dispose.apply(this, arguments);
     };
 
     return SessionController;
