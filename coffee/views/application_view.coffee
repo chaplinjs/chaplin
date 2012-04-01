@@ -60,7 +60,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       body = $(document.body)
       loggedIn = Boolean mediator.user
       body
-        .toggleClass('logged-out', loggedIn)
+        .toggleClass('logged-out', !loggedIn)
         .toggleClass('logged-in', loggedIn)
 
     # Fallback content
