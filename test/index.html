@@ -27,18 +27,24 @@
       baseUrl: '/js',
       paths: {
         text: 'vendor/require-text-1.0.7'
+        //, order: 'vendor/require-order-1.0.5'
       },
       waitSeconds: 1,
       urlArgs: 'bust=' +  (new Date()).getTime()
   });
 
   require([
-    '../test/spec/mediator_spec'
-    , '../test/spec/router_spec'
-    , '../test/spec/application_spec'
-    , '../test/spec/application_controller_spec'
+    '../test/spec/js/mediator_spec'
+    , '../test/spec/js/router_spec'
+    , '../test/spec/js/application_spec'
   ], function () {
-    jasmineEnv.execute();
+    // The order plugin does not seem to play well with the text plugin.
+    // Enforce the order manually. These specs need to run after the
+    require([
+      '../test/spec/js/application_controller_spec'
+    ], function () {
+      jasmineEnv.execute();
+    });
   });
 
 })();
