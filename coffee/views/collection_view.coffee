@@ -363,7 +363,7 @@ define ['lib/utils', 'views/view'], (utils, View) ->
       properties = [
         '$list', '$fallback', 'viewsByCid', 'visibleItems'
       ]
-      delete @[prop] for prop in properties
+      delete this[prop] for prop in properties
 
       # Self-disposal
       super

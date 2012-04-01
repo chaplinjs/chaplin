@@ -41,7 +41,7 @@ define ['lib/subscriber'], (Subscriber) ->
         'collection', 'attributes', '_escapedAttributes', '_previousAttributes',
         '_silent', '_pending'
       ]
-      delete @[prop] for prop in properties
+      delete this[prop] for prop in properties
 
       # Finished
       #console.debug 'Model#dispose', this, 'finished'

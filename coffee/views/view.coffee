@@ -302,7 +302,7 @@ define [
       properties = [
         'el', '$el', '$container', 'options', 'model', 'collection'
       ]
-      delete @[prop] for prop in properties
+      delete this[prop] for prop in properties
 
       # Finished
       #console.debug 'View#dispose', this, 'finished'

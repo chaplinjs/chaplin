@@ -95,7 +95,7 @@ define ['lib/subscriber', 'lib/sync_machine'], (Subscriber, SyncMachine) ->
       properties = [
         'model', 'models', '_byId', '_byCid'
       ]
-      delete @[prop] for prop in properties
+      delete this[prop] for prop in properties
 
       # Finished
       #console.debug 'Collection#dispose', this, 'finished'
