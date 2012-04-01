@@ -54,7 +54,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       var body, loggedIn;
       body = $(document.body);
       loggedIn = Boolean(mediator.user);
-      return body.toggleClass('logged-out', loggedIn).toggleClass('logged-in', loggedIn);
+      return body.toggleClass('logged-out', !loggedIn).toggleClass('logged-in', loggedIn);
     };
 
     ApplicationView.prototype.removeFallbackContent = function() {
