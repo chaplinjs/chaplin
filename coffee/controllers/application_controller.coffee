@@ -1,12 +1,15 @@
 define [
-  'mediator', 'lib/utils',
+  'mediator', 'lib/utils', 'lib/subscriber'
   'controllers/controller',
   'views/application_view',
   'controllers/navigation_controller', 'controllers/sidebar_controller'
-], (mediator, utils, Controller, ApplicationView, NavigationController, SidebarController) ->
+], (mediator, utils, Subscriber, Controller, ApplicationView, NavigationController, SidebarController) ->
   'use strict'
 
   class ApplicationController extends Controller
+
+    # Mixin a Subscriber
+    _(ApplicationController.prototype).extend Subscriber
 
     # The previous controller name
     previousControllerName: null
@@ -21,9 +24,11 @@ define [
     url: null
 
     initialize: ->
+      #console.debug 'ApplicationController#initialize'
+
       # Listen to global events
-      mediator.subscribe 'matchRoute', @matchRoute
-      mediator.subscribe '!startupController', @startupController
+      @subscribeEvent 'matchRoute', @matchRoute
+      @subscribeEvent '!startupController', @startupController
 
       @initApplicationView()
       @initCommonControllers()
@@ -42,12 +47,17 @@ define [
       @navigationController = new NavigationController()
       @sidebarController = new SidebarController()
 
+    disposeCommonControllers: ->
+      @navigationController.dispose()
+      @sidebarController.dispose()
+
     # Controller management
     # Starting and disposing controllers
     # ----------------------------------
 
     # Handler for the global matchRoute event
-    matchRoute: (route, params) =>
+    matchRoute: (route, params) ->
+      #console.debug 'ApplicationController#matchRoute'
       @startupController route.controller, route.action, params
 
     # Handler for the global !startupController event
@@ -60,7 +70,9 @@ define [
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
-    startupController: (controllerName, action = 'index', params = {}) =>
+    startupController: (controllerName, action = 'index', params = {}) ->
+      #console.debug 'ApplicationController#startupController', controllerName, action, params
+
       # Set default flags
 
       # Whether to update the URL after controller startup
@@ -123,11 +135,12 @@ define [
       @adjustURL controller, params
 
       # We're done! Spread the word!
+      #console.debug 'publish startupController'
       mediator.publish 'startupController',
+        previousControllerName: @previousControllerName
         controller: @currentController
         controllerName: @currentControllerName
         params: @currentParams
-        previousController: @previousController
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params) ->
@@ -147,3 +160,23 @@ define [
 
       # Save the URL
       @url = url
+
+    # Disposal
+    # --------
+
+    dispose: ->
+      return if @disposed
+
+      # Dispose controllers
+      @disposeCommonControllers()
+      @currentController?.dispose()
+
+      # Remove properties
+      properties = [
+        'previousControllerName', 'currentControllerName',
+        'currentController', 'currentAction', 'currentParams',
+        'url'
+      ]
+      delete this[prop] for prop in properties
+
+      super

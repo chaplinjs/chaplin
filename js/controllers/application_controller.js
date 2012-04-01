@@ -1,8 +1,7 @@
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = Object.prototype.hasOwnProperty,
+var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_view', 'controllers/navigation_controller', 'controllers/sidebar_controller'], function(mediator, utils, Controller, ApplicationView, NavigationController, SidebarController) {
+define(['mediator', 'lib/utils', 'lib/subscriber', 'controllers/controller', 'views/application_view', 'controllers/navigation_controller', 'controllers/sidebar_controller'], function(mediator, utils, Subscriber, Controller, ApplicationView, NavigationController, SidebarController) {
   'use strict';
   var ApplicationController;
   return ApplicationController = (function(_super) {
@@ -10,10 +9,10 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
     __extends(ApplicationController, _super);
 
     function ApplicationController() {
-      this.startupController = __bind(this.startupController, this);
-      this.matchRoute = __bind(this.matchRoute, this);
       ApplicationController.__super__.constructor.apply(this, arguments);
     }
+
+    _(ApplicationController.prototype).extend(Subscriber);
 
     ApplicationController.prototype.previousControllerName = null;
 
@@ -28,8 +27,8 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
     ApplicationController.prototype.url = null;
 
     ApplicationController.prototype.initialize = function() {
-      mediator.subscribe('matchRoute', this.matchRoute);
-      mediator.subscribe('!startupController', this.startupController);
+      this.subscribeEvent('matchRoute', this.matchRoute);
+      this.subscribeEvent('!startupController', this.startupController);
       this.initApplicationView();
       return this.initCommonControllers();
     };
@@ -41,6 +40,11 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
     ApplicationController.prototype.initCommonControllers = function() {
       this.navigationController = new NavigationController();
       return this.sidebarController = new SidebarController();
+    };
+
+    ApplicationController.prototype.disposeCommonControllers = function() {
+      this.navigationController.dispose();
+      return this.sidebarController.dispose();
     };
 
     ApplicationController.prototype.matchRoute = function(route, params) {
@@ -78,10 +82,10 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
       this.currentParams = params;
       this.adjustURL(controller, params);
       return mediator.publish('startupController', {
+        previousControllerName: this.previousControllerName,
         controller: this.currentController,
         controllerName: this.currentControllerName,
-        params: this.currentParams,
-        previousController: this.previousController
+        params: this.currentParams
       });
     };
 
@@ -96,6 +100,19 @@ define(['mediator', 'lib/utils', 'controllers/controller', 'views/application_vi
       }
       if (params.changeURL) mediator.router.changeURL(url);
       return this.url = url;
+    };
+
+    ApplicationController.prototype.dispose = function() {
+      var prop, properties, _i, _len, _ref;
+      if (this.disposed) return;
+      this.disposeCommonControllers();
+      if ((_ref = this.currentController) != null) _ref.dispose();
+      properties = ['previousControllerName', 'currentControllerName', 'currentController', 'currentAction', 'currentParams', 'url'];
+      for (_i = 0, _len = properties.length; _i < _len; _i++) {
+        prop = properties[_i];
+        delete this[prop];
+      }
+      return ApplicationController.__super__.dispose.apply(this, arguments);
     };
 
     return ApplicationController;
