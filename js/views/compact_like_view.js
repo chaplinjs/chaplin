@@ -12,7 +12,7 @@ define(['views/view', 'text!templates/compact_like.hbs'], function(View, templat
       CompactLikeView.__super__.constructor.apply(this, arguments);
     }
 
-    CompactLikeView.template = template;
+    CompactLikeView.prototype.template = template;
 
     CompactLikeView.prototype.tagName = 'li';
 

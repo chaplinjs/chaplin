@@ -156,10 +156,10 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     View.prototype.render = function() {
       var html, template;
       if (this.disposed) return;
-      template = this.constructor.template;
+      template = this.template;
       if (typeof template === 'string') {
         template = Handlebars.compile(template);
-        this.constructor.template = template;
+        this.template = template;
       }
       if (typeof template === 'function') {
         html = template(this.getTemplateData());

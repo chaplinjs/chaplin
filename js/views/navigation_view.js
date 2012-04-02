@@ -12,7 +12,7 @@ define(['views/view', 'text!templates/navigation.hbs'], function(View, template)
       NavigationView.__super__.constructor.apply(this, arguments);
     }
 
-    NavigationView.template = template;
+    NavigationView.prototype.template = template;
 
     NavigationView.prototype.id = 'navigation';
 

@@ -7,7 +7,7 @@ define [
   class LikesView extends CollectionView
     # This is a workaround.
     # In the end you might want to used precompiled templates.
-    @template: template
+    template: template
 
     tagName: 'div' # This is not directly a list but contains a list
     id: 'likes'

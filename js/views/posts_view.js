@@ -12,7 +12,7 @@ define(['mediator', 'views/collection_view', 'views/post_view', 'text!templates/
       PostsView.__super__.constructor.apply(this, arguments);
     }
 
-    PostsView.template = template;
+    PostsView.prototype.template = template;
 
     PostsView.prototype.tagName = 'div';
 
