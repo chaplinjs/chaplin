@@ -12,7 +12,7 @@ define(['mediator', 'views/view', 'text!templates/full_like.hbs'], function(medi
       FullLikeView.__super__.constructor.apply(this, arguments);
     }
 
-    FullLikeView.template = template;
+    FullLikeView.prototype.template = template;
 
     FullLikeView.prototype.id = 'like';
 

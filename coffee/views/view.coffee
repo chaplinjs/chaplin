@@ -234,13 +234,13 @@ define [
       # on the client-side and store it on the view constructor as a
       # static property.
 
-      template = @constructor.template
+      template = @template
       #console.debug "\ttemplate: #{typeof template}"
 
       if typeof template is 'string'
         template = Handlebars.compile template
         # Save compiled template
-        @constructor.template = template
+        @template = template
 
       if typeof template is 'function'
 
