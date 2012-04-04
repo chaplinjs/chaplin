@@ -1,7 +1,11 @@
 define ['mediator', 'lib/route'], (mediator, Route) ->
   'use strict'
 
-  class Router # This class does not inherit from Backbone’s router
+  # The router which is a replacement for Backbone.Router.
+  # Like the standard router, it creates a Backbone.History
+  # instance and registers routes on it.
+
+  class Router # This class does not extend Backbone.Router
 
     constructor: ->
       # Create a Backbone.History instance
@@ -28,15 +32,16 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
       # Register the route at the Backbone.History instance
       Backbone.history.route route, route.handler
 
-    # Route a given URL path manually, return whether a route matched
+    # Route a given URL path manually, returns whether a route matched
     # This looks quite like Backbone.History::loadUrl but it
     # accepts an absolute URL with a leading slash (e.g. /foo)
-    # and passes the changeURL param to the callback function
+    # and passes a changeURL param to the callback function.
     route: (path) =>
       #console.debug 'Router#route', path
 
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
+
       for handler in Backbone.history.handlers
         if handler.route.test(path)
           handler.callback path, changeURL: true

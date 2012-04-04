@@ -10,7 +10,7 @@ define ['lib/subscriber'], (Subscriber) ->
     currentId: null
 
     # You should set a title property and a historyURL property or method
-    # on the inheriting controller class. Like this:
+    # on the derived controller. Like this:
     # title: 'foo'
     # historyURL: 'foo'
     # historyURL: ->

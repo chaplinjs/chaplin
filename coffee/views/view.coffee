@@ -228,14 +228,18 @@ define [
 
       # Template compilation
 
-      # In the end, you will want to precompile the templates to JavaScript
-      # functions on the server-side and just load the compiled JavaScript
-      # code. In this demo, we load the template as a string, compile it
+      # In the end, you might want to precompile the templates to JavaScript
+      # functions on the server-side and just load the JavaScript code.
+      # Several precompilers create a global JST hash which stores the
+      # template functions. You can get the function by the template name:
+      #
+      # templateFunc = JST[@template]
+      #
+      # In this demo, we load the template as a string, compile it
       # on the client-side and store it on the view constructor as a
       # static property.
 
       template = @template
-      #console.debug "\ttemplate: #{typeof template}"
 
       if typeof template is 'string'
         template = Handlebars.compile template
@@ -249,9 +253,8 @@ define [
 
         # Replace HTML
         # This is a workaround for an apparent issue with jQuery 1.7’s
-        # innerShiv feature
-        # Using @$el.html(html) caused issues with HTML5-only tags in IE7
-        # and IE8
+        # innerShiv feature. Using @$el.html(html) caused issues with
+        # HTML5-only tags in IE7 and IE8
         @$el.empty().append html
 
       # Return this

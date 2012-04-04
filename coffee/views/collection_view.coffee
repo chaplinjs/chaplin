@@ -1,7 +1,7 @@
 define ['lib/utils', 'views/view'], (utils, View) ->
   'use strict'
 
-  # General class for rendering Collections. Inherit from this class and
+  # General class for rendering Collections. Derive this class and
   # overwrite at least getView. getView gets an item model
   # and should instantiate a corresponding item view.
   class CollectionView extends View

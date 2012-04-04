@@ -20,7 +20,7 @@ define [
       super # Will render the list itself and all items
       @subscribeEvent 'loginStatus', @showHideLoginNote
 
-    # The most important method a class inheriting from CollectionView
+    # The most important method a class derived from CollectionView
     # must overwrite.
     getView: (item) ->
       # Instantiate an item view

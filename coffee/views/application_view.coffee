@@ -1,7 +1,7 @@
 define ['mediator', 'lib/utils'], (mediator, utils) ->
   'use strict'
 
-  class ApplicationView # Do not inherit from View
+  class ApplicationView # This class does not extend View
 
     # Set your application name here so
     # the document title is set properly to
