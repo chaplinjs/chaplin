@@ -6,6 +6,7 @@
 </head>
 <body>
 
+<div id="jasmine-root"></div>
 <div id="fb-root"></div>
 
 <script src="../js/vendor/jquery-1.7.2.js"></script>
@@ -18,7 +19,7 @@
 <script>
 (function () {
 
-  var reporter = new jasmine.TrivialReporter();
+  var reporter = new jasmine.TrivialReporter(document.getElementById('jasmine-root'));
   //jasmineEnv.specFilter = trivialReporter.specFilter.bind(trivialReporter);
   var jasmineEnv = new jasmine.getEnv();
   jasmineEnv.addReporter(reporter);
@@ -37,14 +38,10 @@
     '../test/spec/js/mediator_spec'
     , '../test/spec/js/router_spec'
     , '../test/spec/js/application_spec'
+    , '../test/spec/js/application_controller_spec'
+    , '../test/spec/js/application_view_spec'
   ], function () {
-    // The order plugin does not seem to play well with the text plugin.
-    // Enforce the order manually. These specs need to run after the
-    require([
-      '../test/spec/js/application_controller_spec'
-    ], function () {
-      jasmineEnv.execute();
-    });
+    jasmineEnv.execute();
   });
 
 })();

@@ -25,17 +25,9 @@ define [
     it 'should create a router on the mediator', ->
       expect(mediator.router instanceof Router).toEqual true
 
-    it 'should create a readonly router', ->
-      return  unless Object.defineProperty
-      expect(->
-        mediator.router = 'foo'
-      ).toThrow()
-      desc = Object.getOwnPropertyDescriptor mediator, 'router'
-      expect(desc.writable).toBe false
-
     it 'should start Backbone.history', ->
       expect(Backbone.History.started).toBe true
 
     it 'should be frozen', ->
-      return  unless Object.isFrozen
+      return unless Object.isFrozen
       expect(Object.isFrozen(Application)).toBe true

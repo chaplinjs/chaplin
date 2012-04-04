@@ -1,5 +1,5 @@
-jasmine.TrivialReporter = function(doc) {
-  this.document = doc || document;
+jasmine.TrivialReporter = function(rootElement) {
+  this.rootElement = rootElement || document.body;
   this.suiteDivs = {};
   this.logRunningSpecs = false;
 };
@@ -51,7 +51,8 @@ jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
           this.finishedAtSpan = this.createDom('span', { className: 'finished-at' }, ""))
       );
 
-  this.document.body.appendChild(this.outerDiv);
+  this.rootElement.innerHTML = '';
+  this.rootElement.appendChild(this.outerDiv);
 
   var suites = runner.suites();
   for (var i = 0; i < suites.length; i++) {
@@ -90,9 +91,7 @@ jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
 jasmine.TrivialReporter.prototype.reportRunnerResults = function(runner) {
   var results = runner.results();
   var className = (results.failedCount > 0) ? "runner failed" : "runner passed";
-  this.runnerDiv.setAttribute("class", className);
-  //do it twice for IE
-  this.runnerDiv.setAttribute("className", className);
+  this.runnerDiv.className = className
   var specs = runner.specs();
   var specCount = 0;
   for (var i = 0; i < specs.length; i++) {
@@ -171,13 +170,9 @@ jasmine.TrivialReporter.prototype.log = function() {
   }
 };
 
-jasmine.TrivialReporter.prototype.getLocation = function() {
-  return this.document.location;
-};
-
 jasmine.TrivialReporter.prototype.specFilter = function(spec) {
   var paramMap = {};
-  var params = this.getLocation().search.substring(1).split('&');
+  var params = jasmine.getGlobal().location.search.substring(1).split('&');
   for (var i = 0; i < params.length; i++) {
     var p = params[i].split('=');
     paramMap[decodeURIComponent(p[0])] = decodeURIComponent(p[1]);

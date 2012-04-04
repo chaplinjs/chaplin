@@ -1,15 +1,28 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'lib/router', 'application', 'controllers/controller', 'controllers/application_controller'], function(mediator, Router, Application, Controller, ApplicationController) {
+define(['mediator', 'controllers/controller', 'controllers/application_controller'], function(mediator, Controller, ApplicationController) {
   'use strict';  return describe('ApplicationController', function() {
-    var TestController, actionCalled, historyURLCalled, initializeCalled, params, passedParams, route;
-    initializeCalled = actionCalled = historyURLCalled = false;
+    var TestController, actionCalled, applicationController, disposeCalled, freshParams, historyURLCalled, initializeCalled, params, paramsId, passedParams, resetFlags, route;
+    applicationController = void 0;
+    initializeCalled = actionCalled = historyURLCalled = disposeCalled = void 0;
     params = passedParams = void 0;
+    paramsId = 0;
+    resetFlags = function() {
+      return initializeCalled = actionCalled = historyURLCalled = disposeCalled = false;
+    };
+    freshParams = function() {
+      params = {
+        changeURL: false,
+        id: paramsId++
+      };
+      return passedParams = void 0;
+    };
     route = {
       controller: 'test',
       action: 'show'
     };
+    mediator.unsubscribe();
     TestController = (function(_super) {
 
       __extends(TestController, _super);
@@ -24,12 +37,18 @@ define(['mediator', 'lib/router', 'application', 'controllers/controller', 'cont
       };
 
       TestController.prototype.initialize = function() {
+        TestController.__super__.initialize.apply(this, arguments);
         return initializeCalled = true;
       };
 
       TestController.prototype.show = function(params) {
         actionCalled = true;
         return passedParams = params;
+      };
+
+      TestController.prototype.dispose = function() {
+        disposeCalled = true;
+        return TestController.__super__.dispose.apply(this, arguments);
       };
 
       return TestController;
@@ -39,10 +58,11 @@ define(['mediator', 'lib/router', 'application', 'controllers/controller', 'cont
       return TestController;
     });
     beforeEach(function() {
-      return params = {
-        changeURL: false,
-        id: Math.random().toString().replace('0.', '')
-      };
+      resetFlags();
+      return freshParams();
+    });
+    it('should initialize', function() {
+      return applicationController = new ApplicationController();
     });
     it('should dispatch routes to controller actions', function() {
       mediator.publish('matchRoute', route, params);
@@ -51,10 +71,29 @@ define(['mediator', 'lib/router', 'application', 'controllers/controller', 'cont
       expect(historyURLCalled).toBe(true);
       return expect(passedParams).toBe(params);
     });
+    it('should start a controller anyway when forced', function() {
+      mediator.publish('matchRoute', route, params);
+      resetFlags();
+      params.forceStartup = true;
+      mediator.publish('matchRoute', route, params);
+      expect(initializeCalled).toBe(true);
+      expect(actionCalled).toBe(true);
+      expect(historyURLCalled).toBe(true);
+      return expect(passedParams).toBe(params);
+    });
+    it('should dispose old controllers', function() {
+      var controller, handler;
+      controller = void 0;
+      handler = function(passedController) {
+        return controller = passedController;
+      };
+      mediator.subscribe('beforeControllerDispose', handler);
+      return mediator.publish('matchRoute', route, params);
+    });
     it('should save the current controller, action and params', function() {
       var c;
       mediator.publish('matchRoute', route, params);
-      c = Application.applicationController;
+      c = applicationController;
       expect(c.previousControllerName).toBe('test');
       expect(c.currentControllerName).toBe('test');
       expect(c.currentController instanceof TestController).toBe(true);
@@ -63,19 +102,19 @@ define(['mediator', 'lib/router', 'application', 'controllers/controller', 'cont
       return expect(c.url).toBe("test/" + params.id);
     });
     return it('should publish startupController events', function() {
-      var handler, passedEvent;
-      passedEvent = void 0;
-      handler = function(event) {
-        return passedEvent = event;
+      var event, handler;
+      event = void 0;
+      handler = function(passedEvent) {
+        return event = passedEvent;
       };
       mediator.subscribe('startupController', handler);
       mediator.publish('matchRoute', route, params);
       mediator.unsubscribe('startupController', handler);
-      expect(typeof passedEvent).toBe('object');
-      expect(passedEvent.controller instanceof TestController).toBe(true);
-      expect(passedEvent.controllerName).toBe('test');
-      expect(passedEvent.params).toBe(params);
-      return expect(passedEvent.previousControllerName).toBe('test');
+      expect(typeof event).toBe('object');
+      expect(event.controller instanceof TestController).toBe(true);
+      expect(event.controllerName).toBe('test');
+      expect(event.params).toBe(params);
+      return expect(event.previousControllerName).toBe('test');
     });
   });
 });
