@@ -14,7 +14,7 @@ define(['mediator', 'views/view', 'text!templates/sidebar.hbs'], function(mediat
       SidebarView.__super__.constructor.apply(this, arguments);
     }
 
-    SidebarView.template = template;
+    SidebarView.prototype.template = template;
 
     SidebarView.prototype.id = 'sidebar';
 

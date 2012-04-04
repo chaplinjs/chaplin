@@ -12,7 +12,7 @@ define(['mediator', 'views/collection_view', 'views/compact_like_view', 'text!te
       LikesView.__super__.constructor.apply(this, arguments);
     }
 
-    LikesView.template = template;
+    LikesView.prototype.template = template;
 
     LikesView.prototype.tagName = 'div';
 

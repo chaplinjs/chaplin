@@ -12,7 +12,7 @@ define(['views/view', 'text!templates/post.hbs'], function(View, template) {
       PostView.__super__.constructor.apply(this, arguments);
     }
 
-    PostView.template = template;
+    PostView.prototype.template = template;
 
     PostView.prototype.tagName = 'li';
 

@@ -7,7 +7,7 @@ define [
 
     # This is a workaround.
     # In the end you might want to used precompiled templates.
-    @template = template
+    template: template
 
     id: 'sidebar'
     containerSelector: '#sidebar-container'
