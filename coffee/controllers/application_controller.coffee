@@ -160,23 +160,3 @@ define [
 
       # Save the URL
       @url = url
-
-    # Disposal
-    # --------
-
-    dispose: ->
-      return if @disposed
-
-      # Dispose controllers
-      @disposeCommonControllers()
-      @currentController?.dispose()
-
-      # Remove properties
-      properties = [
-        'previousControllerName', 'currentControllerName',
-        'currentController', 'currentAction', 'currentParams',
-        'url'
-      ]
-      delete this[prop] for prop in properties
-
-      super

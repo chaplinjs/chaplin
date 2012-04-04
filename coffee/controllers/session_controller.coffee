@@ -144,11 +144,4 @@ define [
       mediator.user.dispose()
       # Nullify property on the mediator
       mediator.setUser null
-
-    dispose: ->
-      return if @disposed
-      # Dispose the login view
-      @disposeLoginView()
-      # Dispose the service providers
-      serviceProvider.dispose() for serviceProvider in @serviceProviders
-      super
+  

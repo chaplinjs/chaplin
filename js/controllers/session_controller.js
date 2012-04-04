@@ -127,18 +127,6 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       return mediator.setUser(null);
     };
 
-    SessionController.prototype.dispose = function() {
-      var serviceProvider, _i, _len, _ref;
-      if (this.disposed) return;
-      this.disposeLoginView();
-      _ref = this.serviceProviders;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        serviceProvider = _ref[_i];
-        serviceProvider.dispose();
-      }
-      return SessionController.__super__.dispose.apply(this, arguments);
-    };
-
     return SessionController;
 
   })(Controller);

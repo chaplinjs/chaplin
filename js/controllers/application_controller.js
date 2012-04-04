@@ -102,19 +102,6 @@ define(['mediator', 'lib/utils', 'lib/subscriber', 'controllers/controller', 'vi
       return this.url = url;
     };
 
-    ApplicationController.prototype.dispose = function() {
-      var prop, properties, _i, _len, _ref;
-      if (this.disposed) return;
-      this.disposeCommonControllers();
-      if ((_ref = this.currentController) != null) _ref.dispose();
-      properties = ['previousControllerName', 'currentControllerName', 'currentController', 'currentAction', 'currentParams', 'url'];
-      for (_i = 0, _len = properties.length; _i < _len; _i++) {
-        prop = properties[_i];
-        delete this[prop];
-      }
-      return ApplicationController.__super__.dispose.apply(this, arguments);
-    };
-
     return ApplicationController;
 
   })(Controller);
