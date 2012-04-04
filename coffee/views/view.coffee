@@ -275,10 +275,6 @@ define [
       # Return this
       this
 
-    # Default event handler to prevent browser default
-    preventDefault: (event) ->
-      event.preventDefault() if event and event.preventDefault
-
     # Disposal
     # --------
 
