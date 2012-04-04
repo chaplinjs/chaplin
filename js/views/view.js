@@ -20,14 +20,14 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     function View() {
       this.dispose = __bind(this.dispose, this);
       this.render = __bind(this.render, this);
-      var instance, wrapMethod;
-      instance = this;
+      var wrapMethod,
+        _this = this;
       wrapMethod = function(name) {
         var func;
-        func = instance[name];
-        return instance[name] = function() {
-          func.apply(instance, arguments);
-          return instance["after" + (utils.upcase(name))].apply(instance, arguments);
+        func = _this[name];
+        return _this[name] = function() {
+          func.apply(_this, arguments);
+          return _this["after" + (utils.upcase(name))].apply(_this, arguments);
         };
       };
       wrapMethod('initialize');

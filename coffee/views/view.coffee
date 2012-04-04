@@ -27,22 +27,21 @@ define [
 
       # Wrap `initialize` and `render` in order to call `afterInitialize`
       # and `afterRender`
-      instance = this
-      wrapMethod = (name) ->
+      wrapMethod = (name) =>
         # TODO: This isn’t so nice because it creates wrappers on each
         # instance which leads to many function objects.
         # A better way would be using Object.getPrototypeOf to look for a
-        # prototype in the chain which has a overriding method.
+        # prototype in the chain which has an overriding method.
         # For now, get the method using the prototype chain and
         # wrap it on the instance.
-        func = instance[name]
+        func = this[name]
         # Create a method on the instance which wraps the inherited
-        instance[name] = ->
+        this[name] = =>
           #console.debug 'View#' + name + ' wrapper', this
           # Call the original method
-          func.apply instance, arguments
+          func.apply this, arguments
           # Call the corresponding `after~` method
-          instance["after#{utils.upcase(name)}"].apply instance, arguments
+          this["after#{utils.upcase(name)}"].apply this, arguments
 
       wrapMethod 'initialize'
       wrapMethod 'render'
