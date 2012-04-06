@@ -15,6 +15,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     View.prototype.containerSelector = null;
 
+    View.prototype.containerMethod = 'append';
+
     View.prototype.$container = null;
 
     function View() {
@@ -76,7 +78,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         }
         handler = third;
       } else {
-        throw new TypeError('View#delegate: two or three arguments are allowed');
+        throw new TypeError('View#delegate: only two or three arguments are\
+allowed');
       }
       if (typeof handler !== 'function') {
         throw new TypeError('View#delegate: handler argument must be function');
@@ -169,8 +172,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     };
 
     View.prototype.afterRender = function() {
-      if (this.$container) {
-        this.$container.append(this.el);
+      if (this.$container && (this.$container[this.containerMethod] != null)) {
+        this.$container[this.containerMethod](this.el);
         this.trigger('addedToDOM');
       }
       return this;
