@@ -13,13 +13,14 @@ define [
     # As an alternative you might pass a `render` option to the constructor.
     autoRender: false
 
-    # Automatic appending to DOM
+    # Automatic inserting into DOM
     # View container element
     # Set this property in a derived class to specify to selector
-    # of the container element. The view is automatically appended
-    # to the container when it’s rendered.
+    # of the container element. The view is automatically inserted
+    # into the container when it’s rendered.
     # As an alternative you might pass a `container` option to the constructor.
     containerSelector: null
+    containerMethod: 'append'
     $container: null
 
     constructor: ->
@@ -113,9 +114,9 @@ define [
           throw new TypeError 'View#delegate: second argument must be a string'
         handler = third
       else
-        throw new TypeError 'View#delegate: only two or three arguments are 
+        throw new TypeError 'View#delegate: only two or three arguments are
 allowed'
-      
+
       if typeof handler isnt 'function'
         throw new TypeError 'View#delegate: handler argument must be function'
 
@@ -248,9 +249,9 @@ allowed'
       #console.debug 'View#afterRender', this
 
       # Automatically append to DOM if the container element is set
-      if @$container
+      if @$container and @$container[@containerMethod]?
         #console.debug '\tappend to DOM'
-        @$container.append @el
+        @$container[@containerMethod] @el
         # Trigger an event
         @trigger 'addedToDOM'
 
