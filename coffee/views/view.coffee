@@ -9,19 +9,35 @@ define [
     _(View.prototype).extend Subscriber
 
     # Automatic rendering
+    # -------------------
+
     # Flag whether to render the view automatically on initialization.
     # As an alternative you might pass a `render` option to the constructor.
     autoRender: false
 
     # Automatic inserting into DOM
+    # ----------------------------
+
     # View container element
     # Set this property in a derived class to specify to selector
     # of the container element. The view is automatically inserted
     # into the container when it’s rendered.
     # As an alternative you might pass a `container` option to the constructor.
     containerSelector: null
+
+    # Method which is used for adding the view to the DOM
+    # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
     containerMethod: 'append'
+
+    # Store the container element reference
     $container: null
+
+    # Subviews
+    # --------
+
+    # List of subviews
+    subviews: null
+    subviewsByName: null
 
     constructor: ->
       #console.debug 'View#constructor', this
@@ -54,6 +70,10 @@ define [
       #console.debug 'View#initialize', this, 'options', options
       # No super call here, Backbone’s `initialize` is a no-op
 
+      # Initialize subviews
+      @subviews = []
+      @subviewsByName = {}
+
       # Listen for disposal of the model
       # If the model is disposed, automatically dispose the associated view
       if @model or @collection
@@ -76,20 +96,14 @@ define [
       byDefault = @autoRender and not byOption
       @render() if byOption or byDefault
 
-    # Make delegateEvents defunct, it is not used in our approach
-    # but is called by Backbone internally
-    delegateEvents: ->
-      # Noop
-
-    # Setup a simple one-way model-view binding
-    # Pass changed values from model to specific elements in the view
-    pass: (eventType, selector) ->
-      model = @model or @collection
-      @modelBind eventType, (model, val) =>
-        @$(selector).html(val)
-
     # User input event handling
     # -------------------------
+
+    # Make delegateEvents defunct, it is not used in our approach
+    # but is called by Backbone internally. Please use `delegate` and
+    # `undelegate` (see below) instead of the `events` hash.
+    delegateEvents: ->
+      # Noop
 
     # Event handling using event delegation
     # Register a handler for a specific event type
@@ -199,6 +213,57 @@ allowed'
       return unless model
       model.off null, null, @
 
+    # Setup a simple one-way model-view binding
+    # Pass changed values from model to specific elements in the view
+    pass: (eventType, selector) ->
+      model = @model or @collection
+      @modelBind eventType, (model, val) =>
+        @$(selector).html(val)
+
+    # Subviews
+    # --------
+
+    # Getting or adding a subview
+    subview: (name, view) ->
+      #console.debug 'View#subview', name, view
+      if name and view
+        @removeSubview name
+        @subviews.push view
+        @subviewsByName[name] = view
+        #console.debug '\tadd', name, view
+        view
+      else if name
+        #console.debug '\tget', name
+        @subviewsByName[name]
+
+    # Removing a subview
+    removeSubview: (nameOrView) ->
+      #console.debug 'View#removeSubview nameOrView:', nameOrView
+      return unless nameOrView
+
+      if typeof nameOrView is 'string'
+        name = nameOrView
+        view = @subviewsByName[name]
+      else
+        view = nameOrView
+        # Search for the name of the view
+        for otherName, otherView of @subviewsByName
+          if view is otherView
+            name = otherName
+            break
+
+      #console.debug 'View#removeSubview found name:', name, 'view:', view
+      return unless name and view and view.dispose
+
+      # Dispose the view
+      view.dispose()
+
+      # Remove the subview from the lists
+      index = _(@subviews).indexOf(view)
+      if index > -1
+        @subviews.splice index, 1
+      delete @subviewsByName[name]
+
     # Rendering
     # ---------
 
@@ -285,6 +350,9 @@ allowed'
       return if @disposed
       #console.debug 'View#dispose', this
 
+      # Dispose subviews
+      view.dispose() for view in @subviews
+
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
@@ -300,7 +368,8 @@ allowed'
 
       # Remove element references, options and model/collection references
       properties = [
-        'el', '$el', '$container', 'options', 'model', 'collection'
+        'el', '$el', '$container', 'options', 'model', 'collection',
+        'subviews', 'subviewsByName'
       ]
       delete this[prop] for prop in properties
 

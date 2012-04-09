@@ -19,6 +19,10 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     View.prototype.$container = null;
 
+    View.prototype.subviews = null;
+
+    View.prototype.subviewsByName = null;
+
     function View() {
       this.dispose = __bind(this.dispose, this);
       this.render = __bind(this.render, this);
@@ -38,6 +42,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     }
 
     View.prototype.initialize = function(options) {
+      this.subviews = [];
+      this.subviewsByName = {};
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
       if (options && options.container) {
         return this.$container = $(container);
@@ -54,15 +60,6 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     };
 
     View.prototype.delegateEvents = function() {};
-
-    View.prototype.pass = function(eventType, selector) {
-      var model,
-        _this = this;
-      model = this.model || this.collection;
-      return this.modelBind(eventType, function(model, val) {
-        return _this.$(selector).html(val);
-      });
-    };
 
     View.prototype.delegate = function(eventType, second, third) {
       var handler, selector;
@@ -146,6 +143,50 @@ allowed');
       return model.off(null, null, this);
     };
 
+    View.prototype.pass = function(eventType, selector) {
+      var model,
+        _this = this;
+      model = this.model || this.collection;
+      return this.modelBind(eventType, function(model, val) {
+        return _this.$(selector).html(val);
+      });
+    };
+
+    View.prototype.subview = function(name, view) {
+      if (name && view) {
+        this.removeSubview(name);
+        this.subviews.push(view);
+        this.subviewsByName[name] = view;
+        return view;
+      } else if (name) {
+        return this.subviewsByName[name];
+      }
+    };
+
+    View.prototype.removeSubview = function(nameOrView) {
+      var index, name, otherName, otherView, view, _ref;
+      if (!nameOrView) return;
+      if (typeof nameOrView === 'string') {
+        name = nameOrView;
+        view = this.subviewsByName[name];
+      } else {
+        view = nameOrView;
+        _ref = this.subviewsByName;
+        for (otherName in _ref) {
+          otherView = _ref[otherName];
+          if (view === otherView) {
+            name = otherName;
+            break;
+          }
+        }
+      }
+      if (!(name && view && view.dispose)) return;
+      view.dispose();
+      index = _(this.subviews).indexOf(view);
+      if (index > -1) this.subviews.splice(index, 1);
+      return delete this.subviewsByName[name];
+    };
+
     View.prototype.getTemplateData = function() {
       var modelAttributes, templateData;
       modelAttributes = this.model && this.model.getAttributes();
@@ -182,15 +223,20 @@ allowed');
     View.prototype.disposed = false;
 
     View.prototype.dispose = function() {
-      var prop, properties, _i, _len;
+      var prop, properties, view, _i, _j, _len, _len2, _ref;
       if (this.disposed) return;
+      _ref = this.subviews;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        view.dispose();
+      }
       this.unsubscribeAllEvents();
       this.modelUnbindAll();
       this.off();
       this.$el.remove();
-      properties = ['el', '$el', '$container', 'options', 'model', 'collection'];
-      for (_i = 0, _len = properties.length; _i < _len; _i++) {
-        prop = properties[_i];
+      properties = ['el', '$el', '$container', 'options', 'model', 'collection', 'subviews', 'subviewsByName'];
+      for (_j = 0, _len2 = properties.length; _j < _len2; _j++) {
+        prop = properties[_j];
         delete this[prop];
       }
       this.disposed = true;
