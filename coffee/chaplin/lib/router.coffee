@@ -1,4 +1,6 @@
-define ['mediator', 'lib/route'], (mediator, Route) ->
+define [
+  'mediator', 'chaplin/lib/route'
+], (mediator, Route) ->
   'use strict'
 
   # The router which is a replacement for Backbone.Router.

@@ -1,9 +1,8 @@
 define [
-  'mediator', 'lib/utils', 'lib/subscriber'
-  'controllers/controller',
-  'views/application_view',
-  'controllers/navigation_controller', 'controllers/sidebar_controller'
-], (mediator, utils, Subscriber, Controller, ApplicationView, NavigationController, SidebarController) ->
+  'mediator', 'chaplin/lib/utils',
+  'chaplin/controllers/controller',
+  'chaplin/lib/subscriber'
+], (mediator, utils, Controller, Subscriber) ->
   'use strict'
 
   class ApplicationController extends Controller
@@ -29,23 +28,6 @@ define [
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
       @subscribeEvent '!startupController', @startupController
-
-      @initApplicationView()
-      @initCommonControllers()
-
-    # Start common controllers and views
-    # -----------------------------------
-
-    initApplicationView: ->
-      # Save the reference for testing introspection only.
-      # Module should communicate with each other via Pub/Sub.
-      @view = new ApplicationView()
-
-    initCommonControllers: ->
-      # Save the reference for testing introspection only.
-      # Module should communicate with each other via Pub/Sub.
-      @navigationController = new NavigationController()
-      @sidebarController = new SidebarController()
 
     # Controller management
     # Starting and disposing controllers

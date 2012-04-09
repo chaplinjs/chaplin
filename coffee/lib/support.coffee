@@ -1,19 +1,13 @@
-define ->
-  'use strict'
+define ['lib/utils', 'chaplin/lib/support'], (utils, chaplinSupport) ->
 
-  # Feature detection
-  # -----------------
+  # Application-specific feature detection
+  # --------------------------------------
 
-  support =
+  # Delegate to Chaplin’s support module
+  support = utils.beget chaplinSupport
 
-    # Test for defineProperty support
-    # (IE 8 knows the method but will throw an exception)
-    propertyDescriptors: do ->
-      return false unless Object.defineProperty and Object.defineProperties
-      try
-        Object.defineProperty {}, 'foo', value: 'bar'
-        return true
-      catch error
-        return false
+  # _(support).extend
+
+    # someMethod: ->
 
   support

@@ -1,4 +1,4 @@
-define ['lib/create_mediator'], (createMediator) ->
+define ['chaplin/lib/create_mediator'], (createMediator) ->
   'use strict'
 
   # Mediator singleton
@@ -15,8 +15,15 @@ define ['lib/create_mediator'], (createMediator) ->
   # which need to talk to other modules using Publish/Subscribe.
   #
   # The actual creation of the mediator takes place in another
-  # module, see lib/create_mediator.coffee. This separation is due
-  # to testability.
+  # module, see chaplin/lib/create_mediator.coffee.
 
-  # Return a mediator created by the createMediator function
-  createMediator()
+  # Create the mediator using Chaplin’s constructor
+  mediator = createMediator
+    createRouterProperty: true
+    createUserProperty: true
+
+  # You might add properties to the mediator here
+
+  #mediator.foo = ->
+
+  mediator

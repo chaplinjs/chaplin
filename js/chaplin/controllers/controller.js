@@ -1,7 +1,7 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = Object.prototype.hasOwnProperty;
 
-define(['lib/subscriber'], function(Subscriber) {
+define(['chaplin/lib/subscriber'], function(Subscriber) {
   'use strict';
   var Controller;
   return Controller = (function() {

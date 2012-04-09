@@ -2,7 +2,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subscriber) {
+define(['chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'], function(utils, Subscriber) {
   'use strict';
   var View;
   return View = (function(_super) {

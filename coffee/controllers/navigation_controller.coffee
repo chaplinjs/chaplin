@@ -1,5 +1,6 @@
 define [
-  'controllers/controller', 'models/navigation', 'views/navigation_view'
+  'chaplin/controllers/controller',
+  'models/navigation', 'views/navigation_view'
 ], (Controller, Navigation, NavigationView) ->
 
   'use strict'

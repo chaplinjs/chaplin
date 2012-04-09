@@ -1,5 +1,6 @@
 define [
-  'controllers/controller', 'views/sidebar_view'
+  'chaplin/controllers/controller',
+  'views/sidebar_view'
 ], (Controller, SidebarView) ->
   'use strict'
 

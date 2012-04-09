@@ -1,4 +1,6 @@
-define ['views/view', 'text!templates/navigation.hbs'], (View, template) ->
+define [
+  'chaplin/views/view', 'text!templates/navigation.hbs'
+], (View, template) ->
   'use strict'
 
   class NavigationView extends View

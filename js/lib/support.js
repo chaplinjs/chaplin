@@ -1,19 +1,6 @@
 
-define(function() {
-  'use strict';
+define(['lib/utils', 'chaplin/lib/support'], function(utils, chaplinSupport) {
   var support;
-  support = {
-    propertyDescriptors: (function() {
-      if (!(Object.defineProperty && Object.defineProperties)) return false;
-      try {
-        Object.defineProperty({}, 'foo', {
-          value: 'bar'
-        });
-        return true;
-      } catch (error) {
-        return false;
-      }
-    })()
-  };
+  support = utils.beget(chaplinSupport);
   return support;
 });

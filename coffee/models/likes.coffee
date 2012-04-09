@@ -1,5 +1,5 @@
 define [
-  'mediator', 'models/collection', 'models/like'
+  'mediator', 'chaplin/models/collection', 'models/like'
 ], (mediator, Collection, Like) ->
   'use strict'
 

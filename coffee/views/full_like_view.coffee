@@ -1,5 +1,5 @@
 define [
-  'mediator', 'views/view', 'text!templates/full_like.hbs'
+  'mediator', 'chaplin/views/view', 'text!templates/full_like.hbs'
 ], (mediator, View, template) ->
   'use strict'
 

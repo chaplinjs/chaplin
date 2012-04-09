@@ -1,23 +1,29 @@
-define ['mediator', 'lib/utils'], (mediator, utils) ->
+define [
+  'mediator', 'chaplin/lib/utils'
+], (mediator, utils) ->
   'use strict'
 
   class ApplicationView # This class does not extend View
 
-    # Set your application name here so
-    # the document title is set properly to
-    # “Controller title – Site title” (see adjustTitle)
-    siteTitle = 'Chaplin Example Application'
+    # The site title used in the document title
+    title: ''
 
-    constructor: ->
-      #console.debug 'ApplicationView#constructor'
+    constructor: (options = {}) ->
+      #console.debug 'ApplicationView#constructor', options
+
+      @title = options.title
 
       # Listen to global events
-      mediator.subscribe 'login', @updateBodyClasses
-      mediator.subscribe 'logout', @updateBodyClasses
+
+      # Starting and disposing of controllers
       mediator.subscribe 'beforeControllerDispose', @hideOldView
       mediator.subscribe 'startupController', @showNewView
       mediator.subscribe 'startupController', @removeFallbackContent
       mediator.subscribe 'startupController', @adjustTitle
+
+      # Login and logout
+      mediator.subscribe 'login', @updateBodyClasses
+      mediator.subscribe 'logout', @updateBodyClasses
 
       @updateBodyClasses()
       @addDOMHandlers()
@@ -47,7 +53,7 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     # Get the title from the title property of the current controller
     adjustTitle: (context) ->
       #console.debug 'ApplicationView#adjustTitle', info
-      title = siteTitle
+      title = @title
       subtitle = context.controller.title
       title = "#{subtitle} \u2013 #{title}" if subtitle
       # Internet Explorer < 9 workaround
@@ -82,7 +88,6 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
     addDOMHandlers: ->
       # Handle links
       $(document)
-        .delegate('#logout-button', 'click', @logoutButtonClick)
         .delegate('.go-to', 'click', @goToHandler)
         .delegate('a', 'click', @openLink)
 
@@ -140,13 +145,3 @@ define ['mediator', 'lib/utils'], (mediator, utils) ->
       result = mediator.router.route path
 
       event.preventDefault() if result
-
-    # Important application-wide DOM event handlers
-    # ---------------------------------------------
-
-    # Handle clicks on the logout button
-    logoutButtonClick: (event) ->
-      event.preventDefault()
-
-      # Publish a global !logout event
-      mediator.publish '!logout'

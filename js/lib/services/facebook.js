@@ -22,8 +22,6 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
 
     function Facebook() {
       this.processUserData = __bind(this.processUserData, this);
-      this.processComment = __bind(this.processComment, this);
-      this.processLike = __bind(this.processLike, this);
       this.facebookLogout = __bind(this.facebookLogout, this);
       this.publishAbortionResult = __bind(this.publishAbortionResult, this);
       this.loginAbort = __bind(this.loginAbort, this);
@@ -42,8 +40,6 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
       this.subscribeEvent('loginAbort', this.loginAbort);
       this.subscribeEvent('logout', this.logout);
     }
-
-    Facebook.prototype.dispose = function() {};
 
     Facebook.prototype.load = function() {
       if (this.state() === 'resolved' || this.loading) return;
@@ -73,6 +69,12 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
       this.subscribe('auth.logout', this.facebookLogout);
       this.subscribe('edge.create', this.processLike);
       return this.subscribe('comment.create', this.processComment);
+    };
+
+    Facebook.prototype.unregisterHandlers = function() {
+      this.unsubscribe('auth.logout', this.facebookLogout);
+      this.unsubscribe('edge.create', this.processLike);
+      return this.unsubscribe('comment.create', this.processComment);
     };
 
     Facebook.prototype.isLoaded = function() {
@@ -177,11 +179,11 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
     };
 
     Facebook.prototype.processLike = function(url) {
-      return mediator.publish('facebookLike', url);
+      return mediator.publish('facebook:like', url);
     };
 
     Facebook.prototype.processComment = function(comment) {
-      return mediator.publish('facebookComment', comment.href);
+      return mediator.publish('facebook_comment', comment.href);
     };
 
     Facebook.prototype.parse = function(el) {
@@ -225,6 +227,12 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
 
     Facebook.prototype.processUserData = function(response) {
       return mediator.publish('userData', response);
+    };
+
+    Facebook.prototype.dispose = function() {
+      if (this.disposed) return;
+      this.unregisterHandlers();
+      return Facebook.__super__.dispose.apply(this, arguments);
     };
 
     return Facebook;

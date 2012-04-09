@@ -1,22 +1,24 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-define(['mediator', 'lib/utils'], function(mediator, utils) {
+define(['mediator', 'chaplin/lib/utils'], function(mediator, utils) {
   'use strict';
   var ApplicationView;
   return ApplicationView = (function() {
-    var siteTitle;
 
-    siteTitle = 'Chaplin Example Application';
+    ApplicationView.prototype.title = '';
 
-    function ApplicationView() {
+    function ApplicationView(options) {
+      if (options == null) options = {};
       this.openLink = __bind(this.openLink, this);
       this.removeFallbackContent = __bind(this.removeFallbackContent, this);
-      this.updateBodyClasses = __bind(this.updateBodyClasses, this);      mediator.subscribe('login', this.updateBodyClasses);
-      mediator.subscribe('logout', this.updateBodyClasses);
+      this.updateBodyClasses = __bind(this.updateBodyClasses, this);
+      this.title = options.title;
       mediator.subscribe('beforeControllerDispose', this.hideOldView);
       mediator.subscribe('startupController', this.showNewView);
       mediator.subscribe('startupController', this.removeFallbackContent);
       mediator.subscribe('startupController', this.adjustTitle);
+      mediator.subscribe('login', this.updateBodyClasses);
+      mediator.subscribe('logout', this.updateBodyClasses);
       this.updateBodyClasses();
       this.addDOMHandlers();
     }
@@ -42,7 +44,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
 
     ApplicationView.prototype.adjustTitle = function(context) {
       var subtitle, title;
-      title = siteTitle;
+      title = this.title;
       subtitle = context.controller.title;
       if (subtitle) title = "" + subtitle + " \u2013 " + title;
       return setTimeout((function() {
@@ -63,7 +65,7 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
     };
 
     ApplicationView.prototype.addDOMHandlers = function() {
-      return $(document).delegate('#logout-button', 'click', this.logoutButtonClick).delegate('.go-to', 'click', this.goToHandler).delegate('a', 'click', this.openLink);
+      return $(document).delegate('.go-to', 'click', this.goToHandler).delegate('a', 'click', this.openLink);
     };
 
     ApplicationView.prototype.openLink = function(event) {
@@ -100,11 +102,6 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
       if (!path) return;
       result = mediator.router.route(path);
       if (result) return event.preventDefault();
-    };
-
-    ApplicationView.prototype.logoutButtonClick = function(event) {
-      event.preventDefault();
-      return mediator.publish('!logout');
     };
 
     return ApplicationView;

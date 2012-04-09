@@ -2,7 +2,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/services/facebook', 'views/login_view'], function(mediator, utils, User, Controller, Facebook, LoginView) {
+define(['mediator', 'lib/utils', 'chaplin/controllers/controller', 'models/user', 'lib/services/facebook', 'views/login_view'], function(mediator, utils, Controller, User, Facebook, LoginView) {
   'use strict';
   var SessionController;
   return SessionController = (function(_super) {

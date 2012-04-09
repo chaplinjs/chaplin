@@ -4,7 +4,7 @@ define [
   'use strict'
 
   class Facebook extends ServiceProvider
-    
+
     # Note: This is the ID for an example Facebook app.
     # You might change this to your own application ID.
     # See https://developers.facebook.com/apps
@@ -12,7 +12,7 @@ define [
 
     # The permissions we’re asking for.
     # See https://developers.facebook.com/docs/reference/api/permissions/
-    # We want to read the user’s likes, that’s all.
+    # In this demo application, we would like to access the user’s likes.
     scope = 'user_likes'
 
     name: 'facebook'
@@ -38,9 +38,6 @@ define [
 
       @subscribeEvent 'loginAbort', @loginAbort
       @subscribeEvent 'logout', @logout
-
-    dispose: ->
-      # TODO unsubscribe
 
     # Load the JavaScript library asynchronously
     load: ->
@@ -75,12 +72,14 @@ define [
 
     # Register handlers for several events
     registerHandlers: ->
-      # Listen to logout on the Facebook
-      @subscribe 'auth.logout', @facebookLogout
-      # Listen to likes
-      @subscribe 'edge.create', @processLike
-      # Listen to comments
-      @subscribe 'comment.create', @processComment
+      @subscribe 'auth.logout', @facebookLogout # Logout on the Facebook side
+      @subscribe 'edge.create', @processLike # Creating of likes
+      @subscribe 'comment.create', @processComment # Creating of comments
+
+    unregisterHandlers: ->
+      @unsubscribe 'auth.logout', @facebookLogout
+      @unsubscribe 'edge.create', @processLike
+      @unsubscribe 'comment.create', @processComment
 
     # Check whether the Facebook library has been loaded
     isLoaded: ->
@@ -183,11 +182,12 @@ define [
 
     # Handlers for like and comment events
     # ------------------------------------
-    processLike: (url) =>
-      mediator.publish 'facebookLike', url
 
-    processComment: (comment) =>
-      mediator.publish 'facebookComment', comment.href
+    processLike: (url) ->
+      mediator.publish 'facebook:like', url
+
+    processComment: (comment) ->
+      mediator.publish 'facebook_comment', comment.href
 
     # Parsing of Facebook social plugins
     # ----------------------------------
@@ -240,3 +240,11 @@ define [
 
     processUserData: (response) =>
       mediator.publish 'userData', response
+
+    # Disposal
+    # --------
+
+    dispose: ->
+      return if @disposed
+      @unregisterHandlers()
+      super

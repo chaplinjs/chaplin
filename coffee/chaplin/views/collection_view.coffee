@@ -1,4 +1,6 @@
-define ['lib/utils', 'views/view'], (utils, View) ->
+define [
+  'lib/utils', 'chaplin/views/view'
+], (utils, View) ->
   'use strict'
 
   # General class for rendering Collections. Derive this class and

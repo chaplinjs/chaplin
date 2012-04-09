@@ -1,4 +1,6 @@
-define ['mediator', 'models/model'], (mediator, Model) ->
+define [
+  'mediator', 'chaplin/models/model'
+], (mediator, Model) ->
   'use strict'
 
   class Like extends Model

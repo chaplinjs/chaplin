@@ -1,5 +1,5 @@
 
-define(['lib/utils', 'lib/subscriber'], function(utils, Subscriber) {
+define(['lib/utils', 'chaplin/lib/subscriber'], function(utils, Subscriber) {
   'use strict';
   var ServiceProvider;
   return ServiceProvider = (function() {

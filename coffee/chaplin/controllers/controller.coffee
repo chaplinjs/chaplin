@@ -1,4 +1,6 @@
-define ['lib/subscriber'], (Subscriber) ->
+define [
+  'chaplin/lib/subscriber'
+], (Subscriber) ->
   'use strict'
 
   class Controller

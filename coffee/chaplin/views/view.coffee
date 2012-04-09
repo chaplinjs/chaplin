@@ -1,5 +1,6 @@
 define [
-  'lib/utils', 'lib/subscriber', 'lib/view_helper'
+  'chaplin/lib/utils', 'chaplin/lib/subscriber',
+  'chaplin/lib/view_helper' # Just load the file, no return value
 ], (utils, Subscriber) ->
   'use strict'
 

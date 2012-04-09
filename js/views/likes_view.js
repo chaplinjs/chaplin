@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'views/collection_view', 'views/compact_like_view', 'text!templates/likes.hbs'], function(mediator, CollectionView, CompactLikeView, template) {
+define(['mediator', 'chaplin/views/collection_view', 'views/compact_like_view', 'text!templates/likes.hbs'], function(mediator, CollectionView, CompactLikeView, template) {
   'use strict';
   var LikesView;
   return LikesView = (function(_super) {

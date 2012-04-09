@@ -1,4 +1,6 @@
-define ['lib/subscriber', 'lib/sync_machine'], (Subscriber, SyncMachine) ->
+define [
+  'chaplin/lib/subscriber', 'chaplin/lib/sync_machine'
+], (Subscriber, SyncMachine) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection

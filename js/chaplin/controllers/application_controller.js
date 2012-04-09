@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'lib/utils', 'lib/subscriber', 'controllers/controller', 'views/application_view', 'controllers/navigation_controller', 'controllers/sidebar_controller'], function(mediator, utils, Subscriber, Controller, ApplicationView, NavigationController, SidebarController) {
+define(['mediator', 'chaplin/lib/utils', 'chaplin/controllers/controller', 'chaplin/lib/subscriber'], function(mediator, utils, Controller, Subscriber) {
   'use strict';
   var ApplicationController;
   return ApplicationController = (function(_super) {
@@ -28,18 +28,7 @@ define(['mediator', 'lib/utils', 'lib/subscriber', 'controllers/controller', 'vi
 
     ApplicationController.prototype.initialize = function() {
       this.subscribeEvent('matchRoute', this.matchRoute);
-      this.subscribeEvent('!startupController', this.startupController);
-      this.initApplicationView();
-      return this.initCommonControllers();
-    };
-
-    ApplicationController.prototype.initApplicationView = function() {
-      return this.view = new ApplicationView();
-    };
-
-    ApplicationController.prototype.initCommonControllers = function() {
-      this.navigationController = new NavigationController();
-      return this.sidebarController = new SidebarController();
+      return this.subscribeEvent('!startupController', this.startupController);
     };
 
     ApplicationController.prototype.matchRoute = function(route, params) {

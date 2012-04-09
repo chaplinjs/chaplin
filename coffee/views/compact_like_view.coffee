@@ -1,4 +1,6 @@
-define ['views/view', 'text!templates/compact_like.hbs'], (View, template) ->
+define [
+  'chaplin/views/view', 'text!templates/compact_like.hbs'
+], (View, template) ->
   'use strict'
 
   class CompactLikeView extends View

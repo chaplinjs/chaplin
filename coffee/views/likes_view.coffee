@@ -1,5 +1,6 @@
 define [
-  'mediator', 'views/collection_view', 'views/compact_like_view',
+  'mediator',
+  'chaplin/views/collection_view', 'views/compact_like_view',
   'text!templates/likes.hbs'
 ], (mediator, CollectionView, CompactLikeView, template) ->
   'use strict'

@@ -1,4 +1,4 @@
-define ['models/model'], (Model) ->
+define ['chaplin/models/model'], (Model) ->
   'use strict'
 
   class Navigation extends Model

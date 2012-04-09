@@ -1,6 +1,6 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-define(['mediator', 'lib/route'], function(mediator, Route) {
+define(['mediator', 'chaplin/lib/route'], function(mediator, Route) {
   'use strict';
   var Router;
   return Router = (function() {

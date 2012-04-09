@@ -15,9 +15,11 @@ define ['mediator'], (mediator) ->
 
     subscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'Subscriber#subscribeEvent: type argument must be string'
+        throw new TypeError 'Subscriber#subscribeEvent: ' +
+          'type argument must be string'
       if typeof handler isnt 'function'
-        throw new TypeError 'Subscriber#subscribeEvent: handler argument must be function'
+        throw new TypeError 'Subscriber#subscribeEvent: ' +
+          'handler argument must be function'
 
       # Add to store
       @_globalSubscriptions or= {}
@@ -31,9 +33,11 @@ define ['mediator'], (mediator) ->
 
     unsubscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'Subscriber#unsubscribeEvent: type argument must be string'
+        throw new TypeError 'Subscriber#unsubscribeEvent: ' +
+          'type argument must be string'
       if typeof handler isnt 'function'
-        throw new TypeError 'Subscriber#unsubscribeEvent: handler argument must be function'
+        throw new TypeError 'Subscriber#unsubscribeEvent: ' +
+          'handler argument must be function'
 
       # Remove from store
       return unless @_globalSubscriptions

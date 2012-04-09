@@ -1,7 +1,10 @@
 define [
-  'mediator', 'lib/utils', 'models/user', 'controllers/controller',
-  'lib/services/facebook', 'views/login_view'
-], (mediator, utils, User, Controller, Facebook, LoginView) ->
+  'mediator', 'lib/utils',
+  'chaplin/controllers/controller',
+  'models/user',
+  'lib/services/facebook',
+  'views/login_view'
+], (mediator, utils, Controller, User, Facebook, LoginView) ->
   'use strict'
 
   class SessionController extends Controller

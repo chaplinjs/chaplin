@@ -7,10 +7,10 @@ define(['mediator'], function(mediator) {
     subscribeEvent: function(type, handler) {
       var handlers, _base;
       if (typeof type !== 'string') {
-        throw new TypeError('Subscriber#subscribeEvent: type argument must be string');
+        throw new TypeError('Subscriber#subscribeEvent: ' + 'type argument must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('Subscriber#subscribeEvent: handler argument must be function');
+        throw new TypeError('Subscriber#subscribeEvent: ' + 'handler argument must be function');
       }
       this._globalSubscriptions || (this._globalSubscriptions = {});
       handlers = (_base = this._globalSubscriptions)[type] || (_base[type] = []);
@@ -21,10 +21,10 @@ define(['mediator'], function(mediator) {
     unsubscribeEvent: function(type, handler) {
       var handlers, index;
       if (typeof type !== 'string') {
-        throw new TypeError('Subscriber#unsubscribeEvent: type argument must be string');
+        throw new TypeError('Subscriber#unsubscribeEvent: ' + 'type argument must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('Subscriber#unsubscribeEvent: handler argument must be function');
+        throw new TypeError('Subscriber#unsubscribeEvent: ' + 'handler argument must be function');
       }
       if (!this._globalSubscriptions) return;
       handlers = this._globalSubscriptions[type];

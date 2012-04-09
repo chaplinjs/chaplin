@@ -1,5 +1,7 @@
 define [
-  'mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'
+  'mediator', 'lib/utils',
+  'chaplin/views/view',
+  'text!templates/login.hbs'
 ], (mediator, utils, View, template) ->
   'use strict'
 
@@ -15,7 +17,7 @@ define [
     # Expects the serviceProviders in the options
     initialize: (options) ->
       super
-      #console.debug 'LoginView#initialize', @el, @$el, options, options.serviceProviders
+      #console.debug 'LoginView#initialize', @el, options, options.serviceProviders
       @initButtons options.serviceProviders
 
     # In this project we currently only have one service provider and therefore
@@ -60,5 +62,7 @@ define [
         .removeClass('service-loading')
         .addClass('service-unavailable')
         .attr('disabled', true)
-        .attr('title', "Error connecting. Please check whether you are
- blocking #{utils.upcase(serviceProviderName)}.")
+        .attr('title',
+          'Error connecting. Please check whether you are blocking ' +
+          "#{utils.upcase(serviceProviderName)}."
+        )

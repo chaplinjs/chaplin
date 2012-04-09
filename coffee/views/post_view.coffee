@@ -1,4 +1,6 @@
-define ['views/view', 'text!templates/post.hbs'], (View, template) ->
+define [
+  'chaplin/views/view', 'text!templates/post.hbs'
+], (View, template) ->
   'use strict'
 
   class PostView extends View

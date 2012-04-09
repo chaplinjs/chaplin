@@ -1,5 +1,6 @@
 define [
-  'mediator', 'views/view', 'text!templates/sidebar.hbs'
+  'mediator',
+  'chaplin/views/view', 'text!templates/sidebar.hbs'
 ], (mediator, View, template) ->
   'use strict'
 
@@ -15,8 +16,11 @@ define [
 
     initialize: ->
       super
+
       @subscribeEvent 'loginStatus', @loginStatusHandler
       @subscribeEvent 'userData', @render
+
+      @delegate 'click', '#logout-button', @logoutButtonClick
 
     loginStatusHandler: (loggedIn) =>
       #console.debug 'SidebarView#loginStatusHandler', loggedIn
@@ -25,3 +29,9 @@ define [
       else
         @model = null
       @render()
+
+    # Handle clicks on the logout button
+    logoutButtonClick: (event) ->
+      event.preventDefault()
+      # Publish a global !logout event
+      mediator.publish '!logout'

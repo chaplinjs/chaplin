@@ -1,4 +1,6 @@
-define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
+define [
+  'lib/utils', 'chaplin/lib/subscriber'
+], (utils, Subscriber) ->
   'use strict'
 
   class ServiceProvider
