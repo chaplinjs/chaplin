@@ -42,11 +42,6 @@ define(['mediator', 'lib/utils', 'lib/subscriber', 'controllers/controller', 'vi
       return this.sidebarController = new SidebarController();
     };
 
-    ApplicationController.prototype.disposeCommonControllers = function() {
-      this.navigationController.dispose();
-      return this.sidebarController.dispose();
-    };
-
     ApplicationController.prototype.matchRoute = function(route, params) {
       return this.startupController(route.controller, route.action, params);
     };

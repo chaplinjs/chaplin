@@ -47,10 +47,6 @@ define [
       @navigationController = new NavigationController()
       @sidebarController = new SidebarController()
 
-    disposeCommonControllers: ->
-      @navigationController.dispose()
-      @sidebarController.dispose()
-
     # Controller management
     # Starting and disposing controllers
     # ----------------------------------
