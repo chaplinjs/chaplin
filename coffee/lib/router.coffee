@@ -8,19 +8,25 @@ define ['mediator', 'lib/route'], (mediator, Route) ->
   class Router # This class does not extend Backbone.Router
 
     constructor: ->
-      # Create a Backbone.History instance
       @createHistory()
 
+    # Create a Backbone.History instance
     createHistory: ->
-      Backbone.history or= new Backbone.History
+      Backbone.history or= new Backbone.History()
 
     startHistory: ->
       # Start the Backbone.History instance to start routing
       # This should be called after all routes have been registered
       Backbone.history.start pushState: true
 
+    # Stop the current Backbone.History instance from observing URL changes
     stopHistory: ->
       Backbone.history.stop()
+
+    # Stop and delete the Backbone.History instance
+    deleteHistory: ->
+      Backbone.history.stop()
+      delete Backbone.history
 
     # Connect an address with a controller action
     # Directly create a route on the Backbone.History instance

@@ -11,7 +11,7 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
     }
 
     Router.prototype.createHistory = function() {
-      return Backbone.history || (Backbone.history = new Backbone.History);
+      return Backbone.history || (Backbone.history = new Backbone.History());
     };
 
     Router.prototype.startHistory = function() {
@@ -22,6 +22,11 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
 
     Router.prototype.stopHistory = function() {
       return Backbone.history.stop();
+    };
+
+    Router.prototype.deleteHistory = function() {
+      Backbone.history.stop();
+      return delete Backbone.history;
     };
 
     Router.prototype.match = function(pattern, target, options) {
