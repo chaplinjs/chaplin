@@ -31,6 +31,7 @@ define [
 
     processPosts: (response) =>
       #console.debug 'Posts#processPosts', response, response.data
+      return if @disposed
 
       # Trigger before updating the collection to hide the loading spinner
       @trigger 'load'

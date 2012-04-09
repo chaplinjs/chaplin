@@ -38,6 +38,7 @@ define(['mediator', 'chaplin/models/collection', 'models/post'], function(mediat
 
     Posts.prototype.processPosts = function(response) {
       var posts;
+      if (this.disposed) return;
       this.trigger('load');
       posts = response && response.data ? response.data : [];
       posts = _(posts).filter(function(post) {

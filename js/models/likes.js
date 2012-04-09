@@ -37,6 +37,7 @@ define(['mediator', 'chaplin/models/collection', 'models/like'], function(mediat
     };
 
     Likes.prototype.processLikes = function(response) {
+      if (this.disposed) return;
       this.trigger('load');
       this.reset(response && response.data ? response.data : []);
       return this.resolve();

@@ -31,6 +31,7 @@ define [
 
     processLikes: (response) =>
       #console.debug 'Likes#processLikes', response, response.data
+      return if @disposed
 
       # Trigger before updating the collection to hide the loading spinner
       @trigger 'load'
