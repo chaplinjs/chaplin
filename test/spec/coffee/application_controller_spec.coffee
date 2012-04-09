@@ -1,5 +1,7 @@
 define [
-  'mediator', 'controllers/controller', 'controllers/application_controller'
+  'mediator',
+  'chaplin/controllers/controller',
+  'chaplin/controllers/application_controller'
 ], (mediator, Controller, ApplicationController) ->
   'use strict'
 
@@ -79,13 +81,6 @@ define [
       expect(historyURLCalled).toBe true
       expect(passedParams).toBe params
 
-    it 'should dispose old controllers', ->
-      controller = undefined
-      handler = (passedController) ->
-        controller = passedController
-      mediator.subscribe 'beforeControllerDispose', handler
-      mediator.publish 'matchRoute', route, params
-
     it 'should save the current controller, action and params', ->
       mediator.publish 'matchRoute', route, params
       c = applicationController
@@ -96,17 +91,31 @@ define [
       expect(c.currentParams).toBe params
       expect(c.url).toBe "test/#{params.id}"
 
-    it 'should publish startupController events', ->
-      event = undefined
-      handler = (passedEvent) ->
-        event = passedEvent
+    it 'should dispose old controllers', ->
+      passedController = undefined
+      beforeControllerDispose = (controller) ->
+        passedController = controller
+      mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
 
-      mediator.subscribe 'startupController', handler
       mediator.publish 'matchRoute', route, params
-      mediator.unsubscribe 'startupController', handler
+      expect(disposeCalled).toBe true
+      expect(passedController instanceof TestController).toBe true
+      expect(passedController.disposed).toBe true
 
-      expect(typeof event).toBe 'object'
-      expect(event.controller instanceof TestController).toBe true
-      expect(event.controllerName).toBe 'test'
-      expect(event.params).toBe params
-      expect(event.previousControllerName).toBe 'test'
+      mediator.unsubscribe 'beforeControllerDispose', beforeControllerDispose
+
+    it 'should publish startupController events', ->
+      passedEvent = undefined
+      startupController = (event) ->
+        passedEvent = event
+
+      mediator.subscribe 'startupController', startupController
+      mediator.publish 'matchRoute', route, params
+
+      expect(typeof passedEvent).toBe 'object'
+      expect(passedEvent.controller instanceof TestController).toBe true
+      expect(passedEvent.controllerName).toBe 'test'
+      expect(passedEvent.params).toBe params
+      expect(passedEvent.previousControllerName).toBe 'test'
+
+      mediator.unsubscribe 'startupController', startupController

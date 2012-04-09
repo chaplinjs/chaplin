@@ -60,11 +60,13 @@ define [
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
+      # Default to false unless explicitly set to true
       if params.forceStartup isnt true
         params.forceStartup = false
 
       # Check if the desired controller is already active
-      isSameController = not params.forceStartup and
+      isSameController =
+        not params.forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
@@ -122,15 +124,22 @@ define [
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params) ->
-      # Ask the the controller for the URL
-      if typeof controller.historyURL is 'function'
+      if params.path
+        # Just use the matched path
+        url = params.path
+
+      else if typeof controller.historyURL is 'function'
+        # Use controller.historyURL to get the URL
         # If the property is a function, call it
         url = controller.historyURL params
+
       else if typeof controller.historyURL is 'string'
+        # If the property is a string, read it
         url = controller.historyURL
+
       else
-        throw new Error "ApplicationController#adjustURL: controller for
- #{@currentControllerName} does not provide a historyURL"
+        throw new Error 'ApplicationController#adjustURL: controller for ' +
+          "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
       if params.changeURL

@@ -1,5 +1,5 @@
 
-define(['mediator', 'controllers/controller', 'views/application_view'], function(mediator, Controller, ApplicationView) {
+define(['mediator', 'chaplin/controllers/controller', 'chaplin/views/application_view'], function(mediator, Controller, ApplicationView) {
   'use strict';  return describe('ApplicationView', function() {
     var applicationView, testController;
     applicationView = void 0;

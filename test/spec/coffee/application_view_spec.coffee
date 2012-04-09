@@ -1,5 +1,7 @@
 define [
-  'mediator', 'controllers/controller', 'views/application_view'
+  'mediator',
+  'chaplin/controllers/controller',
+  'chaplin/views/application_view'
 ], (mediator, Controller, ApplicationView) ->
   'use strict'
 

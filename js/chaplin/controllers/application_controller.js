@@ -75,12 +75,14 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/controllers/controller', 'chap
 
     ApplicationController.prototype.adjustURL = function(controller, params) {
       var url;
-      if (typeof controller.historyURL === 'function') {
+      if (params.path) {
+        url = params.path;
+      } else if (typeof controller.historyURL === 'function') {
         url = controller.historyURL(params);
       } else if (typeof controller.historyURL === 'string') {
         url = controller.historyURL;
       } else {
-        throw new Error("ApplicationController#adjustURL: controller for " + this.currentControllerName + " does not provide a historyURL");
+        throw new Error('ApplicationController#adjustURL: controller for ' + ("" + this.currentControllerName + " does not provide a historyURL"));
       }
       if (params.changeURL) mediator.publish('!router:changeURL', url);
       return this.url = url;
