@@ -132,9 +132,9 @@ define [
         throw new Error "ApplicationController#adjustURL: controller for
  #{@currentControllerName} does not provide a historyURL"
 
-      # Pass to the router to actually change the current URL
+      # Tell the router to actually change the current URL
       if params.changeURL
-        mediator.router.changeURL url
+        mediator.publish '!router:changeURL', url
 
       # Save the URL
       @url = url

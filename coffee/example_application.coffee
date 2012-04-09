@@ -17,18 +17,31 @@ define [
     title: 'Chaplin Example Application'
 
     initialize: ->
-      #console.debug 'Application#initialize'
+      #console.debug 'ExampleApplication#initialize'
+
       super # This creates the AppController and AppView
 
       # Instantiate common controllers
+      # ------------------------------
+
       new SessionController()
       new NavigationController()
       new SidebarController()
 
-      # Initialize the router. This starts the history
+      # Initialize the router
+      # ---------------------
+
+      # This creates the mediator.router property and
+      # starts the Backbone history.
       @initRouter routes
 
-      # Seal the mediator object
+      # Object sealing
+      # --------------
+
+      # Seal the mediator object (prevent extensions and
+      # make all properties non-configurable)
       if support.propertyDescriptors and Object.seal
         Object.seal mediator
 
+      # Freeze the application instance to prevent further changes
+      Object.freeze? this

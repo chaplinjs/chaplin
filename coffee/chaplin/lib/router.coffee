@@ -1,6 +1,6 @@
 define [
-  'mediator', 'chaplin/lib/route'
-], (mediator, Route) ->
+  'mediator', 'chaplin/lib/subscriber', 'chaplin/lib/route'
+], (mediator, Subscriber, Route) ->
   'use strict'
 
   # The router which is a replacement for Backbone.Router.
@@ -9,7 +9,12 @@ define [
 
   class Router # This class does not extend Backbone.Router
 
+    _(Router.prototype).extend Subscriber
+
     constructor: ->
+      @subscribeEvent '!router:route', @routeHandler
+      @subscribeEvent '!router:changeURL', @changeURLHandler
+
       @createHistory()
 
     # Create a Backbone.History instance
@@ -24,11 +29,6 @@ define [
     # Stop the current Backbone.History instance from observing URL changes
     stopHistory: ->
       Backbone.history.stop()
-
-    # Stop and delete the Backbone.History instance
-    deleteHistory: ->
-      Backbone.history.stop()
-      delete Backbone.history
 
     # Connect an address with a controller action
     # Directly create a route on the Backbone.History instance
@@ -56,8 +56,35 @@ define [
           return true
       false
 
+    # Handler for the global !router:route event
+    routeHandler: (path, callback) ->
+      routed = @route path
+      callback? routed
+
     # Change the current URL, add a history entry.
     # Do not trigger any routes (which is Backbone’s
     # default behavior, but added for clarity)
     changeURL: (url) ->
+      #console.debug 'Router#changeURL', url
       Backbone.history.navigate url, trigger: false
+
+    # Handler for the global !router:changeURL event
+    changeURLHandler: (url) ->
+      @changeURL url
+
+    # Disposal
+    # --------
+
+    disposed: false
+
+    dispose: ->
+      return if @disposed
+
+      @stopHistory()
+      delete Backbone.history
+      @unsubscribeAllEvents()
+
+      @disposed = true
+
+      # Your're frozen when your heart’s not open
+      Object.freeze? this

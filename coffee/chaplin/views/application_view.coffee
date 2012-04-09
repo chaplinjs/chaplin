@@ -127,10 +127,10 @@ define [
       path = el.pathname
       return unless path
 
-      # Pass to the router. Returns true if the URL could be routed.
-      result = mediator.router.route path
-
-      event.preventDefault() if result
+      # Pass to the router
+      mediator.publish '!router:route', path, (routed) ->
+        # Prevent default handling if the URL could be routed
+        event.preventDefault() if routed
 
     # Not only A elements might act as internal links,
     # every element might have:
@@ -144,7 +144,7 @@ define [
       path = $(el).data('href')
       return unless path
 
-      # Pass to the router. Returns true if the URL could be routed.
-      result = mediator.router.route path
-
-      event.preventDefault() if result
+      # Pass to the router
+      mediator.publish '!router:route', path, (routed) ->
+        # Prevent default handling if the URL could be routed
+        event.preventDefault() if routed

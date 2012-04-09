@@ -16,11 +16,9 @@ define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views
     };
 
     Application.prototype.initRouter = function(routes) {
-      var router;
-      router = new Router();
-      mediator.setRouter(router);
-      if (typeof routes === "function") routes(router.match);
-      return router.startHistory();
+      this.router = new Router();
+      if (typeof routes === "function") routes(this.router.match);
+      return this.router.startHistory();
     };
 
     return Application;

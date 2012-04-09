@@ -20,7 +20,8 @@ define(['mediator', 'chaplin/application', 'controllers/session_controller', 'co
       new NavigationController();
       new SidebarController();
       this.initRouter(routes);
-      if (support.propertyDescriptors && Object.seal) return Object.seal(mediator);
+      if (support.propertyDescriptors && Object.seal) Object.seal(mediator);
+      return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
     return ExampleApplication;

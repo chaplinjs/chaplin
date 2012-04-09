@@ -85,23 +85,25 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
     };
 
     ApplicationView.prototype.openInternalLink = function(event) {
-      var el, path, result;
+      var el, path;
       event.preventDefault();
       el = event.currentTarget;
       path = el.pathname;
       if (!path) return;
-      result = mediator.router.route(path);
-      if (result) return event.preventDefault();
+      return mediator.publish('!router:route', path, function(routed) {
+        if (routed) return event.preventDefault();
+      });
     };
 
     ApplicationView.prototype.goToHandler = function(event) {
-      var el, path, result;
+      var el, path;
       el = event.currentTarget;
       if (event.nodeName === 'A') return;
       path = $(el).data('href');
       if (!path) return;
-      result = mediator.router.route(path);
-      if (result) return event.preventDefault();
+      return mediator.publish('!router:route', path, function(routed) {
+        if (routed) return event.preventDefault();
+      });
     };
 
     return ApplicationView;

@@ -1,5 +1,5 @@
 define [
-  'mediator', 'lib/router', 'lib/route'
+  'mediator', 'chaplin/lib/router', 'chaplin/lib/route'
 ], (mediator, Router, Route) ->
   'use strict'
 
@@ -15,9 +15,11 @@ define [
 
     beforeEach ->
       route = params = undefined
+
       # Create a fresh Router with a fresh Backbone.History before each test
-      router.deleteHistory() if router
+      router.dispose() if router
       router = new Router()
+
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
@@ -124,3 +126,26 @@ define [
       expect(params.foo).toBe input.foo
       expect(params.bar).toBe input.bar
       expect(params['q&uu=x']).toBe input['q&uu=x']
+
+    it 'should listen to the !router:route event', ->
+      path = 'router-route-events'
+      spyOn(router, 'route').andCallThrough()
+      spy = jasmine.createSpy()
+      router.match path, 'router#route'
+
+      mediator.publish '!router:route', path, spy
+      expect(router.route).toHaveBeenCalledWith path
+      expect(spy).toHaveBeenCalledWith true
+      expect(route.controller).toBe 'router'
+      expect(route.action).toBe 'route'
+
+      spy = jasmine.createSpy()
+      mediator.publish '!router:route', 'different-path', spy
+      expect(spy).toHaveBeenCalledWith false
+
+    it 'should listen to the !router:changeURL event', ->
+      path = 'router-changeurl-events'
+      spyOn(router, 'changeURL').andCallThrough()
+
+      mediator.publish '!router:changeURL', path
+      expect(router.changeURL).toHaveBeenCalledWith path

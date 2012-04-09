@@ -1,5 +1,5 @@
 
-define(['mediator', 'lib/router', 'lib/route'], function(mediator, Router, Route) {
+define(['mediator', 'chaplin/lib/router', 'chaplin/lib/route'], function(mediator, Router, Route) {
   'use strict';  return describe('Router and Route', function() {
     var matchRoute, params, route, router;
     router = route = params = void 0;
@@ -9,7 +9,7 @@ define(['mediator', 'lib/router', 'lib/route'], function(mediator, Router, Route
     };
     beforeEach(function() {
       route = params = void 0;
-      if (router) router.deleteHistory();
+      if (router) router.dispose();
       router = new Router();
       return mediator.subscribe('matchRoute', matchRoute);
     });
@@ -100,7 +100,7 @@ define(['mediator', 'lib/router', 'lib/route'], function(mediator, Router, Route
       router.route('/conflicting-params/123');
       return expect(params.foo).toBe('bar');
     });
-    return it('should pass query string parameters', function() {
+    it('should pass query string parameters', function() {
       var input, queryString;
       router.match('query-string', 'null#null');
       input = {
@@ -115,6 +115,28 @@ define(['mediator', 'lib/router', 'lib/route'], function(mediator, Router, Route
       expect(params.foo).toBe(input.foo);
       expect(params.bar).toBe(input.bar);
       return expect(params['q&uu=x']).toBe(input['q&uu=x']);
+    });
+    it('should listen to the !router:route event', function() {
+      var path, spy;
+      path = 'router-route-events';
+      spyOn(router, 'route').andCallThrough();
+      spy = jasmine.createSpy();
+      router.match(path, 'router#route');
+      mediator.publish('!router:route', path, spy);
+      expect(router.route).toHaveBeenCalledWith(path);
+      expect(spy).toHaveBeenCalledWith(true);
+      expect(route.controller).toBe('router');
+      expect(route.action).toBe('route');
+      spy = jasmine.createSpy();
+      mediator.publish('!router:route', 'different-path', spy);
+      return expect(spy).toHaveBeenCalledWith(false);
+    });
+    return it('should listen to the !router:changeURL event', function() {
+      var path;
+      path = 'router-changeurl-events';
+      spyOn(router, 'changeURL').andCallThrough();
+      mediator.publish('!router:changeURL', path);
+      return expect(router.changeURL).toHaveBeenCalledWith(path);
     });
   });
 });

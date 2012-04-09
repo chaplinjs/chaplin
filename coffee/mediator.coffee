@@ -17,7 +17,8 @@ define ['chaplin/lib/create_mediator'], (createMediator) ->
   # The actual creation of the mediator takes place in another
   # module, see chaplin/lib/create_mediator.coffee.
 
-  # Create the mediator using Chaplin’s constructor
+  # Create the mediator using Chaplin’s constructor,
+  # add properties/methods for getting/setting the user and the router
   mediator = createMediator
     createRouterProperty: true
     createUserProperty: true

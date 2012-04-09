@@ -82,7 +82,7 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/controllers/controller', 'chap
       } else {
         throw new Error("ApplicationController#adjustURL: controller for " + this.currentControllerName + " does not provide a historyURL");
       }
-      if (params.changeURL) mediator.router.changeURL(url);
+      if (params.changeURL) mediator.publish('!router:changeURL', url);
       return this.url = url;
     };
 

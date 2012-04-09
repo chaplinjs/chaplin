@@ -25,6 +25,7 @@ define [
 
   # The actual function which creates a mediator object
   (options = {}) ->
+
     _(options).defaults
       createRouterProperty: true
       createUserProperty: true
@@ -34,13 +35,16 @@ define [
       return unless descriptorsSupported
       Object.defineProperty mediator, prop, descriptor
 
-    # Helper method to make properties readonly
+    # Helper method to make properties readonly and not configurable
+    readonlyDescriptor =
+      writable: false
+      enumerable: true
+      configurable: false
+
     readonly = ->
       return unless descriptorsSupported
       for prop in arguments
-        descriptor = Object.getOwnPropertyDescriptor mediator, prop
-        descriptor.writable = false
-        defineProperty prop, descriptor
+        defineProperty prop, readonlyDescriptor
 
     # Start with a simple object
     mediator = {}
@@ -59,41 +63,6 @@ define [
 
     # Make subscribe, unsubscribe and publish properties readonly
     readonly 'subscribe', 'unsubscribe', 'publish'
-
-    # The Router
-    # ----------
-
-    if options.createRouterProperty
-
-      mediator.router = null
-
-      # In browsers which support ECMAScript 5 property descriptors,
-      # the router property is not writable directly.
-      # For setting the router, you need to use the `setRouter` method.
-      # Additionally, the router may only be set once.
-
-      # Overwrite the property with a getter and a no-op setter.
-      # The actual value is saved as a private variable.
-      privateRouter = null
-      defineProperty 'router',
-        get: -> privateRouter
-        set: -> throw new Error 'mediator.router is not writable directly. ' +
-          'Please use mediator.setRouter instead.'
-        enumerable: true
-        configurable: false
-
-      # Set the value from the outside
-      mediator.setRouter = (router) ->
-        # Allow the property to be set only once
-        if mediator.router
-          throw new Error 'mediator.router was already set, ' +
-            'it can only be set once.'
-        if descriptorsSupported
-          # Change the private variable
-          privateRouter = router
-        else
-          # Change the public property
-          mediator.router = router
 
     # Current user
     # ------------

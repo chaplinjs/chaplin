@@ -29,14 +29,12 @@ define [
 
     # Pass the function typically returned by routes.coffee
     initRouter: (routes) ->
-      router = new Router()
-
-      # We have to make the router public because
-      # the AppView needs to access it synchronously.
-      mediator.setRouter router
+      # Save the reference for testing introspection only.
+      # Module should communicate with each other via Pub/Sub.
+      @router = new Router()
 
       # Register all routes declared in routes.coffee
-      routes? router.match
+      routes? @router.match
 
       # After registering the routes, start Backbone.history
-      router.startHistory()
+      @router.startHistory()

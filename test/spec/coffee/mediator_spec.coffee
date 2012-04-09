@@ -1,5 +1,5 @@
 define [
-  'lib/create_mediator', 'models/model'
+  'chaplin/lib/create_mediator', 'chaplin/models/model'
 ], (createMediator, Model) ->
   'use strict'
 
@@ -10,10 +10,6 @@ define [
 
     it 'should be a simple object', ->
       expect(typeof mediator).toEqual 'object'
-
-    it 'should be sealed', ->
-      return unless Object.isSealed
-      expect(Object.isSealed(mediator)).toBe true
 
     it 'should have Pub/Sub methods', ->
       expect(typeof mediator.subscribe).toEqual 'function'
@@ -36,26 +32,26 @@ define [
         expect(desc.configurable).toBe false
 
     it 'should publish messages to subscribers', ->
-      callback = jasmine.createSpy()
+      spy = jasmine.createSpy()
       eventName = 'foo'
       payload = 'payload'
 
-      mediator.subscribe eventName, callback
+      mediator.subscribe eventName, spy
       mediator.publish eventName, payload
 
-      expect(callback).toHaveBeenCalledWith payload
-      mediator.unsubscribe eventName, callback
+      expect(spy).toHaveBeenCalledWith payload
+      mediator.unsubscribe eventName, spy
 
     it 'should allow to unsubscribe to events', ->
-      callback = jasmine.createSpy()
+      spy = jasmine.createSpy()
       eventName = 'foo'
       payload = 'payload'
 
-      mediator.subscribe eventName, callback
-      mediator.unsubscribe eventName, callback
+      mediator.subscribe eventName, spy
+      mediator.unsubscribe eventName, spy
       mediator.publish eventName, payload
 
-      expect(callback).not.toHaveBeenCalledWith payload
+      expect(spy).not.toHaveBeenCalledWith payload
 
     it 'should have a user which is null', ->
       expect(mediator.user).toBeNull()
@@ -73,20 +69,3 @@ define [
       user = new Model
       mediator.setUser user
       expect(mediator.user).toBe user
-
-    it 'should have a router which is null', ->
-      expect(mediator.router).toBeNull()
-
-    it 'should have a readonly router', ->
-      return unless Object.defineProperty
-      expect(->
-        mediator.router = 'foo'
-      ).toThrow()
-
-    it 'should have a setRouter method', ->
-      expect(typeof mediator.setRouter).toEqual 'function'
-
-    it 'should have a user after calling setUser', ->
-      router = { fakeRouter: true }
-      mediator.setRouter router
-      expect(mediator.router).toBe router

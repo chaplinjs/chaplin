@@ -4,7 +4,7 @@ define(['chaplin/lib/support'], function(support) {
   var descriptorsSupported;
   descriptorsSupported = support.propertyDescriptors;
   return function(options) {
-    var defineProperty, mediator, privateRouter, privateUser, readonly;
+    var defineProperty, mediator, privateUser, readonly, readonlyDescriptor;
     if (options == null) options = {};
     _(options).defaults({
       createRouterProperty: true,
@@ -14,15 +14,18 @@ define(['chaplin/lib/support'], function(support) {
       if (!descriptorsSupported) return;
       return Object.defineProperty(mediator, prop, descriptor);
     };
+    readonlyDescriptor = {
+      writable: false,
+      enumerable: true,
+      configurable: false
+    };
     readonly = function() {
-      var descriptor, prop, _i, _len, _results;
+      var prop, _i, _len, _results;
       if (!descriptorsSupported) return;
       _results = [];
       for (_i = 0, _len = arguments.length; _i < _len; _i++) {
         prop = arguments[_i];
-        descriptor = Object.getOwnPropertyDescriptor(mediator, prop);
-        descriptor.writable = false;
-        _results.push(defineProperty(prop, descriptor));
+        _results.push(defineProperty(prop, readonlyDescriptor));
       }
       return _results;
     };
@@ -32,30 +35,6 @@ define(['chaplin/lib/support'], function(support) {
     mediator.publish = mediator.trigger = Backbone.Events.trigger;
     mediator._callbacks = null;
     readonly('subscribe', 'unsubscribe', 'publish');
-    if (options.createRouterProperty) {
-      mediator.router = null;
-      privateRouter = null;
-      defineProperty('router', {
-        get: function() {
-          return privateRouter;
-        },
-        set: function() {
-          throw new Error('mediator.router is not writable directly. ' + 'Please use mediator.setRouter instead.');
-        },
-        enumerable: true,
-        configurable: false
-      });
-      mediator.setRouter = function(router) {
-        if (mediator.router) {
-          throw new Error('mediator.router was already set, ' + 'it can only be set once.');
-        }
-        if (descriptorsSupported) {
-          return privateRouter = router;
-        } else {
-          return mediator.router = router;
-        }
-      };
-    }
     if (options.createUserProperty) {
       mediator.user = null;
       privateUser = null;

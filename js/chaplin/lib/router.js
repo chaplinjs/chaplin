@@ -1,13 +1,17 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-define(['mediator', 'chaplin/lib/route'], function(mediator, Route) {
+define(['mediator', 'chaplin/lib/subscriber', 'chaplin/lib/route'], function(mediator, Subscriber, Route) {
   'use strict';
   var Router;
   return Router = (function() {
 
+    _(Router.prototype).extend(Subscriber);
+
     function Router() {
       this.route = __bind(this.route, this);
-      this.match = __bind(this.match, this);      this.createHistory();
+      this.match = __bind(this.match, this);      this.subscribeEvent('!router:route', this.routeHandler);
+      this.subscribeEvent('!router:changeURL', this.changeURLHandler);
+      this.createHistory();
     }
 
     Router.prototype.createHistory = function() {
@@ -22,11 +26,6 @@ define(['mediator', 'chaplin/lib/route'], function(mediator, Route) {
 
     Router.prototype.stopHistory = function() {
       return Backbone.history.stop();
-    };
-
-    Router.prototype.deleteHistory = function() {
-      Backbone.history.stop();
-      return delete Backbone.history;
     };
 
     Router.prototype.match = function(pattern, target, options) {
@@ -52,10 +51,31 @@ define(['mediator', 'chaplin/lib/route'], function(mediator, Route) {
       return false;
     };
 
+    Router.prototype.routeHandler = function(path, callback) {
+      var routed;
+      routed = this.route(path);
+      return typeof callback === "function" ? callback(routed) : void 0;
+    };
+
     Router.prototype.changeURL = function(url) {
       return Backbone.history.navigate(url, {
         trigger: false
       });
+    };
+
+    Router.prototype.changeURLHandler = function(url) {
+      return this.changeURL(url);
+    };
+
+    Router.prototype.disposed = false;
+
+    Router.prototype.dispose = function() {
+      if (this.disposed) return;
+      this.stopHistory();
+      delete Backbone.history;
+      this.unsubscribeAllEvents();
+      this.disposed = true;
+      return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
     return Router;

@@ -1,28 +1,39 @@
 
-define(['mediator', 'application', 'lib/router', 'controllers/session_controller', 'controllers/application_controller'], function(mediator, Application, Router, SessionController, ApplicationController) {
-  'use strict';  return describe('Application', function() {
+define(['mediator', 'chaplin/application', 'chaplin/lib/router', 'chaplin/controllers/application_controller', 'chaplin/views/application_view'], function(mediator, Application, Router, ApplicationController, ApplicationView) {
+  'use strict';
+  var application;
+  application = new Application();
+  return describe('Application', function() {
     it('should be a simple object', function() {
-      return expect(typeof Application).toEqual('object');
+      expect(typeof application).toEqual('object');
+      return expect(application instanceof Application).toBe(true);
     });
     it('should initialize', function() {
-      expect(typeof Application.initialize).toBe('function');
-      return Application.initialize();
-    });
-    it('should create a session controller', function() {
-      return expect(Application.sessionController instanceof SessionController).toEqual(true);
+      expect(typeof application.initialize).toBe('function');
+      return application.initialize();
     });
     it('should create an application controller', function() {
-      return expect(Application.applicationController instanceof ApplicationController).toEqual(true);
+      return expect(application.applicationController instanceof ApplicationController).toEqual(true);
     });
-    it('should create a router on the mediator', function() {
-      return expect(mediator.router instanceof Router).toEqual(true);
+    it('should create an application view', function() {
+      return expect(application.applicationView instanceof ApplicationView).toEqual(true);
     });
-    it('should start Backbone.history', function() {
+    it('should create a router', function() {
+      var passedMatch, routes, routesCalled;
+      passedMatch = void 0;
+      routesCalled = false;
+      routes = function(match) {
+        routesCalled = true;
+        return passedMatch = match;
+      };
+      expect(typeof application.initRouter).toBe('function');
+      application.initRouter(routes);
+      expect(application.router instanceof Router).toEqual(true);
+      expect(routesCalled).toBe(true);
+      return expect(typeof passedMatch).toBe('function');
+    });
+    return it('should start Backbone.history', function() {
       return expect(Backbone.History.started).toBe(true);
-    });
-    return it('should be frozen', function() {
-      if (!Object.isFrozen) return;
-      return expect(Object.isFrozen(Application)).toBe(true);
     });
   });
 });
