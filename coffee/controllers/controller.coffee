@@ -2,13 +2,18 @@ define ['lib/subscriber'], (Subscriber) ->
   'use strict'
 
   class Controller
-    # Mixin a Subscriber
-    _(Controller.prototype).defaults Subscriber
 
-    model: null
-    collection: null
+    # Mixin a Subscriber
+    _(Controller.prototype).extend Subscriber
+
     view: null
     currentId: null
+
+    # You should set a title property and a historyURL property or method
+    # on the derived controller. Like this:
+    # title: 'foo'
+    # historyURL: 'foo'
+    # historyURL: ->
 
     constructor: ->
       @initialize()
@@ -25,17 +30,19 @@ define ['lib/subscriber'], (Subscriber) ->
       return if @disposed
       #console.debug 'Controller#dispose', this
 
-      # Dispose models, collections and views
-      @model.dispose() if @model # Also disposes associated views
-      @collection.dispose() if @collection # Also disposes associated views
-      @view.dispose() if @view # Just in case it wasn't disposed indirectly
+      # Dispose and delete all members which are disposable
+      for own prop of this
+        obj = this[prop]
+        if obj and typeof obj.dispose is 'function'
+          obj.dispose()
+          delete this[prop]
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
-      # Remove model, collection and view references
-      properties = 'model collection view currentId'.split(' ')
-      delete @[prop] for prop in properties
+      # Remove properties
+      properties = ['currentId']
+      delete this[prop] for prop in properties
 
       # Finished
       #console.debug 'Controller#dispose', this, 'finished'

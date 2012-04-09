@@ -3,7 +3,8 @@ define [
 ], (Controller, SidebarView) ->
   'use strict'
 
-  class NavigationController extends Controller
+  class SidebarController extends Controller
+
     initialize: ->
       @view = new SidebarView()
 

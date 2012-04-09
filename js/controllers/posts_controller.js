@@ -12,12 +12,14 @@ define(['controllers/controller', 'models/posts', 'views/posts_view'], function(
       PostsController.__super__.constructor.apply(this, arguments);
     }
 
+    PostsController.prototype.title = 'Facebook Wall Posts';
+
     PostsController.prototype.historyURL = 'posts';
 
     PostsController.prototype.index = function(params) {
-      this.collection = new Posts();
+      this.posts = new Posts();
       return this.view = new PostsView({
-        collection: this.collection
+        collection: this.posts
       });
     };
 

@@ -8,137 +8,67 @@ define(['mediator', 'lib/utils'], function(mediator, utils) {
 
     siteTitle = 'Chaplin Example Application';
 
-    ApplicationView.prototype.previousController = null;
-
-    ApplicationView.prototype.currentControllerName = null;
-
-    ApplicationView.prototype.currentController = null;
-
-    ApplicationView.prototype.currentAction = null;
-
-    ApplicationView.prototype.currentView = null;
-
-    ApplicationView.prototype.currentParams = null;
-
-    ApplicationView.prototype.url = null;
-
     function ApplicationView() {
       this.openLink = __bind(this.openLink, this);
       this.removeFallbackContent = __bind(this.removeFallbackContent, this);
-      this.startupController = __bind(this.startupController, this);
-      this.matchRoute = __bind(this.matchRoute, this);
-      this.logout = __bind(this.logout, this);
-      this.login = __bind(this.login, this);      if (!mediator.user) this.logout();
-      mediator.subscribe('matchRoute', this.matchRoute);
-      mediator.subscribe('!startupController', this.startupController);
-      mediator.subscribe('login', this.login);
-      mediator.subscribe('logout', this.logout);
+      this.updateBodyClasses = __bind(this.updateBodyClasses, this);      mediator.subscribe('login', this.updateBodyClasses);
+      mediator.subscribe('logout', this.updateBodyClasses);
+      mediator.subscribe('beforeControllerDispose', this.hideOldView);
+      mediator.subscribe('startupController', this.showNewView);
       mediator.subscribe('startupController', this.removeFallbackContent);
-      this.addGlobalHandlers();
+      mediator.subscribe('startupController', this.adjustTitle);
+      this.updateBodyClasses();
+      this.addDOMHandlers();
     }
 
-    ApplicationView.prototype.login = function(user) {
-      return $(document.body).removeClass('logged-out').addClass('logged-in');
-    };
-
-    ApplicationView.prototype.logout = function() {
-      return $(document.body).removeClass('logged-in').addClass('logged-out');
-    };
-
-    ApplicationView.prototype.matchRoute = function(route, params) {
-      var action, controllerName;
-      controllerName = route.controller;
-      action = route.action;
-      return this.startupController(controllerName, action, params);
-    };
-
-    ApplicationView.prototype.startupController = function(controllerName, action, params) {
-      var controllerFileName, sameController;
-      if (action == null) action = 'index';
-      if (params == null) params = {};
-      if (params.changeURL !== false) params.changeURL = true;
-      if (params.forceStartup !== true) params.forceStartup = false;
-      sameController = !params.forceStartup && this.currentControllerName === controllerName && this.currentAction === action && (!this.currentParams || _(params).isEqual(this.currentParams));
-      if (sameController) return;
-      controllerFileName = utils.underscorize(controllerName) + '_controller';
-      return require(['controllers/' + controllerFileName], _(this.controllerLoaded).bind(this, controllerName, action, params));
-    };
-
-    ApplicationView.prototype.controllerLoaded = function(controllerName, action, params, ControllerConstructor) {
-      var controller, currentController, currentControllerName, currentView, view;
-      currentControllerName = this.currentControllerName || null;
-      currentController = this.currentController || null;
-      if (this.currentController) currentView = this.currentController.view;
+    ApplicationView.prototype.hideOldView = function(controller) {
+      var view;
       scrollTo(0, 0);
-      if (currentView && currentView.$container) {
-        currentView.$container.css('display', 'none');
-      }
-      if (currentController) {
-        if (typeof currentController.dispose !== 'function') {
-          throw new Error("ApplicationView#controllerLoaded: dispose method not found on " + currentControllerName + " controller");
-        }
-        currentController.dispose(params, controllerName);
-      }
-      controller = new ControllerConstructor();
-      controller.initialize(params, currentControllerName);
-      if (typeof controller[action] !== 'function') {
-        throw new Error("ApplicationView#controllerLoaded: action " + action + " not found on " + controllerName + " controller");
-      }
-      controller[action](params, currentControllerName);
       view = controller.view;
-      if (view && view.$container) {
-        view.$container.css({
+      if (view) return view.$el.css('display', 'none');
+    };
+
+    ApplicationView.prototype.showNewView = function(context) {
+      var view;
+      view = context.controller.view;
+      if (view) {
+        return view.$el.css({
           display: 'block',
-          opacity: 1
+          opacity: 1,
+          visibility: 'visible'
         });
       }
-      this.previousController = currentControllerName;
-      this.currentControllerName = controllerName;
-      this.currentController = controller;
-      this.currentAction = action;
-      this.currentView = view;
-      this.currentParams = params;
-      this.adjustURL();
-      this.adjustTitle();
-      return mediator.publish('startupController', this.currentControllerName, this.currentParams, this.previousController);
     };
 
-    ApplicationView.prototype.adjustURL = function() {
-      var controller, historyURL, params;
-      controller = this.currentController;
-      params = this.currentParams;
-      if (typeof controller.historyURL === 'function') {
-        historyURL = controller.historyURL(params);
-      } else if (typeof controller.historyURL === 'string') {
-        historyURL = controller.historyURL;
-      } else {
-        throw new Error("ApplicationView#adjustURL: controller for " + this.currentControllerName + " does not provide a historyURL");
-      }
-      if (params.changeURL) mediator.router.changeURL(historyURL);
-      return this.url = historyURL;
-    };
-
-    ApplicationView.prototype.adjustTitle = function() {
+    ApplicationView.prototype.adjustTitle = function(context) {
       var subtitle, title;
       title = siteTitle;
-      subtitle = this.currentParams.title || this.currentController.title;
-      if (subtitle) title += " \u2013 " + subtitle;
+      subtitle = context.controller.title;
+      if (subtitle) title = "" + subtitle + " \u2013 " + title;
       return setTimeout((function() {
         return document.title = title;
       }), 50);
     };
 
+    ApplicationView.prototype.updateBodyClasses = function() {
+      var body, loggedIn;
+      body = $(document.body);
+      loggedIn = Boolean(mediator.user);
+      return body.toggleClass('logged-out', !loggedIn).toggleClass('logged-in', loggedIn);
+    };
+
     ApplicationView.prototype.removeFallbackContent = function() {
-      $('#startup-loading, .accessible-fallback').remove();
+      $('.accessible-fallback').remove();
       return mediator.unsubscribe('startupController', this.removeFallbackContent);
     };
 
-    ApplicationView.prototype.addGlobalHandlers = function() {
+    ApplicationView.prototype.addDOMHandlers = function() {
       return $(document).delegate('#logout-button', 'click', this.logoutButtonClick).delegate('.go-to', 'click', this.goToHandler).delegate('a', 'click', this.openLink);
     };
 
     ApplicationView.prototype.openLink = function(event) {
       var currentHostname, el, external, hostname, hostnameRegExp, href, hrefAttr;
+      if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       hrefAttr = el.getAttribute('href');
       if (hrefAttr === '' || /^#/.test(hrefAttr)) return;

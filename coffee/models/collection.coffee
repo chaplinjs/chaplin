@@ -1,21 +1,25 @@
-define ['lib/subscriber'], (Subscriber) ->
+define ['lib/subscriber', 'lib/sync_machine'], (Subscriber, SyncMachine) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
   # in order to add some functionality
   class Collection extends Backbone.Collection
-    # Mixin a Subscriber
-    _(Collection.prototype).defaults Subscriber
 
-    #initialize: ->
-      #console.debug 'Collection#initialize'
-      #super
-      # TODO: Remove an item if a 'dispose' events bubbles and
-      # it wasn't removed before?
+    # Mixin a Subscriber
+    _(Collection.prototype).extend Subscriber
+
+    # Creates a new deferred and mixes it into the collection
+    # This method can be called multiple times to reset the
+    # status of the Deferred to 'pending'.
+    initDeferred: ->
+      _(this).extend $.Deferred()
+
+    # Mixin a synchronization state machine
+    initSyncMachine: ->
+      _(this).extend SyncMachine
 
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
-
     addAtomic: (models, options = {}) ->
       return unless models.length
       options.silent = true
@@ -80,9 +84,18 @@ define ['lib/subscriber'], (Subscriber) ->
       # Unbind all global event handlers
       @unsubscribeAllEvents()
 
+      # Remove all event handlers
+      @off()
+
       # Empty the list silently, but do not dispose all models since
       # they might be referenced elsewhere
       @reset [], silent: true
+
+      # Remove model constructor reference and model lists
+      properties = [
+        'model', 'models', '_byId', '_byCid'
+      ]
+      delete this[prop] for prop in properties
 
       # Finished
       #console.debug 'Collection#dispose', this, 'finished'

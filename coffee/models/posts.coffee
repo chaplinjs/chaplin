@@ -9,24 +9,25 @@ define [
     initialize: ->
       super
 
-      # Mixin a Deferred
-      _(this).extend $.Deferred()
+      @initDeferred()
 
-      @getPosts()
-      @subscribeEvent 'login', @getPosts
-      @subscribeEvent 'logout', @reset
+      @subscribeEvent 'login', @fetch
+      @subscribeEvent 'logout', @logout
 
-    getPosts: ->
-      #console.debug 'Posts#getPosts'
+      @fetch()
 
+    # Custom fetch function since the Facebook graph is not
+    # a REST/JSON API which might be accessed using Ajax
+    fetch: =>
+      #console.debug 'Posts#fetch'
       user = mediator.user
       return unless user
 
-      provider = user.get 'provider'
-      return unless provider.name is 'facebook'
+      facebook = user.get 'provider'
+      return unless facebook.name is 'facebook'
 
       @trigger 'loadStart'
-      provider.getInfo '/158352134203230/feed', @processPosts
+      facebook.getInfo '/158352134203230/feed', @processPosts
 
     processPosts: (response) =>
       #console.debug 'Posts#processPosts', response, response.data
@@ -35,7 +36,7 @@ define [
       @trigger 'load'
 
       posts = if response and response.data then response.data else []
-      
+
       # Only show posts from moviepilot.com
       posts = _(posts).filter (post) ->
         post.from and post.from.name is 'moviepilot.com'
@@ -45,3 +46,10 @@ define [
 
       # Resolve the Deferred
       @resolve()
+
+    # Handler for the global logout event
+    logout: =>
+      # Reset the Deferred state
+      @initDeferred()
+      # Empty the collection
+      @reset()

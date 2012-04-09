@@ -12,7 +12,7 @@ define(['mediator', 'lib/utils', 'views/view', 'text!templates/login.hbs'], func
       LoginView.__super__.constructor.apply(this, arguments);
     }
 
-    LoginView.template = template;
+    LoginView.prototype.template = template;
 
     LoginView.prototype.id = 'login';
 

@@ -4,7 +4,7 @@ define ['views/view', 'text!templates/navigation.hbs'], (View, template) ->
   class NavigationView extends View
     # This is a workaround.
     # In the end you might want to used precompiled templates.
-    @template: template
+    template: template
 
     id: 'navigation'
     containerSelector: '#navigation-container'

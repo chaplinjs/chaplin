@@ -1,35 +1,44 @@
 define [
-  'mediator', 'controllers/session_controller',
-  'controllers/application_controller', 'lib/router'
-], (mediator, SessionController, ApplicationController, Router) ->
+  'mediator',
+  'controllers/session_controller', 'controllers/application_controller',
+  'lib/router', 'routes'
+], (mediator, SessionController, ApplicationController, Router, registerRoutes) ->
   'use strict'
 
   # The application bootstrapper.
   # In practise you might choose a more meaningful name.
   Application =
+
     initialize: ->
+      #console.debug 'Application#initialize'
+
       @initControllers()
       @initRouter()
+
+      # Freeze the object
+      Object.freeze? @
+
       return
 
     # Instantiate meta-controllers
     initControllers: ->
-      # At the moment, do not save the references.
-      # They might be safed as instance properties or directly on the mediator.
-      # Normally, controllers can communicate with each other via Pub/Sub.
-      new SessionController()
-      new ApplicationController()
+      # Save the reference for testing introspection only.
+      # Module should communicate with each other via Pub/Sub.
+      @sessionController = new SessionController()
+      @applicationController = new ApplicationController()
 
     # Instantiate the router
     initRouter: ->
+      @router = new Router()
+
       # We have to make the router public because
       # the AppView needs to access it synchronously.
-      mediator.router = new Router()
+      mediator.setRouter @router
 
-      # Make router property readonly
-      Object.defineProperty? mediator, 'router', writable: false
+      # Register all routes declared in routes.coffee
+      registerRoutes @router.match
 
-  # Freeze the object
-  Object.freeze? Application
+      # After registering the routes, start Backbone.history
+      @router.startHistory()
 
   Application

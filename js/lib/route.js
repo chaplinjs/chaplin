@@ -5,8 +5,15 @@ define(['mediator'], function(mediator) {
   'use strict';
   var Route;
   return Route = (function() {
+    var escapeRegExp, queryStringFieldSeparator, queryStringValueSeparator, reservedParams;
 
-    Route.reservedParams = 'path changeURL'.split(' ');
+    reservedParams = 'path changeURL'.split(' ');
+
+    escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g;
+
+    queryStringFieldSeparator = '&';
+
+    queryStringValueSeparator = '=';
 
     function Route(pattern, target, options) {
       var _ref;
@@ -15,14 +22,23 @@ define(['mediator'], function(mediator) {
       this.addParamName = __bind(this.addParamName, this);
       this.pattern = pattern;
       _ref = target.split('#'), this.controller = _ref[0], this.action = _ref[1];
-      this.paramNames = [];
-      pattern = pattern.replace(/:(\w+)/g, this.addParamName);
-      this.regExp = RegExp("^" + pattern + "(?=\\?|$)");
+      this.createRegExp();
     }
 
+    Route.prototype.createRegExp = function() {
+      var pattern;
+      if (_.isRegExp(this.pattern)) {
+        this.regExp = this.pattern;
+        return;
+      }
+      pattern = this.pattern.replace(escapeRegExp, '\\$&').replace(/:(\w+)/g, this.addParamName);
+      return this.regExp = RegExp("^" + pattern + "(?=\\?|$)");
+    };
+
     Route.prototype.addParamName = function(match, paramName) {
-      if (_(Route.reservedParams).include(paramName)) {
-        throw new Error("Route#new: parameter name " + paramName + " is reserved");
+      if (this.paramNames == null) this.paramNames = [];
+      if (_(reservedParams).include(paramName)) {
+        throw new Error("Route#addParamName: parameter name " + paramName + " is reserved");
       }
       this.paramNames.push(paramName);
       return '([\\w-]+)';
@@ -51,8 +67,12 @@ define(['mediator'], function(mediator) {
     };
 
     Route.prototype.buildParams = function(path, options) {
-      var params;
-      params = this.extractParams(path);
+      var params, patternParams, queryParams;
+      params = {};
+      queryParams = this.extractQueryParams(path);
+      _(params).extend(queryParams);
+      patternParams = this.extractParams(path);
+      _(params).extend(patternParams);
       _(params).extend(this.options.params);
       params.changeURL = Boolean(options && options.changeURL);
       params.path = path;
@@ -66,8 +86,37 @@ define(['mediator'], function(mediator) {
       _ref = matches.slice(1);
       for (index = 0, _len = _ref.length; index < _len; index++) {
         match = _ref[index];
-        paramName = this.paramNames[index];
+        paramName = this.paramNames ? this.paramNames[index] : index;
         params[paramName] = match;
+      }
+      return params;
+    };
+
+    Route.prototype.extractQueryParams = function(path) {
+      var current, field, matches, pair, pairs, params, queryString, regExp, value, _i, _len, _ref;
+      params = {};
+      regExp = /\?(.+?)(?=#|$)/;
+      matches = regExp.exec(path);
+      if (!matches) return params;
+      queryString = matches[1];
+      pairs = queryString.split(queryStringFieldSeparator);
+      for (_i = 0, _len = pairs.length; _i < _len; _i++) {
+        pair = pairs[_i];
+        if (!pair.length) continue;
+        _ref = pair.split(queryStringValueSeparator), field = _ref[0], value = _ref[1];
+        if (!field.length) continue;
+        field = decodeURIComponent(field);
+        value = decodeURIComponent(value);
+        current = params[field];
+        if (current) {
+          if (current.push) {
+            current.push(value);
+          } else {
+            params[field] = [current, value];
+          }
+        } else {
+          params[field] = value;
+        }
       }
       return params;
     };

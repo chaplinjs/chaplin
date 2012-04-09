@@ -26,16 +26,17 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
       this.processLike = __bind(this.processLike, this);
       this.facebookLogout = __bind(this.facebookLogout, this);
       this.publishAbortionResult = __bind(this.publishAbortionResult, this);
+      this.loginAbort = __bind(this.loginAbort, this);
       this.loginHandler = __bind(this.loginHandler, this);
       this.triggerLogin = __bind(this.triggerLogin, this);
       this.loginStatusHandler = __bind(this.loginStatusHandler, this);
       this.getLoginStatus = __bind(this.getLoginStatus, this);
       this.saveAuthResponse = __bind(this.saveAuthResponse, this);
-      this.sdkLoadHandler = __bind(this.sdkLoadHandler, this);      Facebook.__super__.constructor.apply(this, arguments);
+      this.loadHandler = __bind(this.loadHandler, this);      Facebook.__super__.constructor.apply(this, arguments);
       utils.deferMethods({
         deferred: this,
         methods: ['parse', 'subscribe', 'postToGraph', 'getAccumulatedInfo', 'getInfo'],
-        onDeferral: this.loadSDK
+        onDeferral: this.load
       });
       utils.wrapAccumulators(this, ['getAccumulatedInfo']);
       this.subscribeEvent('loginAbort', this.loginAbort);
@@ -44,14 +45,14 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
 
     Facebook.prototype.dispose = function() {};
 
-    Facebook.prototype.loadSDK = function() {
+    Facebook.prototype.load = function() {
       if (this.state() === 'resolved' || this.loading) return;
       this.loading = true;
-      window.fbAsyncInit = this.sdkLoadHandler;
+      window.fbAsyncInit = this.loadHandler;
       return utils.loadLib('http://connect.facebook.net/en_US/all.js', null, this.reject);
     };
 
-    Facebook.prototype.sdkLoadHandler = function() {
+    Facebook.prototype.loadHandler = function() {
       this.loading = false;
       try {
         delete window.fbAsyncInit;
@@ -139,6 +140,10 @@ define(['mediator', 'lib/utils', 'lib/services/service_provider'], function(medi
         userId: authResponse.userID,
         accessToken: authResponse.accessToken
       });
+    };
+
+    Facebook.prototype.loginAbort = function() {
+      return this.getLoginStatus(this.publishAbortionResult, true);
     };
 
     Facebook.prototype.publishAbortionResult = function(response) {

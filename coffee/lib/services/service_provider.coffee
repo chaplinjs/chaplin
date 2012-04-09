@@ -2,8 +2,9 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
   'use strict'
 
   class ServiceProvider
+
     # Mixin a Subscriber
-    _(ServiceProvider.prototype).defaults Subscriber
+    _(ServiceProvider.prototype).extend Subscriber
 
     loading: false
 
@@ -16,37 +17,54 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
       utils.deferMethods
         deferred: this
         methods: ['triggerLogin', 'getLoginStatus']
-        onDeferral: @loadSDK
+        onDeferral: @load
+
+    # Disposal
+    # --------
+
+    disposed: false
+
+    dispose: ->
+      return if @disposed
+
+      # Unbind handlers of global events
+      @unsubscribeAllEvents()
+
+      # Finished
+      #console.debug 'ServiceProvider#dispose', this, 'finished'
+      @disposed = true
+
+      # You're frozen when your heart’s not open
+      Object.freeze? this
 
   ###
 
     Standard methods and their signatures:
 
-    loadSDK: ->
+    load: ->
       # Load a script like this:
-      utils.loadLib 'http://example.org/foo.js', @sdkLoadHandler, @reject
+      utils.loadLib 'http://example.org/foo.js', @loadHandler, @reject
 
-    sdkLoadHandler: =>
-      # Init the SDK, then resolve
-      someSDK.init(foo: 'bar')
+    loadHandler: =>
+      # Init the library, then resolve
+      ServiceProviderLibrary.init(foo: 'bar')
       @resolve()
 
     isLoaded: ->
       # Return a Boolean
-      Boolean window.someSDK and someSDK.login
+      Boolean window.ServiceProviderLibrary and ServiceProviderLibrary.login
 
     # Trigger login popup
     triggerLogin: (loginContext) ->
-      callback = _(@loginHandler).bind(this, @loginHandler)
-      someSDK.login callback
+      callback = _(@loginHandler).bind(this, loginContext)
+      ServiceProviderLibrary.login callback
 
     # Callback for the login popup
     loginHandler: (loginContext, response) =>
 
       if response
         # Publish successful login
-        mediator.publish 'loginSuccessful',
-          provider: this, loginContext: loginContext
+        mediator.publish 'loginSuccessful', {provider: this, loginContext}
 
         # Publish the session
         mediator.publish 'serviceProviderSession',
@@ -56,10 +74,10 @@ define ['lib/utils', 'lib/subscriber'], (utils, Subscriber) ->
           # etc.
 
       else
-        mediator.publish 'loginFail', provider: this, loginContext: loginContext
+        mediator.publish 'loginFail', {provider: this, loginContext}
 
     getLoginStatus: (callback = @loginStatusHandler, force = false) ->
-      someSDK.getLoginStatus callback, force
+      ServiceProviderLibrary.getLoginStatus callback, force
 
     loginStatusHandler: (response) =>
       return unless response

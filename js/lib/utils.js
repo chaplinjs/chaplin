@@ -34,18 +34,6 @@ define(['mediator'], function(mediator) {
         return string.replace(regexp, underscorizer);
       };
     })(),
-    facebookImageURL: function(fbId, type) {
-      var accessToken, params;
-      if (type == null) type = 'square';
-      params = {
-        type: type
-      };
-      if (mediator.user) {
-        accessToken = mediator.user.get('accessToken');
-        if (accessToken) params.access_token = accessToken;
-      }
-      return "https://graph.facebook.com/" + fbId + "/picture?" + ($.param(params));
-    },
     sessionStorage: (function() {
       if (window.sessionStorage && sessionStorage.getItem && sessionStorage.setItem && sessionStorage.removeItem) {
         return function(key, value) {
@@ -193,7 +181,7 @@ define(['mediator'], function(mediator) {
           name = methods[_i];
           func = host[name];
           if (typeof func !== 'function') {
-            throw new TypeError("utils.deferMethods: method " + name + " not found on host " + host);
+            throw new TypeError("utils.deferMethods: method " + name + " notfound on host " + host);
           }
           methodsHash[name] = func;
         }
@@ -341,7 +329,7 @@ define(['mediator'], function(mediator) {
         name = methods[_i];
         func = obj[name];
         if (typeof func !== 'function') {
-          throw new TypeError("utils.deferMethodsUntilLogin: method " + name + " not found");
+          throw new TypeError("utils.deferMethodsUntilLogin: method " + name + "not found");
         }
         _results.push(obj[name] = _(utils.afterLogin).bind(null, obj, func, eventType));
       }
@@ -368,11 +356,26 @@ define(['mediator'], function(mediator) {
         name = methods[_i];
         func = obj[name];
         if (typeof func !== 'function') {
-          throw new TypeError("utils.ensureLoginForMethods: method " + name + " not found");
+          throw new TypeError("utils.ensureLoginForMethods: method " + name + "not found");
         }
         _results.push(obj[name] = _(utils.ensureLogin).bind(null, obj, func, loginContext, eventType));
       }
       return _results;
+    },
+    modifierKeyPressed: function(e) {
+      return e.shiftKey || e.altKey || e.ctrlKey || e.metaKey;
+    },
+    facebookImageURL: function(fbId, type) {
+      var accessToken, params;
+      if (type == null) type = 'square';
+      params = {
+        type: type
+      };
+      if (mediator.user) {
+        accessToken = mediator.user.get('accessToken');
+        if (accessToken) params.access_token = accessToken;
+      }
+      return "https://graph.facebook.com/" + fbId + "/picture?" + ($.param(params));
     }
   };
   if (typeof Object.seal === "function") Object.seal(utils);

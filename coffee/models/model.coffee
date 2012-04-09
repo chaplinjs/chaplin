@@ -2,8 +2,15 @@ define ['lib/subscriber'], (Subscriber) ->
   'use strict'
 
   class Model extends Backbone.Model
+
     # Mixin a Subscriber
-    _(Model.prototype).defaults Subscriber
+    _(Model.prototype).extend Subscriber
+
+    # Creates a new deferred and mixes it into the model
+    # This method can be called multiple times to reset the
+    # status of the Deferred to 'pending'.
+    initDeferred: ->
+      _(this).extend $.Deferred()
 
     # This method is used to get the attributes for the view template
     # and might be overwritten by decorators which cannot create a
@@ -26,12 +33,15 @@ define ['lib/subscriber'], (Subscriber) ->
       # Unbind all global event handlers
       @unsubscribeAllEvents()
 
-      # Remove the collection reference, attributes and event handlers
+      # Remove all event handlers
+      @off()
+
+      # Remove the collection reference and attributes
       properties = [
-        'collection', 'attributes', '_escapedAttributes',
-        '_previousAttributes', '_callbacks'
+        'collection', 'attributes', '_escapedAttributes', '_previousAttributes',
+        '_silent', '_pending'
       ]
-      delete @[prop] for prop in properties
+      delete this[prop] for prop in properties
 
       # Finished
       #console.debug 'Model#dispose', this, 'finished'

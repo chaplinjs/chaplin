@@ -12,7 +12,6 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     function SessionController() {
       this.logout = __bind(this.logout, this);
       this.serviceProviderSession = __bind(this.serviceProviderSession, this);
-      this.loginAttempt = __bind(this.loginAttempt, this);
       this.triggerLogin = __bind(this.triggerLogin, this);
       SessionController.__super__.constructor.apply(this, arguments);
     }
@@ -28,7 +27,6 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     SessionController.prototype.serviceProviderName = null;
 
     SessionController.prototype.initialize = function() {
-      this.subscribeEvent('loginAttempt', this.loginAttempt);
       this.subscribeEvent('serviceProviderSession', this.serviceProviderSession);
       this.subscribeEvent('logout', this.logout);
       this.subscribeEvent('userData', this.userData);
@@ -38,13 +36,13 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       return this.getSession();
     };
 
-    SessionController.prototype.loadSDKs = function() {
+    SessionController.prototype.loadServiceProviders = function() {
       var name, serviceProvider, _ref, _results;
       _ref = SessionController.serviceProviders;
       _results = [];
       for (name in _ref) {
         serviceProvider = _ref[name];
-        _results.push(serviceProvider.loadSDK());
+        _results.push(serviceProvider.load());
       }
       return _results;
     };
@@ -52,12 +50,12 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
     SessionController.prototype.createUser = function(userData) {
       var user;
       user = new User(userData);
-      return mediator.user = user;
+      return mediator.setUser(user);
     };
 
     SessionController.prototype.getSession = function() {
       var name, serviceProvider, _ref, _results;
-      this.loadSDKs();
+      this.loadServiceProviders();
       _ref = SessionController.serviceProviders;
       _results = [];
       for (name in _ref) {
@@ -69,16 +67,10 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     SessionController.prototype.showLoginView = function() {
       if (this.loginView) return;
-      this.loadSDKs();
+      this.loadServiceProviders();
       return this.loginView = new LoginView({
         serviceProviders: SessionController.serviceProviders
       });
-    };
-
-    SessionController.prototype.hideLoginView = function() {
-      if (!this.loginView) return;
-      this.loginView.dispose();
-      return this.loginView = null;
     };
 
     SessionController.prototype.triggerLogin = function(serviceProviderName) {
@@ -92,11 +84,9 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
       return serviceProvider.triggerLogin();
     };
 
-    SessionController.prototype.loginAttempt = function() {};
-
     SessionController.prototype.serviceProviderSession = function(session) {
       this.serviceProviderName = session.provider.name;
-      this.hideLoginView();
+      this.disposeLoginView();
       session.id = session.userId;
       delete session.userId;
       this.createUser(session);
@@ -115,10 +105,7 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     SessionController.prototype.logout = function() {
       this.loginStatusDetermined = true;
-      if (mediator.user) {
-        mediator.user.dispose();
-        mediator.user = null;
-      }
+      this.disposeUser();
       this.serviceProviderName = null;
       this.showLoginView();
       return mediator.publish('loginStatus', false);
@@ -126,6 +113,18 @@ define(['mediator', 'lib/utils', 'models/user', 'controllers/controller', 'lib/s
 
     SessionController.prototype.userData = function(data) {
       return mediator.user.set(data);
+    };
+
+    SessionController.prototype.disposeLoginView = function() {
+      if (!this.loginView) return;
+      this.loginView.dispose();
+      return this.loginView = null;
+    };
+
+    SessionController.prototype.disposeUser = function() {
+      if (!mediator.user) return;
+      mediator.user.dispose();
+      return mediator.setUser(null);
     };
 
     return SessionController;

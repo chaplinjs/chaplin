@@ -1,23 +1,23 @@
 
-define(['mediator', 'controllers/session_controller', 'controllers/application_controller', 'lib/router'], function(mediator, SessionController, ApplicationController, Router) {
+define(['mediator', 'controllers/session_controller', 'controllers/application_controller', 'lib/router', 'routes'], function(mediator, SessionController, ApplicationController, Router, registerRoutes) {
   'use strict';
   var Application;
   Application = {
     initialize: function() {
       this.initControllers();
       this.initRouter();
+      if (typeof Object.freeze === "function") Object.freeze(this);
     },
     initControllers: function() {
-      new SessionController();
-      return new ApplicationController();
+      this.sessionController = new SessionController();
+      return this.applicationController = new ApplicationController();
     },
     initRouter: function() {
-      mediator.router = new Router();
-      return typeof Object.defineProperty === "function" ? Object.defineProperty(mediator, 'router', {
-        writable: false
-      }) : void 0;
+      this.router = new Router();
+      mediator.setRouter(this.router);
+      registerRoutes(this.router.match);
+      return this.router.startHistory();
     }
   };
-  if (typeof Object.freeze === "function") Object.freeze(Application);
   return Application;
 });

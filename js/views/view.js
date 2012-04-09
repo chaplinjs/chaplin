@@ -9,25 +9,31 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     __extends(View, _super);
 
-    _(View.prototype).defaults(Subscriber);
+    _(View.prototype).extend(Subscriber);
 
     View.prototype.autoRender = false;
 
     View.prototype.containerSelector = null;
 
+    View.prototype.containerMethod = 'append';
+
     View.prototype.$container = null;
+
+    View.prototype.subviews = null;
+
+    View.prototype.subviewsByName = null;
 
     function View() {
       this.dispose = __bind(this.dispose, this);
       this.render = __bind(this.render, this);
-      var instance, wrapMethod;
-      instance = this;
+      var wrapMethod,
+        _this = this;
       wrapMethod = function(name) {
         var func;
-        func = instance[name];
-        return instance[name] = function() {
-          func.apply(instance, arguments);
-          return instance["after" + (utils.upcase(name))].apply(instance, arguments);
+        func = _this[name];
+        return _this[name] = function() {
+          func.apply(_this, arguments);
+          return _this["after" + (utils.upcase(name))].apply(_this, arguments);
         };
       };
       wrapMethod('initialize');
@@ -36,6 +42,8 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
     }
 
     View.prototype.initialize = function(options) {
+      this.subviews = [];
+      this.subviewsByName = {};
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
       if (options && options.container) {
         return this.$container = $(container);
@@ -53,15 +61,6 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
 
     View.prototype.delegateEvents = function() {};
 
-    View.prototype.pass = function(eventType, selector) {
-      var model,
-        _this = this;
-      model = this.model || this.collection;
-      return this.modelBind(eventType, function(model, val) {
-        return _this.$(selector).html(val);
-      });
-    };
-
     View.prototype.delegate = function(eventType, second, third) {
       var handler, selector;
       if (typeof eventType !== 'string') {
@@ -76,7 +75,7 @@ define(['lib/utils', 'lib/subscriber', 'lib/view_helper'], function(utils, Subsc
         }
         handler = third;
       } else {
-        throw new TypeError('View#delegate: only two or three arguments are \
+        throw new TypeError('View#delegate: only two or three arguments are\
 allowed');
       }
       if (typeof handler !== 'function') {
@@ -95,59 +94,97 @@ allowed');
       return this.$el.unbind(".delegate" + this.cid);
     };
 
+    View.prototype._modelBindings = null;
+
     View.prototype.modelBind = function(type, handler) {
       var handlers, model, _base;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelBind: type argument must be string');
+        throw new TypeError('View#modelBind: type must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelBind: handler argument must be function');
+        throw new TypeError('View#modelBind: handler must be function');
       }
       model = this.model || this.collection;
-      if (!model) return;
-      this.modelBindings || (this.modelBindings = {});
-      handlers = (_base = this.modelBindings)[type] || (_base[type] = []);
+      if (!model) {
+        throw new TypeError('View#modelBind: no model or collection set');
+      }
+      this._modelBindings || (this._modelBindings = {});
+      handlers = (_base = this._modelBindings)[type] || (_base[type] = []);
       if (_(handlers).include(handler)) return;
       handlers.push(handler);
-      return model.bind(type, handler);
+      return model.on(type, handler, this);
     };
 
     View.prototype.modelUnbind = function(type, handler) {
       var handlers, index, model;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelUnbind: type argument must be string');
+        throw new TypeError('View#modelUnbind: type must be string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelUnbind: handler argument must be\
- function');
+        throw new TypeError('View#modelUnbind: handler must be function');
       }
-      if (!this.modelBindings) return;
-      handlers = this.modelBindings[type];
+      if (!this._modelBindings) return;
+      handlers = this._modelBindings[type];
       if (handlers) {
         index = _(handlers).indexOf(handler);
         if (index > -1) handlers.splice(index, 1);
-        if (handlers.length === 0) delete this.modelBindings[type];
+        if (handlers.length === 0) delete this._modelBindings[type];
       }
       model = this.model || this.collection;
       if (!model) return;
-      return model.unbind(type, handler);
+      return model.off(type, handler);
     };
 
     View.prototype.modelUnbindAll = function() {
-      var handler, handlers, model, type, _i, _len, _ref;
-      if (!this.modelBindings) return;
+      var model;
+      this._modelBindings = null;
       model = this.model || this.collection;
       if (!model) return;
-      _ref = this.modelBindings;
-      for (type in _ref) {
-        if (!__hasProp.call(_ref, type)) continue;
-        handlers = _ref[type];
-        for (_i = 0, _len = handlers.length; _i < _len; _i++) {
-          handler = handlers[_i];
-          model.unbind(type, handler);
+      return model.off(null, null, this);
+    };
+
+    View.prototype.pass = function(eventType, selector) {
+      var model,
+        _this = this;
+      model = this.model || this.collection;
+      return this.modelBind(eventType, function(model, val) {
+        return _this.$(selector).html(val);
+      });
+    };
+
+    View.prototype.subview = function(name, view) {
+      if (name && view) {
+        this.removeSubview(name);
+        this.subviews.push(view);
+        this.subviewsByName[name] = view;
+        return view;
+      } else if (name) {
+        return this.subviewsByName[name];
+      }
+    };
+
+    View.prototype.removeSubview = function(nameOrView) {
+      var index, name, otherName, otherView, view, _ref;
+      if (!nameOrView) return;
+      if (typeof nameOrView === 'string') {
+        name = nameOrView;
+        view = this.subviewsByName[name];
+      } else {
+        view = nameOrView;
+        _ref = this.subviewsByName;
+        for (otherName in _ref) {
+          otherView = _ref[otherName];
+          if (view === otherView) {
+            name = otherName;
+            break;
+          }
         }
       }
-      return this.modelBindings = null;
+      if (!(name && view && view.dispose)) return;
+      view.dispose();
+      index = _(this.subviews).indexOf(view);
+      if (index > -1) this.subviews.splice(index, 1);
+      return delete this.subviewsByName[name];
     };
 
     View.prototype.getTemplateData = function() {
@@ -163,10 +200,10 @@ allowed');
     View.prototype.render = function() {
       var html, template;
       if (this.disposed) return;
-      template = this.constructor.template;
+      template = this.template;
       if (typeof template === 'string') {
         template = Handlebars.compile(template);
-        this.constructor.template = template;
+        this.template = template;
       }
       if (typeof template === 'function') {
         html = template(this.getTemplateData());
@@ -176,28 +213,30 @@ allowed');
     };
 
     View.prototype.afterRender = function() {
-      if (this.$container) {
-        this.$container.append(this.el);
+      if (this.$container && (this.$container[this.containerMethod] != null)) {
+        this.$container[this.containerMethod](this.el);
         this.trigger('addedToDOM');
       }
       return this;
     };
 
-    View.prototype.preventDefault = function(event) {
-      if (event && event.preventDefault) return event.preventDefault();
-    };
-
     View.prototype.disposed = false;
 
     View.prototype.dispose = function() {
-      var prop, properties, _i, _len;
+      var prop, properties, view, _i, _j, _len, _len2, _ref;
       if (this.disposed) return;
-      this.modelUnbindAll();
+      _ref = this.subviews;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        view = _ref[_i];
+        view.dispose();
+      }
       this.unsubscribeAllEvents();
+      this.modelUnbindAll();
+      this.off();
       this.$el.remove();
-      properties = ['el', '$el', '$container', 'options', 'model', 'collection', '_callbacks'];
-      for (_i = 0, _len = properties.length; _i < _len; _i++) {
-        prop = properties[_i];
+      properties = ['el', '$el', '$container', 'options', 'model', 'collection', 'subviews', 'subviewsByName'];
+      for (_j = 0, _len2 = properties.length; _j < _len2; _j++) {
+        prop = properties[_j];
         delete this[prop];
       }
       this.disposed = true;

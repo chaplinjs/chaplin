@@ -1,5 +1,4 @@
 define ['mediator'], (mediator) ->
-
   'use strict'
 
   utils =
@@ -33,20 +32,6 @@ define ['mediator'], (mediator) ->
         '_' + c.toLowerCase()
       (string) ->
         string.replace regexp, underscorizer
-
-    # Facebook image helper
-    # ---------------------
-
-    facebookImageURL: (fbId, type = 'square') ->
-      # Create query string
-      params = type: type
-
-      # Add the Facebook access token if present
-      if mediator.user
-        accessToken = mediator.user.get('accessToken')
-        params.access_token = accessToken if accessToken
-
-      "https://graph.facebook.com/#{fbId}/picture?#{$.param(params)}"
 
     # Persistent data storage
     # -----------------------
@@ -101,13 +86,15 @@ define ['mediator'], (mediator) ->
       document.cookie = "#{key}=nil; expires=#{(new Date).toGMTString()}"
 
     # Load additonal JavaScripts
+    # --------------------------
+
     # We don’t use jQuery here because jQuery does not attach an error
     # handler to the script. In jQuery, a proper error handler only works
     # for same-origin scripts which can be loaded via XHR.
     loadLib: (url, success, error, timeout = 7500) ->
       #console.debug 'utils.loadLib', url
       head = document.head or document.getElementsByTagName('head')[0] or
-      document.documentElement
+        document.documentElement
       script = document.createElement 'script'
       script.async = 'async'
       script.src   = url
@@ -216,7 +203,7 @@ define ['mediator'], (mediator) ->
         for name in methods
           func = host[name]
           unless typeof func is 'function'
-            throw new TypeError "utils.deferMethods: method #{name} not 
+            throw new TypeError "utils.deferMethods: method #{name} not
 found on host #{host}"
           methodsHash[name] = func
 
@@ -382,7 +369,7 @@ found on host #{host}"
       for name in methods
         func = obj[name]
         unless typeof func is 'function'
-          throw new TypeError "utils.deferMethodsUntilLogin: method #{name} 
+          throw new TypeError "utils.deferMethodsUntilLogin: method #{name}
 not found"
         #console.debug '\twrap', obj, name
         obj[name] = _(utils.afterLogin).bind null, obj, func, eventType
@@ -421,15 +408,38 @@ not found"
       for name in methods
         func = obj[name]
         unless typeof func is 'function'
-          throw new TypeError "utils.ensureLoginForMethods: method #{name} 
+          throw new TypeError "utils.ensureLoginForMethods: method #{name}
 not found"
         #console.debug '\twrap', obj, name, loginContext
         obj[name] = _(utils.ensureLogin).bind(
           null, obj, func, loginContext, eventType
         )
 
+    # Event handling helpers
+    # ----------------------
+
+    # Returns whether a modifier key is pressed during a keypress or mouse click
+    modifierKeyPressed: (e) ->
+      e.shiftKey or e.altKey or e.ctrlKey or e.metaKey
+
+    # Facebook image helper
+    # ---------------------
+
+    facebookImageURL: (fbId, type = 'square') ->
+      # Create query string
+      params = type: type
+
+      # Add the Facebook access token if present
+      if mediator.user
+        accessToken = mediator.user.get('accessToken')
+        params.access_token = accessToken if accessToken
+
+      "https://graph.facebook.com/#{fbId}/picture?#{$.param(params)}"
+
+  # Finish
+  # ------
+
   # Seal the utils object
   Object.seal? utils
 
-  # Return utils
   utils

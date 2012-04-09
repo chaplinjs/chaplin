@@ -7,7 +7,7 @@ define [
   class LikesView extends CollectionView
     # This is a workaround.
     # In the end you might want to used precompiled templates.
-    @template: template
+    template: template
 
     tagName: 'div' # This is not directly a list but contains a list
     id: 'likes'
@@ -20,7 +20,7 @@ define [
       super # Will render the list itself and all items
       @subscribeEvent 'loginStatus', @showHideLoginNote
 
-    # The most important method a class inheriting from CollectionView
+    # The most important method a class derived from CollectionView
     # must overwrite.
     getView: (item) ->
       # Instantiate an item view

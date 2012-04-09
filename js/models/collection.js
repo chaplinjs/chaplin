@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['lib/subscriber'], function(Subscriber) {
+define(['lib/subscriber', 'lib/sync_machine'], function(Subscriber, SyncMachine) {
   'use strict';
   var Collection;
   return Collection = (function(_super) {
@@ -12,7 +12,15 @@ define(['lib/subscriber'], function(Subscriber) {
       Collection.__super__.constructor.apply(this, arguments);
     }
 
-    _(Collection.prototype).defaults(Subscriber);
+    _(Collection.prototype).extend(Subscriber);
+
+    Collection.prototype.initDeferred = function() {
+      return _(this).extend($.Deferred());
+    };
+
+    Collection.prototype.initSyncMachine = function() {
+      return _(this).extend(SyncMachine);
+    };
 
     Collection.prototype.addAtomic = function(models, options) {
       var batch_direction, model;
@@ -62,12 +70,19 @@ define(['lib/subscriber'], function(Subscriber) {
     Collection.prototype.disposed = false;
 
     Collection.prototype.dispose = function() {
+      var prop, properties, _i, _len;
       if (this.disposed) return;
       this.trigger('dispose', this);
       this.unsubscribeAllEvents();
+      this.off();
       this.reset([], {
         silent: true
       });
+      properties = ['model', 'models', '_byId', '_byCid'];
+      for (_i = 0, _len = properties.length; _i < _len; _i++) {
+        prop = properties[_i];
+        delete this[prop];
+      }
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };

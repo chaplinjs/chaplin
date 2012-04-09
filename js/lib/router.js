@@ -6,14 +6,12 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
   return Router = (function() {
 
     function Router() {
-      this.route = __bind(this.route, this);      this.registerRoutes();
-      this.startHistory();
+      this.route = __bind(this.route, this);
+      this.match = __bind(this.match, this);      this.createHistory();
     }
 
-    Router.prototype.registerRoutes = function() {
-      this.match('', 'likes#index');
-      this.match('likes/:id', 'likes#show');
-      return this.match('posts', 'posts#index');
+    Router.prototype.createHistory = function() {
+      return Backbone.history || (Backbone.history = new Backbone.History());
     };
 
     Router.prototype.startHistory = function() {
@@ -22,10 +20,18 @@ define(['mediator', 'lib/route'], function(mediator, Route) {
       });
     };
 
+    Router.prototype.stopHistory = function() {
+      return Backbone.history.stop();
+    };
+
+    Router.prototype.deleteHistory = function() {
+      Backbone.history.stop();
+      return delete Backbone.history;
+    };
+
     Router.prototype.match = function(pattern, target, options) {
       var route;
       if (options == null) options = {};
-      Backbone.history || (Backbone.history = new Backbone.History);
       route = new Route(pattern, target, options);
       return Backbone.history.route(route, route.handler);
     };
