@@ -1,24 +1,24 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-define(['mediator', 'chaplin/lib/utils'], function(mediator, utils) {
+define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(mediator, utils, Subscriber) {
   'use strict';
   var ApplicationView;
   return ApplicationView = (function() {
+
+    _(ApplicationView.prototype).extend(Subscriber);
 
     ApplicationView.prototype.title = '';
 
     function ApplicationView(options) {
       if (options == null) options = {};
       this.openLink = __bind(this.openLink, this);
-      this.removeFallbackContent = __bind(this.removeFallbackContent, this);
-      this.updateBodyClasses = __bind(this.updateBodyClasses, this);
       this.title = options.title;
-      mediator.subscribe('beforeControllerDispose', this.hideOldView);
-      mediator.subscribe('startupController', this.showNewView);
-      mediator.subscribe('startupController', this.removeFallbackContent);
-      mediator.subscribe('startupController', this.adjustTitle);
-      mediator.subscribe('login', this.updateBodyClasses);
-      mediator.subscribe('logout', this.updateBodyClasses);
+      this.subscribeEvent('beforeControllerDispose', this.hideOldView);
+      this.subscribeEvent('startupController', this.showNewView);
+      this.subscribeEvent('startupController', this.removeFallbackContent);
+      this.subscribeEvent('startupController', this.adjustTitle);
+      this.subscribeEvent('login', this.updateBodyClasses);
+      this.subscribeEvent('logout', this.updateBodyClasses);
       this.updateBodyClasses();
       this.addDOMHandlers();
     }
@@ -61,7 +61,7 @@ define(['mediator', 'chaplin/lib/utils'], function(mediator, utils) {
 
     ApplicationView.prototype.removeFallbackContent = function() {
       $('.accessible-fallback').remove();
-      return mediator.unsubscribe('startupController', this.removeFallbackContent);
+      return this.unsubscribeEvent('startupController', this.removeFallbackContent);
     };
 
     ApplicationView.prototype.addDOMHandlers = function() {

@@ -1,9 +1,12 @@
 define [
-  'mediator', 'chaplin/lib/utils'
-], (mediator, utils) ->
+  'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'
+], (mediator, utils, Subscriber) ->
   'use strict'
 
   class ApplicationView # This class does not extend View
+
+    # Mixin a Subscriber
+    _(ApplicationView.prototype).extend Subscriber
 
     # The site title used in the document title
     title: ''
@@ -16,14 +19,14 @@ define [
       # Listen to global events
 
       # Starting and disposing of controllers
-      mediator.subscribe 'beforeControllerDispose', @hideOldView
-      mediator.subscribe 'startupController', @showNewView
-      mediator.subscribe 'startupController', @removeFallbackContent
-      mediator.subscribe 'startupController', @adjustTitle
+      @subscribeEvent 'beforeControllerDispose', @hideOldView
+      @subscribeEvent 'startupController', @showNewView
+      @subscribeEvent 'startupController', @removeFallbackContent
+      @subscribeEvent 'startupController', @adjustTitle
 
       # Login and logout
-      mediator.subscribe 'login', @updateBodyClasses
-      mediator.subscribe 'logout', @updateBodyClasses
+      @subscribeEvent 'login', @updateBodyClasses
+      @subscribeEvent 'logout', @updateBodyClasses
 
       @updateBodyClasses()
       @addDOMHandlers()
@@ -62,11 +65,11 @@ define [
     # Logged-in / logged-out classes for the body element
     # ---------------------------------------------------
 
-    updateBodyClasses: =>
+    updateBodyClasses: ->
       body = $(document.body)
       loggedIn = Boolean mediator.user
       body
-        .toggleClass('logged-out', !loggedIn)
+        .toggleClass('logged-out', not loggedIn)
         .toggleClass('logged-in', loggedIn)
 
     # Fallback content
@@ -75,12 +78,12 @@ define [
     # After the first controller has been started, remove all accessible
     # content so the DOM is less complex and images and video do not lie
     # in the background
-    removeFallbackContent: =>
+    removeFallbackContent: ->
       # Hide fallback content and the loading screens
       $('.accessible-fallback').remove()
 
       # Remove the handler after the first startupController event
-      mediator.unsubscribe 'startupController', @removeFallbackContent
+      @unsubscribeEvent 'startupController', @removeFallbackContent
 
     # DOM Event handling
     # ------------------
