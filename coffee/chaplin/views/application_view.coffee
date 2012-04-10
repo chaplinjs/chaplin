@@ -130,7 +130,10 @@ define [
       # Pass to the router
       mediator.publish '!router:route', path, (routed) ->
         # Prevent default handling if the URL could be routed
-        event.preventDefault() if routed
+        if routed
+          event.preventDefault()
+        else
+          window.location.href = path
 
     # Not only A elements might act as internal links,
     # every element might have:
