@@ -69,24 +69,21 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
     };
 
     ApplicationView.prototype.openLink = function(event) {
-      var currentHostname, el, external, hostname, hostnameRegExp, href, hrefAttr;
+      var currentHostname, el, external, hostnameRegExp, href;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
-      hrefAttr = el.getAttribute('href');
-      if (hrefAttr === '' || /^#/.test(hrefAttr)) return;
-      href = el.href;
-      hostname = el.hostname;
-      if (!(href && hostname)) return;
+      href = el.getAttribute('href');
+      if (href === '' || href.charAt(0) === '#') return;
       currentHostname = location.hostname.replace('.', '\\.');
       hostnameRegExp = RegExp("" + currentHostname + "$", "i");
-      external = !hostnameRegExp.test(hostname);
+      external = !hostnameRegExp.test(el.hostname);
       if (external) return;
       return this.openInternalLink(event);
     };
 
     ApplicationView.prototype.openInternalLink = function(event) {
       var el, path;
-      event.preventDefault();
+      if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       path = el.pathname;
       if (!path) return;
@@ -102,7 +99,11 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
       path = $(el).data('href');
       if (!path) return;
       return mediator.publish('!router:route', path, function(routed) {
-        if (routed) return event.preventDefault();
+        if (routed) {
+          return event.preventDefault();
+        } else {
+          return location.href = path;
+        }
       });
     };
 

@@ -55,7 +55,7 @@ define [
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
     adjustTitle: (context) ->
-      #console.debug 'ApplicationView#adjustTitle', info
+      #console.debug 'ApplicationView#adjustTitle', context
       title = @title
       subtitle = context.controller.title
       title = "#{subtitle} \u2013 #{title}" if subtitle
@@ -96,55 +96,64 @@ define [
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) =>
+      #console.debug 'ApplicationView#openLink'
       return if utils.modifierKeyPressed(event)
-      el = event.currentTarget
 
-      # Handle empty href
-      hrefAttr = el.getAttribute 'href'
-      return if hrefAttr is '' or /^#/.test(hrefAttr)
+      el = event.currentTarget
+      href = el.getAttribute 'href'
+      # Ignore empty path even if it is a valid relative URL
+      return if href is '' or href.charAt(0) is '#'
 
       # Is it an external link?
-      href = el.href
-      hostname = el.hostname
-      return unless href and hostname
       currentHostname = location.hostname.replace('.', '\\.')
       hostnameRegExp = ///#{currentHostname}$///i
-      external = not hostnameRegExp.test(hostname)
+      external = not hostnameRegExp.test(el.hostname)
       if external
+        #console.debug 'ApplicationView#openLink: external link', el.hostname
         # Open external links normally
         # You might want to enforce opening in a new tab here:
-        # event.preventDefault()
-        # window.open href
+        #event.preventDefault()
+        #window.open el.href
         return
 
       @openInternalLink event
 
     # Try to route a click on a link internally
     openInternalLink: (event) ->
-      event.preventDefault()
-      el = event.currentTarget
+      #console.debug 'ApplicationView#openInternalLink'
+      return if utils.modifierKeyPressed(event)
 
+      el = event.currentTarget
       path = el.pathname
       return unless path
 
-      # Pass to the router
+      # Pass to the router, try to route internally
       mediator.publish '!router:route', path, (routed) ->
+        #console.debug 'ApplicationView#openInternalLink routed:', routed
         # Prevent default handling if the URL could be routed
         event.preventDefault() if routed
+        # Otherwise navigate to the URL normally
 
     # Not only A elements might act as internal links,
     # every element might have:
     # class="go-to" data-href="/something"
     goToHandler: (event) ->
+      #console.debug 'ApplicationView#goToHandler'
       el = event.currentTarget
 
       # Do not handle A elements
       return if event.nodeName is 'A'
 
       path = $(el).data('href')
+      # Ignore empty path even if it is a valid relative URL
       return unless path
 
-      # Pass to the router
+      # Pass to the router, try to route internally
       mediator.publish '!router:route', path, (routed) ->
-        # Prevent default handling if the URL could be routed
-        event.preventDefault() if routed
+        #console.debug 'ApplicationView#goToHandler routed:', routed
+        if routed
+          # Prevent default handling if the URL could be routed
+          event.preventDefault()
+        else
+          # Navigate to the URL normally
+          location.href = path
