@@ -6,6 +6,7 @@ define(['chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'
   'use strict';
   var View;
   return View = (function(_super) {
+    var wrapMethod;
 
     __extends(View, _super);
 
@@ -23,40 +24,43 @@ define(['chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'
 
     View.prototype.subviewsByName = null;
 
-    function View() {
-      this.dispose = __bind(this.dispose, this);
-      this.render = __bind(this.render, this);
-      var wrapMethod,
-        _this = this;
-      wrapMethod = function(name) {
-        var func;
-        func = _this[name];
-        return _this[name] = function() {
-          func.apply(_this, arguments);
-          return _this["after" + (utils.upcase(name))].apply(_this, arguments);
-        };
+    wrapMethod = function(obj, name) {
+      var func;
+      func = obj[name];
+      return obj[name] = function() {
+        func.apply(obj, arguments);
+        return obj["after" + (utils.upcase(name))].apply(obj, arguments);
       };
-      wrapMethod('initialize');
-      wrapMethod('render');
+    };
+
+    function View() {
+      this.dispose = __bind(this.dispose, this);      if (this.initialize !== View.prototype.initialize) {
+        wrapMethod(this, 'initialize');
+      }
+      if (this.initialize !== View.prototype.initialize) {
+        wrapMethod(this, 'render');
+      } else {
+        this.render = _(this.render).bind(this);
+      }
       View.__super__.constructor.apply(this, arguments);
     }
 
     View.prototype.initialize = function(options) {
+      var container;
       this.subviews = [];
       this.subviewsByName = {};
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
-      if (options && options.container) {
-        return this.$container = $(container);
-      } else if (this.containerSelector) {
-        return this.$container = $(this.containerSelector);
+      container = this.options.container != null ? this.options.container : this.containerSelector;
+      if (container) this.$container = $(container);
+      if (this.initialize === View.prototype.initialize) {
+        return this.afterInitialize();
       }
     };
 
-    View.prototype.afterInitialize = function(options) {
-      var byDefault, byOption;
-      byOption = options && options.autoRender === true;
-      byDefault = this.autoRender && !byOption;
-      if (byOption || byDefault) return this.render();
+    View.prototype.afterInitialize = function() {
+      var autoRender;
+      autoRender = this.options.autoRender != null ? this.options.autoRender : this.autoRender;
+      if (autoRender) return this.render();
     };
 
     View.prototype.delegateEvents = function() {};

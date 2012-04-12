@@ -40,31 +40,35 @@ define [
     subviews: null
     subviewsByName: null
 
+    # Wrap a `method` in order to call and `afterMethod`
+    wrapMethod = (obj, name) ->
+      func = obj[name]
+      #console.debug 'View wrapMethod', obj, name
+      # Create a method on the instance which wraps the inherited
+      obj[name] = ->
+        #console.debug 'View#' + name + ' wrapper', obj
+        # Call the original method
+        func.apply obj, arguments
+        # Call the corresponding `after-` method
+        obj["after#{utils.upcase(name)}"].apply obj, arguments
+
     constructor: ->
       #console.debug 'View#constructor', this
 
-      # Wrap `initialize` and `render` in order to call `afterInitialize`
-      # and `afterRender`
-      wrapMethod = (name) =>
-        # TODO: This isn’t so nice because it creates wrappers on each
-        # instance which leads to many function objects.
-        # A better way would be using Object.getPrototypeOf to look for a
-        # prototype in the chain which has an overriding method.
-        # For now, get the method using the prototype chain and
-        # wrap it on the instance.
-        func = this[name]
-        # Create a method on the instance which wraps the inherited
-        this[name] = =>
-          #console.debug 'View#' + name + ' wrapper', this
-          # Call the original method
-          func.apply this, arguments
-          # Call the corresponding `after~` method
-          this["after#{utils.upcase(name)}"].apply this, arguments
+      # Wrap `initialize` so `afterInitialize` is called afterwards
+      # Only wrap if there is an overring method, otherwise we
+      # call the after method directly
+      unless @initialize is View.prototype.initialize
+        wrapMethod this, 'initialize'
 
-      wrapMethod 'initialize'
-      wrapMethod 'render'
+      # Wrap `render` so `afterRender` is called afterwards
+      unless @initialize is View.prototype.initialize
+        wrapMethod this, 'render'
+      else
+        # Otherwise just bind the `render` method normally
+        @render = _(@render).bind this
 
-      # Finally call Backbone’s constructor
+      # Call Backbone’s constructor
       super
 
     initialize: (options) ->
@@ -82,20 +86,29 @@ define [
 
       # Create a shortcut to the container element
       # The view will be automatically appended to the container when rendered
-      if options and options.container
-        @$container = $(container)
-      else if @containerSelector
-        @$container = $(@containerSelector)
+      # `container` option may override `autoRender` instance property
+      container = if @options.container?
+          @options.container
+        else
+          @containerSelector
+      @$container = $(container) if container
+
+      # Call afterInitialize manually when initialize wasn’t wrapped
+      if @initialize is View.prototype.initialize
+        #console.debug '\tcall afterInitialize without wrapping'
+        @afterInitialize()
 
     # This method is called after a specific `initialize` of a derived class
-    afterInitialize: (options) ->
-      #console.debug 'View#afterInitialize', this, 'options', options
+    afterInitialize: ->
+      #console.debug 'View#afterInitialize', this
 
       # Render automatically if set by options or instance property
-      # and the option do not override it
-      byOption = options and options.autoRender is true
-      byDefault = @autoRender and not byOption
-      @render() if byOption or byDefault
+      # `autoRender` option may override `autoRender` instance property
+      autoRender = if @options.autoRender?
+          @options.autoRender
+        else
+          @autoRender
+      @render() if autoRender
 
     # User input event handling
     # -------------------------
@@ -288,12 +301,13 @@ allowed'
 
     # Main render function
     # Always bind it to the view instance
-    render: =>
+    render: ->
       #console.debug "View#render\n\t", this, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
 
       return if @disposed
 
       # Template compilation
+      # --------------------
 
       # In the end, you might want to precompile the templates to JavaScript
       # functions on the server-side and just load the JavaScript code.
@@ -319,6 +333,8 @@ allowed'
         html = template @getTemplateData()
 
         # Replace HTML
+        # ------------
+
         # This is a workaround for an apparent issue with jQuery 1.7’s
         # innerShiv feature. Using @$el.html(html) caused issues with
         # HTML5-only tags in IE7 and IE8
@@ -328,7 +344,6 @@ allowed'
       this
 
     # This method is called after a specific `render` of a derived class
-
     afterRender: ->
       #console.debug 'View#afterRender', this
 
@@ -369,7 +384,8 @@ allowed'
 
       # Remove element references, options and model/collection references
       properties = [
-        'el', '$el', '$container', 'options', 'model', 'collection',
+        'el', '$el', '$container',
+        'options', 'model', 'collection',
         'subviews', 'subviewsByName'
       ]
       delete this[prop] for prop in properties
