@@ -169,27 +169,22 @@ allowed'
     # The following implementation resembles subscriber.coffee
     # --------------------------------------------------------
 
-    # The handler store
-    _modelBindings: null
-
     # Bind to a model event
     modelBind: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'View#modelBind: type must be string'
+        throw new TypeError 'View#modelBind: ' +
+          'type must be a string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelBind: handler must be function'
+        throw new TypeError 'View#modelBind: ' +
+          'handler argument must be function'
 
       # Get model/collection reference
       model = @model or @collection
       unless model
         throw new TypeError 'View#modelBind: no model or collection set'
 
-      # Add to store
-      @_modelBindings or= {}
-      handlers = @_modelBindings[type] or= []
       # Ensure that a handler isn’t registered twice
-      return if _(handlers).include handler
-      handlers.push handler
+      model.off type, handler, @
 
       # Register model handler, force context to the view
       model.on type, handler, @
@@ -198,17 +193,11 @@ allowed'
 
     modelUnbind: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'View#modelUnbind: type must be string'
+        throw new TypeError 'View#modelUnbind: ' +
+          'type argument must be a string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelUnbind: handler must be function'
-
-      # Remove from store
-      return unless @_modelBindings
-      handlers = @_modelBindings[type]
-      if handlers
-        index = _(handlers).indexOf handler
-        handlers.splice index, 1 if index > -1
-        delete @_modelBindings[type] if handlers.length is 0
+        throw new TypeError 'View#modelUnbind: ' +
+          'handler argument must be a function'
 
       # Get model/collection reference
       model = @model or @collection
@@ -219,12 +208,11 @@ allowed'
 
     # Unbind all recorded model event handlers
     modelUnbindAll: () ->
-      # Clear store
-      @_modelBindings = null
-
-      # Remove all handlers with a context of this view
+      # Get model/collection reference
       model = @model or @collection
       return unless model
+
+      # Remove all handlers with a context of this view
       model.off null, null, @
 
     # Setup a simple one-way model-view binding

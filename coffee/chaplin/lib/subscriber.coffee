@@ -15,10 +15,10 @@ define ['mediator'], (mediator) ->
     subscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
         throw new TypeError 'Subscriber#subscribeEvent: ' +
-          'type argument must be string'
+          'type argument must be a string'
       if typeof handler isnt 'function'
         throw new TypeError 'Subscriber#subscribeEvent: ' +
-          'handler argument must be function'
+          'handler argument must be a function'
 
       # Ensure that a handler isn’t registered twice
       mediator.unsubscribe type, handler, @
@@ -29,10 +29,10 @@ define ['mediator'], (mediator) ->
     unsubscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
         throw new TypeError 'Subscriber#unsubscribeEvent: ' +
-          'type argument must be string'
+          'type argument must be a string'
       if typeof handler isnt 'function'
         throw new TypeError 'Subscriber#unsubscribeEvent: ' +
-          'handler argument must be function'
+          'handler argument must be a function'
 
       # Remove global handler
       mediator.unsubscribe type, handler

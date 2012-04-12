@@ -98,41 +98,29 @@ allowed');
       return this.$el.unbind(".delegate" + this.cid);
     };
 
-    View.prototype._modelBindings = null;
-
     View.prototype.modelBind = function(type, handler) {
-      var handlers, model, _base;
+      var model;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelBind: type must be string');
+        throw new TypeError('View#modelBind: ' + 'type must be a string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelBind: handler must be function');
+        throw new TypeError('View#modelBind: ' + 'handler argument must be function');
       }
       model = this.model || this.collection;
       if (!model) {
         throw new TypeError('View#modelBind: no model or collection set');
       }
-      this._modelBindings || (this._modelBindings = {});
-      handlers = (_base = this._modelBindings)[type] || (_base[type] = []);
-      if (_(handlers).include(handler)) return;
-      handlers.push(handler);
+      model.off(type, handler, this);
       return model.on(type, handler, this);
     };
 
     View.prototype.modelUnbind = function(type, handler) {
-      var handlers, index, model;
+      var model;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelUnbind: type must be string');
+        throw new TypeError('View#modelUnbind: ' + 'type argument must be a string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelUnbind: handler must be function');
-      }
-      if (!this._modelBindings) return;
-      handlers = this._modelBindings[type];
-      if (handlers) {
-        index = _(handlers).indexOf(handler);
-        if (index > -1) handlers.splice(index, 1);
-        if (handlers.length === 0) delete this._modelBindings[type];
+        throw new TypeError('View#modelUnbind: ' + 'handler argument must be a function');
       }
       model = this.model || this.collection;
       if (!model) return;
@@ -141,7 +129,6 @@ allowed');
 
     View.prototype.modelUnbindAll = function() {
       var model;
-      this._modelBindings = null;
       model = this.model || this.collection;
       if (!model) return;
       return model.off(null, null, this);
