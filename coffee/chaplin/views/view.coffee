@@ -217,10 +217,16 @@ allowed'
 
     # Setup a simple one-way model-view binding
     # Pass changed values from model to specific elements in the view
+    # For form controls, the value is changed, otherwise the element
+    # text content is set to the model attribute value.
     pass: (eventType, selector) ->
       model = @model or @collection
-      @modelBind eventType, (model, val) =>
-        @$(selector).html(val)
+      @modelBind eventType, (model, value) =>
+        $el = @$(selector)
+        if $el.is(':input')
+          $el.val value
+        else
+          $el.text value
 
     # Subviews
     # --------

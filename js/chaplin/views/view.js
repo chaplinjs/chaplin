@@ -138,8 +138,14 @@ allowed');
       var model,
         _this = this;
       model = this.model || this.collection;
-      return this.modelBind(eventType, function(model, val) {
-        return _this.$(selector).html(val);
+      return this.modelBind(eventType, function(model, value) {
+        var $el;
+        $el = _this.$(selector);
+        if ($el.is(':input')) {
+          return $el.val(value);
+        } else {
+          return $el.text(value);
+        }
       });
     };
 
