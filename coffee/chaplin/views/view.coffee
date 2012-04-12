@@ -333,7 +333,7 @@ allowed'
       #console.debug 'View#afterRender', this
 
       # Automatically append to DOM if the container element is set
-      if @$container and @$container[@containerMethod]?
+      if @$container
         #console.debug '\tappend to DOM'
         @$container[@containerMethod] @el
         # Trigger an event

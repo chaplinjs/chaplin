@@ -213,7 +213,7 @@ allowed');
     };
 
     View.prototype.afterRender = function() {
-      if (this.$container && (this.$container[this.containerMethod] != null)) {
+      if (this.$container) {
         this.$container[this.containerMethod](this.el);
         this.trigger('addedToDOM');
       }
