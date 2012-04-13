@@ -1,3 +1,5 @@
+**Hey there! There’s a major rewrite going on in the [development branch](https://github.com/moviepilot/chaplin/tree/development). How about joining us? You might also have a look at the [discussions](https://github.com/moviepilot/chaplin/issues) about changes on the structure.**
+
 ![Chaplin](http://s3.amazonaws.com/imgly_production/3401027/original.png)
 
 # A Sample Application Architecture Using Backbone.js
