@@ -1,11 +1,10 @@
 define [
   'mediator', 'chaplin/lib/utils',
-  'chaplin/controllers/controller',
   'chaplin/lib/subscriber'
-], (mediator, utils, Controller, Subscriber) ->
+], (mediator, utils, Subscriber) ->
   'use strict'
 
-  class ApplicationController extends Controller
+  class ApplicationController # Do not inherit from Controller
 
     # Mixin a Subscriber
     _(ApplicationController.prototype).extend Subscriber
@@ -21,6 +20,9 @@ define [
 
     # The current URL
     url: null
+
+    constructor: ->
+      @initialize()
 
     initialize: ->
       #console.debug 'ApplicationController#initialize'
