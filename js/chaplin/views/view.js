@@ -18,8 +18,6 @@ define(['chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'
 
     View.prototype.containerMethod = 'append';
 
-    View.prototype.$container = null;
-
     View.prototype.subviews = null;
 
     View.prototype.subviewsByName = null;
@@ -46,12 +44,9 @@ define(['chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'
     }
 
     View.prototype.initialize = function(options) {
-      var container;
       this.subviews = [];
       this.subviewsByName = {};
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
-      container = this.options.container != null ? this.options.container : this.containerSelector;
-      if (container) this.$container = $(container);
       if (this.initialize === View.prototype.initialize) {
         return this.afterInitialize();
       }
@@ -134,11 +129,9 @@ allowed');
       return model.off(null, null, this);
     };
 
-    View.prototype.pass = function(eventType, selector) {
-      var model,
-        _this = this;
-      model = this.model || this.collection;
-      return this.modelBind(eventType, function(model, value) {
+    View.prototype.pass = function(attribute, selector) {
+      var _this = this;
+      return this.modelBind("change:" + attribute, function(model, value) {
         var $el;
         $el = _this.$(selector);
         if ($el.is(':input')) {
@@ -210,8 +203,11 @@ allowed');
     };
 
     View.prototype.afterRender = function() {
-      if (this.$container) {
-        this.$container[this.containerMethod](this.el);
+      var container, containerMethod;
+      container = this.options.container != null ? this.options.container : this.containerSelector;
+      if (container) {
+        containerMethod = this.options.containerMethod != null ? this.options.containerMethod : this.containerMethod;
+        $(container)[containerMethod](this.el);
         this.trigger('addedToDOM');
       }
       return this;
@@ -231,7 +227,7 @@ allowed');
       this.modelUnbindAll();
       this.off();
       this.$el.remove();
-      properties = ['el', '$el', '$container', 'options', 'model', 'collection', 'subviews', 'subviewsByName'];
+      properties = ['el', '$el', 'options', 'model', 'collection', 'subviews', 'subviewsByName'];
       for (_j = 0, _len2 = properties.length; _j < _len2; _j++) {
         prop = properties[_j];
         delete this[prop];

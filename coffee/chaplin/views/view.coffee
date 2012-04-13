@@ -30,9 +30,6 @@ define [
     # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
     containerMethod: 'append'
 
-    # Store the container element reference
-    $container: null
-
     # Subviews
     # --------
 
@@ -83,15 +80,6 @@ define [
       # If the model is disposed, automatically dispose the associated view
       if @model or @collection
         @modelBind 'dispose', @dispose
-
-      # Create a shortcut to the container element
-      # The view will be automatically appended to the container when rendered
-      # `container` option may override `autoRender` instance property
-      container = if @options.container?
-          @options.container
-        else
-          @containerSelector
-      @$container = $(container) if container
 
       # Call afterInitialize manually when initialize wasn’t wrapped
       if @initialize is View.prototype.initialize
@@ -216,12 +204,12 @@ allowed'
       model.off null, null, @
 
     # Setup a simple one-way model-view binding
-    # Pass changed values from model to specific elements in the view
+    # Pass changed attribute values to specific elements in the view
     # For form controls, the value is changed, otherwise the element
     # text content is set to the model attribute value.
-    pass: (eventType, selector) ->
-      model = @model or @collection
-      @modelBind eventType, (model, value) =>
+    # Example: @pass 'attribute', '.selector'
+    pass: (attribute, selector) ->
+      @modelBind "change:#{attribute}", (model, value) =>
         $el = @$(selector)
         if $el.is(':input')
           $el.val value
@@ -341,10 +329,25 @@ allowed'
     afterRender: ->
       #console.debug 'View#afterRender', this
 
+      # Create a shortcut to the container element
+      # The view will be automatically appended to the container when rendered
+      # `container` option may override `autoRender` instance property
+      container = if @options.container?
+          @options.container
+        else
+          @containerSelector
+
       # Automatically append to DOM if the container element is set
-      if @$container
-        #console.debug '\tappend to DOM'
-        @$container[@containerMethod] @el
+      if container
+        # Get the attach method name
+        containerMethod = if @options.containerMethod?
+            @options.containerMethod
+          else
+            @containerMethod
+
+        #console.debug '\tappend to DOM', containerMethod, container
+        $(container)[containerMethod] @el
+
         # Trigger an event
         @trigger 'addedToDOM'
 
@@ -378,7 +381,7 @@ allowed'
 
       # Remove element references, options and model/collection references
       properties = [
-        'el', '$el', '$container',
+        'el', '$el',
         'options', 'model', 'collection',
         'subviews', 'subviewsByName'
       ]
