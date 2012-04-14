@@ -17,8 +17,7 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
       this.subscribeEvent('startupController', this.showNewView);
       this.subscribeEvent('startupController', this.removeFallbackContent);
       this.subscribeEvent('startupController', this.adjustTitle);
-      this.subscribeEvent('login', this.updateBodyClasses);
-      this.subscribeEvent('logout', this.updateBodyClasses);
+      this.subscribeEvent('loginStatus', this.updateBodyClasses);
       this.updateBodyClasses();
       this.addDOMHandlers();
     }
@@ -52,11 +51,8 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
       }), 50);
     };
 
-    ApplicationView.prototype.updateBodyClasses = function() {
-      var body, loggedIn;
-      body = $(document.body);
-      loggedIn = Boolean(mediator.user);
-      return body.toggleClass('logged-out', !loggedIn).toggleClass('logged-in', loggedIn);
+    ApplicationView.prototype.updateBodyClasses = function(loggedIn) {
+      return $(document.body).toggleClass('logged-out', !loggedIn).toggleClass('logged-in', loggedIn);
     };
 
     ApplicationView.prototype.removeFallbackContent = function() {

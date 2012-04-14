@@ -25,8 +25,7 @@ define [
       @subscribeEvent 'startupController', @adjustTitle
 
       # Login and logout
-      @subscribeEvent 'login', @updateBodyClasses
-      @subscribeEvent 'logout', @updateBodyClasses
+      @subscribeEvent 'loginStatus', @updateBodyClasses
 
       @updateBodyClasses()
       @addDOMHandlers()
@@ -65,10 +64,8 @@ define [
     # Logged-in / logged-out classes for the body element
     # ---------------------------------------------------
 
-    updateBodyClasses: ->
-      body = $(document.body)
-      loggedIn = Boolean mediator.user
-      body
+    updateBodyClasses: (loggedIn) ->
+      $(document.body)
         .toggleClass('logged-out', not loggedIn)
         .toggleClass('logged-in', loggedIn)
 
