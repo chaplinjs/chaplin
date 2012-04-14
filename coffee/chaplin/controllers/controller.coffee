@@ -22,9 +22,8 @@ define [
 
     initialize: ->
 
-    #
     # Disposal
-    #
+    # --------
 
     disposed: false
 

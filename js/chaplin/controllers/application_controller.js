@@ -84,6 +84,15 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
       return this.url = url;
     };
 
+    ApplicationController.prototype.disposed = false;
+
+    ApplicationController.prototype.dispose = function() {
+      if (this.disposed) return;
+      this.unsubscribeAllEvents();
+      this.disposed = true;
+      return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
+    };
+
     return ApplicationController;
 
   })();

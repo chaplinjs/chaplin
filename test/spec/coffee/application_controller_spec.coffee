@@ -8,13 +8,20 @@ define [
   describe 'ApplicationController', ->
     #console.debug 'ApplicationController spec'
 
+    # Initialize shared variables
     applicationController = undefined
 
     initializeCalled = actionCalled =
       historyURLCalled = disposeCalled = undefined
     params = passedParams = undefined
+
     # Unique ID counter for creating params objects
     paramsId = 0
+
+    # Fake route object, walks like a route and swims like a route
+    route = controller: 'test', action: 'show'
+
+    # Reset helpers
 
     resetFlags = ->
       initializeCalled = actionCalled =
@@ -24,9 +31,6 @@ define [
       # Create a fresh params object which does not equal the previous one
       params = changeURL: false, id: paramsId++
       passedParams = undefined
-
-    # Fake route object, walks like a route and swims like a route
-    route = controller: 'test', action: 'show'
 
     # Clear the mediator
     mediator.unsubscribe()
@@ -91,7 +95,7 @@ define [
       expect(c.currentParams).toBe params
       expect(c.url).toBe "test/#{params.id}"
 
-    it 'should dispose old controllers', ->
+    it 'should dispose inactive controllers', ->
       passedController = undefined
       beforeControllerDispose = (controller) ->
         passedController = controller
@@ -119,3 +123,14 @@ define [
       expect(passedEvent.previousControllerName).toBe 'test'
 
       mediator.unsubscribe 'startupController', startupController
+
+    it 'should be disposable', ->
+      expect(typeof applicationController.dispose).toBe 'function'
+      applicationController.dispose()
+
+      mediator.publish 'matchRoute', route, params
+      expect(initializeCalled).toBe false
+
+      expect(applicationController.disposed).toBe true
+      if Object.isFrozen
+        expect(Object.isFrozen(applicationController)).toBe true

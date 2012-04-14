@@ -8,6 +8,12 @@ define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views
 
     Application.prototype.title = '';
 
+    Application.prototype.applicationController = null;
+
+    Application.prototype.applicationView = null;
+
+    Application.prototype.router = null;
+
     Application.prototype.initialize = function() {
       this.applicationController = new ApplicationController();
       return this.applicationView = new ApplicationView({
@@ -19,6 +25,21 @@ define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views
       this.router = new Router();
       if (typeof routes === "function") routes(this.router.match);
       return this.router.startHistory();
+    };
+
+    Application.prototype.disposed = false;
+
+    Application.prototype.dispose = function() {
+      var prop, properties, _i, _len;
+      if (this.disposed) return;
+      properties = ['applicationController', 'applicationView', 'router'];
+      for (_i = 0, _len = properties.length; _i < _len; _i++) {
+        prop = properties[_i];
+        this[prop].dispose();
+        delete this[prop];
+      }
+      this.disposed = true;
+      return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
     return Application;

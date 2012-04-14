@@ -8,6 +8,10 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
     initializeCalled = actionCalled = historyURLCalled = disposeCalled = void 0;
     params = passedParams = void 0;
     paramsId = 0;
+    route = {
+      controller: 'test',
+      action: 'show'
+    };
     resetFlags = function() {
       return initializeCalled = actionCalled = historyURLCalled = disposeCalled = false;
     };
@@ -17,10 +21,6 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
         id: paramsId++
       };
       return passedParams = void 0;
-    };
-    route = {
-      controller: 'test',
-      action: 'show'
     };
     mediator.unsubscribe();
     TestController = (function(_super) {
@@ -92,7 +92,7 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       expect(c.currentParams).toBe(params);
       return expect(c.url).toBe("test/" + params.id);
     });
-    it('should dispose old controllers', function() {
+    it('should dispose inactive controllers', function() {
       var beforeControllerDispose, passedController;
       passedController = void 0;
       beforeControllerDispose = function(controller) {
@@ -105,7 +105,7 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       expect(passedController.disposed).toBe(true);
       return mediator.unsubscribe('beforeControllerDispose', beforeControllerDispose);
     });
-    return it('should publish startupController events', function() {
+    it('should publish startupController events', function() {
       var passedEvent, startupController;
       passedEvent = void 0;
       startupController = function(event) {
@@ -119,6 +119,16 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       expect(passedEvent.params).toBe(params);
       expect(passedEvent.previousControllerName).toBe('test');
       return mediator.unsubscribe('startupController', startupController);
+    });
+    return it('should be disposable', function() {
+      expect(typeof applicationController.dispose).toBe('function');
+      applicationController.dispose();
+      mediator.publish('matchRoute', route, params);
+      expect(initializeCalled).toBe(false);
+      expect(applicationController.disposed).toBe(true);
+      if (Object.isFrozen) {
+        return expect(Object.isFrozen(applicationController)).toBe(true);
+      }
     });
   });
 });

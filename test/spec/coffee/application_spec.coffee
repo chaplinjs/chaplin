@@ -7,10 +7,10 @@ define [
 ], (mediator, Application, Router, ApplicationController, ApplicationView) ->
   'use strict'
 
-  application = new Application()
-
   describe 'Application', ->
     #console.debug 'Application spec'
+
+    application = new Application()
 
     it 'should be a simple object', ->
       expect(typeof application).toEqual 'object'
@@ -44,3 +44,14 @@ define [
 
     it 'should start Backbone.history', ->
       expect(Backbone.History.started).toBe true
+
+    it 'should be disposable', ->
+      expect(typeof application.dispose).toBe 'function'
+      application.dispose()
+      expect(application.applicationController).toBe null
+      expect(application.applicationView).toBe null
+      expect(application.router).toBe null
+
+      expect(application.disposed).toBe true
+      if Object.isFrozen
+        expect(Object.isFrozen(application)).toBe true

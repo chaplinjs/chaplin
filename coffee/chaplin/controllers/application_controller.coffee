@@ -149,3 +149,18 @@ define [
 
       # Save the URL
       @url = url
+
+    # Disposal
+    # --------
+
+    disposed: false
+
+    dispose: ->
+      return if @disposed
+
+      @unsubscribeAllEvents()
+
+      @disposed = true
+
+      # Your're frozen when your heart’s not open
+      Object.freeze? this

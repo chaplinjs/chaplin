@@ -103,6 +103,16 @@ define(['mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function(med
       });
     };
 
+    ApplicationView.prototype.disposed = false;
+
+    ApplicationView.prototype.dispose = function() {
+      if (this.disposed) return;
+      this.unsubscribeAllEvents();
+      delete this.title;
+      this.disposed = true;
+      return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
+    };
+
     return ApplicationView;
 
   })();

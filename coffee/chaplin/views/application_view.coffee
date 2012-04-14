@@ -154,3 +154,20 @@ define [
         else
           # Navigate to the URL normally
           location.href = path
+
+    # Disposal
+    # --------
+
+    disposed: false
+
+    dispose: ->
+      return if @disposed
+
+      @unsubscribeAllEvents()
+
+      delete @title
+
+      @disposed = true
+
+      # Your're frozen when your heart’s not open
+      Object.freeze? this

@@ -7,11 +7,18 @@ define [
 ], (mediator, ApplicationController, ApplicationView, Router) ->
   'use strict'
 
-  # The application bootstrapper.
+  # The application bootstrapper
+  # ----------------------------
+
   class Application
 
     # The site title used in the document title
     title: ''
+
+    # The application instantiates these three core modules
+    applicationController: null
+    applicationView: null
+    router: null
 
     initialize: ->
       #console.debug 'Application#initialize'
@@ -38,3 +45,21 @@ define [
 
       # After registering the routes, start Backbone.history
       @router.startHistory()
+
+    # Disposal
+    # --------
+
+    disposed: false
+
+    dispose: ->
+      return if @disposed
+
+      properties = ['applicationController', 'applicationView', 'router']
+      for prop in properties
+        this[prop].dispose()
+        delete this[prop]
+
+      @disposed = true
+
+      # Your're frozen when your heart’s not open
+      Object.freeze? this

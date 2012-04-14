@@ -70,15 +70,14 @@ define(['chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'
       } else if (arguments.length === 3) {
         selector = second;
         if (typeof selector !== 'string') {
-          throw new TypeError('View#delegate: second argument must be a string');
+          throw new TypeError('View#delegate: ' + 'second argument must be a string');
         }
         handler = third;
       } else {
-        throw new TypeError('View#delegate: only two or three arguments are\
-allowed');
+        throw new TypeError('View#delegate: ' + 'only two or three arguments are allowed');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#delegate: handler argument must be function');
+        throw new TypeError('View#delegate: ' + 'handler argument must be function');
       }
       eventType += ".delegate" + this.cid;
       handler = _(handler).bind(this);

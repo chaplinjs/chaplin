@@ -126,14 +126,16 @@ define [
       else if arguments.length is 3
         selector = second
         if typeof selector isnt 'string'
-          throw new TypeError 'View#delegate: second argument must be a string'
+          throw new TypeError 'View#delegate: ' +
+            'second argument must be a string'
         handler = third
       else
-        throw new TypeError 'View#delegate: only two or three arguments are
-allowed'
+        throw new TypeError 'View#delegate: ' +
+          'only two or three arguments are allowed'
 
       if typeof handler isnt 'function'
-        throw new TypeError 'View#delegate: handler argument must be function'
+        throw new TypeError 'View#delegate: ' +
+          'handler argument must be function'
 
       # Add an event namespace
       eventType += ".delegate#{@cid}"
