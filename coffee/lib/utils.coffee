@@ -1,4 +1,8 @@
-define ['mediator', 'chaplin/lib/utils'], (mediator, chaplinUtils) ->
+define [
+  'underscore',
+  'mediator',
+  'chaplin/lib/utils'
+], (_, mediator, chaplinUtils) ->
 
   # Application-specific utilities
   # ------------------------------

@@ -1,8 +1,10 @@
 define [
-  'mediator', 'lib/utils',
+  'underscore',
+  'mediator',
+  'lib/utils',
   'chaplin/views/view',
   'text!templates/login.hbs'
-], (mediator, utils, View, template) ->
+], (_, mediator, utils, View, template) ->
   'use strict'
 
   class LoginView extends View

@@ -1,5 +1,6 @@
 define [
-  'chaplin/views/view', 'text!templates/post.hbs'
+  'chaplin/views/view',
+  'text!templates/post.hbs'
 ], (View, template) ->
   'use strict'
 

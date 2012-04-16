@@ -1,6 +1,10 @@
 define [
-  'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'
-], (mediator, utils, Subscriber) ->
+  'jquery',
+  'underscore',
+  'mediator',
+  'chaplin/lib/utils',
+  'chaplin/lib/subscriber'
+], ($, _, mediator, utils, Subscriber) ->
   'use strict'
 
   class ApplicationView # This class does not extend View

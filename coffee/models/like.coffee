@@ -1,6 +1,8 @@
 define [
-  'mediator', 'chaplin/models/model'
-], (mediator, Model) ->
+  'underscore',
+  'mediator',
+  'chaplin/models/model'
+], (_, mediator, Model) ->
   'use strict'
 
   class Like extends Model

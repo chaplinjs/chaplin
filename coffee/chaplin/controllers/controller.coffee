@@ -1,6 +1,7 @@
 define [
+  'underscore',
   'chaplin/lib/subscriber'
-], (Subscriber) ->
+], (_, Subscriber) ->
   'use strict'
 
   class Controller

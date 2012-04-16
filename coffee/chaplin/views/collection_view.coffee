@@ -1,6 +1,9 @@
 define [
-  'lib/utils', 'chaplin/views/view'
-], (utils, View) ->
+  'jquery',
+  'underscore',
+  'lib/utils',
+  'chaplin/views/view'
+], ($, _, utils, View) ->
   'use strict'
 
   # General class for rendering Collections. Derive this class and

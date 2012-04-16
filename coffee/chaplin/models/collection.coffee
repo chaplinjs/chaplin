@@ -1,6 +1,9 @@
 define [
-  'chaplin/lib/subscriber', 'chaplin/lib/sync_machine'
-], (Subscriber, SyncMachine) ->
+  'underscore',
+  'backbone',
+  'chaplin/lib/subscriber',
+  'chaplin/lib/sync_machine'
+], (_, Backbone, Subscriber, SyncMachine) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
