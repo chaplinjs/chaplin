@@ -11,7 +11,7 @@ define [
 
     _(Router.prototype).extend Subscriber
 
-    constructor: (@options) ->
+    constructor: (@options = {}) ->
       @subscribeEvent '!router:route', @routeHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
