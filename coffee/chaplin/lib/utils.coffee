@@ -39,22 +39,14 @@ define [
       str.charAt(0).toUpperCase() + str.substring(1)
 
     # underScoreHelper -> under_score_helper
-    underscorize = do ->
-      regExp = /[A-Z]/g
-      underscorizer = (char) -> "_#{char.toLowerCase()}"
-      (string) ->
-        result = string.replace regExp, underscorizer
-        result = result.substring(1) if result.charAt(0) is '_'
-        result
+    underscorize: (string) ->
+      string.replace /[A-Z]/g, (char, index) ->
+        (if index isnt 0 then '_' else '') + char.toLowerCase()
 
     # dashHelper -> dash-helper
-    dasherize = do ->
-      regExp = /[A-Z]/g
-      dasherizer = (char) -> "-#{char.toLowerCase()}"
-      (string) ->
-        result = string.replace regExp, dasherizer
-        result = result.substring(1) if result.charAt(0) is '-'
-        result
+    dasherize: (string) ->
+      string.replace /[A-Z]/g, (char, index) ->
+        (if index isnt 0 then '-' else '') + char.toLowerCase()
 
     # Persistent data storage
     # -----------------------
