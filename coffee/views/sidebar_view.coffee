@@ -1,6 +1,7 @@
 define [
   'mediator',
-  'chaplin/views/view', 'text!templates/sidebar.hbs'
+  'chaplin/views/view',
+  'text!templates/sidebar.hbs'
 ], (mediator, View, template) ->
   'use strict'
 

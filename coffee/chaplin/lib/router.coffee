@@ -1,6 +1,10 @@
 define [
-  'mediator', 'chaplin/lib/subscriber', 'chaplin/lib/route'
-], (mediator, Subscriber, Route) ->
+  'underscore',
+  'backbone',
+  'mediator',
+  'chaplin/lib/subscriber',
+  'chaplin/lib/route'
+], (_, Backbone, mediator, Subscriber, Route) ->
   'use strict'
 
   # The router which is a replacement for Backbone.Router.

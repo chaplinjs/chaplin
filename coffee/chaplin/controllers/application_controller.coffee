@@ -1,7 +1,9 @@
 define [
-  'mediator', 'chaplin/lib/utils',
+  'underscore',
+  'mediator',
+  'chaplin/lib/utils',
   'chaplin/lib/subscriber'
-], (mediator, utils, Subscriber) ->
+], (_, mediator, utils, Subscriber) ->
   'use strict'
 
   class ApplicationController # Do not inherit from Controller

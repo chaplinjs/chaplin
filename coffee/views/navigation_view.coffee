@@ -1,5 +1,6 @@
 define [
-  'chaplin/views/view', 'text!templates/navigation.hbs'
+  'chaplin/views/view',
+  'text!templates/navigation.hbs'
 ], (View, template) ->
   'use strict'
 

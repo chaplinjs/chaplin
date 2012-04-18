@@ -1,6 +1,8 @@
 define [
-  'mediator', 'chaplin/lib/utils'
-], (mediator, utils) ->
+  'handlebars',
+  'mediator',
+  'chaplin/lib/utils'
+], (Handlebars, mediator, utils) ->
 
   'use strict'
 

@@ -1,4 +1,8 @@
-define ['mediator'], (mediator) ->
+define [
+  'jquery',
+  'underscore',
+  'mediator'
+], ($, _, mediator) ->
   'use strict'
 
   # Utilities

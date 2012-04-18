@@ -1,5 +1,6 @@
 define [
-  'mediator', 'chaplin/models/model'
+  'mediator',
+  'chaplin/models/model'
 ], (mediator, Model) ->
   'use strict'
 
