@@ -1,4 +1,8 @@
-define ['chaplin/lib/subscriber'], (Subscriber) ->
+define [
+  'underscore',
+  'backbone',
+  'chaplin/lib/subscriber'
+], (_, Backbone, Subscriber) ->
   'use strict'
 
   class Model extends Backbone.Model

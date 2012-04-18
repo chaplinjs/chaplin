@@ -1,6 +1,8 @@
 define [
-  'lib/utils', 'chaplin/lib/subscriber'
-], (utils, Subscriber) ->
+  'underscore',
+  'lib/utils',
+  'chaplin/lib/subscriber'
+], (_, utils, Subscriber) ->
   'use strict'
 
   class ServiceProvider

@@ -1,4 +1,8 @@
-define ['lib/utils', 'chaplin/lib/support'], (utils, chaplinSupport) ->
+define [
+  'underscore',
+  'lib/utils',
+  'chaplin/lib/support'
+], (_, utils, chaplinSupport) ->
 
   # Application-specific feature detection
   # --------------------------------------

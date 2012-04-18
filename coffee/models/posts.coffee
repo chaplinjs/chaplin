@@ -1,6 +1,9 @@
 define [
-  'mediator', 'chaplin/models/collection', 'models/post'
-], (mediator, Collection, Post) ->
+  'underscore',
+  'mediator',
+  'chaplin/models/collection',
+  'models/post'
+], (_, mediator, Collection, Post) ->
   'use strict'
 
   class Posts extends Collection

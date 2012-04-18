@@ -1,6 +1,7 @@
 define [
   'chaplin/controllers/controller',
-  'models/posts', 'views/posts_view'
+  'models/posts',
+  'views/posts_view'
 ], (Controller, Posts, PostsView) ->
   'use strict'
 

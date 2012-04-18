@@ -1,4 +1,7 @@
-define ['mediator'], (mediator) ->
+define [
+  'underscore',
+  'mediator'
+], (_, mediator) ->
   'use strict'
 
   class Route

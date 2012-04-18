@@ -1,7 +1,12 @@
 define [
-  'chaplin/lib/utils', 'chaplin/lib/subscriber',
+  'jquery',
+  'underscore',
+  'backbone',
+  'handlebars',
+  'chaplin/lib/utils',
+  'chaplin/lib/subscriber',
   'chaplin/lib/view_helper' # Just load the file, no return value
-], (utils, Subscriber) ->
+], ($, _, Backbone, Handlebars, utils, Subscriber) ->
   'use strict'
 
   class View extends Backbone.View

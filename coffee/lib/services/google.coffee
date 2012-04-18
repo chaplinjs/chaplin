@@ -1,6 +1,9 @@
 define [
-  'mediator', 'lib/utils', 'lib/services/service_provider'
-], (mediator, utils, ServiceProvider) ->
+  'underscore',
+  'mediator',
+  'lib/utils',
+  'lib/services/service_provider'
+], (_, mediator, utils, ServiceProvider) ->
   'use strict'
 
   class Google extends ServiceProvider

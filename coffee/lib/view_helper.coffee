@@ -1,4 +1,7 @@
-define ['lib/utils'], (utils) ->
+define [
+  'handlebars',
+  'lib/utils'
+], (Handlebars, utils) ->
 
   # Application-specific view helpers
   # ---------------------------------

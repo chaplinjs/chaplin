@@ -2,7 +2,8 @@ define [
   'mediator',
   'chaplin/application',
   'controllers/session_controller',
-  'controllers/navigation_controller', 'controllers/sidebar_controller',
+  'controllers/navigation_controller',
+  'controllers/sidebar_controller',
   'routes',
   'chaplin/lib/support',
 ], (mediator, Application, SessionController, NavigationController, SidebarController, routes, support) ->
