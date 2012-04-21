@@ -9,7 +9,7 @@ define [
   class ApplicationController # Do not inherit from Controller
 
     # Mixin a Subscriber
-    _(ApplicationController.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     # The previous controller name
     previousControllerName: null

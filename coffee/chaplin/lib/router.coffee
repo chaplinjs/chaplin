@@ -13,7 +13,7 @@ define [
 
   class Router # This class does not extend Backbone.Router
 
-    _(Router.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     constructor: (@options = {}) ->
       @subscribeEvent '!router:route', @routeHandler

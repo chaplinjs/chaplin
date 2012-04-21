@@ -8,7 +8,7 @@ define [
   class ServiceProvider
 
     # Mixin a Subscriber
-    _(ServiceProvider.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     loading: false
 

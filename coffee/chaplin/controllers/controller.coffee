@@ -7,7 +7,7 @@ define [
   class Controller
 
     # Mixin a Subscriber
-    _(Controller.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     view: null
     currentId: null

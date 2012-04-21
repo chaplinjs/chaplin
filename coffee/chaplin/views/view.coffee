@@ -12,7 +12,7 @@ define [
   class View extends Backbone.View
 
     # Mixin a Subscriber
-    _(View.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     # Automatic rendering
     # -------------------

@@ -10,7 +10,7 @@ define [
   class ApplicationView # This class does not extend View
 
     # Mixin a Subscriber
-    _(ApplicationView.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     # The site title used in the document title
     title: ''

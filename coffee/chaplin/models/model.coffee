@@ -8,7 +8,7 @@ define [
   class Model extends Backbone.Model
 
     # Mixin a Subscriber
-    _(Model.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     # Creates a new deferred and mixes it into the model
     # This method can be called multiple times to reset the

@@ -11,7 +11,7 @@ define [
   class Collection extends Backbone.Collection
 
     # Mixin a Subscriber
-    _(Collection.prototype).extend Subscriber
+    _(@prototype).extend Subscriber
 
     # Creates a new deferred and mixes it into the collection
     # This method can be called multiple times to reset the
