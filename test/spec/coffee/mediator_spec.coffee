@@ -1,5 +1,6 @@
 define [
-  'chaplin/lib/create_mediator', 'chaplin/models/model'
+  'chaplin/lib/create_mediator',
+  'chaplin/models/model'
 ], (createMediator, Model) ->
   'use strict'
 

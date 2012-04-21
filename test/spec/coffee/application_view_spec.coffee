@@ -1,9 +1,10 @@
 define [
+  'jquery',
   'mediator',
   'chaplin/controllers/controller',
   'chaplin/views/application_view',
   'chaplin/views/view'
-], (mediator, Controller, ApplicationView, View) ->
+], ($, mediator, Controller, ApplicationView, View) ->
   'use strict'
 
   describe 'ApplicationView', ->

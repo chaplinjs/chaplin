@@ -1,5 +1,5 @@
 
-define(['mediator', 'chaplin/lib/router', 'chaplin/lib/route'], function(mediator, Router, Route) {
+define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], function(_, mediator, Router, Route) {
   'use strict';  return describe('Router and Route', function() {
     var matchRoute, params, route, router;
     router = route = params = void 0;

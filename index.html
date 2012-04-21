@@ -29,11 +29,6 @@ document.documentElement.className += 'js';
 
 <div id="fb-root"></div>
 
-<!--
-This is a simple solution. We use the non-AMD versions of the core libraries
-because nearly every module uses these libraries. In the end you might want
-to package all libraries in AMD modules.
--->
 <script src="js/vendor/require-1.0.7.js"></script>
 <script>
 require.config({

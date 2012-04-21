@@ -1,5 +1,5 @@
 
-define(['mediator', 'chaplin/controllers/controller', 'chaplin/views/application_view', 'chaplin/views/view'], function(mediator, Controller, ApplicationView, View) {
+define(['jquery', 'mediator', 'chaplin/controllers/controller', 'chaplin/views/application_view', 'chaplin/views/view'], function($, mediator, Controller, ApplicationView, View) {
   'use strict';  return describe('ApplicationView', function() {
     var applicationView, startupControllerContext, testController;
     applicationView = testController = startupControllerContext = void 0;
