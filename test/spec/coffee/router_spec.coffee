@@ -16,16 +16,14 @@ define [
       route = _route
       params = _params
 
+    # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      route = params = undefined
-
-      # Create a fresh Router with a fresh Backbone.History before each test
-      router.dispose() if router
       router = new Router()
-
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
+      route = params = undefined
+      router.dispose()
       mediator.unsubscribe 'matchRoute', matchRoute
 
     it 'should create a Backbone.History instance', ->
@@ -152,3 +150,22 @@ define [
 
       mediator.publish '!router:changeURL', path
       expect(router.changeURL).toHaveBeenCalledWith path
+
+    it 'should be disposable', ->
+      expect(typeof router.dispose).toBe 'function'
+      router.dispose()
+
+      expect(Backbone.history).toBe undefined
+
+      expect(->
+        router.match '', 'x#y'
+      ).toThrow()
+      
+      expect(->
+        router.route '/'
+      ).toThrow()
+
+      expect(router.disposed).toBe true
+      if Object.isFrozen
+        expect(Object.isFrozen(router)).toBe true
+      

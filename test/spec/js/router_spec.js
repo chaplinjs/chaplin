@@ -8,12 +8,12 @@ define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], fu
       return params = _params;
     };
     beforeEach(function() {
-      route = params = void 0;
-      if (router) router.dispose();
       router = new Router();
       return mediator.subscribe('matchRoute', matchRoute);
     });
     afterEach(function() {
+      route = params = void 0;
+      router.dispose();
       return mediator.unsubscribe('matchRoute', matchRoute);
     });
     it('should create a Backbone.History instance', function() {
@@ -131,12 +131,25 @@ define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], fu
       mediator.publish('!router:route', 'different-path', spy);
       return expect(spy).toHaveBeenCalledWith(false);
     });
-    return it('should listen to the !router:changeURL event', function() {
+    it('should listen to the !router:changeURL event', function() {
       var path;
       path = 'router-changeurl-events';
       spyOn(router, 'changeURL').andCallThrough();
       mediator.publish('!router:changeURL', path);
       return expect(router.changeURL).toHaveBeenCalledWith(path);
+    });
+    return it('should be disposable', function() {
+      expect(typeof router.dispose).toBe('function');
+      router.dispose();
+      expect(Backbone.history).toBe(void 0);
+      expect(function() {
+        return router.match('', 'x#y');
+      }).toThrow();
+      expect(function() {
+        return router.route('/');
+      }).toThrow();
+      expect(router.disposed).toBe(true);
+      if (Object.isFrozen) return expect(Object.isFrozen(router)).toBe(true);
     });
   });
 });

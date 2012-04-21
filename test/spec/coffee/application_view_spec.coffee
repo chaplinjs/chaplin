@@ -1,10 +1,11 @@
 define [
   'jquery',
   'mediator',
+  'chaplin/lib/router',
   'chaplin/controllers/controller',
   'chaplin/views/application_view',
-  'chaplin/views/view'
-], ($, mediator, Controller, ApplicationView, View) ->
+  'chaplin/views/view',
+], ($, mediator, Router, Controller, ApplicationView, View) ->
   'use strict'
 
   describe 'ApplicationView', ->
@@ -70,6 +71,9 @@ define [
         passedPath = path
         passedCallback = callback
 
+      # We need a router for that
+      router = new Router()
+
       mediator.subscribe '!router:route', routerRoute
       path = '/an/internal/link'
       $("<a href='#{path}'>")
@@ -89,6 +93,8 @@ define [
         .remove()
       expect(spy).not.toHaveBeenCalled()
       mediator.unsubscribe '!router:route', spy
+
+      router.dispose()
 
     it 'should be disposable', ->
       expect(typeof applicationView.dispose).toBe 'function'

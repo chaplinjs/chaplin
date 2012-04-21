@@ -48,6 +48,7 @@ define [
     it 'should be disposable', ->
       expect(typeof application.dispose).toBe 'function'
       application.dispose()
+
       expect(application.applicationController).toBe null
       expect(application.applicationView).toBe null
       expect(application.router).toBe null

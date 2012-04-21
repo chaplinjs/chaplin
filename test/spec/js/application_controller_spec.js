@@ -22,7 +22,6 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       };
       return passedParams = void 0;
     };
-    mediator.unsubscribe();
     TestController = (function(_super) {
 
       __extends(TestController, _super);

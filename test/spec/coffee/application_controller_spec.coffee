@@ -32,9 +32,6 @@ define [
       params = changeURL: false, id: paramsId++
       passedParams = undefined
 
-    # Clear the mediator
-    mediator.unsubscribe()
-
     # Define a test controller
     class TestController extends Controller
 

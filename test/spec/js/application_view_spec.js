@@ -1,5 +1,5 @@
 
-define(['jquery', 'mediator', 'chaplin/controllers/controller', 'chaplin/views/application_view', 'chaplin/views/view'], function($, mediator, Controller, ApplicationView, View) {
+define(['jquery', 'mediator', 'chaplin/lib/router', 'chaplin/controllers/controller', 'chaplin/views/application_view', 'chaplin/views/view'], function($, mediator, Router, Controller, ApplicationView, View) {
   'use strict';  return describe('ApplicationView', function() {
     var applicationView, startupControllerContext, testController;
     applicationView = testController = startupControllerContext = void 0;
@@ -57,12 +57,13 @@ define(['jquery', 'mediator', 'chaplin/controllers/controller', 'chaplin/views/a
       return expect($body.attr('class')).toBe('logged-out');
     });
     it('should route clicks on internal links', function() {
-      var passedCallback, passedPath, path, routerRoute, spy;
+      var passedCallback, passedPath, path, router, routerRoute, spy;
       passedPath = passedCallback = void 0;
       routerRoute = function(path, callback) {
         passedPath = path;
         return passedCallback = callback;
       };
+      router = new Router();
       mediator.subscribe('!router:route', routerRoute);
       path = '/an/internal/link';
       $("<a href='" + path + "'>").appendTo(document.body).click().remove();
@@ -74,7 +75,8 @@ define(['jquery', 'mediator', 'chaplin/controllers/controller', 'chaplin/views/a
       path = 'http://www.example.org/';
       $("<a href='" + path + "'>").appendTo(document.body).click().remove();
       expect(spy).not.toHaveBeenCalled();
-      return mediator.unsubscribe('!router:route', spy);
+      mediator.unsubscribe('!router:route', spy);
+      return router.dispose();
     });
     return it('should be disposable', function() {
       expect(typeof applicationView.dispose).toBe('function');
