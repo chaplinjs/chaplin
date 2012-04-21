@@ -361,6 +361,9 @@ define [
       #console.debug 'CollectionView#dispose', this, 'disposed?', @disposed
       return if @disposed
 
+      # Remove all listeners registered in this context
+      @collection.off null, null, @
+
       # Dispose all item views
       view.dispose() for own cid, view of @viewsByCid
 
