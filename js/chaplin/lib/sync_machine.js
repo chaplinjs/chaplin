@@ -26,8 +26,8 @@ define(function() {
       if ((_ref = this._syncState) === SYNCING || _ref === SYNCED) {
         this._previousSync = this._syncState;
         this._syncState = UNSYNCED;
-        this.trigger(this._syncState);
-        this.trigger(STATE_CHANGE);
+        this.trigger(this._syncState, this, this._syncState);
+        this.trigger(STATE_CHANGE, this, this._syncState);
       }
     },
     beginSync: function() {
@@ -35,24 +35,24 @@ define(function() {
       if ((_ref = this._syncState) === UNSYNCED || _ref === SYNCED) {
         this._previousSync = this._syncState;
         this._syncState = SYNCING;
-        this.trigger(this._syncState);
-        this.trigger(STATE_CHANGE);
+        this.trigger(this._syncState, this, this._syncState);
+        this.trigger(STATE_CHANGE, this, this._syncState);
       }
     },
     finishSync: function() {
       if (this._syncState === SYNCING) {
         this._previousSync = this._syncState;
         this._syncState = SYNCED;
-        this.trigger(this._syncState);
-        this.trigger(STATE_CHANGE);
+        this.trigger(this._syncState, this, this._syncState);
+        this.trigger(STATE_CHANGE, this, this._syncState);
       }
     },
     abortSync: function() {
       if (this._syncState === SYNCING) {
         this._syncState = this._previousSync;
         this._previousSync = this._syncState;
-        this.trigger(this._syncState);
-        this.trigger(STATE_CHANGE);
+        this.trigger(this._syncState, this, this._syncState);
+        this.trigger(STATE_CHANGE, this, this._syncState);
       }
     }
   };
