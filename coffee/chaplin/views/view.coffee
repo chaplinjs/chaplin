@@ -367,8 +367,8 @@ define [
     disposed: false
 
     dispose: =>
+      #console.debug 'View#dispose', this, 'disposed?', @disposed
       return if @disposed
-      #console.debug 'View#dispose', this
 
       # Dispose subviews
       view.dispose() for view in @subviews
@@ -379,18 +379,20 @@ define [
       # Unbind all model handlers
       @modelUnbindAll()
 
-      # Remove all event handlers
+      # Remove all event handlers on this module
       @off()
 
       # Remove the topmost element from DOM. This also removes all event
       # handlers from the element and all its children.
       @$el.remove()
 
-      # Remove element references, options and model/collection references
+      # Remove element references, options,
+      # model/collection references and subview lists
       properties = [
         'el', '$el',
         'options', 'model', 'collection',
-        'subviews', 'subviewsByName'
+        'subviews', 'subviewsByName',
+        '_callbacks'
       ]
       delete this[prop] for prop in properties
 
