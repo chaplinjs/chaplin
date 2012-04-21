@@ -86,19 +86,25 @@ define [
       # Fire an event to notify associated views
       @trigger 'dispose', this
 
-      # Unbind all global event handlers
-      @unsubscribeAllEvents()
-
-      # Remove all event handlers
-      @off()
-
       # Empty the list silently, but do not dispose all models since
       # they might be referenced elsewhere
       @reset [], silent: true
 
-      # Remove model constructor reference and model lists
+      # Unbind all global event handlers
+      @unsubscribeAllEvents()
+
+      # Remove all event handlers on this module
+      @off()
+
+      # If the model is a Deferred, reject it
+      # This does nothing if it was resolved before
+      @reject?()
+
+      # Remove model constructor reference, internal lists and event handlers
       properties = [
-        'model', 'models', '_byId', '_byCid'
+        'model',
+        'models', '_byId', '_byCid',
+        '_callbacks'
       ]
       delete this[prop] for prop in properties
 
