@@ -20,7 +20,7 @@ define(['mediator', 'chaplin/models/collection', 'models/like'], function(mediat
 
     Likes.prototype.initialize = function() {
       Likes.__super__.initialize.apply(this, arguments);
-      this.initDeferred();
+      this.initSyncMachine();
       this.subscribeEvent('login', this.fetch);
       this.subscribeEvent('logout', this.logout);
       return this.fetch();
@@ -32,20 +32,19 @@ define(['mediator', 'chaplin/models/collection', 'models/like'], function(mediat
       if (!user) return;
       facebook = user.get('provider');
       if (facebook.name !== 'facebook') return;
-      this.trigger('loadStart');
+      this.beginSync();
       return facebook.getInfo('/me/likes', this.processLikes);
     };
 
     Likes.prototype.processLikes = function(response) {
       if (this.disposed) return;
-      this.trigger('load');
       this.reset(response && response.data ? response.data : []);
-      return this.resolve();
+      return this.finishSync();
     };
 
     Likes.prototype.logout = function() {
-      this.initDeferred();
-      return this.reset();
+      this.reset();
+      return this.unsync();
     };
 
     return Likes;

@@ -58,8 +58,8 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     };
 
     CollectionView.prototype.addCollectionListeners = function() {
-      this.modelBind('loadStart', this.showLoadingIndicator);
-      this.modelBind('load', this.hideLoadingIndicator);
+      this.modelBind('syncing', this.showLoadingIndicator);
+      this.modelBind('synced', this.hideLoadingIndicator);
       this.modelBind('add', this.itemAdded);
       this.modelBind('remove', this.itemRemoved);
       return this.modelBind('reset', this.itemsResetted);
@@ -100,8 +100,9 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     };
 
     CollectionView.prototype.showHideFallback = function() {
-      var empty;
-      empty = this.visibleItems.length === 0 && this.collection.state() === 'resolved';
+      var empty, synced;
+      synced = typeof this.collection.state === 'function' ? this.collection.state() === 'resolved' : typeof this.collection.isSynced === 'function' ? this.collection.isSynced() : true;
+      empty = synced && this.visibleItems.length === 0;
       return this.$fallback.css('display', empty ? 'block' : 'none');
     };
 

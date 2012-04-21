@@ -26,14 +26,11 @@ define [
       provider = user.get 'provider'
       return unless provider.name is 'facebook'
 
-      @trigger 'loadStart'
       #console.debug 'getInfo', @id, @processLike
       provider.getInfo @id, @processLike
 
     processLike: (response) =>
       #console.debug 'Like#processLike', response
-
-      @trigger 'load'
       @set response
       @resolve()
 

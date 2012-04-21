@@ -20,7 +20,7 @@ define(['underscore', 'mediator', 'chaplin/models/collection', 'models/post'], f
 
     Posts.prototype.initialize = function() {
       Posts.__super__.initialize.apply(this, arguments);
-      this.initDeferred();
+      this.initSyncMachine();
       this.subscribeEvent('login', this.fetch);
       this.subscribeEvent('logout', this.logout);
       return this.fetch();
@@ -32,25 +32,24 @@ define(['underscore', 'mediator', 'chaplin/models/collection', 'models/post'], f
       if (!user) return;
       facebook = user.get('provider');
       if (facebook.name !== 'facebook') return;
-      this.trigger('loadStart');
+      this.beginSync();
       return facebook.getInfo('/158352134203230/feed', this.processPosts);
     };
 
     Posts.prototype.processPosts = function(response) {
       var posts;
       if (this.disposed) return;
-      this.trigger('load');
       posts = response && response.data ? response.data : [];
       posts = _(posts).filter(function(post) {
         return post.from && post.from.name === 'moviepilot.com';
       });
       this.reset(posts);
-      return this.resolve();
+      return this.finishSync();
     };
 
     Posts.prototype.logout = function() {
-      this.initDeferred();
-      return this.reset();
+      this.reset();
+      return this.unsync();
     };
 
     return Posts;

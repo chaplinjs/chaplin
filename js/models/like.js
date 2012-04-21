@@ -28,12 +28,10 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
       if (!user) return;
       provider = user.get('provider');
       if (provider.name !== 'facebook') return;
-      this.trigger('loadStart');
       return provider.getInfo(this.id, this.processLike);
     };
 
     Like.prototype.processLike = function(response) {
-      this.trigger('load');
       this.set(response);
       return this.resolve();
     };

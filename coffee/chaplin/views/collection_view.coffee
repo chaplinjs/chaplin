@@ -65,7 +65,7 @@ define [
       @viewsByCid = {}
       @visibleItems = []
 
-      # Start observing the model
+      # Start observing the collection
       @addCollectionListeners()
 
       # Set the filter function
@@ -79,8 +79,8 @@ define [
 
     # Binding of collection listeners
     addCollectionListeners: ->
-      @modelBind 'loadStart', @showLoadingIndicator
-      @modelBind 'load',      @hideLoadingIndicator
+      @modelBind 'syncing',   @showLoadingIndicator
+      @modelBind 'synced',    @hideLoadingIndicator
       @modelBind 'add',       @itemAdded
       @modelBind 'remove',    @itemRemoved
       @modelBind 'reset',     @itemsResetted
@@ -142,8 +142,17 @@ define [
     showHideFallback: =>
       #console.debug 'CollectionView#showHideFallback', this, 'visibleItems', @visibleItems, 'collection', @collection
       # Show fallback message if no item is visible and
-      # the collection Deferred has been resolved
-      empty = @visibleItems.length is 0 and @collection.state() is 'resolved'
+      # the collection is synced
+      synced = if typeof @collection.state is 'function'
+          # Collection is a Deferred
+          @collection.state() is 'resolved'
+        else if typeof @collection.isSynced is 'function'
+          # Collection is a SyncMachine
+          @collection.isSynced()
+        else
+          # Assume it is synced
+          true
+      empty = synced and @visibleItems.length is 0
       @$fallback.css 'display', if empty then 'block' else 'none'
 
     # Render and insert all items

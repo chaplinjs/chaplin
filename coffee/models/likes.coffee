@@ -11,7 +11,7 @@ define [
     initialize: ->
       super
 
-      @initDeferred()
+      @initSyncMachine()
 
       @subscribeEvent 'login', @fetch
       @subscribeEvent 'logout', @logout
@@ -28,25 +28,25 @@ define [
       facebook = user.get 'provider'
       return unless facebook.name is 'facebook'
 
-      @trigger 'loadStart'
+      # Switch to syncing state
+      @beginSync()
+
       facebook.getInfo '/me/likes', @processLikes
 
     processLikes: (response) =>
       #console.debug 'Likes#processLikes', response, response.data
       return if @disposed
 
-      # Trigger before updating the collection to hide the loading spinner
-      @trigger 'load'
-
       # Update the collection
       @reset(if response and response.data then response.data else [])
 
-      # Resolve the Deferred
-      @resolve()
+      # Switch to synced state
+      @finishSync()
 
     # Handler for the global logout event
     logout: =>
-      # Reset the Deferred state
-      @initDeferred()
       # Empty the collection
       @reset()
+
+      # Return to unsynced state
+      @unsync()

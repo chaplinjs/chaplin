@@ -22,7 +22,8 @@ define [
       #console.debug 'FullLikeView#initialize'
 
       # Render again when the model is resolved
-      @model.done @render if @model.state() isnt 'resolved'
+      if @model.state() isnt 'resolved'
+        @model.done @render
 
     # Rendering
     render: ->
