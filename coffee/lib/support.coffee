@@ -10,8 +10,10 @@ define [
   # Delegate to Chaplin’s support module
   support = utils.beget chaplinSupport
 
-  # _(support).extend
+  # Add additional application-specific properties and methods
 
+  # _(support).extend
+    # someProperty: 'foo'
     # someMethod: ->
 
   support

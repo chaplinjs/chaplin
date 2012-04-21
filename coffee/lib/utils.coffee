@@ -10,6 +10,8 @@ define [
   # Delegate to Chaplin’s utils module
   utils = chaplinUtils.beget chaplinUtils
 
+  # Add additional application-specific properties and methods
+
   _(utils).extend
 
     # Facebook image helper
