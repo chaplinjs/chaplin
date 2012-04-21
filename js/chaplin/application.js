@@ -1,5 +1,5 @@
 
-define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views/application_view', 'chaplin/lib/router', 'lib/view_helper'], function(mediator, ApplicationController, ApplicationView, Router) {
+define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views/application_view', 'chaplin/lib/router'], function(mediator, ApplicationController, ApplicationView, Router) {
   'use strict';
   var Application;
   return Application = (function() {

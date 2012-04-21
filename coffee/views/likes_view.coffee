@@ -1,14 +1,18 @@
 define [
   'mediator',
-  'chaplin/views/collection_view', 'views/compact_like_view',
+  'views/collection_view',
+  'views/compact_like_view',
   'text!templates/likes.hbs'
 ], (mediator, CollectionView, CompactLikeView, template) ->
   'use strict'
 
   class LikesView extends CollectionView
-    # This is a workaround.
+    
+    # Save the template string in a prototype property.
+    # This is overwritten with the compiled template function.
     # In the end you might want to used precompiled templates.
     template: template
+    template = null
 
     tagName: 'div' # This is not directly a list but contains a list
     id: 'likes'

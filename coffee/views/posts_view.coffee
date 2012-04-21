@@ -1,6 +1,6 @@
 define [
   'mediator',
-  'chaplin/views/collection_view',
+  'views/collection_view',
   'views/post_view',
   'text!templates/posts.hbs'
 ], (mediator, CollectionView, PostView, template) ->
@@ -8,9 +8,11 @@ define [
 
   class PostsView extends CollectionView
 
-    # This is a workaround.
+    # Save the template string in a prototype property.
+    # This is overwritten with the compiled template function.
     # In the end you might want to used precompiled templates.
     template: template
+    template = null
 
     tagName: 'div' # This is not directly a list but contains a list
     id: 'posts'

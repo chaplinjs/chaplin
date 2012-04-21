@@ -94,12 +94,8 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     };
 
     CollectionView.prototype.initFallback = function() {
-      var f, isDeferred;
       if (!this.fallbackSelector) return;
       this.$fallback = this.$(this.fallbackSelector);
-      f = 'function';
-      isDeferred = typeof this.collection.done === f && typeof this.collection.state === f;
-      if (!isDeferred) return;
       return this.bind('visibilityChange', this.showHideFallback);
     };
 

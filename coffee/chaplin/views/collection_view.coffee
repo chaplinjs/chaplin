@@ -130,18 +130,10 @@ define [
     # Initialize the fallback
     initFallback: ->
       return unless @fallbackSelector
-
-      #console.debug 'CollectionView#initFallback', this, @el, @el.parentNode
+      #console.debug 'CollectionView#initFallback', this, @el
 
       # Set the $fallback property
       @$fallback = @$(@fallbackSelector)
-
-      # The collection has to be a deferred in order that
-      # the fallback can be shown properly
-      f = 'function'
-      isDeferred = (typeof @collection.done is f and
-        typeof @collection.state is f)
-      return unless isDeferred
 
       # Listen for visible items changes
       @bind 'visibilityChange', @showHideFallback

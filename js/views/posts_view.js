@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'chaplin/views/collection_view', 'views/post_view', 'text!templates/posts.hbs'], function(mediator, CollectionView, PostView, template) {
+define(['mediator', 'views/collection_view', 'views/post_view', 'text!templates/posts.hbs'], function(mediator, CollectionView, PostView, template) {
   'use strict';
   var PostsView;
   return PostsView = (function(_super) {
@@ -13,6 +13,8 @@ define(['mediator', 'chaplin/views/collection_view', 'views/post_view', 'text!te
     }
 
     PostsView.prototype.template = template;
+
+    template = null;
 
     PostsView.prototype.tagName = 'div';
 

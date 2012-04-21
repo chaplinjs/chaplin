@@ -2,7 +2,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['jquery', 'underscore', 'backbone', 'handlebars', 'chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'], function($, _, Backbone, Handlebars, utils, Subscriber) {
+define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/subscriber', 'chaplin/lib/view_helper'], function($, _, Backbone, utils, Subscriber) {
   'use strict';
   var View;
   return View = (function(_super) {
@@ -186,16 +186,17 @@ define(['jquery', 'underscore', 'backbone', 'handlebars', 'chaplin/lib/utils', '
       return templateData;
     };
 
+    View.prototype.getTemplateFunction = function() {
+      throw new Error('View#getTemplateFunction must be overridden');
+    };
+
     View.prototype.render = function() {
-      var html, template;
+      var html, templateData, templateFunc;
       if (this.disposed) return;
-      template = this.template;
-      if (typeof template === 'string') {
-        template = Handlebars.compile(template);
-        this.template = template;
-      }
-      if (typeof template === 'function') {
-        html = template(this.getTemplateData());
+      templateData = this.getTemplateData();
+      templateFunc = this.getTemplateFunction();
+      if (typeof templateFunc === 'function') {
+        html = templateFunc(templateData);
         this.$el.empty().append(html);
       }
       return this;

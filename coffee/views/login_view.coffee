@@ -2,15 +2,18 @@ define [
   'underscore',
   'mediator',
   'lib/utils',
-  'chaplin/views/view',
+  'views/view',
   'text!templates/login.hbs'
 ], (_, mediator, utils, View, template) ->
   'use strict'
 
   class LoginView extends View
-    # This is a workaround.
+
+    # Save the template string in a prototype property.
+    # This is overwritten with the compiled template function.
     # In the end you might want to used precompiled templates.
     template: template
+    template = null
 
     id: 'login'
     containerSelector: '#sidebar-container'

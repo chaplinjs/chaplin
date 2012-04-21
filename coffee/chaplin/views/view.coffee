@@ -2,11 +2,10 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'handlebars',
   'chaplin/lib/utils',
   'chaplin/lib/subscriber',
-  'chaplin/lib/view_helper' # Just load the file, no return value
-], ($, _, Backbone, Handlebars, utils, Subscriber) ->
+  'chaplin/lib/view_helper' # Just load the view helpers, no return value
+], ($, _, Backbone, utils, Subscriber) ->
   'use strict'
 
   class View extends Backbone.View
@@ -288,48 +287,36 @@ define [
 
       templateData
 
+    getTemplateFunction: ->
+      # Chaplin doesn’t define how you load and compile templates in order to
+      # render views. The example application uses Handlebars and RequireJS
+      # to load and compile templates on the client side. See the derived
+      # View class in the example application.
+      throw new Error 'View#getTemplateFunction must be overridden'
+
     # Main render function
     # Always bind it to the view instance
     render: ->
-      #console.debug "View#render\n\t", this, "\n\tel:", @el, "\n\tmodel/collection:", (@model or @collection), "\n\tdisposed:", @disposed
+      #console.debug 'View#render', this
 
       return if @disposed
+      templateData = @getTemplateData()
+      templateFunc = @getTemplateFunction()
 
-      # Template compilation
-      # --------------------
-
-      # In the end, you might want to precompile the templates to JavaScript
-      # functions on the server-side and just load the JavaScript code.
-      # Several precompilers create a global JST hash which stores the
-      # template functions. You can get the function by the template name:
-      #
-      # templateFunc = JST[@template]
-      #
-      # In this demo, we load the template as a string, compile it
-      # on the client-side and store it on the view constructor as a
-      # static property.
-
-      template = @template
-
-      if typeof template is 'string'
-        template = Handlebars.compile template
-        # Save compiled template
-        @template = template
-
-      if typeof template is 'function'
+      if typeof templateFunc is 'function'
 
         # Call the template function passing the template data
-        html = template @getTemplateData()
+        html = templateFunc templateData
 
         # Replace HTML
         # ------------
 
         # This is a workaround for an apparent issue with jQuery 1.7’s
         # innerShiv feature. Using @$el.html(html) caused issues with
-        # HTML5-only tags in IE7 and IE8
+        # HTML5-only tags in IE7 and IE8.
         @$el.empty().append html
 
-      # Return this
+      # Return the view
       this
 
     # This method is called after a specific `render` of a derived class

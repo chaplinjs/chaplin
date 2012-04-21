@@ -2,8 +2,7 @@ define [
   'mediator',
   'chaplin/controllers/application_controller',
   'chaplin/views/application_view',
-  'chaplin/lib/router',
-  'lib/view_helper' # Just load the file, no return value
+  'chaplin/lib/router'
 ], (mediator, ApplicationController, ApplicationView, Router) ->
   'use strict'
 

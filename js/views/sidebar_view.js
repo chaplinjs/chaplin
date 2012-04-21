@@ -2,7 +2,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'chaplin/views/view', 'text!templates/sidebar.hbs'], function(mediator, View, template) {
+define(['mediator', 'views/view', 'text!templates/sidebar.hbs'], function(mediator, View, template) {
   'use strict';
   var SidebarView;
   return SidebarView = (function(_super) {
@@ -15,6 +15,8 @@ define(['mediator', 'chaplin/views/view', 'text!templates/sidebar.hbs'], functio
     }
 
     SidebarView.prototype.template = template;
+
+    template = null;
 
     SidebarView.prototype.id = 'sidebar';
 
