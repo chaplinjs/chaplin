@@ -294,7 +294,7 @@ define [
       throw new Error 'View#getTemplateFunction must be overridden'
 
     # Main render function
-    # Always bind it to the view instance
+    # This method is bound to the instance in the constructor (see above)
     render: ->
       #console.debug 'View#render', this
 
