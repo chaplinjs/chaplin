@@ -3,8 +3,7 @@ define [
   'underscore',
   'backbone',
   'chaplin/lib/utils',
-  'chaplin/lib/subscriber',
-  'chaplin/lib/view_helper' # Just load the view helpers, no return value
+  'chaplin/lib/subscriber'
 ], ($, _, Backbone, utils, Subscriber) ->
   'use strict'
 
