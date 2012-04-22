@@ -1,10 +1,10 @@
 
-define(['chaplin/lib/create_mediator'], function(createMediator) {
+define(['chaplin/lib/create_mediator', 'chaplin/lib/support'], function(createMediator, support) {
   'use strict';
   var mediator;
   mediator = createMediator({
-    createRouterProperty: true,
     createUserProperty: true
   });
+  if (support.propertyDescriptors && Object.seal) Object.seal(mediator);
   return mediator;
 });

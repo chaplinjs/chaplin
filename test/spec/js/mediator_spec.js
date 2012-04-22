@@ -2,7 +2,9 @@
 define(['chaplin/lib/create_mediator', 'chaplin/models/model'], function(createMediator, Model) {
   'use strict';
   var mediator;
-  mediator = createMediator();
+  mediator = createMediator({
+    createUserProperty: true
+  });
   return describe('mediator', function() {
     it('should be a simple object', function() {
       return expect(typeof mediator).toEqual('object');

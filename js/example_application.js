@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'chaplin/application', 'controllers/session_controller', 'controllers/navigation_controller', 'controllers/sidebar_controller', 'routes', 'chaplin/lib/support'], function(mediator, Application, SessionController, NavigationController, SidebarController, routes, support) {
+define(['mediator', 'chaplin/application', 'controllers/session_controller', 'controllers/navigation_controller', 'controllers/sidebar_controller', 'routes'], function(mediator, Application, SessionController, NavigationController, SidebarController, routes) {
   'use strict';
   var ExampleApplication;
   return ExampleApplication = (function(_super) {
@@ -20,7 +20,6 @@ define(['mediator', 'chaplin/application', 'controllers/session_controller', 'co
       new NavigationController();
       new SidebarController();
       this.initRouter(routes);
-      if (support.propertyDescriptors && Object.seal) Object.seal(mediator);
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 

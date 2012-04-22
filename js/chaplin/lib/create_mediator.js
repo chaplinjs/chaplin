@@ -7,8 +7,7 @@ define(['underscore', 'backbone', 'chaplin/lib/support'], function(_, Backbone, 
     var defineProperty, mediator, privateUser, readonly, readonlyDescriptor;
     if (options == null) options = {};
     _(options).defaults({
-      createRouterProperty: true,
-      createUserProperty: true
+      createUserProperty: false
     });
     defineProperty = function(prop, descriptor) {
       if (!descriptorsSupported) return;

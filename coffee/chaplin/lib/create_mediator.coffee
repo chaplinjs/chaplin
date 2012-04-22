@@ -8,19 +8,16 @@ define [
   # Mediator constructor
   # --------------------
 
-  # The mediator is a simple object all others modules use to
-  # communicate with each other. It implements the Publish/Subscribe pattern.
+  # The mediator is a simple object all others modules use to communicate
+  # with each other. It implements the Publish/Subscribe pattern.
   #
-  # Additionally, it holds two common objects which need to be shared
-  # between modules: the user and the router.
+  # Additionally, it holds objects which need to be shared between modules.
+  # By passing the `createUserProperty` option, a readonly `user` property
+  # and a `setUser` method are created
   #
-  # You might store additional objects on the mediator or
-  # you might introduce another object(s) as shared data storage
-  # so this mediator doesn’t get the kitchen sink of your app.
-  #
-  # This module return a method which creates a mediator.
+  # This module returns a function which creates a mediator.
   # The actual application-specific mediator is created in
-  # /mediator.coffee using this very function.
+  # mediator.coffee using this very function.
 
   # Shortcut flag for proper ES5 property descriptor support
   descriptorsSupported = support.propertyDescriptors
@@ -29,8 +26,7 @@ define [
   (options = {}) ->
 
     _(options).defaults
-      createRouterProperty: true
-      createUserProperty: true
+      createUserProperty: false
 
     # Wrapper for ES5 Object.defineProperty
     defineProperty = (prop, descriptor) ->

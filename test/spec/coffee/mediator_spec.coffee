@@ -4,7 +4,8 @@ define [
 ], (createMediator, Model) ->
   'use strict'
 
-  mediator = createMediator()
+  mediator = createMediator
+    createUserProperty: true
 
   describe 'mediator', ->
     #console.debug 'mediator spec'

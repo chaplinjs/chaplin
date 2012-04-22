@@ -4,9 +4,8 @@ define [
   'controllers/session_controller',
   'controllers/navigation_controller',
   'controllers/sidebar_controller',
-  'routes',
-  'chaplin/lib/support',
-], (mediator, Application, SessionController, NavigationController, SidebarController, routes, support) ->
+  'routes'
+], (mediator, Application, SessionController, NavigationController, SidebarController, routes) ->
   'use strict'
 
   # The application bootstrapper.
@@ -20,11 +19,13 @@ define [
     initialize: ->
       #console.debug 'ExampleApplication#initialize'
 
-      super # This creates the AppController and AppView
+      # This creates the ApplicationController and ApplicationView
+      super
 
       # Instantiate common controllers
       # ------------------------------
-
+      
+      # These controllers are active during the whole application runtime.
       new SessionController()
       new NavigationController()
       new SidebarController()
@@ -36,13 +37,8 @@ define [
       # starts the Backbone history.
       @initRouter routes
 
-      # Object sealing
-      # --------------
-
-      # Seal the mediator object (prevent extensions and
-      # make all properties non-configurable)
-      if support.propertyDescriptors and Object.seal
-        Object.seal mediator
+      # Finish
+      # ------
 
       # Freeze the application instance to prevent further changes
       Object.freeze? this
