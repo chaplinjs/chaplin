@@ -19,7 +19,6 @@
     "chaplin/views/view"
   ],
   paths: {
-    text: 'vendor/require-text-1.0.6',
     jquery: 'empty:',
     underscore: 'empty:',
     backbone: 'empty:'
