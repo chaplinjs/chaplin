@@ -243,7 +243,7 @@ The current `CollectionView` implementation is quite simple and could be improve
 
 Following Backbone’s design that models/collection can fetch themselves from the server or other stores, most of our fetching code is in the model/collection. On moviepilot.com, the actual API calls are located in separate modules, but the whole processing and updating logic resides in the model/collection. Model/collections may fetch themselves on initialization without receiving a call to do so.
 
-Likewise, our views are quite independent. Most of them render themselves on instantiation, on model attribute change or on global events. They might event destroy themselves independently.
+Likewise, our views are quite independent. Most of them render themselves on instantiation, on model attribute change or on global events. They might even destroy themselves independently.
 
 As a consequence, our controllers are quite skinny. In most cases, they just instantiate the model/collection an its associated view passing the necessary data. Then the model/collection and the view will handle the rest themselves.
 
