@@ -26,6 +26,8 @@ define(['mediator', 'views/collection_view', 'views/post_view', 'text!templates/
 
     PostsView.prototype.fallbackSelector = '.fallback';
 
+    PostsView.prototype.loadingSelector = '.loading';
+
     PostsView.prototype.initialize = function() {
       PostsView.__super__.initialize.apply(this, arguments);
       return this.subscribeEvent('loginStatus', this.showHideLoginNote);

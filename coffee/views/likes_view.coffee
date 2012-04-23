@@ -7,7 +7,7 @@ define [
   'use strict'
 
   class LikesView extends CollectionView
-    
+
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.
     # In the end you might want to used precompiled templates.
@@ -18,8 +18,13 @@ define [
     id: 'likes'
 
     containerSelector: '#content-container'
-    listSelector: 'ol' # Append the item views to this element
+
+    # Append the item views to this element
+    listSelector: 'ol'
+    # Fallback content selector
     fallbackSelector: '.fallback'
+    # Loading indicator selector
+    loadingSelector: '.loading'
 
     initialize: ->
       super # Will render the list itself and all items

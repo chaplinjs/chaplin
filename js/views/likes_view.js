@@ -26,6 +26,8 @@ define(['mediator', 'views/collection_view', 'views/compact_like_view', 'text!te
 
     LikesView.prototype.fallbackSelector = '.fallback';
 
+    LikesView.prototype.loadingSelector = '.loading';
+
     LikesView.prototype.initialize = function() {
       LikesView.__super__.initialize.apply(this, arguments);
       return this.subscribeEvent('loginStatus', this.showHideLoginNote);

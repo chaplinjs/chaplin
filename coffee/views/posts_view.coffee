@@ -18,9 +18,14 @@ define [
     id: 'posts'
 
     containerSelector: '#content-container'
-    listSelector: 'ol' # Append the item views to this element
+    
+    # Append the item views to this element
+    listSelector: 'ol'
+    # Fallback content selector
     fallbackSelector: '.fallback'
-
+    # Loading indicator selector
+    loadingSelector: '.loading'
+    
     initialize: ->
       super # Will render the list itself and all items
       @subscribeEvent 'loginStatus', @showHideLoginNote
