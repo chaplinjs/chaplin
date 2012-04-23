@@ -58,11 +58,11 @@ define [
       # Wrap `initialize` so `afterInitialize` is called afterwards
       # Only wrap if there is an overring method, otherwise we
       # call the after method directly
-      unless @initialize is View.prototype.initialize
+      unless @initialize is View::initialize
         wrapMethod this, 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
-      unless @initialize is View.prototype.initialize
+      unless @initialize is View::initialize
         wrapMethod this, 'render'
       else
         # Otherwise just bind the `render` method normally
@@ -84,8 +84,8 @@ define [
       if @model or @collection
         @modelBind 'dispose', @dispose
 
-      # Call afterInitialize manually when initialize wasn’t wrapped
-      if @initialize is View.prototype.initialize
+      # Call afterInitialize manually if initialize wasn’t wrapped
+      if @initialize is View::initialize
         #console.debug '\tcall afterInitialize without wrapping'
         @afterInitialize()
 
