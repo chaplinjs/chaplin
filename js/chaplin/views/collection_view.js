@@ -16,8 +16,6 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       this.itemsResetted = __bind(this.itemsResetted, this);
       this.itemRemoved = __bind(this.itemRemoved, this);
       this.itemAdded = __bind(this.itemAdded, this);
-      this.hideLoadingIndicator = __bind(this.hideLoadingIndicator, this);
-      this.showLoadingIndicator = __bind(this.showLoadingIndicator, this);
       CollectionView.__super__.constructor.apply(this, arguments);
     }
 
@@ -31,15 +29,23 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
 
     CollectionView.prototype.$fallback = null;
 
+    CollectionView.prototype.loadingSelector = null;
+
+    CollectionView.prototype.$loading = null;
+
     CollectionView.prototype.itemSelector = null;
+
+    CollectionView.prototype.filterer = null;
 
     CollectionView.prototype.viewsByCid = null;
 
     CollectionView.prototype.visibleItems = null;
 
-    CollectionView.prototype.getView = function() {
+    CollectionView.prototype.getView = function(model) {
       throw new Error('CollectionView#getView must be overridden');
     };
+
+    CollectionView.prototype.getTemplateFunction = function() {};
 
     CollectionView.prototype.initialize = function(options) {
       if (options == null) options = {};
@@ -58,20 +64,9 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     };
 
     CollectionView.prototype.addCollectionListeners = function() {
-      this.modelBind('syncing', this.showLoadingIndicator);
-      this.modelBind('synced', this.hideLoadingIndicator);
       this.modelBind('add', this.itemAdded);
       this.modelBind('remove', this.itemRemoved);
       return this.modelBind('reset', this.itemsResetted);
-    };
-
-    CollectionView.prototype.showLoadingIndicator = function() {
-      if (this.collection.length) return;
-      return this.$('.loading').css('display', 'block');
-    };
-
-    CollectionView.prototype.hideLoadingIndicator = function() {
-      return this.$('.loading').css('display', 'none');
     };
 
     CollectionView.prototype.itemAdded = function(item, collection, options) {
@@ -90,20 +85,58 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     CollectionView.prototype.render = function() {
       CollectionView.__super__.render.apply(this, arguments);
       this.$list = this.listSelector ? this.$(this.listSelector) : this.$el;
-      return this.initFallback();
+      this.initFallback();
+      return this.initLoadingIndicator();
     };
 
     CollectionView.prototype.initFallback = function() {
       if (!this.fallbackSelector) return;
       this.$fallback = this.$(this.fallbackSelector);
-      return this.bind('visibilityChange', this.showHideFallback);
+      this.bind('visibilityChange', this.showHideFallback);
+      return this.modelBind('syncStateChange', this.showHideFallback);
     };
 
     CollectionView.prototype.showHideFallback = function() {
-      var empty, synced;
-      synced = typeof this.collection.state === 'function' ? this.collection.state() === 'resolved' : typeof this.collection.isSynced === 'function' ? this.collection.isSynced() : true;
-      empty = synced && this.visibleItems.length === 0;
-      return this.$fallback.css('display', empty ? 'block' : 'none');
+      var visible;
+      visible = this.visibleItems.length === 0 && (typeof this.collection.isSynced === 'function' ? this.collection.isSynced() : true);
+      return this.$fallback.css('display', visible ? 'block' : 'none');
+    };
+
+    CollectionView.prototype.collectionIsSynced = function() {};
+
+    CollectionView.prototype.initLoadingIndicator = function() {
+      if (!(this.loadingSelector && typeof this.collection.isSyncing === 'function')) {
+        return;
+      }
+      this.$loading = this.$(this.loadingSelector);
+      this.modelBind('syncStateChange', this.showHideLoadingIndicator);
+      return this.showHideLoadingIndicator();
+    };
+
+    CollectionView.prototype.showHideLoadingIndicator = function() {
+      var visible;
+      visible = this.collection.length === 0 && this.collection.isSyncing();
+      return this.$loading.css('display', visible ? 'block' : 'none');
+    };
+
+    CollectionView.prototype.filter = function(filterer) {
+      var included, index, item, view, _len, _ref;
+      this.filterer = filterer;
+      if (!_(this.viewsByCid).isEmpty()) {
+        _ref = this.collection.models;
+        for (index = 0, _len = _ref.length; index < _len; index++) {
+          item = _ref[index];
+          included = typeof filterer === 'function' ? filterer(item, index) : true;
+          view = this.viewsByCid[item.cid];
+          if (!view) {
+            throw new Error('no view found for ' + item.cid);
+            continue;
+          }
+          $(view.el).stop(true, true).css('display', included ? '' : 'none');
+          this.updateVisibleItems(item, included, false);
+        }
+      }
+      return this.trigger('visibilityChange', this.visibleItems);
     };
 
     CollectionView.prototype.renderAllItems = function() {
@@ -136,23 +169,6 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       }
     };
 
-    CollectionView.prototype.filter = function(filterer) {
-      var included, index, item, view, _len, _ref;
-      this.filterer = filterer;
-      if (!_(this.viewsByCid).isEmpty()) {
-        _ref = this.collection.models;
-        for (index = 0, _len = _ref.length; index < _len; index++) {
-          item = _ref[index];
-          included = filterer ? filterer(item, index) : true;
-          view = this.viewsByCid[item.cid];
-          if (!view) continue;
-          $(view.el).stop(true, true)[included ? 'show' : 'hide']();
-          this.updateVisibleItems(item, included, false);
-        }
-      }
-      return this.trigger('visibilityChange', this.visibleItems);
-    };
-
     CollectionView.prototype.renderAndInsertItem = function(item, index) {
       var view;
       view = this.renderItem(item);
@@ -175,7 +191,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       if (index == null) index = null;
       if (animationDuration == null) animationDuration = this.animationDuration;
       position = typeof index === 'number' ? index : this.collection.indexOf(item);
-      included = this.filterer ? this.filterer(item, position) : true;
+      included = typeof this.filterer === 'function' ? this.filterer(item, position) : true;
       $viewEl = view.$el;
       if (included) {
         if (animationDuration) $viewEl.css('opacity', 0);
@@ -241,7 +257,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
         view = _ref[cid];
         view.dispose();
       }
-      properties = ['$list', '$fallback', 'viewsByCid', 'visibleItems'];
+      properties = ['$list', '$fallback', '$loading', 'viewsByCid', 'visibleItems'];
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         prop = properties[_i];
         delete this[prop];
