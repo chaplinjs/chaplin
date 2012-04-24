@@ -91,7 +91,7 @@ define [
       # Initialize lists for views and visible items
       @viewsByCid = {}
       @visibleItems = []
-      
+
       # Debugging
       #@bind 'visibilityChange', (visibleItems) ->
         #console.debug 'visibilityChange', visibleItems.length
@@ -236,7 +236,9 @@ define [
             continue
 
           #console.debug item, item.cid, view
-          $(view.el).stop(true, true).css('display', if included then '' else 'none')
+          view.$el
+            .stop(true, true)
+            .css('display', if included then '' else 'none')
 
           # Update visibleItems list, but do not trigger
           # a `visibilityChange` event immediately
@@ -336,6 +338,7 @@ define [
       #console.debug '\tincluded?', included
 
       # Get the view’s top element
+      viewEl = view.el
       $viewEl = view.$el
 
       if included
@@ -345,22 +348,28 @@ define [
         # Hide the view if it’s filtered
         $viewEl.css 'display', 'none'
 
-      # Get the lsit and its children which are originate from item views
+      # Insert the view into the list
       $list = @$list
-      children = $list.children @itemSelector
 
       if position is 0
         # Insert at the beginning
         #console.debug '\tinsert at the beginning'
-        $list.prepend $viewEl
-      else if position < children.length
-        # Insert at the right position
-        #console.debug '\tinsert before', children.eq(position)
-        children.eq(position).before($viewEl)
+        $list.prepend viewEl
       else
-        # Insert at the end
-        #console.debug '\tinsert at the end'
-        $list.append $viewEl
+        # Get the children which originate from item views
+        children = $list.children @itemSelector
+        #console.debug '\tposition', position, 'children', children.length
+
+        if position >= children.length
+          # Insert at the end
+          #console.debug '\tinsert at the end'
+          $list.append viewEl
+
+        else # if position < children.length
+          # Insert at the right position
+          $previous = children.eq position - 1
+          #console.debug '\tinsert after', $previous
+          $previous.after viewEl
 
       # Tell the view that it was added to the DOM
       view.trigger 'addedToDOM'

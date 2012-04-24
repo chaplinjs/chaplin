@@ -132,7 +132,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
             throw new Error('no view found for ' + item.cid);
             continue;
           }
-          $(view.el).stop(true, true).css('display', included ? '' : 'none');
+          view.$el.stop(true, true).css('display', included ? '' : 'none');
           this.updateVisibleItems(item, included, false);
         }
       }
@@ -187,11 +187,12 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     };
 
     CollectionView.prototype.insertView = function(item, view, index, animationDuration) {
-      var $list, $viewEl, children, included, position;
+      var $list, $previous, $viewEl, children, included, position, viewEl;
       if (index == null) index = null;
       if (animationDuration == null) animationDuration = this.animationDuration;
       position = typeof index === 'number' ? index : this.collection.indexOf(item);
       included = typeof this.filterer === 'function' ? this.filterer(item, position) : true;
+      viewEl = view.el;
       $viewEl = view.$el;
       if (included) {
         if (animationDuration) $viewEl.css('opacity', 0);
@@ -199,13 +200,16 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
         $viewEl.css('display', 'none');
       }
       $list = this.$list;
-      children = $list.children(this.itemSelector);
       if (position === 0) {
-        $list.prepend($viewEl);
-      } else if (position < children.length) {
-        children.eq(position).before($viewEl);
+        $list.prepend(viewEl);
       } else {
-        $list.append($viewEl);
+        children = $list.children(this.itemSelector);
+        if (position >= children.length) {
+          $list.append(viewEl);
+        } else {
+          $previous = children.eq(position - 1);
+          $previous.after(viewEl);
+        }
       }
       view.trigger('addedToDOM');
       this.updateVisibleItems(item, included);
