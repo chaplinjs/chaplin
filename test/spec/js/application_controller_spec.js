@@ -3,24 +3,19 @@ var __hasProp = Object.prototype.hasOwnProperty,
 
 define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/application_controller'], function(mediator, Controller, ApplicationController) {
   'use strict';  return describe('ApplicationController', function() {
-    var TestController, actionCalled, applicationController, disposeCalled, freshParams, historyURLCalled, initializeCalled, params, paramsId, passedParams, resetFlags, route;
+    var TestController, applicationController, freshParams, params, paramsId, route;
     applicationController = void 0;
-    initializeCalled = actionCalled = historyURLCalled = disposeCalled = void 0;
-    params = passedParams = void 0;
+    params = void 0;
     paramsId = 0;
     route = {
       controller: 'test',
       action: 'show'
     };
-    resetFlags = function() {
-      return initializeCalled = actionCalled = historyURLCalled = disposeCalled = false;
-    };
     freshParams = function() {
-      params = {
+      return params = {
         changeURL: false,
         id: paramsId++
       };
-      return passedParams = void 0;
     };
     TestController = (function(_super) {
 
@@ -31,22 +26,16 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       }
 
       TestController.prototype.historyURL = function(params) {
-        historyURLCalled = true;
         return 'test/' + (params.id || '');
       };
 
-      TestController.prototype.initialize = function() {
-        TestController.__super__.initialize.apply(this, arguments);
-        return initializeCalled = true;
+      TestController.prototype.initialize = function(params, oldControllerName) {
+        return TestController.__super__.initialize.apply(this, arguments);
       };
 
-      TestController.prototype.show = function(params) {
-        actionCalled = true;
-        return passedParams = params;
-      };
+      TestController.prototype.show = function(params, oldControllerName) {};
 
-      TestController.prototype.dispose = function() {
-        disposeCalled = true;
+      TestController.prototype.dispose = function(params, newControllerName) {
         return TestController.__super__.dispose.apply(this, arguments);
       };
 
@@ -57,30 +46,39 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       return TestController;
     });
     beforeEach(function() {
-      resetFlags();
       return freshParams();
     });
     it('should initialize', function() {
       return applicationController = new ApplicationController();
     });
     it('should dispatch routes to controller actions', function() {
+      var action, historyURL, initialize, proto;
+      proto = TestController.prototype;
+      historyURL = spyOn(proto, 'historyURL').andCallThrough();
+      initialize = spyOn(proto, 'initialize').andCallThrough();
+      action = spyOn(proto, 'show').andCallThrough();
       mediator.publish('matchRoute', route, params);
-      expect(initializeCalled).toBe(true);
-      expect(actionCalled).toBe(true);
-      expect(historyURLCalled).toBe(true);
-      return expect(passedParams).toBe(params);
+      expect(initialize).toHaveBeenCalledWith(params, null);
+      expect(action).toHaveBeenCalledWith(params, null);
+      return expect(historyURL).toHaveBeenCalledWith(params);
     });
     it('should start a controller anyway when forced', function() {
+      var action, historyURL, initialize, proto;
       mediator.publish('matchRoute', route, params);
-      resetFlags();
+      proto = TestController.prototype;
+      historyURL = spyOn(proto, 'historyURL').andCallThrough();
+      initialize = spyOn(proto, 'initialize').andCallThrough();
+      action = spyOn(proto, 'show').andCallThrough();
       params.forceStartup = true;
       mediator.publish('matchRoute', route, params);
-      expect(initializeCalled).toBe(true);
-      expect(actionCalled).toBe(true);
-      expect(historyURLCalled).toBe(true);
-      return expect(passedParams).toBe(params);
+      expect(initialize).toHaveBeenCalledWith(params, 'test');
+      expect(initialize.callCount).toBe(1);
+      expect(action).toHaveBeenCalledWith(params, 'test');
+      expect(action.callCount).toBe(1);
+      expect(historyURL).toHaveBeenCalledWith(params);
+      return expect(historyURL.callCount).toBe(1);
     });
-    it('should save the current controller, action and params', function() {
+    it('should save the controller, action, params and url', function() {
       var c;
       mediator.publish('matchRoute', route, params);
       c = applicationController;
@@ -91,27 +89,24 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       expect(c.currentParams).toBe(params);
       return expect(c.url).toBe("test/" + params.id);
     });
-    it('should dispose inactive controllers', function() {
-      var beforeControllerDispose, passedController;
-      passedController = void 0;
-      beforeControllerDispose = function(controller) {
-        return passedController = controller;
-      };
+    it('should dispose inactive controllers and fire beforeControllerDispose events', function() {
+      var beforeControllerDispose, dispose, passedController;
+      dispose = spyOn(TestController.prototype, 'dispose').andCallThrough();
+      beforeControllerDispose = jasmine.createSpy();
       mediator.subscribe('beforeControllerDispose', beforeControllerDispose);
       mediator.publish('matchRoute', route, params);
-      expect(disposeCalled).toBe(true);
+      expect(dispose).toHaveBeenCalledWith(params, 'test');
+      passedController = beforeControllerDispose.mostRecentCall.args[0];
       expect(passedController instanceof TestController).toBe(true);
       expect(passedController.disposed).toBe(true);
       return mediator.unsubscribe('beforeControllerDispose', beforeControllerDispose);
     });
     it('should publish startupController events', function() {
       var passedEvent, startupController;
-      passedEvent = void 0;
-      startupController = function(event) {
-        return passedEvent = event;
-      };
+      startupController = jasmine.createSpy();
       mediator.subscribe('startupController', startupController);
       mediator.publish('matchRoute', route, params);
+      passedEvent = startupController.mostRecentCall.args[0];
       expect(typeof passedEvent).toBe('object');
       expect(passedEvent.controller instanceof TestController).toBe(true);
       expect(passedEvent.controllerName).toBe('test');
@@ -120,10 +115,12 @@ define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/appli
       return mediator.unsubscribe('startupController', startupController);
     });
     return it('should be disposable', function() {
+      var initialize;
       expect(typeof applicationController.dispose).toBe('function');
       applicationController.dispose();
+      initialize = spyOn(TestController.prototype, 'initialize');
       mediator.publish('matchRoute', route, params);
-      expect(initializeCalled).toBe(false);
+      expect(initialize).not.toHaveBeenCalled();
       expect(applicationController.disposed).toBe(true);
       if (Object.isFrozen) {
         return expect(Object.isFrozen(applicationController)).toBe(true);

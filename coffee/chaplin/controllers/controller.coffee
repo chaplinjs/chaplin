@@ -18,8 +18,8 @@ define [
     # historyURL: 'foo'
     # historyURL: ->
 
-    constructor: (params, currentControllerName) ->
-      @initialize(params, currentControllerName)
+    constructor: ->
+      @initialize arguments...
 
     initialize: ->
 

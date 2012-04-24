@@ -52,8 +52,7 @@ define(['underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber']
         mediator.publish('beforeControllerDispose', currentController);
         currentController.dispose(params, controllerName);
       }
-      controller = new ControllerConstructor();
-      controller.initialize(params, currentControllerName);
+      controller = new ControllerConstructor(params, currentControllerName);
       controller[action](params, currentControllerName);
       this.previousControllerName = currentControllerName;
       this.currentControllerName = controllerName;

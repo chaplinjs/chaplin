@@ -100,7 +100,7 @@ define [
 
       # Initialize the new controller
       # Passing the params and the old controller name
-      controller = new ControllerConstructor(params, currentControllerName)
+      controller = new ControllerConstructor params, currentControllerName
 
       # Call the specific controller action
       # Passing the params and the old controller name
