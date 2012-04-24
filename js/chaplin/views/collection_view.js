@@ -10,7 +10,6 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     __extends(CollectionView, _super);
 
     function CollectionView() {
-      this.dispose = __bind(this.dispose, this);
       this.renderAllItems = __bind(this.renderAllItems, this);
       this.showHideFallback = __bind(this.showHideFallback, this);
       this.itemsResetted = __bind(this.itemsResetted, this);

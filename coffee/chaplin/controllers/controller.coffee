@@ -28,7 +28,7 @@ define [
 
     disposed: false
 
-    dispose: =>
+    dispose: ->
       return if @disposed
       #console.debug 'Controller#dispose', this
 

@@ -1,5 +1,4 @@
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = Object.prototype.hasOwnProperty;
+var __hasProp = Object.prototype.hasOwnProperty;
 
 define(['underscore', 'chaplin/lib/subscriber'], function(_, Subscriber) {
   'use strict';
@@ -13,7 +12,7 @@ define(['underscore', 'chaplin/lib/subscriber'], function(_, Subscriber) {
     Controller.prototype.currentId = null;
 
     function Controller() {
-      this.dispose = __bind(this.dispose, this);      this.initialize();
+      this.initialize.apply(this, arguments);
     }
 
     Controller.prototype.initialize = function() {};

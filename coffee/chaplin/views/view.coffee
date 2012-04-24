@@ -352,7 +352,7 @@ define [
 
     disposed: false
 
-    dispose: =>
+    dispose: ->
       #console.debug 'View#dispose', this, 'disposed?', @disposed
       return if @disposed
 

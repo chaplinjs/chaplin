@@ -436,7 +436,7 @@ define [
     # Disposal
     # --------
 
-    dispose: =>
+    dispose: ->
       #console.debug 'CollectionView#dispose', this, 'disposed?', @disposed
       return if @disposed
 
