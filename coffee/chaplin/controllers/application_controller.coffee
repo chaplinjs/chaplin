@@ -99,11 +99,8 @@ define [
         currentController.dispose params, controllerName
 
       # Initialize the new controller
-      controller = new ControllerConstructor()
-
-      # Call the initialize method
       # Passing the params and the old controller name
-      controller.initialize params, currentControllerName
+      controller = new ControllerConstructor(params, currentControllerName)
 
       # Call the specific controller action
       # Passing the params and the old controller name
