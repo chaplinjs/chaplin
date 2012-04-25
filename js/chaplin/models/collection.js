@@ -1,7 +1,7 @@
 var __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_machine'], function(_, Backbone, Subscriber, SyncMachine) {
+define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_machine', 'chaplin/models/model'], function(_, Backbone, Subscriber, SyncMachine, Model) {
   'use strict';
   var Collection;
   return Collection = (function(_super) {
@@ -13,6 +13,8 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
     }
 
     _(Collection.prototype).extend(Subscriber);
+
+    Collection.prototype.model = Model;
 
     Collection.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());

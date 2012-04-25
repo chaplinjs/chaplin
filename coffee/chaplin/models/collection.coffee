@@ -3,7 +3,8 @@ define [
   'backbone',
   'chaplin/lib/subscriber',
   'chaplin/lib/sync_machine'
-], (_, Backbone, Subscriber, SyncMachine) ->
+  'chaplin/models/model'
+], (_, Backbone, Subscriber, SyncMachine, Model) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
@@ -12,6 +13,9 @@ define [
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
+    
+    # Use the Chaplin model per default, not Backbone.Model
+    model: Model
 
     # Creates a new deferred and mixes it into the collection
     # This method can be called multiple times to reset the
