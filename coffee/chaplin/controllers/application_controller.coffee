@@ -27,7 +27,7 @@ define [
       @initialize()
 
     initialize: ->
-      #console.debug 'ApplicationController#initialize'
+      ###console.debug 'ApplicationController#initialize'###
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
@@ -39,7 +39,7 @@ define [
 
     # Handler for the global matchRoute event
     matchRoute: (route, params) ->
-      #console.debug 'ApplicationController#matchRoute'
+      ###console.debug 'ApplicationController#matchRoute'###
       @startupController route.controller, route.action, params
 
     # Handler for the global !startupController event
@@ -53,7 +53,7 @@ define [
     #   4. Show the new view
     #
     startupController: (controllerName, action = 'index', params = {}) ->
-      #console.debug 'ApplicationController#startupController', controllerName, action, params
+      ###console.debug 'ApplicationController#startupController', controllerName, action, params###
 
       # Set default flags
 
@@ -116,7 +116,7 @@ define [
       @adjustURL controller, params
 
       # We're done! Spread the word!
-      #console.debug 'publish startupController'
+      ###console.debug 'publish startupController'###
       mediator.publish 'startupController',
         previousControllerName: @previousControllerName
         controller: @currentController

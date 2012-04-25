@@ -21,7 +21,7 @@ define [
     # Custom fetch function since the Facebook graph is not
     # a REST/JSON API which might be accessed using Ajax
     fetch: =>
-      #console.debug 'Likes#fetch'
+      ###console.debug 'Likes#fetch'###
       user = mediator.user
       return unless user
 
@@ -34,7 +34,7 @@ define [
       facebook.getInfo '/me/likes', @processLikes
 
     processLikes: (response) =>
-      #console.debug 'Likes#processLikes', response, response.data
+      ###console.debug 'Likes#processLikes', response, response.data###
       return if @disposed
 
       # Update the collection

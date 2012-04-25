@@ -32,7 +32,8 @@ define(['mediator', 'views/view', 'text!templates/sidebar.hbs'], function(mediat
     };
 
     SidebarView.prototype.loginStatusHandler = function(loggedIn) {
-      if (loggedIn) {
+      /*console.debug 'SidebarView#loginStatusHandler', loggedIn
+      */      if (loggedIn) {
         this.model = mediator.user;
       } else {
         this.model = null;

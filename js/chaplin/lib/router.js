@@ -40,6 +40,8 @@ define(['underscore', 'backbone', 'mediator', 'chaplin/lib/subscriber', 'chaplin
     };
 
     Router.prototype.route = function(path) {
+      /*console.debug 'Router#route', path
+      */
       var handler, _i, _len, _ref;
       path = path.replace(/^(\/#|\/)/, '');
       _ref = Backbone.history.handlers;
@@ -62,7 +64,8 @@ define(['underscore', 'backbone', 'mediator', 'chaplin/lib/subscriber', 'chaplin
     };
 
     Router.prototype.changeURL = function(url) {
-      return Backbone.history.navigate(url, {
+      /*console.debug 'Router#changeURL', url
+      */      return Backbone.history.navigate(url, {
         trigger: false
       });
     };

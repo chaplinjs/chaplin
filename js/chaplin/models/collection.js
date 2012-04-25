@@ -37,15 +37,23 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
     Collection.prototype.update = function(newList, options) {
       var fingerPrint, i, ids, model, newFingerPrint, preexistent, _ids, _len, _results;
       if (options == null) options = {};
+      /*console.debug 'Collection#update', 'deep?', options.deep
+      */
       fingerPrint = this.pluck('id').join();
       ids = _(newList).pluck('id');
       newFingerPrint = ids.join();
+      /*console.debug '\t' + fingerPrint + '\n\t' + newFingerPrint + '\n\t' + (fingerPrint is newFingerPrint)
+      */
       if (fingerPrint !== newFingerPrint) {
         _ids = _(ids);
         i = this.models.length - 1;
         while (i >= 0) {
           model = this.models[i];
-          if (!_ids.include(model.id)) this.remove(model);
+          if (!_ids.include(model.id)) {
+            /*console.debug '\tremove', model.id
+            */
+            this.remove(model);
+          }
           i--;
         }
       }
@@ -56,8 +64,12 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
           preexistent = this.get(model.id);
           if (preexistent) {
             if (!options.deep) continue;
+            /*console.debug '\update', preexistent.id
+            */
             _results.push(preexistent.set(model));
           } else {
+            /*console.debug '\tinsert', model.id, 'at', i
+            */
             _results.push(this.add(model, {
               at: i
             }));
@@ -72,6 +84,8 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
     Collection.prototype.dispose = function() {
       var prop, properties, _i, _len;
       if (this.disposed) return;
+      /*console.debug 'Collection#dispose', this
+      */
       this.trigger('dispose', this);
       this.reset([], {
         silent: true
@@ -84,6 +98,8 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
         prop = properties[_i];
         delete this[prop];
       }
+      /*console.debug 'Collection#dispose', this, 'finished'
+      */
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };

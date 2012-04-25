@@ -15,7 +15,8 @@ define(['mediator', 'chaplin/application', 'controllers/session_controller', 'co
     ExampleApplication.prototype.title = 'Chaplin Example Application';
 
     ExampleApplication.prototype.initialize = function() {
-      ExampleApplication.__super__.initialize.apply(this, arguments);
+      /*console.debug 'ExampleApplication#initialize'
+      */      ExampleApplication.__super__.initialize.apply(this, arguments);
       new SessionController();
       new NavigationController();
       new SidebarController();

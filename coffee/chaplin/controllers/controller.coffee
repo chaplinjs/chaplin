@@ -30,7 +30,7 @@ define [
 
     dispose: ->
       return if @disposed
-      #console.debug 'Controller#dispose', this
+      ###console.debug 'Controller#dispose', this###
 
       # Dispose and delete all members which are disposable
       for own prop of this
@@ -47,7 +47,7 @@ define [
       delete this[prop] for prop in properties
 
       # Finished
-      #console.debug 'Controller#dispose', this, 'finished'
+      ###console.debug 'Controller#dispose', this, 'finished'###
       @disposed = true
 
       # You're frozen when your heart’s not open

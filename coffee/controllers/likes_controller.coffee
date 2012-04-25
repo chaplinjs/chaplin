@@ -12,11 +12,11 @@ define [
       if params.id then "likes/#{params.id}" else ''
 
     index: (params) ->
-      #console.debug 'LikesController#index'
+      ###console.debug 'LikesController#index'###
       @likes = new Likes()
       @view = new LikesView collection: @likes
 
     show: (params) ->
-      #console.debug 'LikesController#show'
+      ###console.debug 'LikesController#show'###
       @like = new Like {id: params.id}, {loadDetails: true}
       @view = new FullLikeView model: @like

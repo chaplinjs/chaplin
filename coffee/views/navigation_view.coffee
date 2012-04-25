@@ -18,5 +18,5 @@ define [
 
     initialize: ->
       super
-      #console.debug 'NavigationView#initialize'
+      ###console.debug 'NavigationView#initialize'###
       @subscribeEvent 'startupController', @render

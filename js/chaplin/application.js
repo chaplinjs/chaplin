@@ -15,7 +15,8 @@ define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views
     Application.prototype.router = null;
 
     Application.prototype.initialize = function() {
-      this.applicationController = new ApplicationController();
+      /*console.debug 'Application#initialize'
+      */      this.applicationController = new ApplicationController();
       return this.applicationView = new ApplicationView({
         title: this.title
       });
