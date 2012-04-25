@@ -22,7 +22,9 @@ define [
 
       initialize: ->
         super
-        @el.id = @model.id
+        @$el.attr
+          id: @model.id
+          cid: @model.cid
 
       templateFunction: (templateData) ->
         templateData.title
@@ -38,6 +40,7 @@ define [
       animationDuration: 0
 
       getView: (model) ->
+        #console.debug 'TestCollectionView#getView', model
         new ItemView model: model
 
     # Testing class for CollectionViews with template,
@@ -60,14 +63,13 @@ define [
 
     # Helper function
 
-    getModels = ->
+    fillCollection = ->
       models = for code in [65..90] # A-Z
-        new Model
+        {
           id: String.fromCharCode(code)
           title: String(Math.random())
-
-    fillCollection = ->
-      collection.reset getModels()
+        }
+      collection.reset models
 
     addOne = ->
       model = new Model id: 'one', title: 'one'
@@ -83,6 +85,14 @@ define [
       collection.add model3
       [model1, model2, model3]
 
+    viewsMatchCollection = ->
+      children = collectionView.$el.children()
+      expect(children.length).toBe collection.length
+      collection.each (model, index) ->
+        expected = model.id
+        actual = children.eq(index).attr('id')
+        expect(actual).toBe expected
+
     # Create the collection
     collection = new Collection()
 
@@ -95,12 +105,7 @@ define [
         collection: collection
 
     it 'should render item views', ->
-      children = collectionView.$el.children()
-      expect(children.length).toBe collection.length
-      collection.each (model, index) ->
-        expected = model.id
-        actual = children.eq(index).attr('id')
-        expect(actual).toBe expected
+      viewsMatchCollection()
 
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
@@ -111,10 +116,10 @@ define [
 
     it 'should fire visibilityChange events', ->
       collection.reset()
-      spy = jasmine.createSpy()
-      collectionView.on 'visibilityChange', spy
+      visibilityChange = jasmine.createSpy()
+      collectionView.on 'visibilityChange', visibilityChange
       addOne()
-      expect(spy).toHaveBeenCalledWith collectionView.visibleItems
+      expect(visibilityChange).toHaveBeenCalledWith collectionView.visibleItems
       expect(collectionView.visibleItems.length).toBe 1
 
     it 'should add views when collection items are added', ->
@@ -137,13 +142,7 @@ define [
     it 'should remove views when collection items are removed', ->
       models = addThree()
       collection.remove models
-
-      children = collectionView.$el.children()
-      expect(children.length).toBe collection.length
-      collection.each (model, index) ->
-        expected = model.id
-        actual = children.eq(index).attr('id')
-        expect(actual).toBe expected
+      viewsMatchCollection()
 
     it 'should remove all views when collection is emptied', ->
       collection.reset()
@@ -159,13 +158,25 @@ define [
       view2 = collectionView.viewsByCid[model2.cid]
       expect(view2 instanceof ItemView).toBe true
 
-      collection.reset [model1]
+      collection.reset model1
 
       expect(view1.disposed).toBe false
       expect(view2.disposed).toBe true
 
       newView1 = collectionView.viewsByCid[model1.cid]
       expect(newView1).toBe view1
+
+    it 'should append views in the right order', ->
+      collection.comparator = (model) -> model.id
+      collection.reset {id: '2'}
+      collection.addAtomic [
+        {id: '0'}
+        {id: '1'}
+        {id: '3'}
+        {id: '4'}
+      ]
+      viewsMatchCollection()
+      delete collection.comparator
 
     it 'should filter views', ->
       addThree()
@@ -192,20 +203,19 @@ define [
       collectionView.filter null
       expect(collectionView.visibleItems.length).toBe collection.length
 
-    it 'should be disposable', ->
+    it 'should be disposable and dispose all item views', ->
       expect(typeof collectionView.dispose).toBe 'function'
       model = collection.at 0
-      view = collectionView.viewsByCid[model.cid]
-      expect(view instanceof ItemView).toBe true
+      viewsByCid = collectionView.viewsByCid
 
       expect(collectionView.disposed).toBe false
-      expect(view.disposed).toBe false
+      expect(view.disposed).toBe false for cid, view of viewsByCid
       collectionView.dispose()
       expect(collectionView.disposed).toBe true
-      expect(view.disposed).toBe true
+      expect(view.disposed).toBe true for cid, view of viewsByCid
 
-      expect(view.viewsByCid).toBe undefined
-      expect(view.visibleItems).toBe undefined
+      expect(collectionView.viewsByCid).toBe null
+      expect(collectionView.visibleItems).toBe null
 
     it 'should initialize with a template', ->
       # Mix in SyncMachine into Collection
@@ -216,7 +226,7 @@ define [
       collectionView = new TemplatedCollectionView
         collection: collection
 
-    it 'should render templates', ->
+    it 'should render the template', ->
       children = collectionView.$el.children()
       expect(children.length).toBe 3
 

@@ -3,7 +3,7 @@ var __hasProp = Object.prototype.hasOwnProperty,
 
 define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/views/view', 'chaplin/views/collection_view'], function(jQuery, Model, Collection, View, CollectionView) {
   'use strict';  return describe('CollectionView', function() {
-    var ItemView, TemplatedCollectionView, TestCollectionView, addOne, addThree, collection, collectionView, fillCollection, getModels;
+    var ItemView, TemplatedCollectionView, TestCollectionView, addOne, addThree, collection, collectionView, fillCollection, viewsMatchCollection;
     collection = collectionView = void 0;
     ItemView = (function(_super) {
 
@@ -17,7 +17,10 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
 
       ItemView.prototype.initialize = function() {
         ItemView.__super__.initialize.apply(this, arguments);
-        return this.el.id = this.model.id;
+        return this.$el.attr({
+          id: this.model.id,
+          cid: this.model.cid
+        });
       };
 
       ItemView.prototype.templateFunction = function(templateData) {
@@ -77,22 +80,20 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       return TemplatedCollectionView;
 
     })(TestCollectionView);
-    getModels = function() {
+    fillCollection = function() {
       var code, models;
-      return models = (function() {
+      models = (function() {
         var _results;
         _results = [];
         for (code = 65; code <= 90; code++) {
-          _results.push(new Model({
+          _results.push({
             id: String.fromCharCode(code),
             title: String(Math.random())
-          }));
+          });
         }
         return _results;
       })();
-    };
-    fillCollection = function() {
-      return collection.reset(getModels());
+      return collection.reset(models);
     };
     addOne = function() {
       var model;
@@ -126,6 +127,17 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       collection.add(model3);
       return [model1, model2, model3];
     };
+    viewsMatchCollection = function() {
+      var children;
+      children = collectionView.$el.children();
+      expect(children.length).toBe(collection.length);
+      return collection.each(function(model, index) {
+        var actual, expected;
+        expected = model.id;
+        actual = children.eq(index).attr('id');
+        return expect(actual).toBe(expected);
+      });
+    };
     collection = new Collection();
     beforeEach(function() {
       return fillCollection();
@@ -136,15 +148,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       });
     });
     it('should render item views', function() {
-      var children;
-      children = collectionView.$el.children();
-      expect(children.length).toBe(collection.length);
-      return collection.each(function(model, index) {
-        var actual, expected;
-        expected = model.id;
-        actual = children.eq(index).attr('id');
-        return expect(actual).toBe(expected);
-      });
+      return viewsMatchCollection();
     });
     it('should have a visibleItems array', function() {
       var visibleItems;
@@ -156,12 +160,12 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       });
     });
     it('should fire visibilityChange events', function() {
-      var spy;
+      var visibilityChange;
       collection.reset();
-      spy = jasmine.createSpy();
-      collectionView.on('visibilityChange', spy);
+      visibilityChange = jasmine.createSpy();
+      collectionView.on('visibilityChange', visibilityChange);
       addOne();
-      expect(spy).toHaveBeenCalledWith(collectionView.visibleItems);
+      expect(visibilityChange).toHaveBeenCalledWith(collectionView.visibleItems);
       return expect(collectionView.visibleItems.length).toBe(1);
     });
     it('should add views when collection items are added', function() {
@@ -179,17 +183,10 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       return expect(last.text()).toBe(model3.get('title'));
     });
     it('should remove views when collection items are removed', function() {
-      var children, models;
+      var models;
       models = addThree();
       collection.remove(models);
-      children = collectionView.$el.children();
-      expect(children.length).toBe(collection.length);
-      return collection.each(function(model, index) {
-        var actual, expected;
-        expected = model.id;
-        actual = children.eq(index).attr('id');
-        return expect(actual).toBe(expected);
-      });
+      return viewsMatchCollection();
     });
     it('should remove all views when collection is emptied', function() {
       var children;
@@ -205,11 +202,32 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       model2 = collection.at(1);
       view2 = collectionView.viewsByCid[model2.cid];
       expect(view2 instanceof ItemView).toBe(true);
-      collection.reset([model1]);
+      collection.reset(model1);
       expect(view1.disposed).toBe(false);
       expect(view2.disposed).toBe(true);
       newView1 = collectionView.viewsByCid[model1.cid];
       return expect(newView1).toBe(view1);
+    });
+    it('should append views in the right order', function() {
+      collection.comparator = function(model) {
+        return model.id;
+      };
+      collection.reset({
+        id: '2'
+      });
+      collection.addAtomic([
+        {
+          id: '0'
+        }, {
+          id: '1'
+        }, {
+          id: '3'
+        }, {
+          id: '4'
+        }
+      ]);
+      viewsMatchCollection();
+      return delete collection.comparator;
     });
     it('should filter views', function() {
       var children, filterer;
@@ -237,19 +255,24 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       collectionView.filter(null);
       return expect(collectionView.visibleItems.length).toBe(collection.length);
     });
-    it('should be disposable', function() {
-      var model, view;
+    it('should be disposable and dispose all item views', function() {
+      var cid, model, view, viewsByCid;
       expect(typeof collectionView.dispose).toBe('function');
       model = collection.at(0);
-      view = collectionView.viewsByCid[model.cid];
-      expect(view instanceof ItemView).toBe(true);
+      viewsByCid = collectionView.viewsByCid;
       expect(collectionView.disposed).toBe(false);
-      expect(view.disposed).toBe(false);
+      for (cid in viewsByCid) {
+        view = viewsByCid[cid];
+        expect(view.disposed).toBe(false);
+      }
       collectionView.dispose();
       expect(collectionView.disposed).toBe(true);
-      expect(view.disposed).toBe(true);
-      expect(view.viewsByCid).toBe(void 0);
-      return expect(view.visibleItems).toBe(void 0);
+      for (cid in viewsByCid) {
+        view = viewsByCid[cid];
+        expect(view.disposed).toBe(true);
+      }
+      expect(collectionView.viewsByCid).toBe(null);
+      return expect(collectionView.visibleItems).toBe(null);
     });
     it('should initialize with a template', function() {
       collection.initSyncMachine();
@@ -258,7 +281,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
         collection: collection
       });
     });
-    it('should render templates', function() {
+    it('should render the template', function() {
       var $fallback, $list, $loading, children;
       children = collectionView.$el.children();
       expect(children.length).toBe(3);
