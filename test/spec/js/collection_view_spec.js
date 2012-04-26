@@ -3,7 +3,7 @@ var __hasProp = Object.prototype.hasOwnProperty,
 
 define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/views/view', 'chaplin/views/collection_view'], function(jQuery, Model, Collection, View, CollectionView) {
   'use strict';  return describe('CollectionView', function() {
-    var ItemView, TemplatedCollectionView, TestCollectionView, addOne, addThree, collection, collectionView, fillCollection, viewsMatchCollection;
+    var ItemView, MixedCollectionView, TemplatedCollectionView, TestCollectionView, addOne, addThree, collection, collectionView, fillCollection, getAllChildren, getViewChildren, viewsMatchCollection;
     collection = collectionView = void 0;
     ItemView = (function(_super) {
 
@@ -80,6 +80,27 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       return TemplatedCollectionView;
 
     })(TestCollectionView);
+    MixedCollectionView = (function(_super) {
+
+      __extends(MixedCollectionView, _super);
+
+      function MixedCollectionView() {
+        MixedCollectionView.__super__.constructor.apply(this, arguments);
+      }
+
+      MixedCollectionView.prototype.itemSelector = 'li';
+
+      MixedCollectionView.prototype.templateFunction = function(templateData) {
+        return "<p>foo</p>\n<div>bar</div>\n<article>quux</article>\n<ul>\n  <li>nested</li>\n</ul>";
+      };
+
+      MixedCollectionView.prototype.getTemplateFunction = function() {
+        return this.templateFunction;
+      };
+
+      return MixedCollectionView;
+
+    })(TestCollectionView);
     fillCollection = function() {
       var code, models;
       models = (function() {
@@ -127,9 +148,15 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       collection.add(model3);
       return [model1, model2, model3];
     };
+    getViewChildren = function() {
+      return collectionView.$list.children(collectionView.itemSelector);
+    };
+    getAllChildren = function() {
+      return collectionView.$el.children();
+    };
     viewsMatchCollection = function() {
       var children;
-      children = collectionView.$list.children(collectionView.itemSelector);
+      children = getViewChildren();
       expect(children.length).toBe(collection.length);
       return collection.each(function(model, index) {
         var actual, expected;
@@ -171,7 +198,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
     it('should add views when collection items are added', function() {
       var children, first, last, model1, model2, model3, tenth, _ref;
       _ref = addThree(), model1 = _ref[0], model2 = _ref[1], model3 = _ref[2];
-      children = collectionView.$el.children();
+      children = getViewChildren();
       first = children.first();
       expect(first.attr('id')).toBe(model1.id);
       expect(first.text()).toBe(model1.get('title'));
@@ -191,7 +218,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
     it('should remove all views when collection is emptied', function() {
       var children;
       collection.reset();
-      children = collectionView.$el.children();
+      children = getViewChildren();
       return expect(children.length).toBe(0);
     });
     it('should reuse views on reset', function() {
@@ -239,7 +266,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       };
       collectionView.filter(filterer);
       expect(collectionView.visibleItems.length).toBe(3);
-      children = collectionView.$el.children();
+      children = getViewChildren();
       expect(children.length).toBe(collection.length);
       collection.each(function(model, index) {
         var $el, displayValue, visible;
@@ -282,37 +309,31 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       });
     });
     it('should render the template', function() {
-      var $fallback, $list, $loading, children;
-      children = collectionView.$el.children();
-      expect(children.length).toBe(3);
-      $list = collectionView.$(collectionView.listSelector);
-      $fallback = collectionView.$(collectionView.fallbackSelector);
-      $loading = collectionView.$(collectionView.loadingSelector);
-      expect($list.length).toBe(1);
-      expect($fallback.length).toBe(1);
-      return expect($loading.length).toBe(1);
+      var children;
+      children = getAllChildren();
+      return expect(children.length).toBe(3);
     });
-    it('should apply selector properties', function() {
-      var $fallback, $list, $loading;
+    it('should append views to the listSelector', function() {
+      var $list, $list2, children;
       $list = collectionView.$list;
-      $fallback = collectionView.$fallback;
-      $loading = collectionView.$loading;
       expect($list instanceof jQuery).toBe(true);
-      expect($fallback instanceof jQuery).toBe(true);
-      expect($loading instanceof jQuery).toBe(true);
       expect($list.length).toBe(1);
-      expect($fallback.length).toBe(1);
-      return expect($loading.length).toBe(1);
-    });
-    it('should append item views to the listSelector', function() {
-      var $list, children;
-      $list = collectionView.$(collectionView.listSelector);
-      children = $list.children();
+      $list2 = collectionView.$(collectionView.listSelector);
+      expect($list.get(0) === $list2.get(0)).toBe(true);
+      children = getViewChildren();
       return expect(children.length).toBe(collection.length);
+    });
+    it('should set the fallback element properly', function() {
+      var $fallback, $fallback2;
+      $fallback = collectionView.$fallback;
+      expect($fallback instanceof jQuery).toBe(true);
+      expect($fallback.length).toBe(1);
+      $fallback2 = collectionView.$(collectionView.fallbackSelector);
+      return expect($fallback.get(0) === $fallback2.get(0)).toBe(true);
     });
     it('should show the fallback element properly', function() {
       var $fallback;
-      $fallback = collectionView.$(collectionView.fallbackSelector);
+      $fallback = collectionView.$fallback;
       collection.unsync();
       expect($fallback.css('display')).toBe('none');
       collection.beginSync();
@@ -328,6 +349,14 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       expect($fallback.css('display')).toBe('block');
       addOne();
       return expect($fallback.css('display')).toBe('none');
+    });
+    it('should set the loading indicator properly', function() {
+      var $loading, $loading2;
+      $loading = collectionView.$loading;
+      expect($loading instanceof jQuery).toBe(true);
+      expect($loading.length).toBe(1);
+      $loading2 = collectionView.$(collectionView.loadingSelector);
+      return expect($loading.get(0) === $loading.get(0)).toBe(true);
     });
     it('should show the loading indicator properly', function() {
       var $loading;
@@ -354,29 +383,53 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       expect(collectionView.$fallback).toBe(null);
       return expect(collectionView.$loading).toBe(null);
     });
-    it('should the respect render options', function() {
+    it('should respect the render options', function() {
       var children;
       collectionView = new TemplatedCollectionView({
         collection: collection,
         render: false,
         renderItems: false
       });
-      children = collectionView.$el.children();
+      children = getAllChildren();
       expect(children.length).toBe(0);
       expect(collectionView.$list).toBe(null);
       collectionView.render();
-      children = collectionView.$el.children();
+      children = getAllChildren();
       expect(children.length).toBe(3);
       expect(collectionView.$list instanceof jQuery).toBe(true);
       expect(collectionView.$list.length).toBe(1);
       collectionView.renderAllItems();
       return viewsMatchCollection();
     });
-    xit('should test filterer option', function() {
-      return expect(false).toBe(true);
+    it('should respect the filterer option', function() {
+      var children, filterer;
+      filterer = function(model) {
+        return model.id === 'A';
+      };
+      collectionView.dispose();
+      collectionView = new TemplatedCollectionView({
+        collection: collection,
+        filterer: filterer
+      });
+      expect(collectionView.filterer).toBe(filterer);
+      expect(collectionView.visibleItems.length).toBe(1);
+      children = getViewChildren();
+      return expect(children.length).toBe(collection.length);
     });
-    return xit('should test itemSelector', function() {
-      return expect(false).toBe(true);
+    return it('should respect the itemSelector property', function() {
+      var additionalLength, allChildren, viewChildren;
+      collectionView.dispose();
+      collectionView = new MixedCollectionView({
+        collection: collection
+      });
+      additionalLength = 4;
+      allChildren = getAllChildren();
+      expect(allChildren.length).toBe(collection.length + additionalLength);
+      viewChildren = getViewChildren();
+      expect(viewChildren.length).toBe(collection.length);
+      expect(allChildren.eq(0).get(0) === viewChildren.get(0)).toBe(false);
+      expect(allChildren.eq(additionalLength).get(0) === viewChildren.get(0)).toBe(true);
+      return collectionView.dispose();
     });
   });
 });

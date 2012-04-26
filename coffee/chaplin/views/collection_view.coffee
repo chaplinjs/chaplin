@@ -350,24 +350,24 @@ define [
       # Insert the view into the list
       $list = @$list
 
-      if position is 0
-        # Insert at the beginning
-        #console.debug '\tinsert at the beginning'
-        $list.prepend viewEl
+      # Get the children which originate from item views
+      children = $list.children @itemSelector
+      length = children.length
+      #console.debug '\tview', viewEl.id, 'position', position, 'children', length
+
+      if length is 0 or position is length
+        # Insert at the end
+        #console.debug '\t\tinsert at the end'
+        $list.append viewEl
       else
-        # Get the children which originate from item views
-        children = $list.children @itemSelector
-        #console.debug '\tposition', position, 'children', children.length
-
-        if position >= children.length
-          # Insert at the end
-          #console.debug '\tinsert at the end'
-          $list.append viewEl
-
-        else # if position < children.length
-          # Insert at the right position
+        # Insert at the right position
+        if position is 0
+          $next = children.eq position
+          #console.debug '\t\tinsert before', $next.attr('id')
+          $next.before viewEl
+        else
           $previous = children.eq position - 1
-          #console.debug '\tinsert after', $previous
+          #console.debug '\t\tinsert after', $previous.attr('id')
           $previous.after viewEl
 
       # Tell the view that it was added to the DOM
