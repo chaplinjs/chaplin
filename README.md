@@ -10,6 +10,7 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 * [Motivation](#toc-motivation)
 * [Technology Stack](#toc-technology-stack)
 * [The Example Application](#toc-example-application)
+* [The Example Twitter Client](#toc-example-twitter)
 * [The Architecture in Detail](#toc-architecture-in-detail)
 * [Application](#toc-application)
 * [Mediator and Publish/Subscribe](#toc-mediator-and-pub-sub)
