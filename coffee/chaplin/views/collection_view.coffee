@@ -21,15 +21,14 @@ define [
     animationDuration: 500
 
     # A collection view may have a template and use one of its child elements
-    # as the container of the item views. Specify `listSelector` or set
-    # `$list` before rendering. The item views will be appended to this
-    # element. If empty, $el is used.
+    # as the container of the item views. If you specify `listSelector`, the
+    # item views will be appended to this element. If empty, $el is used.
     listSelector: null
 
     # The actual element which is fetched using `listSelector`
     $list: null
 
-    # Selector for a fallback element which is shown when the collection is empty.
+    # Selector for a fallback element which is shown if the collection is empty.
     fallbackSelector: null
 
     # The actual element which is fetched using `fallbackSelector`
