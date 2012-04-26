@@ -129,7 +129,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
     };
     viewsMatchCollection = function() {
       var children;
-      children = collectionView.$el.children();
+      children = collectionView.$list.children(collectionView.itemSelector);
       expect(children.length).toBe(collection.length);
       return collection.each(function(model, index) {
         var actual, expected;
@@ -348,11 +348,35 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       addOne();
       return expect($loading.css('display')).toBe('none');
     });
-    return it('should also dispose when templated', function() {
+    it('should also dispose when templated', function() {
       collectionView.dispose();
       expect(collectionView.$list).toBe(null);
       expect(collectionView.$fallback).toBe(null);
       return expect(collectionView.$loading).toBe(null);
+    });
+    it('should the respect render options', function() {
+      var children;
+      collectionView = new TemplatedCollectionView({
+        collection: collection,
+        render: false,
+        renderItems: false
+      });
+      children = collectionView.$el.children();
+      expect(children.length).toBe(0);
+      expect(collectionView.$list).toBe(null);
+      collectionView.render();
+      children = collectionView.$el.children();
+      expect(children.length).toBe(3);
+      expect(collectionView.$list instanceof jQuery).toBe(true);
+      expect(collectionView.$list.length).toBe(1);
+      collectionView.renderAllItems();
+      return viewsMatchCollection();
+    });
+    xit('should test filterer option', function() {
+      return expect(false).toBe(true);
+    });
+    return xit('should test itemSelector', function() {
+      return expect(false).toBe(true);
     });
   });
 });

@@ -86,7 +86,7 @@ define [
       [model1, model2, model3]
 
     viewsMatchCollection = ->
-      children = collectionView.$el.children()
+      children = collectionView.$list.children collectionView.itemSelector
       expect(children.length).toBe collection.length
       collection.each (model, index) ->
         expected = model.id
@@ -332,3 +332,27 @@ define [
       expect(collectionView.$list).toBe null
       expect(collectionView.$fallback).toBe null
       expect(collectionView.$loading).toBe null
+
+    it 'should the respect render options', ->
+      collectionView = new TemplatedCollectionView
+        collection: collection
+        render: false
+        renderItems: false
+
+      children = collectionView.$el.children()
+      expect(children.length).toBe 0
+      expect(collectionView.$list).toBe null
+
+      collectionView.render()
+      children = collectionView.$el.children()
+      expect(children.length).toBe 3
+      expect(collectionView.$list instanceof jQuery).toBe true
+      expect(collectionView.$list.length).toBe 1
+
+      collectionView.renderAllItems()
+      viewsMatchCollection()
+
+    xit 'should test filterer option', ->
+      expect(false).toBe true
+    xit 'should test itemSelector', ->
+      expect(false).toBe true
