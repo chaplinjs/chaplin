@@ -96,6 +96,18 @@ After successful login, your Facebook likes are fetched from the Open Graph and 
 
 Besides the likes browsers, there’s a second screen which displays some latest posts on the moviepilot.com Facebook page. This is just another controller in order to demonstrate the change between controllers with proper routing and cleanup.
 
+## <a name="toc-example-twitter">The Example Application: Twitter client</a>
+The example uses twitter authentication to display user's feed and to create
+new tweets. It uses [brunch](http://brunch.io) for assembling files & assets.
+
+To run it on your machine, just clone the repository and run server on `public`
+directory (you can use one brunch provides with `brunch w -s`).
+
+See [source code](https://github.com/brunch/twitter) for more info.
+
+Live edition of the example is available at
+[http://brunch.io/twitter/public/](http://brunch.io/twitter/public/).
+
 ## <a name="toc-architecture-in-detail">The Architecture in Detail</a>
 
 The following chapters will discuss the core objects and classes of our application structure.
