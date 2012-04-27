@@ -42,8 +42,8 @@ define ->
       if @_syncState in [SYNCING, SYNCED]
         @_previousSync = @_syncState
         @_syncState = UNSYNCED
-        @trigger @_syncState, @, @_syncState
-        @trigger STATE_CHANGE, @, @_syncState
+        @trigger @_syncState, this, @_syncState
+        @trigger STATE_CHANGE, this, @_syncState
       # when UNSYNCED do nothing
       return
 
@@ -51,8 +51,8 @@ define ->
       if @_syncState in [UNSYNCED, SYNCED]
         @_previousSync = @_syncState
         @_syncState = SYNCING
-        @trigger @_syncState, @, @_syncState
-        @trigger STATE_CHANGE, @, @_syncState
+        @trigger @_syncState, this, @_syncState
+        @trigger STATE_CHANGE, this, @_syncState
       # when SYNCING do nothing
       return
 
@@ -60,8 +60,8 @@ define ->
       if @_syncState is SYNCING
         @_previousSync = @_syncState
         @_syncState = SYNCED
-        @trigger @_syncState, @, @_syncState
-        @trigger STATE_CHANGE, @, @_syncState
+        @trigger @_syncState, this, @_syncState
+        @trigger STATE_CHANGE, this, @_syncState
       # when SYNCED, UNSYNCED do nothing
       return
 
@@ -69,8 +69,8 @@ define ->
       if @_syncState is SYNCING
         @_syncState = @_previousSync
         @_previousSync = @_syncState
-        @trigger @_syncState, @, @_syncState
-        @trigger STATE_CHANGE, @, @_syncState
+        @trigger @_syncState, this, @_syncState
+        @trigger STATE_CHANGE, this, @_syncState
       # when UNSYNCED, SYNCED do nothing
       return
 

@@ -28,8 +28,6 @@ define(['underscore', 'mediator'], function(_, mediator) {
     }
 
     Route.prototype.createRegExp = function() {
-      /*console.debug 'Route#createRegExp', @pattern
-      */
       var pattern;
       if (_.isRegExp(this.pattern)) {
         this.regExp = this.pattern;
@@ -40,8 +38,7 @@ define(['underscore', 'mediator'], function(_, mediator) {
     };
 
     Route.prototype.addParamName = function(match, paramName) {
-      /*console.debug 'Route#addParamName', match, paramName
-      */      if (this.paramNames == null) this.paramNames = [];
+      if (this.paramNames == null) this.paramNames = [];
       if (_(reservedParams).include(paramName)) {
         throw new Error("Route#addParamName: parameter name " + paramName + " is reserved");
       }
@@ -76,8 +73,6 @@ define(['underscore', 'mediator'], function(_, mediator) {
     };
 
     Route.prototype.buildParams = function(path, options) {
-      /*console.debug 'Route#buildParams', path, options
-      */
       var params, patternParams, queryParams;
       params = {};
       queryParams = this.extractQueryParams(path);

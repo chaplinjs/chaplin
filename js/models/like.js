@@ -20,11 +20,11 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
       */
       if (options && options.loadDetails) {
         _(this).extend($.Deferred());
-        return this.getLike();
+        return this.fetch();
       }
     };
 
-    Like.prototype.getLike = function() {
+    Like.prototype.fetch = function() {
       /*console.debug 'Like#getLike'
       */
       var provider, user;
@@ -32,8 +32,6 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
       if (!user) return;
       provider = user.get('provider');
       if (provider.name !== 'facebook') return;
-      /*console.debug 'getInfo', @id, @processLike
-      */
       return provider.getInfo(this.id, this.processLike);
     };
 

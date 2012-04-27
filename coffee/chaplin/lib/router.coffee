@@ -16,6 +16,8 @@ define [
     _(@prototype).extend Subscriber
 
     constructor: (@options = {}) ->
+      ###console.debug 'Router#constructor'###
+      
       @subscribeEvent '!router:route', @routeHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
@@ -83,6 +85,7 @@ define [
     disposed: false
 
     dispose: ->
+      ###console.debug 'Router#dispose'###
       return if @disposed
 
       @stopHistory()

@@ -39,7 +39,6 @@ define [
 
     # Handler for the global matchRoute event
     matchRoute: (route, params) ->
-      ###console.debug 'ApplicationController#matchRoute'###
       @startupController route.controller, route.action, params
 
     # Handler for the global !startupController event
@@ -116,7 +115,6 @@ define [
       @adjustURL controller, params
 
       # We're done! Spread the word!
-      ###console.debug 'publish startupController'###
       mediator.publish 'startupController',
         previousControllerName: @previousControllerName
         controller: @currentController
@@ -155,6 +153,7 @@ define [
     disposed: false
 
     dispose: ->
+      ###console.debug 'ApplicationController#dispose###
       return if @disposed
 
       @unsubscribeAllEvents()

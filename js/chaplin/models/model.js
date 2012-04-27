@@ -25,10 +25,10 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber'], function(_, Backbon
     Model.prototype.disposed = false;
 
     Model.prototype.dispose = function() {
+      /*console.debug 'Model#dispose', this, 'disposed?', @disposed
+      */
       var prop, properties, _i, _len;
       if (this.disposed) return;
-      /*console.debug 'Model#dispose', this
-      */
       this.trigger('dispose', this);
       this.unsubscribeAllEvents();
       this.off();
@@ -38,8 +38,6 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber'], function(_, Backbon
         prop = properties[_i];
         delete this[prop];
       }
-      /*console.debug 'Model#dispose', this, 'finished'
-      */
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };

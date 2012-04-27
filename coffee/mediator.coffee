@@ -32,7 +32,7 @@ define [
   # You might add methods and properties to the mediator here
 
   #mediator.foo = ->
-  
+
   # Finally seal the mediator
   # -------------------------
 

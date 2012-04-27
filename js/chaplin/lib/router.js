@@ -11,6 +11,8 @@ define(['underscore', 'backbone', 'mediator', 'chaplin/lib/subscriber', 'chaplin
       this.options = options != null ? options : {};
       this.route = __bind(this.route, this);
       this.match = __bind(this.match, this);
+      /*console.debug 'Router#constructor'
+      */
       this.subscribeEvent('!router:route', this.routeHandler);
       this.subscribeEvent('!router:changeURL', this.changeURLHandler);
       this.createHistory();
@@ -77,7 +79,8 @@ define(['underscore', 'backbone', 'mediator', 'chaplin/lib/subscriber', 'chaplin
     Router.prototype.disposed = false;
 
     Router.prototype.dispose = function() {
-      if (this.disposed) return;
+      /*console.debug 'Router#dispose'
+      */      if (this.disposed) return;
       this.stopHistory();
       delete Backbone.history;
       this.unsubscribeAllEvents();
