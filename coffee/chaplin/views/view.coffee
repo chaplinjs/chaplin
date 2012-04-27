@@ -43,18 +43,14 @@ define [
     # Wrap a `method` in order to call and `afterMethod`
     wrapMethod = (obj, name) ->
       func = obj[name]
-      ###console.debug 'View wrapMethod', obj, name###
       # Create a method on the instance which wraps the inherited
       obj[name] = ->
-        ###console.debug 'View#' + name + ' wrapper', obj###
         # Call the original method
         func.apply obj, arguments
         # Call the corresponding `after-` method
         obj["after#{utils.upcase(name)}"].apply obj, arguments
 
     constructor: ->
-      ###console.debug 'View#constructor', this###
-
       # Wrap `initialize` so `afterInitialize` is called afterwards
       # Only wrap if there is an overring method, otherwise we
       # call the after method directly
@@ -84,15 +80,12 @@ define [
       if @model or @collection
         @modelBind 'dispose', @dispose
 
-      # Call afterInitialize manually if initialize wasn’t wrapped
+      # Call afterInitialize manually if initialize did not wrap it
       if @initialize is View::initialize
-        ###console.debug '\tcall afterInitialize without wrapping'###
         @afterInitialize()
 
     # This method is called after a specific `initialize` of a derived class
     afterInitialize: ->
-      ###console.debug 'View#afterInitialize', this###
-
       # Render automatically if set by options or instance property
       # `autoRender` option may override `autoRender` instance property
       autoRender = if @options.autoRender?
@@ -177,10 +170,10 @@ define [
         throw new TypeError 'View#modelBind: no model or collection set'
 
       # Ensure that a handler isn’t registered twice
-      model.off type, handler, @
+      model.off type, handler, this
 
       # Register model handler, force context to the view
-      model.on type, handler, @
+      model.on type, handler, this
 
     # Unbind from a model event
 
@@ -206,7 +199,7 @@ define [
       return unless model
 
       # Remove all handlers with a context of this view
-      model.off null, null, @
+      model.off null, null, this
 
     # Setup a simple one-way model-view binding
     # Pass changed attribute values to specific elements in the view
@@ -226,34 +219,33 @@ define [
 
     # Getting or adding a subview
     subview: (name, view) ->
-      ###console.debug 'View#subview', name, view###
       if name and view
+        # Add the subview, ensure it’s unique
         @removeSubview name
         @subviews.push view
         @subviewsByName[name] = view
-        ###console.debug '\tadd', name, view###
         view
       else if name
-        ###console.debug '\tget', name###
+        # Get and return the subview by the given name
         @subviewsByName[name]
 
     # Removing a subview
     removeSubview: (nameOrView) ->
-      ###console.debug 'View#removeSubview nameOrView:', nameOrView###
       return unless nameOrView
 
       if typeof nameOrView is 'string'
+        # Name given, search for a subview by name
         name = nameOrView
         view = @subviewsByName[name]
       else
+        # View instance given, search for the corresponding name
         view = nameOrView
-        # Search for the name of the view
         for otherName, otherView of @subviewsByName
           if view is otherView
             name = otherName
             break
-
-      ###console.debug 'View#removeSubview found name:', name, 'view:', view###
+      
+      # Brak if no view and name were found
       return unless name and view and view.dispose
 
       # Dispose the view
@@ -320,8 +312,6 @@ define [
 
     # This method is called after a specific `render` of a derived class
     afterRender: ->
-      ###console.debug 'View#afterRender', this###
-
       # Create a shortcut to the container element
       # The view will be automatically appended to the container when rendered
       # `container` option may override `autoRender` instance property
@@ -338,7 +328,7 @@ define [
           else
             @containerMethod
 
-        ###console.debug '\tappend to DOM', containerMethod, container###
+        # Append the view to the DOM
         $(container)[containerMethod] @el
 
         # Trigger an event
@@ -383,7 +373,6 @@ define [
       delete this[prop] for prop in properties
 
       # Finished
-      ###console.debug 'View#dispose', this, 'finished'###
       @disposed = true
 
       # Your're frozen when your heart’s not open

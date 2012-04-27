@@ -21,10 +21,9 @@ define(['underscore', 'lib/utils', 'chaplin/lib/subscriber'], function(_, utils,
     ServiceProvider.prototype.disposed = false;
 
     ServiceProvider.prototype.dispose = function() {
-      if (this.disposed) return;
+      /*console.debug 'ServiceProvider#dispose'
+      */      if (this.disposed) return;
       this.unsubscribeAllEvents();
-      /*console.debug 'ServiceProvider#dispose', this, 'finished'
-      */
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };

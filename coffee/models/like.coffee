@@ -25,8 +25,6 @@ define [
 
       provider = user.get 'provider'
       return unless provider.name is 'facebook'
-
-      ###console.debug 'getInfo', @id, @processLike###
       provider.getInfo @id, @processLike
 
     processLike: (response) =>

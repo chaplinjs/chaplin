@@ -31,6 +31,8 @@ define(['mediator', 'chaplin/controllers/application_controller', 'chaplin/views
     Application.prototype.disposed = false;
 
     Application.prototype.dispose = function() {
+      /*console.debug 'Application#dispose'
+      */
       var prop, properties, _i, _len;
       if (this.disposed) return;
       properties = ['applicationController', 'applicationView', 'router'];

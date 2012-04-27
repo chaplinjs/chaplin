@@ -32,8 +32,6 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
       if (!user) return;
       provider = user.get('provider');
       if (provider.name !== 'facebook') return;
-      /*console.debug 'getInfo', @id, @processLike
-      */
       return provider.getInfo(this.id, this.processLike);
     };
 

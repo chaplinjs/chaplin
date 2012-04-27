@@ -97,8 +97,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
     loadLib: function(url, success, error, timeout) {
       var head, onload, script, timeoutHandle;
       if (timeout == null) timeout = 7500;
-      /*console.debug 'utils.loadLib', url
-      */
       head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
       script = document.createElement('script');
       script.async = 'async';
@@ -183,8 +181,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       host = options.host || deferred;
       target = options.target || host;
       onDeferral = options.onDeferral;
-      /*console.debug 'utils.deferMethods', deferred, methods, host, target
-      */
       methodsHash = {};
       if (typeof methods === 'string') {
         methodsHash[methods] = host[methods];
@@ -211,21 +207,14 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
     },
     createDeferredFunction: function(deferred, func, context, onDeferral) {
       if (context == null) context = deferred;
-      /*console.debug 'utils.createWrappedFunction', 'deferred:', deferred, 'func:', func, 'context:', context, 'onDeferral:', onDeferral
-      */
       return function() {
         var args;
         args = arguments;
         if (deferred.state() === 'resolved') {
-          /*console.debug 'utils.createDeferredFunction: wrapped', name, 'called -> already resolved, call immediately'
-          */
           return func.apply(context, args);
         } else {
-          /*console.debug 'utils.createDeferredFunction: wrapped', name, 'called -> defer'
-          */
           deferred.done(function() {
-            /*console.debug 'utils.createDeferredFunction: Deferred done, call', name, args
-            */            return func.apply(context, args);
+            return func.apply(context, args);
           });
           if (typeof onDeferral === 'function') return onDeferral.apply(context);
         }
@@ -277,8 +266,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       accumulatedSuccess = function() {
         var handler, handlers, _i, _len;
         handlers = acc.successHandlers[id];
-        /*console.debug 'createAccumulator: accumulatedSuccess', id, handlers
-        */
         if (handlers) {
           for (_i = 0, _len = handlers.length; _i < _len; _i++) {
             handler = handlers[_i];
@@ -290,8 +277,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       accumulatedError = function() {
         var handler, handlers, _i, _len;
         handlers = acc.errorHandlers[id];
-        /*console.debug 'createAccumulator: accumulatedError', id, handlers
-        */
         if (handlers) {
           for (_i = 0, _len = handlers.length; _i < _len; _i++) {
             handler = handlers[_i];
@@ -303,8 +288,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       return function() {
         var data, error, handler, rest, success;
         data = arguments[0], success = arguments[1], error = arguments[2], rest = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
-        /*console.debug 'accumulator', name, id, 'success:', success, 'error:', error
-        */
         if (data) {
           acc.collectedData[id] = (acc.collectedData[id] || []).concat(data);
         }
@@ -318,8 +301,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
         handler = function(options) {
           var args, collectedData;
           if (options == null) options = options;
-          /*console.debug 'createAccumulator: handler fired'
-          */
           if (!(collectedData = acc.collectedData[id])) return;
           args = [collectedData, accumulatedSuccess, accumulatedError].concat(rest);
           func.apply(context, args);
@@ -337,8 +318,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       var args, context, eventType, func, loginHandler;
       context = arguments[0], func = arguments[1], eventType = arguments[2], args = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
       if (eventType == null) eventType = 'login';
-      /*console.debug 'utils.afterLogin', context, func, eventType, args
-      */
       if (mediator.user) {
         return func.apply(context, args);
       } else {
@@ -352,8 +331,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
     deferMethodsUntilLogin: function(obj, methods, eventType) {
       var func, name, _i, _len, _results;
       if (eventType == null) eventType = 'login';
-      /*console.debug 'utils.deferMethodsUntilLogin', arguments...
-      */
       if (typeof methods === 'string') methods = [methods];
       _results = [];
       for (_i = 0, _len = methods.length; _i < _len; _i++) {
@@ -362,8 +339,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
         if (typeof func !== 'function') {
           throw new TypeError("utils.deferMethodsUntilLogin: method " + name + "not found");
         }
-        /*console.debug '\twrap', obj, name
-        */
         _results.push(obj[name] = _(utils.afterLogin).bind(null, obj, func, eventType));
       }
       return _results;
@@ -372,8 +347,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       var args, context, e, eventType, func, loginContext;
       context = arguments[0], func = arguments[1], loginContext = arguments[2], eventType = arguments[3], args = 5 <= arguments.length ? __slice.call(arguments, 4) : [];
       if (eventType == null) eventType = 'login';
-      /*console.debug 'utils.ensureLogin', context, func, loginContext, args
-      */
       utils.afterLogin.apply(utils, [context, func, eventType].concat(__slice.call(args)));
       if (!mediator.user) {
         if ((e = args[0]) && typeof e.preventDefault === 'function') {
@@ -385,8 +358,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
     ensureLoginForMethods: function(obj, methods, loginContext, eventType) {
       var func, name, _i, _len, _results;
       if (eventType == null) eventType = 'login';
-      /*console.debug 'utils.ensureLoginForMethods', obj, methods, loginContext
-      */
       if (typeof methods === 'string') methods = [methods];
       _results = [];
       for (_i = 0, _len = methods.length; _i < _len; _i++) {
@@ -395,8 +366,6 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
         if (typeof func !== 'function') {
           throw new TypeError("utils.ensureLoginForMethods: method " + name + "not found");
         }
-        /*console.debug '\twrap', obj, name, loginContext
-        */
         _results.push(obj[name] = _(utils.ensureLogin).bind(null, obj, func, loginContext, eventType));
       }
       return _results;

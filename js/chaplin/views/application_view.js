@@ -44,8 +44,6 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     ApplicationView.prototype.adjustTitle = function(context) {
-      /*console.debug 'ApplicationView#adjustTitle', context
-      */
       var subtitle, title;
       title = this.title;
       subtitle = context.controller.title;
@@ -69,8 +67,6 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     ApplicationView.prototype.openLink = function(event) {
-      /*console.debug 'ApplicationView#openLink'
-      */
       var currentHostname, el, external, hostnameRegExp, href;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
@@ -79,39 +75,29 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       currentHostname = location.hostname.replace('.', '\\.');
       hostnameRegExp = RegExp("" + currentHostname + "$", "i");
       external = !hostnameRegExp.test(el.hostname);
-      if (external) {
-        /*console.debug 'ApplicationView#openLink: external link', el.hostname
-        */
-        return;
-      }
+      if (external) return;
       return this.openInternalLink(event);
     };
 
     ApplicationView.prototype.openInternalLink = function(event) {
-      /*console.debug 'ApplicationView#openInternalLink'
-      */
       var el, path;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       path = el.pathname;
       if (!path) return;
       return mediator.publish('!router:route', path, function(routed) {
-        /*console.debug 'ApplicationView#openInternalLink routed:', routed
-        */        if (routed) return event.preventDefault();
+        if (routed) return event.preventDefault();
       });
     };
 
     ApplicationView.prototype.goToHandler = function(event) {
-      /*console.debug 'ApplicationView#goToHandler'
-      */
       var el, path;
       el = event.currentTarget;
       if (event.nodeName === 'A') return;
       path = $(el).data('href');
       if (!path) return;
       return mediator.publish('!router:route', path, function(routed) {
-        /*console.debug 'ApplicationView#goToHandler routed:', routed
-        */        if (routed) {
+        if (routed) {
           return event.preventDefault();
         } else {
           return location.href = path;
@@ -123,6 +109,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
 
     ApplicationView.prototype.dispose = function() {
       if (this.disposed) return;
+      console.debug;
       this.unsubscribeAllEvents();
       delete this.title;
       this.disposed = true;

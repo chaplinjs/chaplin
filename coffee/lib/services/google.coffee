@@ -24,7 +24,6 @@ define [
     name: 'google'
 
     load: ->
-      ###console.debug 'Google#load'###
       return if @state() is 'resolved' or @loading
       @loading = true
 
@@ -35,8 +34,6 @@ define [
       utils.loadLib 'https://apis.google.com/js/client.js?onload=googleClientLoaded', null, @reject
 
     loadHandler: =>
-      ###console.debug 'Google#loadHandler', @isLoaded()###
-
       # Remove the global load handler
       try
         # IE 8 throws an exception
@@ -51,14 +48,11 @@ define [
       Boolean window.gapi and gapi.auth and gapi.auth.authorize
 
     triggerLogin: (loginContext) ->
-      ###console.debug 'Google#triggerLogin', loginContext###
       gapi.auth.authorize
         client_id: clientId, scope: scopes, immediate: false
-        _(@loginHandler).bind(@, loginContext)
+        _(@loginHandler).bind(this, loginContext)
 
     loginHandler: (loginContext, authResponse) ->
-      ###console.debug 'Google#loginHandler', loginContext, authResponse###
-
       if authResponse
         # Publish successful login
         mediator.publish 'loginSuccessful', {provider: this, loginContext}
@@ -72,7 +66,6 @@ define [
         mediator.publish 'loginFail', {provider: this, loginContext}
 
     getLoginStatus: (callback) ->
-      ###console.debug 'Google#getLoginStatus immediate: true'###
       gapi.auth.authorize { client_id: clientId, scope: scopes, immediate: true }, callback
 
     # TODO

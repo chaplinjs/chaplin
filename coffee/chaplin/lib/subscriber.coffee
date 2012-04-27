@@ -23,10 +23,10 @@ define ['mediator'], (mediator) ->
           'handler argument must be a function'
 
       # Ensure that a handler isn’t registered twice
-      mediator.unsubscribe type, handler, @
+      mediator.unsubscribe type, handler, this
 
       # Register global handler, force context to the subscriber
-      mediator.subscribe type, handler, @
+      mediator.subscribe type, handler, this
 
     unsubscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
@@ -42,7 +42,7 @@ define ['mediator'], (mediator) ->
     # Unbind all global handlers
     unsubscribeAllEvents: ->
       # Remove all handlers with a context of this subscriber
-      mediator.unsubscribe null, null, @
+      mediator.unsubscribe null, null, this
 
   Object.freeze? Subscriber
 
