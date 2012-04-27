@@ -31,7 +31,7 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 
 ## <a name="toc-upcoming-version">Current Version</a>
 
-The current stable version is <strong>0.3</strong>, released on 2012-03-23.
+The current stable version is **0.3**, released on 2012-03-23.
 
 To use the stable version, please clone the repository and [check out the tag 0.3](https://github.com/moviepilot/chaplin/tree/0.3).
 
