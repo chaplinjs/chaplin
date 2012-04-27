@@ -20,12 +20,16 @@ define(['underscore', 'mediator'], function(_, mediator) {
       this.options = options != null ? options : {};
       this.handler = __bind(this.handler, this);
       this.addParamName = __bind(this.addParamName, this);
+      /*console.debug 'Route#constructor', pattern, target, options
+      */
       this.pattern = pattern;
       _ref = target.split('#'), this.controller = _ref[0], this.action = _ref[1];
       this.createRegExp();
     }
 
     Route.prototype.createRegExp = function() {
+      /*console.debug 'Route#createRegExp', @pattern
+      */
       var pattern;
       if (_.isRegExp(this.pattern)) {
         this.regExp = this.pattern;
@@ -36,7 +40,8 @@ define(['underscore', 'mediator'], function(_, mediator) {
     };
 
     Route.prototype.addParamName = function(match, paramName) {
-      if (this.paramNames == null) this.paramNames = [];
+      /*console.debug 'Route#addParamName', match, paramName
+      */      if (this.paramNames == null) this.paramNames = [];
       if (_(reservedParams).include(paramName)) {
         throw new Error("Route#addParamName: parameter name " + paramName + " is reserved");
       }
@@ -45,6 +50,8 @@ define(['underscore', 'mediator'], function(_, mediator) {
     };
 
     Route.prototype.test = function(path) {
+      /*console.debug 'Route#test', this, "path »#{path}«", typeof path
+      */
       var constraint, constraints, matched, name, params;
       matched = this.regExp.test(path);
       if (!matched) return false;
@@ -61,12 +68,16 @@ define(['underscore', 'mediator'], function(_, mediator) {
     };
 
     Route.prototype.handler = function(path, options) {
+      /*console.debug 'Route#handler', this, path, options
+      */
       var params;
       params = this.buildParams(path, options);
       return mediator.publish('matchRoute', this, params);
     };
 
     Route.prototype.buildParams = function(path, options) {
+      /*console.debug 'Route#buildParams', path, options
+      */
       var params, patternParams, queryParams;
       params = {};
       queryParams = this.extractQueryParams(path);

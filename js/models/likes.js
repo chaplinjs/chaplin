@@ -27,6 +27,8 @@ define(['mediator', 'chaplin/models/collection', 'models/like'], function(mediat
     };
 
     Likes.prototype.fetch = function() {
+      /*console.debug 'Likes#fetch'
+      */
       var facebook, user;
       user = mediator.user;
       if (!user) return;
@@ -37,7 +39,8 @@ define(['mediator', 'chaplin/models/collection', 'models/like'], function(mediat
     };
 
     Likes.prototype.processLikes = function(response) {
-      if (this.disposed) return;
+      /*console.debug 'Likes#processLikes', response, response.data
+      */      if (this.disposed) return;
       this.reset(response && response.data ? response.data : []);
       return this.finishSync();
     };

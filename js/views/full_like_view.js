@@ -24,12 +24,16 @@ define(['mediator', 'views/view', 'text!templates/full_like.hbs'], function(medi
 
     FullLikeView.prototype.initialize = function() {
       FullLikeView.__super__.initialize.apply(this, arguments);
+      /*console.debug 'FullLikeView#initialize'
+      */
       if (this.model.state() !== 'resolved') return this.model.done(this.render);
     };
 
     FullLikeView.prototype.render = function() {
       var provider, user;
       FullLikeView.__super__.render.apply(this, arguments);
+      /*console.debug 'FullLikeView#render'
+      */
       if (this.model.state() === 'resolved') {
         user = mediator.user;
         provider = user.get('provider');

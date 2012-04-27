@@ -16,7 +16,7 @@ define [
     title: ''
 
     constructor: (options = {}) ->
-      #console.debug 'ApplicationView#constructor', options
+      ###console.debug 'ApplicationView#constructor', options###
 
       @title = options.title
 
@@ -58,7 +58,7 @@ define [
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
     adjustTitle: (context) ->
-      #console.debug 'ApplicationView#adjustTitle', context
+      ###console.debug 'ApplicationView#adjustTitle', context###
       title = @title
       subtitle = context.controller.title
       title = "#{subtitle} \u2013 #{title}" if subtitle
@@ -97,7 +97,7 @@ define [
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) =>
-      #console.debug 'ApplicationView#openLink'
+      ###console.debug 'ApplicationView#openLink'###
       return if utils.modifierKeyPressed(event)
 
       el = event.currentTarget
@@ -110,7 +110,7 @@ define [
       hostnameRegExp = ///#{currentHostname}$///i
       external = not hostnameRegExp.test(el.hostname)
       if external
-        #console.debug 'ApplicationView#openLink: external link', el.hostname
+        ###console.debug 'ApplicationView#openLink: external link', el.hostname###
         # Open external links normally
         # You might want to enforce opening in a new tab here:
         #event.preventDefault()
@@ -121,7 +121,7 @@ define [
 
     # Try to route a click on a link internally
     openInternalLink: (event) ->
-      #console.debug 'ApplicationView#openInternalLink'
+      ###console.debug 'ApplicationView#openInternalLink'###
       return if utils.modifierKeyPressed(event)
 
       el = event.currentTarget
@@ -130,7 +130,7 @@ define [
 
       # Pass to the router, try to route internally
       mediator.publish '!router:route', path, (routed) ->
-        #console.debug 'ApplicationView#openInternalLink routed:', routed
+        ###console.debug 'ApplicationView#openInternalLink routed:', routed###
         # Prevent default handling if the URL could be routed
         event.preventDefault() if routed
         # Otherwise navigate to the URL normally
@@ -139,7 +139,7 @@ define [
     # every element might have:
     # class="go-to" data-href="/something"
     goToHandler: (event) ->
-      #console.debug 'ApplicationView#goToHandler'
+      ###console.debug 'ApplicationView#goToHandler'###
       el = event.currentTarget
 
       # Do not handle A elements
@@ -151,7 +151,7 @@ define [
 
       # Pass to the router, try to route internally
       mediator.publish '!router:route', path, (routed) ->
-        #console.debug 'ApplicationView#goToHandler routed:', routed
+        ###console.debug 'ApplicationView#goToHandler routed:', routed###
         if routed
           # Prevent default handling if the URL could be routed
           event.preventDefault()

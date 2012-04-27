@@ -22,6 +22,8 @@ define(['underscore', 'chaplin/lib/subscriber'], function(_, Subscriber) {
     Controller.prototype.dispose = function() {
       var obj, prop, properties, _i, _len;
       if (this.disposed) return;
+      /*console.debug 'Controller#dispose', this
+      */
       for (prop in this) {
         if (!__hasProp.call(this, prop)) continue;
         obj = this[prop];
@@ -36,6 +38,8 @@ define(['underscore', 'chaplin/lib/subscriber'], function(_, Subscriber) {
         prop = properties[_i];
         delete this[prop];
       }
+      /*console.debug 'Controller#dispose', this, 'finished'
+      */
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };

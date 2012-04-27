@@ -17,7 +17,7 @@ define [
     title: 'Chaplin Example Application'
 
     initialize: ->
-      #console.debug 'ExampleApplication#initialize'
+      ###console.debug 'ExampleApplication#initialize'###
 
       # This creates the ApplicationController and ApplicationView
       super

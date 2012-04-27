@@ -11,6 +11,6 @@ define [
     historyURL: 'posts'
 
     index: (params) ->
-      #console.debug 'PostsController#index'
+      ###console.debug 'PostsController#index'###
       @posts = new Posts()
       @view = new PostsView collection: @posts

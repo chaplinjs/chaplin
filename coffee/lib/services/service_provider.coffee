@@ -13,7 +13,7 @@ define [
     loading: false
 
     constructor: ->
-      #console.debug 'ServiceProvider#constructor'
+      ###console.debug 'ServiceProvider#constructor'###
 
       # Mixin a Deferred
       _(this).extend $.Deferred()
@@ -35,7 +35,7 @@ define [
       @unsubscribeAllEvents()
 
       # Finished
-      #console.debug 'ServiceProvider#dispose', this, 'finished'
+      ###console.debug 'ServiceProvider#dispose', this, 'finished'###
       @disposed = true
 
       # You're frozen when your heart’s not open
