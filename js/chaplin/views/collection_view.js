@@ -238,7 +238,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
     };
 
     CollectionView.prototype.insertView = function(item, view, index, animationDuration) {
-      var $list, $previous, $viewEl, children, included, position, viewEl;
+      var $list, $next, $previous, $viewEl, children, included, length, position, viewEl;
       if (index == null) index = null;
       if (animationDuration == null) animationDuration = this.animationDuration;
       /*console.debug 'CollectionView#insertView', item, view, index
@@ -257,21 +257,19 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
         $viewEl.css('display', 'none');
       }
       $list = this.$list;
-      if (position === 0) {
-        /*console.debug '\tinsert at the beginning'
-        */
-        $list.prepend(viewEl);
+      children = $list.children(this.itemSelector);
+      length = children.length;
+      /*console.debug '\tview', viewEl.id, 'position', position, 'children', length
+      */
+      if (length === 0 || position === length) {
+        $list.append(viewEl);
       } else {
-        children = $list.children(this.itemSelector);
-        /*console.debug '\tposition', position, 'children', children.length
-        */
-        if (position >= children.length) {
-          /*console.debug '\tinsert at the end'
-          */
-          $list.append(viewEl);
+        if (position === 0) {
+          $next = children.eq(position);
+          $next.before(viewEl);
         } else {
           $previous = children.eq(position - 1);
-          /*console.debug '\tinsert after', $previous
+          /*console.debug '\t\tinsert after', $previous.attr('id')
           */
           $previous.after(viewEl);
         }
