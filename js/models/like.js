@@ -20,11 +20,11 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
       */
       if (options && options.loadDetails) {
         _(this).extend($.Deferred());
-        return this.getLike();
+        return this.fetch();
       }
     };
 
-    Like.prototype.getLike = function() {
+    Like.prototype.fetch = function() {
       /*console.debug 'Like#getLike'
       */
       var provider, user;
