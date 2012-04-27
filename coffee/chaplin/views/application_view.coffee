@@ -158,8 +158,8 @@ define [
     disposed: false
 
     dispose: ->
+      ###console.debug 'ApplicationView#dispose'###
       return if @disposed
-      console.debug
 
       @unsubscribeAllEvents()
 

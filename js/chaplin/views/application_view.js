@@ -108,8 +108,8 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     ApplicationView.prototype.disposed = false;
 
     ApplicationView.prototype.dispose = function() {
-      if (this.disposed) return;
-      console.debug;
+      /*console.debug 'ApplicationView#dispose'
+      */      if (this.disposed) return;
       this.unsubscribeAllEvents();
       delete this.title;
       this.disposed = true;
