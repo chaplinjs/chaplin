@@ -43,17 +43,17 @@ define [
     # Wrap a `method` in order to call and `afterMethod`
     wrapMethod = (obj, name) ->
       func = obj[name]
-      #console.debug 'View wrapMethod', obj, name
+      ###console.debug 'View wrapMethod', obj, name###
       # Create a method on the instance which wraps the inherited
       obj[name] = ->
-        #console.debug 'View#' + name + ' wrapper', obj
+        ###console.debug 'View#' + name + ' wrapper', obj###
         # Call the original method
         func.apply obj, arguments
         # Call the corresponding `after-` method
         obj["after#{utils.upcase(name)}"].apply obj, arguments
 
     constructor: ->
-      #console.debug 'View#constructor', this
+      ###console.debug 'View#constructor', this###
 
       # Wrap `initialize` so `afterInitialize` is called afterwards
       # Only wrap if there is an overring method, otherwise we
@@ -72,7 +72,7 @@ define [
       super
 
     initialize: (options) ->
-      #console.debug 'View#initialize', this, 'options', options
+      ###console.debug 'View#initialize', this, 'options', options###
       # No super call here, Backbone’s `initialize` is a no-op
 
       # Initialize subviews
@@ -86,12 +86,12 @@ define [
 
       # Call afterInitialize manually if initialize wasn’t wrapped
       if @initialize is View::initialize
-        #console.debug '\tcall afterInitialize without wrapping'
+        ###console.debug '\tcall afterInitialize without wrapping'###
         @afterInitialize()
 
     # This method is called after a specific `initialize` of a derived class
     afterInitialize: ->
-      #console.debug 'View#afterInitialize', this
+      ###console.debug 'View#afterInitialize', this###
 
       # Render automatically if set by options or instance property
       # `autoRender` option may override `autoRender` instance property
@@ -226,20 +226,20 @@ define [
 
     # Getting or adding a subview
     subview: (name, view) ->
-      #console.debug 'View#subview', name, view
+      ###console.debug 'View#subview', name, view###
       if name and view
         @removeSubview name
         @subviews.push view
         @subviewsByName[name] = view
-        #console.debug '\tadd', name, view
+        ###console.debug '\tadd', name, view###
         view
       else if name
-        #console.debug '\tget', name
+        ###console.debug '\tget', name###
         @subviewsByName[name]
 
     # Removing a subview
     removeSubview: (nameOrView) ->
-      #console.debug 'View#removeSubview nameOrView:', nameOrView
+      ###console.debug 'View#removeSubview nameOrView:', nameOrView###
       return unless nameOrView
 
       if typeof nameOrView is 'string'
@@ -253,7 +253,7 @@ define [
             name = otherName
             break
 
-      #console.debug 'View#removeSubview found name:', name, 'view:', view
+      ###console.debug 'View#removeSubview found name:', name, 'view:', view###
       return unless name and view and view.dispose
 
       # Dispose the view
@@ -296,7 +296,7 @@ define [
     # Main render function
     # This method is bound to the instance in the constructor (see above)
     render: ->
-      #console.debug 'View#render', this
+      ###console.debug 'View#render', this###
 
       return if @disposed
       templateData = @getTemplateData()
@@ -320,7 +320,7 @@ define [
 
     # This method is called after a specific `render` of a derived class
     afterRender: ->
-      #console.debug 'View#afterRender', this
+      ###console.debug 'View#afterRender', this###
 
       # Create a shortcut to the container element
       # The view will be automatically appended to the container when rendered
@@ -338,7 +338,7 @@ define [
           else
             @containerMethod
 
-        #console.debug '\tappend to DOM', containerMethod, container
+        ###console.debug '\tappend to DOM', containerMethod, container###
         $(container)[containerMethod] @el
 
         # Trigger an event
@@ -353,7 +353,7 @@ define [
     disposed: false
 
     dispose: ->
-      #console.debug 'View#dispose', this, 'disposed?', @disposed
+      ###console.debug 'View#dispose', this, 'disposed?', @disposed###
       return if @disposed
 
       # Dispose subviews
@@ -383,7 +383,7 @@ define [
       delete this[prop] for prop in properties
 
       # Finished
-      #console.debug 'View#dispose', this, 'finished'
+      ###console.debug 'View#dispose', this, 'finished'###
       @disposed = true
 
       # Your're frozen when your heart’s not open

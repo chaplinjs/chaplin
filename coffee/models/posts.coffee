@@ -22,7 +22,7 @@ define [
     # Custom fetch function since the Facebook graph is not
     # a REST/JSON API which might be accessed using Ajax
     fetch: =>
-      #console.debug 'Posts#fetch'
+      ###console.debug 'Posts#fetch'###
       user = mediator.user
       return unless user
 
@@ -35,7 +35,7 @@ define [
       facebook.getInfo '/158352134203230/feed', @processPosts
 
     processPosts: (response) =>
-      #console.debug 'Posts#processPosts', response, response.data
+      ###console.debug 'Posts#processPosts', response, response.data###
       return if @disposed
 
       posts = if response and response.data then response.data else []

@@ -12,6 +12,8 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     function ApplicationView(options) {
       if (options == null) options = {};
       this.openLink = __bind(this.openLink, this);
+      /*console.debug 'ApplicationView#constructor', options
+      */
       this.title = options.title;
       this.subscribeEvent('beforeControllerDispose', this.hideOldView);
       this.subscribeEvent('startupController', this.showNewView);
@@ -42,6 +44,8 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     ApplicationView.prototype.adjustTitle = function(context) {
+      /*console.debug 'ApplicationView#adjustTitle', context
+      */
       var subtitle, title;
       title = this.title;
       subtitle = context.controller.title;
@@ -65,6 +69,8 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     ApplicationView.prototype.openLink = function(event) {
+      /*console.debug 'ApplicationView#openLink'
+      */
       var currentHostname, el, external, hostnameRegExp, href;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
@@ -73,29 +79,39 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       currentHostname = location.hostname.replace('.', '\\.');
       hostnameRegExp = RegExp("" + currentHostname + "$", "i");
       external = !hostnameRegExp.test(el.hostname);
-      if (external) return;
+      if (external) {
+        /*console.debug 'ApplicationView#openLink: external link', el.hostname
+        */
+        return;
+      }
       return this.openInternalLink(event);
     };
 
     ApplicationView.prototype.openInternalLink = function(event) {
+      /*console.debug 'ApplicationView#openInternalLink'
+      */
       var el, path;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       path = el.pathname;
       if (!path) return;
       return mediator.publish('!router:route', path, function(routed) {
-        if (routed) return event.preventDefault();
+        /*console.debug 'ApplicationView#openInternalLink routed:', routed
+        */        if (routed) return event.preventDefault();
       });
     };
 
     ApplicationView.prototype.goToHandler = function(event) {
+      /*console.debug 'ApplicationView#goToHandler'
+      */
       var el, path;
       el = event.currentTarget;
       if (event.nodeName === 'A') return;
       path = $(el).data('href');
       if (!path) return;
       return mediator.publish('!router:route', path, function(routed) {
-        if (routed) {
+        /*console.debug 'ApplicationView#goToHandler routed:', routed
+        */        if (routed) {
           return event.preventDefault();
         } else {
           return location.href = path;

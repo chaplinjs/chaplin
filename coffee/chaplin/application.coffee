@@ -20,7 +20,7 @@ define [
     router: null
 
     initialize: ->
-      #console.debug 'Application#initialize'
+      ###console.debug 'Application#initialize'###
 
       # Instantiate the AppController and AppView
       # -----------------------------------------

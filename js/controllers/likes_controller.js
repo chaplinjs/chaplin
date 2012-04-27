@@ -23,14 +23,16 @@ define(['chaplin/controllers/controller', 'models/likes', 'models/like', 'views/
     };
 
     LikesController.prototype.index = function(params) {
-      this.likes = new Likes();
+      /*console.debug 'LikesController#index'
+      */      this.likes = new Likes();
       return this.view = new LikesView({
         collection: this.likes
       });
     };
 
     LikesController.prototype.show = function(params) {
-      this.like = new Like({
+      /*console.debug 'LikesController#show'
+      */      this.like = new Like({
         id: params.id
       }, {
         loadDetails: true

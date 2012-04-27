@@ -16,6 +16,8 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
 
     Like.prototype.initialize = function(attributes, options) {
       Like.__super__.initialize.apply(this, arguments);
+      /*console.debug 'Like#initialize', attributes, options
+      */
       if (options && options.loadDetails) {
         _(this).extend($.Deferred());
         return this.getLike();
@@ -23,16 +25,21 @@ define(['underscore', 'mediator', 'chaplin/models/model'], function(_, mediator,
     };
 
     Like.prototype.getLike = function() {
+      /*console.debug 'Like#getLike'
+      */
       var provider, user;
       user = mediator.user;
       if (!user) return;
       provider = user.get('provider');
       if (provider.name !== 'facebook') return;
+      /*console.debug 'getInfo', @id, @processLike
+      */
       return provider.getInfo(this.id, this.processLike);
     };
 
     Like.prototype.processLike = function(response) {
-      this.set(response);
+      /*console.debug 'Like#processLike', response
+      */      this.set(response);
       return this.resolve();
     };
 

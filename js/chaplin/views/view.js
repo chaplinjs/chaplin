@@ -24,14 +24,18 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     wrapMethod = function(obj, name) {
       var func;
       func = obj[name];
+      /*console.debug 'View wrapMethod', obj, name
+      */
       return obj[name] = function() {
-        func.apply(obj, arguments);
+        /*console.debug 'View#' + name + ' wrapper', obj
+        */        func.apply(obj, arguments);
         return obj["after" + (utils.upcase(name))].apply(obj, arguments);
       };
     };
 
     function View() {
-      if (this.initialize !== View.prototype.initialize) {
+      /*console.debug 'View#constructor', this
+      */      if (this.initialize !== View.prototype.initialize) {
         wrapMethod(this, 'initialize');
       }
       if (this.initialize !== View.prototype.initialize) {
@@ -43,15 +47,20 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     }
 
     View.prototype.initialize = function(options) {
-      this.subviews = [];
+      /*console.debug 'View#initialize', this, 'options', options
+      */      this.subviews = [];
       this.subviewsByName = {};
       if (this.model || this.collection) this.modelBind('dispose', this.dispose);
       if (this.initialize === View.prototype.initialize) {
+        /*console.debug '\tcall afterInitialize without wrapping'
+        */
         return this.afterInitialize();
       }
     };
 
     View.prototype.afterInitialize = function() {
+      /*console.debug 'View#afterInitialize', this
+      */
       var autoRender;
       autoRender = this.options.autoRender != null ? this.options.autoRender : this.autoRender;
       if (autoRender) return this.render();
@@ -141,17 +150,24 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     View.prototype.subview = function(name, view) {
-      if (name && view) {
+      /*console.debug 'View#subview', name, view
+      */      if (name && view) {
         this.removeSubview(name);
         this.subviews.push(view);
         this.subviewsByName[name] = view;
+        /*console.debug '\tadd', name, view
+        */
         return view;
       } else if (name) {
+        /*console.debug '\tget', name
+        */
         return this.subviewsByName[name];
       }
     };
 
     View.prototype.removeSubview = function(nameOrView) {
+      /*console.debug 'View#removeSubview nameOrView:', nameOrView
+      */
       var index, name, otherName, otherView, view, _ref;
       if (!nameOrView) return;
       if (typeof nameOrView === 'string') {
@@ -168,6 +184,8 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
           }
         }
       }
+      /*console.debug 'View#removeSubview found name:', name, 'view:', view
+      */
       if (!(name && view && view.dispose)) return;
       view.dispose();
       index = _(this.subviews).indexOf(view);
@@ -190,6 +208,8 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     View.prototype.render = function() {
+      /*console.debug 'View#render', this
+      */
       var html, templateData, templateFunc;
       if (this.disposed) return;
       templateData = this.getTemplateData();
@@ -202,10 +222,14 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     View.prototype.afterRender = function() {
+      /*console.debug 'View#afterRender', this
+      */
       var container, containerMethod;
       container = this.options.container != null ? this.options.container : this.containerSelector;
       if (container) {
         containerMethod = this.options.containerMethod != null ? this.options.containerMethod : this.containerMethod;
+        /*console.debug '\tappend to DOM', containerMethod, container
+        */
         $(container)[containerMethod](this.el);
         this.trigger('addedToDOM');
       }
@@ -215,6 +239,8 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     View.prototype.disposed = false;
 
     View.prototype.dispose = function() {
+      /*console.debug 'View#dispose', this, 'disposed?', @disposed
+      */
       var prop, properties, view, _i, _j, _len, _len2, _ref;
       if (this.disposed) return;
       _ref = this.subviews;
@@ -231,6 +257,8 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
         prop = properties[_j];
         delete this[prop];
       }
+      /*console.debug 'View#dispose', this, 'finished'
+      */
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };

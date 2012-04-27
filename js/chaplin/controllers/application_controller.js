@@ -23,18 +23,22 @@ define(['underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber']
     }
 
     ApplicationController.prototype.initialize = function() {
-      this.subscribeEvent('matchRoute', this.matchRoute);
+      /*console.debug 'ApplicationController#initialize'
+      */      this.subscribeEvent('matchRoute', this.matchRoute);
       return this.subscribeEvent('!startupController', this.startupController);
     };
 
     ApplicationController.prototype.matchRoute = function(route, params) {
-      return this.startupController(route.controller, route.action, params);
+      /*console.debug 'ApplicationController#matchRoute'
+      */      return this.startupController(route.controller, route.action, params);
     };
 
     ApplicationController.prototype.startupController = function(controllerName, action, params) {
       var controllerFileName, handler, isSameController;
       if (action == null) action = 'index';
       if (params == null) params = {};
+      /*console.debug 'ApplicationController#startupController', controllerName, action, params
+      */
       if (params.changeURL !== false) params.changeURL = true;
       if (params.forceStartup !== true) params.forceStartup = false;
       isSameController = !params.forceStartup && this.currentControllerName === controllerName && this.currentAction === action && (!this.currentParams || _(params).isEqual(this.currentParams));
@@ -60,6 +64,8 @@ define(['underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber']
       this.currentAction = action;
       this.currentParams = params;
       this.adjustURL(controller, params);
+      /*console.debug 'publish startupController'
+      */
       return mediator.publish('startupController', {
         previousControllerName: this.previousControllerName,
         controller: this.currentController,

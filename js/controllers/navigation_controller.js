@@ -14,6 +14,8 @@ define(['chaplin/controllers/controller', 'models/navigation', 'views/navigation
 
     NavigationController.prototype.initialize = function() {
       NavigationController.__super__.initialize.apply(this, arguments);
+      /*console.debug 'NavigationController#initialize'
+      */
       this.navigation = new Navigation();
       return this.view = new NavigationView({
         model: this.navigation

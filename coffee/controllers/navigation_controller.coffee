@@ -10,6 +10,6 @@ define [
 
     initialize: ->
       super
-      #console.debug 'NavigationController#initialize'
+      ###console.debug 'NavigationController#initialize'###
       @navigation = new Navigation()
       @view = new NavigationView model: @navigation

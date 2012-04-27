@@ -8,7 +8,7 @@ define [
   class Like extends Model
     initialize: (attributes, options) ->
       super
-      #console.debug 'Like#initialize', attributes, options
+      ###console.debug 'Like#initialize', attributes, options###
 
       if options and options.loadDetails
 
@@ -18,7 +18,7 @@ define [
         @getLike()
 
     getLike: ->
-      #console.debug 'Like#getLike'
+      ###console.debug 'Like#getLike'###
 
       user = mediator.user
       return unless user
@@ -26,11 +26,11 @@ define [
       provider = user.get 'provider'
       return unless provider.name is 'facebook'
 
-      #console.debug 'getInfo', @id, @processLike
+      ###console.debug 'getInfo', @id, @processLike###
       provider.getInfo @id, @processLike
 
     processLike: (response) =>
-      #console.debug 'Like#processLike', response
+      ###console.debug 'Like#processLike', response###
       @set response
       @resolve()
 
