@@ -51,6 +51,7 @@ define [
     disposed: false
 
     dispose: ->
+      ###console.debug 'Application#dispose'###
       return if @disposed
 
       properties = ['applicationController', 'applicationView', 'router']

@@ -22,16 +22,14 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     Google.prototype.name = 'google';
 
     Google.prototype.load = function() {
-      /*console.debug 'Google#load'
-      */      if (this.state() === 'resolved' || this.loading) return;
+      if (this.state() === 'resolved' || this.loading) return;
       this.loading = true;
       window.googleClientLoaded = this.loadHandler;
       return utils.loadLib('https://apis.google.com/js/client.js?onload=googleClientLoaded', null, this.reject);
     };
 
     Google.prototype.loadHandler = function() {
-      /*console.debug 'Google#loadHandler', @isLoaded()
-      */      try {
+      try {
         delete window.googleClientLoaded;
       } catch (error) {
         window.googleClientLoaded = void 0;
@@ -44,8 +42,7 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     };
 
     Google.prototype.triggerLogin = function(loginContext) {
-      /*console.debug 'Google#triggerLogin', loginContext
-      */      return gapi.auth.authorize({
+      return gapi.auth.authorize({
         client_id: clientId,
         scope: scopes,
         immediate: false
@@ -53,8 +50,7 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     };
 
     Google.prototype.loginHandler = function(loginContext, authResponse) {
-      /*console.debug 'Google#loginHandler', loginContext, authResponse
-      */      if (authResponse) {
+      if (authResponse) {
         mediator.publish('loginSuccessful', {
           provider: this,
           loginContext: loginContext
@@ -72,8 +68,7 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     };
 
     Google.prototype.getLoginStatus = function(callback) {
-      /*console.debug 'Google#getLoginStatus immediate: true'
-      */      return gapi.auth.authorize({
+      return gapi.auth.authorize({
         client_id: clientId,
         scope: scopes,
         immediate: true

@@ -122,23 +122,19 @@ define [
 
     # When an item is added, create a new view and insert it
     itemAdded: (item, collection, options = {}) =>
-      ###console.debug 'CollectionView#itemAdded', this, item.cid, item###
       @renderAndInsertItem item, options.index
 
     # When an item is removed, remove the corresponding view from DOM and caches
     itemRemoved: (item) =>
-      ###console.debug 'CollectionView#itemRemoved', this, item.cid, item###
       @removeViewForItem item
 
     # When all items are resetted, render all anew
     itemsResetted: =>
-      ###console.debug 'CollectionView#itemsResetted', this, @collection.length, @collection.models###
       @renderAllItems()
 
     # Main render method (should be called only once)
     render: ->
       super
-      ###console.debug 'CollectionView#render', this, @collection###
 
       # Set the $list property
       @$list = if @listSelector then @$(@listSelector) else @$el
@@ -151,7 +147,6 @@ define [
 
     initFallback: ->
       return unless @fallbackSelector
-      ###console.debug 'CollectionView#initFallback', this, @el###
 
       # Set the $fallback property
       @$fallback = @$(@fallbackSelector)
@@ -172,7 +167,6 @@ define [
           # Assume it is synced
           true
       )
-      ###console.debug 'CollectionView#showHideFallback', this, 'visibleItems', @visibleItems.length, 'synced', @collection.isSynced?(), '\n\tvisible?', visible###
       @$fallback.css 'display', if visible then 'block' else 'none'
 
     # Return whether the collection is synced
@@ -203,7 +197,6 @@ define [
       # show up in this case, you need to overwrite this method to
       # disable the check.
       visible = @collection.length is 0 and @collection.isSyncing()
-      ###console.debug 'CollectionView#showHideLoadingIndicator', this, 'collection', @collection.length, 'syncing?', @collection.isSyncing(), '\n\tvisible?', visible###
       @$loading.css 'display', if visible then 'block' else 'none'
 
     # Filtering
@@ -213,8 +206,6 @@ define [
     # Expects an interator function as parameter.
     # Hides all items for which the iterator returns false.
     filter: (filterer) ->
-      ###console.debug 'CollectionView#filter', this, @collection###
-
       # Save the new filterer function
       @filterer = filterer
 
@@ -232,11 +223,9 @@ define [
           view = @viewsByCid[item.cid]
           # A view has not been created for this item yet
           unless view
-            ###console.debug 'CollectionView#filter: no view for', item.cid, item###
-            throw new Error 'no view found for ' + item.cid
-            continue
+            throw new Error 'CollectionView#filter: ' +
+              "no view found for #{item.cid}"
 
-          ###console.debug item, item.cid, view###
           view.$el
             .stop(true, true)
             .css('display', if included then '' else 'none')
@@ -246,7 +235,6 @@ define [
           @updateVisibleItems item, included, false
 
       # Trigger a combined `visibilityChange` event
-      ###console.debug 'CollectionView#filter', 'visibleItems', @visibleItems.length###
       @trigger 'visibilityChange', @visibleItems
 
     # Item view rendering
@@ -254,9 +242,7 @@ define [
 
     # Render and insert all items
     renderAllItems: =>
-
       items = @collection.models
-      ###console.debug 'CollectionView#renderAllItems', items.length###
 
       # Reset visible items
       @visibleItems = []
@@ -266,46 +252,38 @@ define [
       for item in items
         view = @viewsByCid[item.cid]
         if view
-          ###console.debug '\tview for', item.cid, 'remains'###
+          # View remains
           remainingViewsByCid[item.cid] = view
 
       # Remove old views of items not longer in the list
       for own cid, view of @viewsByCid
-        ###console.debug '\tcheck', cid, view, 'remaining?', cid of remainingViewsByCid###
+        # Check if the view remains
         unless cid of remainingViewsByCid
-          ###console.debug '\t\tremove view for', cid###
+          # Remove the view
           @removeView cid, view
 
       # Re-insert remaining items; render and insert new items
-      ###console.debug '\tbuild up list again'###
       for item, index in items
-        # View already created?
+        # Check if view was already created
         view = @viewsByCid[item.cid]
         if view
           # Re-insert the view
-          ###console.debug '\tre-insert', item.cid###
           @insertView item, view, index, 0
         else
           # Create a new view, render and insert it
-          ###console.debug '\trender and insert new view for', item.cid###
           @renderAndInsertItem item, index
 
       # If no view was created, trigger `visibilityChange` event manually
       unless items.length
-        ###console.debug 'CollectionView#renderAllItems', 'visibleItems', @visibleItems.length###
         @trigger 'visibilityChange', @visibleItems
 
     # Render the view for an item
     renderAndInsertItem: (item, index) ->
-      ###console.debug 'CollectionView#renderAndInsertItem', item.cid, item###
-
       view = @renderItem item
       @insertView item, view, index
 
     # Instantiate and render an item using the viewsByCid hash as a cache
     renderItem: (item) ->
-      ###console.debug 'CollectionView#renderItem', item.cid, item###
-
       # Get the existing view
       view = @viewsByCid[item.cid]
 
@@ -322,21 +300,17 @@ define [
 
     # Inserts a view into the list at the proper position
     insertView: (item, view, index = null, animationDuration = @animationDuration) ->
-      ###console.debug 'CollectionView#insertView', item, view, index###
-
       # Get the insertion offset
       position = if typeof index is 'number'
         index
       else
         @collection.indexOf item
-      ###console.debug '\titem', item.id, 'position', position, 'length', @collection.length###
 
       # Is the item included in the filter?
       included = if typeof @filterer is 'function'
           @filterer item, position
         else
           true
-      ###console.debug '\tincluded?', included###
 
       # Get the view’s top element
       viewEl = view.el
@@ -355,21 +329,17 @@ define [
       # Get the children which originate from item views
       children = $list.children @itemSelector
       length = children.length
-      ###console.debug '\tview', viewEl.id, 'position', position, 'children', length###
 
       if length is 0 or position is length
         # Insert at the end
-        #console.debug '\t\tinsert at the end'
         $list.append viewEl
       else
         # Insert at the right position
         if position is 0
           $next = children.eq position
-          #console.debug '\t\tinsert before', $next.attr('id')
           $next.before viewEl
         else
           $previous = children.eq position - 1
-          ###console.debug '\t\tinsert after', $previous.attr('id')###
           $previous.after viewEl
 
       # Tell the view that it was added to the DOM
@@ -384,8 +354,6 @@ define [
 
     # Remove the view for an item
     removeViewForItem: (item) ->
-      ###console.debug 'CollectionView#removeViewForItem', this, item###
-
       # Remove item from visibleItems list, trigger a `visibilityChange` event
       @updateVisibleItems item, false
 
@@ -396,8 +364,6 @@ define [
 
     # Remove a view
     removeView: (cid, view) ->
-      ###console.debug 'CollectionView#removeView', cid, view###
-
       # Dispose the view
       view.dispose()
 
@@ -414,7 +380,6 @@ define [
 
       visibleItemsIndex = _(@visibleItems).indexOf item
       includedInVisibleItems = visibleItemsIndex > -1
-      ###console.debug 'CollectionView#updateVisibleItems', item.id, 'included?', includedInFilter###
 
       if includedInFilter and not includedInVisibleItems
         # Add item to the visible items list
@@ -425,8 +390,6 @@ define [
         # Remove item from the visible items list
         @visibleItems.splice visibleItemsIndex, 1
         visibilityChanged = true
-
-      ###console.debug '\tvisibilityChanged?', visibilityChanged, 'visibleItems', @visibleItems.length, 'triggerEvent?', triggerEvent###
 
       # Trigger a `visibilityChange` event if the visible items changed
       if visibilityChanged and triggerEvent
@@ -442,7 +405,7 @@ define [
       return if @disposed
 
       # Remove all listeners registered in this context
-      @collection.off null, null, @
+      @collection.off null, null, this
 
       # Dispose all item views
       view.dispose() for own cid, view of @viewsByCid

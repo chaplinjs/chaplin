@@ -29,8 +29,7 @@ define(['underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber']
     };
 
     ApplicationController.prototype.matchRoute = function(route, params) {
-      /*console.debug 'ApplicationController#matchRoute'
-      */      return this.startupController(route.controller, route.action, params);
+      return this.startupController(route.controller, route.action, params);
     };
 
     ApplicationController.prototype.startupController = function(controllerName, action, params) {
@@ -64,8 +63,6 @@ define(['underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber']
       this.currentAction = action;
       this.currentParams = params;
       this.adjustURL(controller, params);
-      /*console.debug 'publish startupController'
-      */
       return mediator.publish('startupController', {
         previousControllerName: this.previousControllerName,
         controller: this.currentController,
@@ -92,7 +89,8 @@ define(['underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber']
     ApplicationController.prototype.disposed = false;
 
     ApplicationController.prototype.dispose = function() {
-      if (this.disposed) return;
+      /*console.debug 'ApplicationController#dispose
+      */      if (this.disposed) return;
       this.unsubscribeAllEvents();
       this.disposed = true;
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;

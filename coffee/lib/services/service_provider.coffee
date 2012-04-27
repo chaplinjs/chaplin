@@ -29,13 +29,13 @@ define [
     disposed: false
 
     dispose: ->
+      ###console.debug 'ServiceProvider#dispose'###
       return if @disposed
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
       # Finished
-      ###console.debug 'ServiceProvider#dispose', this, 'finished'###
       @disposed = true
 
       # You're frozen when your heart’s not open

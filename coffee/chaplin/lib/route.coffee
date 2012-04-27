@@ -25,8 +25,6 @@ define [
       @createRegExp()
 
     createRegExp: ->
-      ###console.debug 'Route#createRegExp', @pattern###
-
       if _.isRegExp(@pattern)
         @regExp = @pattern
         return
@@ -42,8 +40,6 @@ define [
       @regExp = ///^#{pattern}(?=\?|$)///
 
     addParamName: (match, paramName) =>
-      ###console.debug 'Route#addParamName', match, paramName###
-
       @paramNames ?= []
       # Test if parameter name is reserved
       if _(reservedParams).include(paramName)
@@ -85,8 +81,6 @@ define [
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` and `additionalParams` arguments are optional
     buildParams: (path, options) ->
-      ###console.debug 'Route#buildParams', path, options###
-
       params = {}
 
       # Add params from query string

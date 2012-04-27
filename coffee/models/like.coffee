@@ -15,9 +15,11 @@ define [
         # Mixin a Deferred
         _(this).extend $.Deferred()
 
-        @getLike()
+        @fetch()
 
-    getLike: ->
+    # Custom fetch function since the Facebook graph is not
+    # a REST/JSON API which might be accessed using Ajax
+    fetch: ->
       ###console.debug 'Like#getLike'###
 
       user = mediator.user
@@ -25,8 +27,6 @@ define [
 
       provider = user.get 'provider'
       return unless provider.name is 'facebook'
-
-      ###console.debug 'getInfo', @id, @processLike###
       provider.getInfo @id, @processLike
 
     processLike: (response) =>

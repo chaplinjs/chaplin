@@ -107,7 +107,6 @@ define [
     # handler to the script. In jQuery, a proper error handler only works
     # for same-origin scripts which can be loaded via XHR.
     loadLib: (url, success, error, timeout = 7500) ->
-      ###console.debug 'utils.loadLib', url###
       head = document.head or document.getElementsByTagName('head')[0] or
         document.documentElement
       script = document.createElement 'script'
@@ -204,8 +203,6 @@ define [
       target = options.target or host
       onDeferral = options.onDeferral
 
-      ###console.debug 'utils.deferMethods', deferred, methods, host, target###
-
       # Hash with named functions
       methodsHash = {}
 
@@ -241,20 +238,16 @@ found on host #{host}"
     # Defaults to `deferred`. The optional `onDeferral` function to after
     # original function is registered as a done callback.
     createDeferredFunction: (deferred, func, context = deferred, onDeferral) ->
-      ###console.debug 'utils.createWrappedFunction', 'deferred:', deferred, 'func:', func, 'context:', context, 'onDeferral:', onDeferral###
       # Return a wrapper function
       ->
         # Save the original arguments
         args = arguments
         if deferred.state() is 'resolved'
           # Deferred already resolved, call func immediately
-          ###console.debug 'utils.createDeferredFunction: wrapped', name, 'called -> already resolved, call immediately'###
           func.apply context, args
         else
-          ###console.debug 'utils.createDeferredFunction: wrapped', name, 'called -> defer'###
           # Register a done handler
           deferred.done ->
-            ###console.debug 'utils.createDeferredFunction: Deferred done, call', name, args###
             func.apply context, args
           # Invoke the onDeferral callback
           if typeof onDeferral is 'function'
@@ -308,20 +301,16 @@ found on host #{host}"
 
       accumulatedSuccess = ->
         handlers = acc.successHandlers[id]
-        ###console.debug 'createAccumulator: accumulatedSuccess', id, handlers###
         handler.apply(this, arguments) for handler in handlers if handlers
         cleanup()
 
       accumulatedError = ->
         handlers = acc.errorHandlers[id]
-        ###console.debug 'createAccumulator: accumulatedError', id, handlers###
         handler.apply(this, arguments) for handler in handlers if handlers
         cleanup()
 
       # Resulting function
       (data, success, error, rest...) ->
-        ###console.debug 'accumulator', name, id, 'success:', success, 'error:', error###
-
         # Store data, success and error handlers
         if data
           acc.collectedData[id] = (acc.collectedData[id] or []).concat(data)
@@ -336,7 +325,6 @@ found on host #{host}"
         return if acc.handles[id]
 
         handler = (options = options) ->
-          ###console.debug 'createAccumulator: handler fired'###
           return unless collectedData = acc.collectedData[id]
           # Call the original function
           args = [
@@ -362,7 +350,6 @@ found on host #{host}"
     # You may pass a `loginContext` for the UI context where
     # the login was triggered.
     afterLogin: (context, func, eventType = 'login', args...) ->
-      ###console.debug 'utils.afterLogin', context, func, eventType, args###
       if mediator.user
         # All fine, just pass through
         func.apply context, args
@@ -377,8 +364,6 @@ found on host #{host}"
         mediator.subscribe eventType, loginHandler
 
     deferMethodsUntilLogin: (obj, methods, eventType = 'login') ->
-      ###console.debug 'utils.deferMethodsUntilLogin', arguments...###
-
       methods = [methods] if typeof methods is 'string'
 
       for name in methods
@@ -386,14 +371,12 @@ found on host #{host}"
         unless typeof func is 'function'
           throw new TypeError "utils.deferMethodsUntilLogin: method #{name}
 not found"
-        ###console.debug '\twrap', obj, name###
         obj[name] = _(utils.afterLogin).bind null, obj, func, eventType
 
     # Delegates to afterLogin, but triggers the login dialog if the user
     # isn't logged in
     # and calls preventDefault if an event object is passed.
     ensureLogin: (context, func, loginContext, eventType = 'login', args...) ->
-      ###console.debug 'utils.ensureLogin', context, func, loginContext, args###
       utils.afterLogin context, func, eventType, args...
 
       unless mediator.user
@@ -415,8 +398,6 @@ not found"
     # `eventType`: The global PubSub event the actual method call will wait for.
     #              Defaults to 'login'.
     ensureLoginForMethods: (obj, methods, loginContext, eventType = 'login') ->
-      ###console.debug 'utils.ensureLoginForMethods', obj, methods, loginContext###
-
       # Transform a single method string into a list
       methods = [methods] if typeof methods is 'string'
 
@@ -425,7 +406,6 @@ not found"
         unless typeof func is 'function'
           throw new TypeError "utils.ensureLoginForMethods: method #{name}
 not found"
-        ###console.debug '\twrap', obj, name, loginContext###
         obj[name] = _(utils.ensureLogin).bind(
           null, obj, func, loginContext, eventType
         )
