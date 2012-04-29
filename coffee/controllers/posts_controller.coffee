@@ -1,11 +1,11 @@
 define [
-  'chaplin/controllers/controller',
+  'controllers/application_controller',
   'models/posts',
   'views/posts_view'
-], (Controller, Posts, PostsView) ->
+], (ApplicationController, Posts, PostsView) ->
   'use strict'
 
-  class PostsController extends Controller
+  class PostsController extends ApplicationController
 
     title: 'Facebook Wall Posts'
     historyURL: 'posts'

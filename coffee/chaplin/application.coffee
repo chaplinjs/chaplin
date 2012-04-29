@@ -1,22 +1,22 @@
 define [
   'mediator',
-  'chaplin/controllers/application_controller',
-  'chaplin/views/application_view',
+  'chaplin/dispatcher',
+  'chaplin/views/layout'
   'chaplin/lib/router'
-], (mediator, ApplicationController, ApplicationView, Router) ->
+], (mediator, Dispatcher, Layout, Router) ->
   'use strict'
 
   # The application bootstrapper
   # ----------------------------
 
-  class Application
+  class ChaplinApplication
 
     # The site title used in the document title
     title: ''
 
     # The application instantiates these three core modules
-    applicationController: null
-    applicationView: null
+    dispatcher: null
+    layout: null
     router: null
 
     initialize: ->
@@ -27,11 +27,11 @@ define [
 
       # Save the references for testing introspection only.
       # Module should communicate with each other via Pub/Sub.
-      @applicationController = new ApplicationController()
-      @applicationView = new ApplicationView title: @title
+      @dispatcher = new Dispatcher()
+      #r @layout = new Layout title: @title
 
-    # Instantiate the router
-    # ----------------------
+    # Instantiate the dispatcher
+    # --------------------------
 
     # Pass the function typically returned by routes.coffee
     initRouter: (routes, options) ->
@@ -54,7 +54,7 @@ define [
       ###console.debug 'Application#dispose'###
       return if @disposed
 
-      properties = ['applicationController', 'applicationView', 'router']
+      properties = ['dispatcher', 'layout', 'router']
       for prop in properties
         this[prop].dispose()
         delete this[prop]

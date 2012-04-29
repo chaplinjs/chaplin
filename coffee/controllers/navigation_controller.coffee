@@ -1,12 +1,12 @@
 define [
-  'chaplin/controllers/controller',
+  'controllers/application_controller',
   'models/navigation',
   'views/navigation_view'
-], (Controller, Navigation, NavigationView) ->
+], (ApplicationController, Navigation, NavigationView) ->
 
   'use strict'
 
-  class NavigationController extends Controller
+  class NavigationController extends ApplicationController
 
     initialize: ->
       super
