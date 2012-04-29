@@ -1,10 +1,10 @@
 define [
-  'chaplin/controllers/controller',
+  'controllers/application_controller',
   'views/sidebar_view'
-], (Controller, SidebarView) ->
+], (ApplicationController, SidebarView) ->
   'use strict'
 
-  class SidebarController extends Controller
+  class SidebarController extends ApplicationController
 
     initialize: ->
       @view = new SidebarView()

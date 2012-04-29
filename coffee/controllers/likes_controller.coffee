@@ -1,11 +1,11 @@
 define [
-  'chaplin/controllers/controller',
+  'controllers/application_controller',
   'models/likes', 'models/like',
   'views/likes_view', 'views/full_like_view'
-], (Controller, Likes, Like, LikesView, FullLikeView) ->
+], (ApplicationController, Likes, Like, LikesView, FullLikeView) ->
   'use strict'
 
-  class LikesController extends Controller
+  class LikesController extends ApplicationController
 
     title: 'Your Likes'
     historyURL: (params) ->

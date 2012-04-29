@@ -1,13 +1,14 @@
 define [
-  'mediator', 'lib/utils',
-  'chaplin/controllers/controller',
+  'mediator',
+  'lib/utils',
+  'controllers/application_controller',
   'models/user',
   'lib/services/facebook',
   'views/login_view'
-], (mediator, utils, Controller, User, Facebook, LoginView) ->
+], (mediator, utils, ApplicationController, User, Facebook, LoginView) ->
   'use strict'
 
-  class SessionController extends Controller
+  class SessionController extends ApplicationController
     # Service provider instances as static properties
     # This just hardcoded here to avoid async loading of service providers.
     # In the end you might want to do this.
@@ -147,4 +148,3 @@ define [
       mediator.user.dispose()
       # Nullify property on the mediator
       mediator.setUser null
-  
