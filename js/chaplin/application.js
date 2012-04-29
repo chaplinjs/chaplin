@@ -3,28 +3,28 @@
 define(['mediator', 'chaplin/dispatcher', 'chaplin/views/layout', 'chaplin/lib/router'], function(mediator, Dispatcher, Layout, Router) {
   'use strict';
 
-  var Core;
-  return Core = (function() {
+  var ChaplinApplication;
+  return ChaplinApplication = (function() {
 
-    Core.name = 'Core';
+    ChaplinApplication.name = 'ChaplinApplication';
 
-    function Core() {}
+    function ChaplinApplication() {}
 
-    Core.prototype.title = '';
+    ChaplinApplication.prototype.title = '';
 
-    Core.prototype.dispatcher = null;
+    ChaplinApplication.prototype.dispatcher = null;
 
-    Core.prototype.layout = null;
+    ChaplinApplication.prototype.layout = null;
 
-    Core.prototype.router = null;
+    ChaplinApplication.prototype.router = null;
 
-    Core.prototype.initialize = function() {
+    ChaplinApplication.prototype.initialize = function() {
       /*console.debug 'Application#initialize'
       */
       return this.dispatcher = new Dispatcher();
     };
 
-    Core.prototype.initRouter = function(routes, options) {
+    ChaplinApplication.prototype.initRouter = function(routes, options) {
       this.router = new Router(options);
       if (typeof routes === "function") {
         routes(this.router.match);
@@ -32,9 +32,9 @@ define(['mediator', 'chaplin/dispatcher', 'chaplin/views/layout', 'chaplin/lib/r
       return this.router.startHistory();
     };
 
-    Core.prototype.disposed = false;
+    ChaplinApplication.prototype.disposed = false;
 
-    Core.prototype.dispose = function() {
+    ChaplinApplication.prototype.dispose = function() {
       /*console.debug 'Application#dispose'
       */
 
@@ -52,7 +52,7 @@ define(['mediator', 'chaplin/dispatcher', 'chaplin/views/layout', 'chaplin/lib/r
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
-    return Core;
+    return ChaplinApplication;
 
   })();
 });

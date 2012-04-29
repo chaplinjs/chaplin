@@ -2,7 +2,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['mediator', 'chaplin/core', 'views/application_layout', 'controllers/session_controller', 'controllers/navigation_controller', 'controllers/sidebar_controller', 'routes'], function(mediator, ChaplinCore, ApplicationLayout, SessionController, NavigationController, SidebarController, routes) {
+define(['mediator', 'chaplin/application', 'views/application_layout', 'controllers/session_controller', 'controllers/navigation_controller', 'controllers/sidebar_controller', 'routes'], function(mediator, ChaplinApplication, ApplicationLayout, SessionController, NavigationController, SidebarController, routes) {
   'use strict';
 
   var ExampleApplication;
@@ -34,5 +34,5 @@ define(['mediator', 'chaplin/core', 'views/application_layout', 'controllers/ses
 
     return ExampleApplication;
 
-  })(ChaplinCore);
+  })(ChaplinApplication);
 });
