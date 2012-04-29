@@ -1,16 +1,19 @@
 ![Chaplin](http://s3.amazonaws.com/imgly_production/3401027/original.png)
 
-# A Sample Application Architecture Using Backbone.js
+# An Application Architecture Using Backbone.js
 
 ## Introduction
 
 Chaplin is an example architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
+* [Current Version: 0.4](#toc-current-version)
+* [Upcoming Version: Chaplin as a Library](#toc-upcoming-version)
+* [Stay Tuned for Updates](#toc-updates)
 * [Key Features](#toc-key-features)
 * [Motivation](#toc-motivation)
 * [Technology Stack](#toc-technology-stack)
-* [The Example Application](#toc-example-application)
-* [The Example Twitter Client](#toc-example-twitter)
+* [Example: The Facebook Likes Browser](#toc-example-facebook)
+* [Example: The Twitter Client](#toc-example-twitter)
 * [The Architecture in Detail](#toc-architecture-in-detail)
 * [Application](#toc-application)
 * [Mediator and Publish/Subscribe](#toc-mediator-and-pub-sub)
@@ -23,9 +26,36 @@ Chaplin is an example architecture for JavaScript applications using the [Backbo
 * [Memory Management and Object Disposal](#toc-memory-management)
 * [Application Glue and Dependency Management](#toc-application-glue)
 * [Conclusions](#toc-conclusions)
-* [Changelog](https://github.com/moviepilot/chaplin/blob/master/CHANGELOG.md)
 * [The Cast](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-cast)
 * [The Producers](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-producers)
+
+## <a name="toc-upcoming-version">Current Version</a>
+
+The current stable version is **0.3**, released on 2012-03-23.
+
+To use the stable version, please clone the repository and [check out the tag 0.3](https://github.com/moviepilot/chaplin/tree/0.3).
+
+See also the [Changelog](https://github.com/moviepilot/chaplin/blob/master/CHANGELOG.md).
+
+## <a name="toc-current-version">Upcoming Version: Chaplin as a Library</a>
+
+While the stable version is merely an example application structure, our goal is to generalize Chaplin into a separate, reusable and unit-tested library.
+
+There’s a major rewrite going on and the `master` branch already reflects these changes. We’re working on several topics:
+
+- Improving and generalizing the Chaplin architecture
+- Writing tests for all Chaplin core components
+- Writing an up-to-date documentation and writing a class & method reference
+- Creating a boilerplate app, outsourcing the current application examples
+
+How about joining us? You might also have a look at the [issue discussions](https://github.com/moviepilot/chaplin/issues) about changes on the structure. There is also a [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
+).
+
+## <a name="toc-updates">Stay tuned for updates</a>
+
+[Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
+
+---
 
 ## <a name="toc-key-features">Key Features</a>
 
@@ -81,7 +111,7 @@ Since this example isn’t about building and deployment, it has no such depende
 r.js -o name=application out=built.js paths.text=vendor/require-text-1.0.6 baseUrl=.
 ```
 
-## <a name="toc-example-application">The Example Application: Facebook Likes Browser</a>
+## <a name="toc-example-facebook">Example: The Facebook Likes Browser</a>
 
 While traditional site login using e-mail and password is still around, single sign-on gained popularity. The example application features a client-side OAuth 2.0 login with [Facebook Connect](https://developers.facebook.com/docs/reference/javascript/FB.login/). Facebook is just a sample service provider. On moviepilot.com, we’re also using the [Google APIs Client Library](http://code.google.com/p/google-api-javascript-client/). We have experimented with [Twitter Anywhere](https://dev.twitter.com/docs/anywhere/welcome) which provides a client-side login but doesn’t support OAuth 2.0. (Moviepilot.com allows you to log in with Twitter, but it’s an old-school OAuth 1.0 server-side login.)
 
@@ -97,17 +127,15 @@ After successful login, your Facebook likes are fetched from the Open Graph and 
 
 Besides the likes browsers, there’s a second screen which displays some latest posts on the moviepilot.com Facebook page. This is just another controller in order to demonstrate the change between controllers with proper routing and cleanup.
 
-## <a name="toc-example-twitter">The Example Application: Twitter client</a>
-The example uses twitter authentication to display user's feed and to create
-new tweets. It uses [brunch](http://brunch.io) for assembling files & assets.
+## <a name="toc-example-twitter">Example: The Twitter Client</a>
 
-To run it on your machine, just clone the repository and run server on `public`
-directory (you can use one brunch provides with `brunch w -s`).
+The example uses twitter authentication to display user's feed and to create new tweets. It uses [brunch](http://brunch.io) for assembling files & assets.
+
+To run it on your machine, just clone the repository and run server on `public` directory (you can use one brunch provides with `brunch w -s`).
 
 See [source code](https://github.com/brunch/twitter) for more info.
 
-Live edition of the example is available at
-[http://brunch.io/twitter/public/](http://brunch.io/twitter/public/).
+Live edition of the example is available at [http://brunch.io/twitter/public/](http://brunch.io/twitter/public/).
 
 ## <a name="toc-architecture-in-detail">The Architecture in Detail</a>
 
