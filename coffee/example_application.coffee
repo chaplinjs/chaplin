@@ -1,16 +1,16 @@
 define [
   'mediator',
-  'chaplin/application',
+  'chaplin/core',
   'controllers/session_controller',
   'controllers/navigation_controller',
   'controllers/sidebar_controller',
   'routes'
-], (mediator, Application, SessionController, NavigationController, SidebarController, routes) ->
+], (mediator, ChaplinCore, ApplicationLayout, SessionController, NavigationController, SidebarController, routes) ->
   'use strict'
 
   # The application bootstrapper.
   # You should find a better name for your application.
-  class ExampleApplication extends Application
+  class ExampleApplication extends ChaplinCore
 
     # Set your application name here so the document title is set to
     # “Controller title – Site title” (see ApplicationView#adjustTitle)
