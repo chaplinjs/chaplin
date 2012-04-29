@@ -169,9 +169,6 @@ define [
       )
       @$fallback.css 'display', if visible then 'block' else 'none'
 
-    # Return whether the collection is synced
-    collectionIsSynced: ->
-
     # Loading indicator
     # -----------------
 

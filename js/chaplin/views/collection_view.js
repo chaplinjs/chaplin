@@ -109,8 +109,6 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       return this.$fallback.css('display', visible ? 'block' : 'none');
     };
 
-    CollectionView.prototype.collectionIsSynced = function() {};
-
     CollectionView.prototype.initLoadingIndicator = function() {
       if (!(this.loadingSelector && typeof this.collection.isSyncing === 'function')) {
         return;
