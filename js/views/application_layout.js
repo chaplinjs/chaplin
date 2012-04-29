@@ -2,21 +2,21 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['chaplin/models/model'], function(Model) {
+define(['chaplin/views/layout'], function(Layout) {
   'use strict';
 
-  var User;
-  return User = (function(_super) {
+  var ApplicationLayout;
+  return ApplicationLayout = (function(_super) {
 
-    __extends(User, _super);
+    __extends(ApplicationLayout, _super);
 
-    User.name = 'User';
+    ApplicationLayout.name = 'ApplicationLayout';
 
-    function User() {
-      return User.__super__.constructor.apply(this, arguments);
+    function ApplicationLayout() {
+      return ApplicationLayout.__super__.constructor.apply(this, arguments);
     }
 
-    return User;
+    return ApplicationLayout;
 
-  })(Model);
+  })(Layout);
 });
