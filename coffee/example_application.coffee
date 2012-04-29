@@ -1,6 +1,7 @@
 define [
   'mediator',
   'chaplin/core',
+  'views/application_layout',
   'controllers/session_controller',
   'controllers/navigation_controller',
   'controllers/sidebar_controller',
@@ -22,9 +23,15 @@ define [
       # This creates the ApplicationController and ApplicationView
       super
 
+      # Instantiate layout
+      # ------------------
+
+      @layout = new ApplicationLayout title: @title
+
+
       # Instantiate common controllers
       # ------------------------------
-      
+
       # These controllers are active during the whole application runtime.
       new SessionController()
       new NavigationController()

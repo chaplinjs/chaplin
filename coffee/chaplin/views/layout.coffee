@@ -7,7 +7,7 @@ define [
 ], ($, _, mediator, utils, Subscriber) ->
   'use strict'
 
-  class ApplicationView # This class does not extend View
+  class Layout # This class does not extend View
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
@@ -16,7 +16,7 @@ define [
     title: ''
 
     constructor: (options = {}) ->
-      ###console.debug 'ApplicationView#constructor', options###
+      ###console.debug 'Layout#constructor', options###
 
       @title = options.title
 
@@ -158,7 +158,7 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'ApplicationView#dispose'###
+      ###console.debug 'Layout#dispose'###
       return if @disposed
 
       @unsubscribeAllEvents()
