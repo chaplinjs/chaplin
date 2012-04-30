@@ -15,7 +15,7 @@ define [
     _(@prototype).extend Subscriber
 
     # Use the Chaplin model per default, not Backbone.Model
-    model: Model
+    model: ChaplinModel
 
     # Creates a new deferred and mixes it into the collection
     # This method can be called multiple times to reset the

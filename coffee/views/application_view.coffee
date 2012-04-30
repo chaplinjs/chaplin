@@ -5,7 +5,7 @@ define [
 ], (Handlebars, ChaplinView) ->
   'use strict'
 
-  class View extends ChaplinView
+  class ApplicationView extends ChaplinView
 
     getTemplateFunction: ->
 

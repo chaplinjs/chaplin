@@ -1,10 +1,10 @@
 define [
-  'views/view',
+  'views/application_view',
   'text!templates/compact_like.hbs'
-], (ChaplinView, template) ->
+], (ApplicationView, template) ->
   'use strict'
 
-  class CompactLikeView extends ChaplinView
+  class CompactLikeView extends ApplicationView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

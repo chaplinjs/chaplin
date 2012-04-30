@@ -54,11 +54,11 @@ define [
       # Wrap `initialize` so `afterInitialize` is called afterwards
       # Only wrap if there is an overring method, otherwise we
       # call the after method directly
-      unless @initialize is View::initialize
+      unless @initialize is ChaplinView::initialize
         wrapMethod this, 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
-      unless @initialize is View::initialize
+      unless @initialize is ChaplinView::initialize
         wrapMethod this, 'render'
       else
         # Otherwise just bind the `render` method normally
@@ -68,7 +68,7 @@ define [
       super
 
     initialize: (options) ->
-      ###console.debug 'View#initialize', this, 'options', options###
+      ###console.debug 'ChaplinView#initialize', this, 'options', options###
       # No super call here, Backbone’s `initialize` is a no-op
 
       # Initialize subviews
@@ -81,7 +81,7 @@ define [
         @modelBind 'dispose', @dispose
 
       # Call afterInitialize manually if initialize did not wrap it
-      if @initialize is View::initialize
+      if @initialize is ChaplinView::initialize
         @afterInitialize()
 
     # This method is called after a specific `initialize` of a derived class
@@ -115,22 +115,22 @@ define [
     #   @delegate('click', 'button.confirm', @confirm)
     delegate: (eventType, second, third) ->
       if typeof eventType isnt 'string'
-        throw new TypeError 'View#delegate: first argument must be a string'
+        throw new TypeError 'ChaplinView#delegate: first argument must be a string'
 
       if arguments.length is 2
         handler = second
       else if arguments.length is 3
         selector = second
         if typeof selector isnt 'string'
-          throw new TypeError 'View#delegate: ' +
+          throw new TypeError 'ChaplinView#delegate: ' +
             'second argument must be a string'
         handler = third
       else
-        throw new TypeError 'View#delegate: ' +
+        throw new TypeError 'ChaplinView#delegate: ' +
           'only two or three arguments are allowed'
 
       if typeof handler isnt 'function'
-        throw new TypeError 'View#delegate: ' +
+        throw new TypeError 'ChaplinView#delegate: ' +
           'handler argument must be function'
 
       # Add an event namespace
@@ -158,16 +158,16 @@ define [
     # Bind to a model event
     modelBind: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'View#modelBind: ' +
+        throw new TypeError 'ChaplinView#modelBind: ' +
           'type must be a string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelBind: ' +
+        throw new TypeError 'ChaplinView#modelBind: ' +
           'handler argument must be function'
 
       # Get model/collection reference
       model = @model or @collection
       unless model
-        throw new TypeError 'View#modelBind: no model or collection set'
+        throw new TypeError 'ChaplinView#modelBind: no model or collection set'
 
       # Ensure that a handler isn’t registered twice
       model.off type, handler, this
@@ -179,10 +179,10 @@ define [
 
     modelUnbind: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'View#modelUnbind: ' +
+        throw new TypeError 'ChaplinView#modelUnbind: ' +
           'type argument must be a string'
       if typeof handler isnt 'function'
-        throw new TypeError 'View#modelUnbind: ' +
+        throw new TypeError 'ChaplinView#modelUnbind: ' +
           'handler argument must be a function'
 
       # Get model/collection reference
@@ -283,12 +283,12 @@ define [
       # render views. The example application uses Handlebars and RequireJS
       # to load and compile templates on the client side. See the derived
       # View class in the example application.
-      throw new Error 'View#getTemplateFunction must be overridden'
+      throw new Error 'ChaplinView#getTemplateFunction must be overridden'
 
     # Main render function
     # This method is bound to the instance in the constructor (see above)
     render: ->
-      ###console.debug 'View#render', this###
+      ###console.debug 'ChaplinView#render', this###
 
       return if @disposed
       templateData = @getTemplateData()
@@ -343,7 +343,7 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'View#dispose', this, 'disposed?', @disposed###
+      ###console.debug 'ChaplinView#dispose', this, 'disposed?', @disposed###
       return if @disposed
 
       # Dispose subviews

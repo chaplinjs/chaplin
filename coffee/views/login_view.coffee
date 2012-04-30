@@ -2,12 +2,12 @@ define [
   'underscore',
   'mediator',
   'lib/utils',
-  'views/view',
+  'views/application_view',
   'text!templates/login.hbs'
-], (_, mediator, utils, ChaplinView, template) ->
+], (_, mediator, utils, ApplicationView, template) ->
   'use strict'
 
-  class LoginView extends ChaplinView
+  class LoginView extends ApplicationView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.
