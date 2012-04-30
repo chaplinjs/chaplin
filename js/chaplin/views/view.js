@@ -5,25 +5,25 @@ var __hasProp = {}.hasOwnProperty,
 define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function($, _, Backbone, utils, Subscriber) {
   'use strict';
 
-  var View;
-  return View = (function(_super) {
+  var ChaplinView;
+  return ChaplinView = (function(_super) {
     var wrapMethod;
 
-    __extends(View, _super);
+    __extends(ChaplinView, _super);
 
-    View.name = 'View';
+    ChaplinView.name = 'ChaplinView';
 
-    _(View.prototype).extend(Subscriber);
+    _(ChaplinView.prototype).extend(Subscriber);
 
-    View.prototype.autoRender = false;
+    ChaplinView.prototype.autoRender = false;
 
-    View.prototype.containerSelector = null;
+    ChaplinView.prototype.containerSelector = null;
 
-    View.prototype.containerMethod = 'append';
+    ChaplinView.prototype.containerMethod = 'append';
 
-    View.prototype.subviews = null;
+    ChaplinView.prototype.subviews = null;
 
-    View.prototype.subviewsByName = null;
+    ChaplinView.prototype.subviewsByName = null;
 
     wrapMethod = function(obj, name) {
       var func;
@@ -34,7 +34,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       };
     };
 
-    function View() {
+    function ChaplinView() {
       if (this.initialize !== View.prototype.initialize) {
         wrapMethod(this, 'initialize');
       }
@@ -43,10 +43,10 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       } else {
         this.render = _(this.render).bind(this);
       }
-      View.__super__.constructor.apply(this, arguments);
+      ChaplinView.__super__.constructor.apply(this, arguments);
     }
 
-    View.prototype.initialize = function(options) {
+    ChaplinView.prototype.initialize = function(options) {
       /*console.debug 'View#initialize', this, 'options', options
       */
       this.subviews = [];
@@ -59,7 +59,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       }
     };
 
-    View.prototype.afterInitialize = function() {
+    ChaplinView.prototype.afterInitialize = function() {
       var autoRender;
       autoRender = this.options.autoRender != null ? this.options.autoRender : this.autoRender;
       if (autoRender) {
@@ -67,9 +67,9 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       }
     };
 
-    View.prototype.delegateEvents = function() {};
+    ChaplinView.prototype.delegateEvents = function() {};
 
-    View.prototype.delegate = function(eventType, second, third) {
+    ChaplinView.prototype.delegate = function(eventType, second, third) {
       var handler, selector;
       if (typeof eventType !== 'string') {
         throw new TypeError('View#delegate: first argument must be a string');
@@ -97,11 +97,11 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       }
     };
 
-    View.prototype.undelegate = function() {
+    ChaplinView.prototype.undelegate = function() {
       return this.$el.unbind(".delegate" + this.cid);
     };
 
-    View.prototype.modelBind = function(type, handler) {
+    ChaplinView.prototype.modelBind = function(type, handler) {
       var model;
       if (typeof type !== 'string') {
         throw new TypeError('View#modelBind: ' + 'type must be a string');
@@ -117,7 +117,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return model.on(type, handler, this);
     };
 
-    View.prototype.modelUnbind = function(type, handler) {
+    ChaplinView.prototype.modelUnbind = function(type, handler) {
       var model;
       if (typeof type !== 'string') {
         throw new TypeError('View#modelUnbind: ' + 'type argument must be a string');
@@ -132,7 +132,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return model.off(type, handler);
     };
 
-    View.prototype.modelUnbindAll = function() {
+    ChaplinView.prototype.modelUnbindAll = function() {
       var model;
       model = this.model || this.collection;
       if (!model) {
@@ -141,7 +141,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return model.off(null, null, this);
     };
 
-    View.prototype.pass = function(attribute, selector) {
+    ChaplinView.prototype.pass = function(attribute, selector) {
       var _this = this;
       return this.modelBind("change:" + attribute, function(model, value) {
         var $el;
@@ -154,7 +154,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       });
     };
 
-    View.prototype.subview = function(name, view) {
+    ChaplinView.prototype.subview = function(name, view) {
       if (name && view) {
         this.removeSubview(name);
         this.subviews.push(view);
@@ -165,7 +165,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       }
     };
 
-    View.prototype.removeSubview = function(nameOrView) {
+    ChaplinView.prototype.removeSubview = function(nameOrView) {
       var index, name, otherName, otherView, view, _ref;
       if (!nameOrView) {
         return;
@@ -195,7 +195,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return delete this.subviewsByName[name];
     };
 
-    View.prototype.getTemplateData = function() {
+    ChaplinView.prototype.getTemplateData = function() {
       var modelAttributes, templateData;
       modelAttributes = this.model && this.model.getAttributes();
       templateData = modelAttributes ? utils.beget(modelAttributes) : {};
@@ -205,11 +205,11 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return templateData;
     };
 
-    View.prototype.getTemplateFunction = function() {
+    ChaplinView.prototype.getTemplateFunction = function() {
       throw new Error('View#getTemplateFunction must be overridden');
     };
 
-    View.prototype.render = function() {
+    ChaplinView.prototype.render = function() {
       /*console.debug 'View#render', this
       */
 
@@ -226,7 +226,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return this;
     };
 
-    View.prototype.afterRender = function() {
+    ChaplinView.prototype.afterRender = function() {
       var container, containerMethod;
       container = this.options.container != null ? this.options.container : this.containerSelector;
       if (container) {
@@ -237,9 +237,9 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return this;
     };
 
-    View.prototype.disposed = false;
+    ChaplinView.prototype.disposed = false;
 
-    View.prototype.dispose = function() {
+    ChaplinView.prototype.dispose = function() {
       /*console.debug 'View#dispose', this, 'disposed?', @disposed
       */
 
@@ -265,7 +265,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
-    return View;
+    return ChaplinView;
 
   })(Backbone.View);
 });

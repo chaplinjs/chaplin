@@ -3,17 +3,17 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, _, utils, View) {
+define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, _, utils, ChaplinView) {
   'use strict';
 
-  var CollectionView;
-  return CollectionView = (function(_super) {
+  var ChaplinCollectionView;
+  return ChaplinCollectionView = (function(_super) {
 
-    __extends(CollectionView, _super);
+    __extends(ChaplinCollectionView, _super);
 
-    CollectionView.name = 'CollectionView';
+    ChaplinCollectionView.name = 'ChaplinCollectionView';
 
-    function CollectionView() {
+    function ChaplinCollectionView() {
       this.renderAllItems = __bind(this.renderAllItems, this);
 
       this.showHideFallback = __bind(this.showHideFallback, this);
@@ -23,42 +23,42 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       this.itemRemoved = __bind(this.itemRemoved, this);
 
       this.itemAdded = __bind(this.itemAdded, this);
-      return CollectionView.__super__.constructor.apply(this, arguments);
+      return ChaplinCollectionView.__super__.constructor.apply(this, arguments);
     }
 
-    CollectionView.prototype.animationDuration = 500;
+    ChaplinCollectionView.prototype.animationDuration = 500;
 
-    CollectionView.prototype.listSelector = null;
+    ChaplinCollectionView.prototype.listSelector = null;
 
-    CollectionView.prototype.$list = null;
+    ChaplinCollectionView.prototype.$list = null;
 
-    CollectionView.prototype.fallbackSelector = null;
+    ChaplinCollectionView.prototype.fallbackSelector = null;
 
-    CollectionView.prototype.$fallback = null;
+    ChaplinCollectionView.prototype.$fallback = null;
 
-    CollectionView.prototype.loadingSelector = null;
+    ChaplinCollectionView.prototype.loadingSelector = null;
 
-    CollectionView.prototype.$loading = null;
+    ChaplinCollectionView.prototype.$loading = null;
 
-    CollectionView.prototype.itemSelector = null;
+    ChaplinCollectionView.prototype.itemSelector = null;
 
-    CollectionView.prototype.filterer = null;
+    ChaplinCollectionView.prototype.filterer = null;
 
-    CollectionView.prototype.viewsByCid = null;
+    ChaplinCollectionView.prototype.viewsByCid = null;
 
-    CollectionView.prototype.visibleItems = null;
+    ChaplinCollectionView.prototype.visibleItems = null;
 
-    CollectionView.prototype.getView = function(model) {
+    ChaplinCollectionView.prototype.getView = function(model) {
       throw new Error('CollectionView#getView must be overridden');
     };
 
-    CollectionView.prototype.getTemplateFunction = function() {};
+    ChaplinCollectionView.prototype.getTemplateFunction = function() {};
 
-    CollectionView.prototype.initialize = function(options) {
+    ChaplinCollectionView.prototype.initialize = function(options) {
       if (options == null) {
         options = {};
       }
-      CollectionView.__super__.initialize.apply(this, arguments);
+      ChaplinCollectionView.__super__.initialize.apply(this, arguments);
       /*console.debug 'CollectionView#initialize', this, @collection, options
       */
 
@@ -88,35 +88,35 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       }
     };
 
-    CollectionView.prototype.addCollectionListeners = function() {
+    ChaplinCollectionView.prototype.addCollectionListeners = function() {
       this.modelBind('add', this.itemAdded);
       this.modelBind('remove', this.itemRemoved);
       return this.modelBind('reset', this.itemsResetted);
     };
 
-    CollectionView.prototype.itemAdded = function(item, collection, options) {
+    ChaplinCollectionView.prototype.itemAdded = function(item, collection, options) {
       if (options == null) {
         options = {};
       }
       return this.renderAndInsertItem(item, options.index);
     };
 
-    CollectionView.prototype.itemRemoved = function(item) {
+    ChaplinCollectionView.prototype.itemRemoved = function(item) {
       return this.removeViewForItem(item);
     };
 
-    CollectionView.prototype.itemsResetted = function() {
+    ChaplinCollectionView.prototype.itemsResetted = function() {
       return this.renderAllItems();
     };
 
-    CollectionView.prototype.render = function() {
-      CollectionView.__super__.render.apply(this, arguments);
+    ChaplinCollectionView.prototype.render = function() {
+      ChaplinCollectionView.__super__.render.apply(this, arguments);
       this.$list = this.listSelector ? this.$(this.listSelector) : this.$el;
       this.initFallback();
       return this.initLoadingIndicator();
     };
 
-    CollectionView.prototype.initFallback = function() {
+    ChaplinCollectionView.prototype.initFallback = function() {
       if (!this.fallbackSelector) {
         return;
       }
@@ -125,15 +125,15 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       return this.modelBind('syncStateChange', this.showHideFallback);
     };
 
-    CollectionView.prototype.showHideFallback = function() {
+    ChaplinCollectionView.prototype.showHideFallback = function() {
       var visible;
       visible = this.visibleItems.length === 0 && (typeof this.collection.isSynced === 'function' ? this.collection.isSynced() : true);
       return this.$fallback.css('display', visible ? 'block' : 'none');
     };
 
-    CollectionView.prototype.collectionIsSynced = function() {};
+    ChaplinCollectionView.prototype.collectionIsSynced = function() {};
 
-    CollectionView.prototype.initLoadingIndicator = function() {
+    ChaplinCollectionView.prototype.initLoadingIndicator = function() {
       if (!(this.loadingSelector && typeof this.collection.isSyncing === 'function')) {
         return;
       }
@@ -142,13 +142,13 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       return this.showHideLoadingIndicator();
     };
 
-    CollectionView.prototype.showHideLoadingIndicator = function() {
+    ChaplinCollectionView.prototype.showHideLoadingIndicator = function() {
       var visible;
       visible = this.collection.length === 0 && this.collection.isSyncing();
       return this.$loading.css('display', visible ? 'block' : 'none');
     };
 
-    CollectionView.prototype.filter = function(filterer) {
+    ChaplinCollectionView.prototype.filter = function(filterer) {
       var included, index, item, view, _i, _len, _ref;
       this.filterer = filterer;
       if (!_(this.viewsByCid).isEmpty()) {
@@ -167,7 +167,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       return this.trigger('visibilityChange', this.visibleItems);
     };
 
-    CollectionView.prototype.renderAllItems = function() {
+    ChaplinCollectionView.prototype.renderAllItems = function() {
       var cid, index, item, items, remainingViewsByCid, view, _i, _j, _len, _len1, _ref;
       items = this.collection.models;
       this.visibleItems = [];
@@ -201,13 +201,13 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       }
     };
 
-    CollectionView.prototype.renderAndInsertItem = function(item, index) {
+    ChaplinCollectionView.prototype.renderAndInsertItem = function(item, index) {
       var view;
       view = this.renderItem(item);
       return this.insertView(item, view, index);
     };
 
-    CollectionView.prototype.renderItem = function(item) {
+    ChaplinCollectionView.prototype.renderItem = function(item) {
       var view;
       view = this.viewsByCid[item.cid];
       if (!view) {
@@ -218,7 +218,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       return view;
     };
 
-    CollectionView.prototype.insertView = function(item, view, index, animationDuration) {
+    ChaplinCollectionView.prototype.insertView = function(item, view, index, animationDuration) {
       var $list, $next, $previous, $viewEl, children, included, length, position, viewEl;
       if (index == null) {
         index = null;
@@ -260,19 +260,19 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       }
     };
 
-    CollectionView.prototype.removeViewForItem = function(item) {
+    ChaplinCollectionView.prototype.removeViewForItem = function(item) {
       var view;
       this.updateVisibleItems(item, false);
       view = this.viewsByCid[item.cid];
       return this.removeView(item.cid, view);
     };
 
-    CollectionView.prototype.removeView = function(cid, view) {
+    ChaplinCollectionView.prototype.removeView = function(cid, view) {
       view.dispose();
       return delete this.viewsByCid[cid];
     };
 
-    CollectionView.prototype.updateVisibleItems = function(item, includedInFilter, triggerEvent) {
+    ChaplinCollectionView.prototype.updateVisibleItems = function(item, includedInFilter, triggerEvent) {
       var includedInVisibleItems, visibilityChanged, visibleItemsIndex;
       if (triggerEvent == null) {
         triggerEvent = true;
@@ -293,7 +293,7 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
       return visibilityChanged;
     };
 
-    CollectionView.prototype.dispose = function() {
+    ChaplinCollectionView.prototype.dispose = function() {
       /*console.debug 'CollectionView#dispose', this, 'disposed?', @disposed
       */
 
@@ -313,10 +313,10 @@ define(['jquery', 'underscore', 'lib/utils', 'chaplin/views/view'], function($, 
         prop = properties[_i];
         delete this[prop];
       }
-      return CollectionView.__super__.dispose.apply(this, arguments);
+      return ChaplinCollectionView.__super__.dispose.apply(this, arguments);
     };
 
-    return CollectionView;
+    return ChaplinCollectionView;
 
-  })(View);
+  })(ChaplinView);
 });

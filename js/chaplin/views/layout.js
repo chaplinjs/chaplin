@@ -4,16 +4,16 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/subscriber'], function($, _, mediator, utils, Subscriber) {
   'use strict';
 
-  var Layout;
-  return Layout = (function() {
+  var ChaplinLayout;
+  return ChaplinLayout = (function() {
 
-    Layout.name = 'Layout';
+    ChaplinLayout.name = 'ChaplinLayout';
 
-    _(Layout.prototype).extend(Subscriber);
+    _(ChaplinLayout.prototype).extend(Subscriber);
 
-    Layout.prototype.title = '';
+    ChaplinLayout.prototype.title = '';
 
-    function Layout(options) {
+    function ChaplinLayout(options) {
       if (options == null) {
         options = {};
       }
@@ -32,7 +32,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       this.addDOMHandlers();
     }
 
-    Layout.prototype.hideOldView = function(controller) {
+    ChaplinLayout.prototype.hideOldView = function(controller) {
       var view;
       scrollTo(0, 0);
       view = controller.view;
@@ -41,7 +41,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       }
     };
 
-    Layout.prototype.showNewView = function(context) {
+    ChaplinLayout.prototype.showNewView = function(context) {
       var view;
       view = context.controller.view;
       if (view) {
@@ -53,7 +53,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       }
     };
 
-    Layout.prototype.adjustTitle = function(context) {
+    ChaplinLayout.prototype.adjustTitle = function(context) {
       var subtitle, title;
       title = this.title;
       subtitle = context.controller.title;
@@ -65,20 +65,20 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       }), 50);
     };
 
-    Layout.prototype.updateBodyClasses = function(loggedIn) {
+    ChaplinLayout.prototype.updateBodyClasses = function(loggedIn) {
       return $(document.body).toggleClass('logged-out', !loggedIn).toggleClass('logged-in', loggedIn);
     };
 
-    Layout.prototype.removeFallbackContent = function() {
+    ChaplinLayout.prototype.removeFallbackContent = function() {
       $('.accessible-fallback').remove();
       return this.unsubscribeEvent('startupController', this.removeFallbackContent);
     };
 
-    Layout.prototype.addDOMHandlers = function() {
+    ChaplinLayout.prototype.addDOMHandlers = function() {
       return $(document).delegate('.go-to', 'click', this.goToHandler).delegate('a', 'click', this.openLink);
     };
 
-    Layout.prototype.openLink = function(event) {
+    ChaplinLayout.prototype.openLink = function(event) {
       var currentHostname, el, external, hostnameRegExp, href;
       if (utils.modifierKeyPressed(event)) {
         return;
@@ -97,7 +97,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       return this.openInternalLink(event);
     };
 
-    Layout.prototype.openInternalLink = function(event) {
+    ChaplinLayout.prototype.openInternalLink = function(event) {
       var el, path;
       if (utils.modifierKeyPressed(event)) {
         return;
@@ -114,7 +114,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       });
     };
 
-    Layout.prototype.goToHandler = function(event) {
+    ChaplinLayout.prototype.goToHandler = function(event) {
       var el, path;
       el = event.currentTarget;
       if (event.nodeName === 'A') {
@@ -133,9 +133,9 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       });
     };
 
-    Layout.prototype.disposed = false;
+    ChaplinLayout.prototype.disposed = false;
 
-    Layout.prototype.dispose = function() {
+    ChaplinLayout.prototype.dispose = function() {
       /*console.debug 'Layout#dispose'
       */
       if (this.disposed) {
@@ -147,7 +147,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
-    return Layout;
+    return ChaplinLayout;
 
   })();
 });

@@ -5,30 +5,30 @@ var __hasProp = {}.hasOwnProperty,
 define(['underscore', 'backbone', 'chaplin/lib/subscriber'], function(_, Backbone, Subscriber) {
   'use strict';
 
-  var Model;
-  return Model = (function(_super) {
+  var ChaplinModel;
+  return ChaplinModel = (function(_super) {
 
-    __extends(Model, _super);
+    __extends(ChaplinModel, _super);
 
-    Model.name = 'Model';
+    ChaplinModel.name = 'ChaplinModel';
 
-    function Model() {
-      return Model.__super__.constructor.apply(this, arguments);
+    function ChaplinModel() {
+      return ChaplinModel.__super__.constructor.apply(this, arguments);
     }
 
-    _(Model.prototype).extend(Subscriber);
+    _(ChaplinModel.prototype).extend(Subscriber);
 
-    Model.prototype.initDeferred = function() {
+    ChaplinModel.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());
     };
 
-    Model.prototype.getAttributes = function() {
+    ChaplinModel.prototype.getAttributes = function() {
       return this.attributes;
     };
 
-    Model.prototype.disposed = false;
+    ChaplinModel.prototype.disposed = false;
 
-    Model.prototype.dispose = function() {
+    ChaplinModel.prototype.dispose = function() {
       /*console.debug 'Model#dispose', this, 'disposed?', @disposed
       */
 
@@ -51,7 +51,7 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber'], function(_, Backbon
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
-    return Model;
+    return ChaplinModel;
 
   })(Backbone.Model);
 });

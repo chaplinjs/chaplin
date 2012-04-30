@@ -2,33 +2,33 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_machine', 'chaplin/models/model'], function(_, Backbone, Subscriber, SyncMachine, Model) {
+define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_machine', 'chaplin/models/model'], function(_, Backbone, Subscriber, SyncMachine, ChaplinModel) {
   'use strict';
 
-  var Collection;
-  return Collection = (function(_super) {
+  var ChaplinCollection;
+  return ChaplinCollection = (function(_super) {
 
-    __extends(Collection, _super);
+    __extends(ChaplinCollection, _super);
 
-    Collection.name = 'Collection';
+    ChaplinCollection.name = 'ChaplinCollection';
 
-    function Collection() {
-      return Collection.__super__.constructor.apply(this, arguments);
+    function ChaplinCollection() {
+      return ChaplinCollection.__super__.constructor.apply(this, arguments);
     }
 
-    _(Collection.prototype).extend(Subscriber);
+    _(ChaplinCollection.prototype).extend(Subscriber);
 
-    Collection.prototype.model = Model;
+    ChaplinCollection.prototype.model = Model;
 
-    Collection.prototype.initDeferred = function() {
+    ChaplinCollection.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());
     };
 
-    Collection.prototype.initSyncMachine = function() {
+    ChaplinCollection.prototype.initSyncMachine = function() {
       return _(this).extend(SyncMachine);
     };
 
-    Collection.prototype.addAtomic = function(models, options) {
+    ChaplinCollection.prototype.addAtomic = function(models, options) {
       var batch_direction, model;
       if (options == null) {
         options = {};
@@ -44,7 +44,7 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
       return this.trigger('reset');
     };
 
-    Collection.prototype.update = function(newList, options) {
+    ChaplinCollection.prototype.update = function(newList, options) {
       var fingerPrint, i, ids, model, newFingerPrint, preexistent, _i, _ids, _len, _results;
       if (options == null) {
         options = {};
@@ -83,9 +83,9 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
       }
     };
 
-    Collection.prototype.disposed = false;
+    ChaplinCollection.prototype.disposed = false;
 
-    Collection.prototype.dispose = function() {
+    ChaplinCollection.prototype.dispose = function() {
       /*console.debug 'Collection#dispose', this, 'disposed?', @disposed
       */
 
@@ -111,7 +111,7 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
-    return Collection;
+    return ChaplinCollection;
 
   })(Backbone.Collection);
 });

@@ -4,26 +4,26 @@ var __hasProp = {}.hasOwnProperty;
 define(['underscore', 'chaplin/lib/subscriber'], function(_, Subscriber) {
   'use strict';
 
-  var Controller;
-  return Controller = (function() {
+  var ChaplinController;
+  return ChaplinController = (function() {
 
-    Controller.name = 'Controller';
+    ChaplinController.name = 'ChaplinController';
 
-    _(Controller.prototype).extend(Subscriber);
+    _(ChaplinController.prototype).extend(Subscriber);
 
-    Controller.prototype.view = null;
+    ChaplinController.prototype.view = null;
 
-    Controller.prototype.currentId = null;
+    ChaplinController.prototype.currentId = null;
 
-    function Controller() {
+    function ChaplinController() {
       this.initialize.apply(this, arguments);
     }
 
-    Controller.prototype.initialize = function() {};
+    ChaplinController.prototype.initialize = function() {};
 
-    Controller.prototype.disposed = false;
+    ChaplinController.prototype.disposed = false;
 
-    Controller.prototype.dispose = function() {
+    ChaplinController.prototype.dispose = function() {
       /*console.debug 'Controller#dispose', this, 'disposed?', @disposed
       */
 
@@ -49,7 +49,7 @@ define(['underscore', 'chaplin/lib/subscriber'], function(_, Subscriber) {
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
-    return Controller;
+    return ChaplinController;
 
   })();
 });
