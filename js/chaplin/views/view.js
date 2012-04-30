@@ -35,10 +35,10 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     function ChaplinView() {
-      if (this.initialize !== View.prototype.initialize) {
+      if (this.initialize !== ChaplinView.prototype.initialize) {
         wrapMethod(this, 'initialize');
       }
-      if (this.initialize !== View.prototype.initialize) {
+      if (this.initialize !== ChaplinView.prototype.initialize) {
         wrapMethod(this, 'render');
       } else {
         this.render = _(this.render).bind(this);
@@ -47,14 +47,14 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     }
 
     ChaplinView.prototype.initialize = function(options) {
-      /*console.debug 'View#initialize', this, 'options', options
+      /*console.debug 'ChaplinView#initialize', this, 'options', options
       */
       this.subviews = [];
       this.subviewsByName = {};
       if (this.model || this.collection) {
         this.modelBind('dispose', this.dispose);
       }
-      if (this.initialize === View.prototype.initialize) {
+      if (this.initialize === ChaplinView.prototype.initialize) {
         return this.afterInitialize();
       }
     };
@@ -72,21 +72,21 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     ChaplinView.prototype.delegate = function(eventType, second, third) {
       var handler, selector;
       if (typeof eventType !== 'string') {
-        throw new TypeError('View#delegate: first argument must be a string');
+        throw new TypeError('ChaplinView#delegate: first argument must be a string');
       }
       if (arguments.length === 2) {
         handler = second;
       } else if (arguments.length === 3) {
         selector = second;
         if (typeof selector !== 'string') {
-          throw new TypeError('View#delegate: ' + 'second argument must be a string');
+          throw new TypeError('ChaplinView#delegate: ' + 'second argument must be a string');
         }
         handler = third;
       } else {
-        throw new TypeError('View#delegate: ' + 'only two or three arguments are allowed');
+        throw new TypeError('ChaplinView#delegate: ' + 'only two or three arguments are allowed');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#delegate: ' + 'handler argument must be function');
+        throw new TypeError('ChaplinView#delegate: ' + 'handler argument must be function');
       }
       eventType += ".delegate" + this.cid;
       handler = _(handler).bind(this);
@@ -104,14 +104,14 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     ChaplinView.prototype.modelBind = function(type, handler) {
       var model;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelBind: ' + 'type must be a string');
+        throw new TypeError('ChaplinView#modelBind: ' + 'type must be a string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelBind: ' + 'handler argument must be function');
+        throw new TypeError('ChaplinView#modelBind: ' + 'handler argument must be function');
       }
       model = this.model || this.collection;
       if (!model) {
-        throw new TypeError('View#modelBind: no model or collection set');
+        throw new TypeError('ChaplinView#modelBind: no model or collection set');
       }
       model.off(type, handler, this);
       return model.on(type, handler, this);
@@ -120,10 +120,10 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     ChaplinView.prototype.modelUnbind = function(type, handler) {
       var model;
       if (typeof type !== 'string') {
-        throw new TypeError('View#modelUnbind: ' + 'type argument must be a string');
+        throw new TypeError('ChaplinView#modelUnbind: ' + 'type argument must be a string');
       }
       if (typeof handler !== 'function') {
-        throw new TypeError('View#modelUnbind: ' + 'handler argument must be a function');
+        throw new TypeError('ChaplinView#modelUnbind: ' + 'handler argument must be a function');
       }
       model = this.model || this.collection;
       if (!model) {
@@ -206,11 +206,11 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     ChaplinView.prototype.getTemplateFunction = function() {
-      throw new Error('View#getTemplateFunction must be overridden');
+      throw new Error('ChaplinView#getTemplateFunction must be overridden');
     };
 
     ChaplinView.prototype.render = function() {
-      /*console.debug 'View#render', this
+      /*console.debug 'ChaplinView#render', this
       */
 
       var html, templateData, templateFunc;
@@ -240,7 +240,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     ChaplinView.prototype.disposed = false;
 
     ChaplinView.prototype.dispose = function() {
-      /*console.debug 'View#dispose', this, 'disposed?', @disposed
+      /*console.debug 'ChaplinView#dispose', this, 'disposed?', @disposed
       */
 
       var prop, properties, view, _i, _j, _len, _len1, _ref;

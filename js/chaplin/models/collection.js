@@ -18,7 +18,7 @@ define(['underscore', 'backbone', 'chaplin/lib/subscriber', 'chaplin/lib/sync_ma
 
     _(ChaplinCollection.prototype).extend(Subscriber);
 
-    ChaplinCollection.prototype.model = Model;
+    ChaplinCollection.prototype.model = ChaplinModel;
 
     ChaplinCollection.prototype.initDeferred = function() {
       return _(this).extend($.Deferred());

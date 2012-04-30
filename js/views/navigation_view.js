@@ -2,7 +2,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-define(['views/view', 'text!templates/navigation.hbs'], function(ChaplinView, template) {
+define(['views/application_view', 'text!templates/navigation.hbs'], function(ApplicationView, template) {
   'use strict';
 
   var NavigationView;
@@ -36,5 +36,5 @@ define(['views/view', 'text!templates/navigation.hbs'], function(ChaplinView, te
 
     return NavigationView;
 
-  })(ChaplinView);
+  })(ApplicationView);
 });

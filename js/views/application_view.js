@@ -5,18 +5,18 @@ var __hasProp = {}.hasOwnProperty,
 define(['handlebars', 'chaplin/views/view', 'lib/view_helper'], function(Handlebars, ChaplinView) {
   'use strict';
 
-  var View;
-  return View = (function(_super) {
+  var ApplicationView;
+  return ApplicationView = (function(_super) {
 
-    __extends(View, _super);
+    __extends(ApplicationView, _super);
 
-    View.name = 'View';
+    ApplicationView.name = 'ApplicationView';
 
-    function View() {
-      return View.__super__.constructor.apply(this, arguments);
+    function ApplicationView() {
+      return ApplicationView.__super__.constructor.apply(this, arguments);
     }
 
-    View.prototype.getTemplateFunction = function() {
+    ApplicationView.prototype.getTemplateFunction = function() {
       var template, templateFunc;
       template = this.template;
       if (typeof template === 'string') {
@@ -28,7 +28,7 @@ define(['handlebars', 'chaplin/views/view', 'lib/view_helper'], function(Handleb
       return templateFunc;
     };
 
-    return View;
+    return ApplicationView;
 
   })(ChaplinView);
 });
