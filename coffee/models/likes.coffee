@@ -2,10 +2,10 @@ define [
   'mediator',
   'chaplin/models/collection',
   'models/like'
-], (mediator, Collection, Like) ->
+], (mediator, ChaplinCollection, Like) ->
   'use strict'
 
-  class Likes extends Collection
+  class Likes extends ChaplinCollection
     model: Like
 
     initialize: ->

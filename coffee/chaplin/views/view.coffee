@@ -7,7 +7,7 @@ define [
 ], ($, _, Backbone, utils, Subscriber) ->
   'use strict'
 
-  class View extends Backbone.View
+  class ChaplinView extends Backbone.View
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
@@ -244,7 +244,7 @@ define [
           if view is otherView
             name = otherName
             break
-      
+
       # Brak if no view and name were found
       return unless name and view and view.dispose
 

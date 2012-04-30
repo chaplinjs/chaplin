@@ -3,10 +3,10 @@ define [
   'mediator',
   'chaplin/models/collection',
   'models/post'
-], (_, mediator, Collection, Post) ->
+], (_, mediator, ChaplinCollection, Post) ->
   'use strict'
 
-  class Posts extends Collection
+  class Posts extends ChaplinCollection
     model: Post
 
     initialize: ->
@@ -54,6 +54,6 @@ define [
     logout: =>
       # Empty the collection
       @reset()
-      
+
       # Return to unsynced state
       @unsync()

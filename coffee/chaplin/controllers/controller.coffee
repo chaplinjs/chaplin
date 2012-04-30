@@ -4,7 +4,7 @@ define [
 ], (_, Subscriber) ->
   'use strict'
 
-  class Controller
+  class ChaplinController
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber

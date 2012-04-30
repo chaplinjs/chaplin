@@ -2,10 +2,10 @@ define [
   'underscore',
   'mediator',
   'chaplin/models/model'
-], (_, mediator, Model) ->
+], (_, mediator, ChaplinModel) ->
   'use strict'
 
-  class Like extends Model
+  class Like extends ChaplinModel
     initialize: (attributes, options) ->
       super
       ###console.debug 'Like#initialize', attributes, options###

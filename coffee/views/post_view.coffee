@@ -1,10 +1,10 @@
 define [
   'views/view',
   'text!templates/post.hbs'
-], (View, template) ->
+], (ChaplinView, template) ->
   'use strict'
 
-  class PostView extends View
+  class PostView extends ChaplinView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

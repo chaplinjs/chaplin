@@ -4,10 +4,10 @@ define [
   'lib/utils',
   'views/view',
   'text!templates/login.hbs'
-], (_, mediator, utils, View, template) ->
+], (_, mediator, utils, ChaplinView, template) ->
   'use strict'
 
-  class LoginView extends View
+  class LoginView extends ChaplinView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

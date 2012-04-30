@@ -4,12 +4,12 @@ define [
   'chaplin/lib/subscriber',
   'chaplin/lib/sync_machine'
   'chaplin/models/model'
-], (_, Backbone, Subscriber, SyncMachine, Model) ->
+], (_, Backbone, Subscriber, SyncMachine, ChaplinModel) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
   # in order to add some functionality
-  class Collection extends Backbone.Collection
+  class ChaplinCollection extends Backbone.Collection
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber

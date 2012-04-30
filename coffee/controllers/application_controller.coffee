@@ -1,8 +1,8 @@
 define [
   'chaplin/controllers/controller',
-], (Controller) ->
+], (ChaplinController) ->
   'use strict'
 
-  class ApplicationController extends Controller
+  class ApplicationController extends ChaplinController
 
     title: 'Default title'

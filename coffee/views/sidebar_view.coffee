@@ -2,10 +2,10 @@ define [
   'mediator',
   'views/view',
   'text!templates/sidebar.hbs'
-], (mediator, View, template) ->
+], (mediator, ChaplinView, template) ->
   'use strict'
 
-  class SidebarView extends View
+  class SidebarView extends ChaplinView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

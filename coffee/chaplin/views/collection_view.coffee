@@ -3,13 +3,13 @@ define [
   'underscore',
   'lib/utils',
   'chaplin/views/view'
-], ($, _, utils, View) ->
+], ($, _, utils, ChaplinView) ->
   'use strict'
 
   # General class for rendering Collections. Derive this class and
   # overwrite at least getView. getView gets an item model
   # and should instantiate a corresponding item view.
-  class CollectionView extends View
+  class ChaplinCollectionView extends ChaplinView
 
     # Configuration options
     # ---------------------

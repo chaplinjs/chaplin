@@ -1,10 +1,10 @@
 define [
   'views/view',
   'text!templates/navigation.hbs'
-], (View, template) ->
+], (ChaplinView, template) ->
   'use strict'
 
-  class NavigationView extends View
+  class NavigationView extends ChaplinView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

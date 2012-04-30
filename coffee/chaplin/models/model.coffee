@@ -5,7 +5,7 @@ define [
 ], (_, Backbone, Subscriber) ->
   'use strict'
 
-  class Model extends Backbone.Model
+  class ChaplinModel extends Backbone.Model
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber

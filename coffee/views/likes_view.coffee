@@ -3,10 +3,10 @@ define [
   'views/collection_view',
   'views/compact_like_view',
   'text!templates/likes.hbs'
-], (mediator, CollectionView, CompactLikeView, template) ->
+], (mediator, ChaplinCollectionView, CompactLikeView, template) ->
   'use strict'
 
-  class LikesView extends CollectionView
+  class LikesView extends ChaplinCollectionView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.

@@ -3,10 +3,10 @@ define [
   'views/collection_view',
   'views/post_view',
   'text!templates/posts.hbs'
-], (mediator, CollectionView, PostView, template) ->
+], (mediator, ChaplinCollectionView, PostView, template) ->
   'use strict'
 
-  class PostsView extends CollectionView
+  class PostsView extends ChaplinCollectionView
 
     # Save the template string in a prototype property.
     # This is overwritten with the compiled template function.
@@ -18,14 +18,14 @@ define [
     id: 'posts'
 
     containerSelector: '#content-container'
-    
+
     # Append the item views to this element
     listSelector: 'ol'
     # Fallback content selector
     fallbackSelector: '.fallback'
     # Loading indicator selector
     loadingSelector: '.loading'
-    
+
     initialize: ->
       super # Will render the list itself and all items
       @subscribeEvent 'loginStatus', @showHideLoginNote

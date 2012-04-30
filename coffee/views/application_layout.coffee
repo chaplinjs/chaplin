@@ -1,6 +1,6 @@
 define [
   'chaplin/views/layout'
-], (Layout) ->
+], (ChaplinLayout) ->
   'use strict'
 
-  class ApplicationLayout extends Layout
+  class ApplicationLayout extends ChaplinLayout
