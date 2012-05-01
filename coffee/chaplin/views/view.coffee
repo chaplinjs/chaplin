@@ -97,12 +97,6 @@ define [
     # User input event handling
     # -------------------------
 
-    # Make delegateEvents defunct, it is not used in our approach
-    # but is called by Backbone internally. Please use `delegate` and
-    # `undelegate` (see below) instead of the `events` hash.
-    delegateEvents: ->
-      # Noop
-
     # Event handling using event delegation
     # Register a handler for a specific event type
     # For the whole view:
