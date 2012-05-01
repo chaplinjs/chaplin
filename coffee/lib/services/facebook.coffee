@@ -39,7 +39,6 @@ define [
       # Bundle comment count calls into one request
       utils.wrapAccumulators this, ['getAccumulatedInfo']
 
-      @subscribeEvent 'loginAbort', @loginAbort
       @subscribeEvent 'logout', @logout
 
     # Load the JavaScript library asynchronously
@@ -113,6 +112,8 @@ define [
         @publishSession authResponse
         @getUserData()
       else
+        # TODO: Don’t do this if several providers are used
+        # This is only necessary if Facebook is he only provider
         mediator.publish 'logout'
 
     # Open the Facebook login popup
@@ -129,19 +130,35 @@ define [
       @saveAuthResponse response
       authResponse = response.authResponse
 
+      eventPayload = {provider: this, loginContext}
       if authResponse
-        mediator.publish 'loginSuccessful', {provider: this, loginContext}
+        mediator.publish 'loginSuccessful', eventPayload
         @publishSession authResponse
         @getUserData()
 
       else
-        mediator.publish 'loginAbort', {provider: this, loginContext}
+        mediator.publish 'loginAbort', eventPayload
 
         # Get the login status again (forced) because the user might be
         # logged in anyway. This might happen when the user grants access
         # to the app but closes the second page of the auth dialog which
         # asks for Extended Permissions.
-        @getLoginStatus @publishAbortionResult, true
+        loginStatusHandler = _(@loginStatusAfterAbort).bind this, loginContext
+        @getLoginStatus loginStatusHandler, true
+
+    # After abort, check login status and publish success or failure
+    loginStatusAfterAbort: (loginContext, response) =>
+      @saveAuthResponse response
+      authResponse = response.authResponse
+
+      eventPayload = {provider: this, loginContext}
+      if authResponse
+        mediator.publish 'loginSuccessful', eventPayload
+        @publishSession authResponse
+
+      else
+        # Login failed ultimately
+        mediator.publish 'loginFail', eventPayload
 
     # Publish the Facebook session
     publishSession: (authResponse) ->
@@ -149,28 +166,6 @@ define [
         provider: this
         userId: authResponse.userID
         accessToken: authResponse.accessToken
-
-    # Handler for the global loginAbort event
-    # Get the login status again (forced) because the user might be logged in anyway
-    loginAbort: =>
-      @getLoginStatus @publishAbortionResult, true
-
-    # Check login status after abort and publish success or failure
-    publishAbortionResult: (response) =>
-      @saveAuthResponse response
-      authResponse = response.authResponse
-
-      if authResponse
-        mediator.publish 'loginSuccessful', {provider: this, loginContext}
-        mediator.publish 'loginSuccessfulThoughAborted', {
-          provider: this, loginContext
-        }
-
-        @publishSession authResponse
-
-      else
-        # Login failed ultimately
-        mediator.publish 'loginFail', {provider: this, loginContext}
 
     # Handler for the FB auth.logout event
     facebookLogout: (response) =>
@@ -190,13 +185,13 @@ define [
       mediator.publish 'facebook:like', url
 
     processComment: (comment) ->
-      mediator.publish 'facebook_comment', comment.href
+      mediator.publish 'facebook:comment', comment.href
 
     # Parsing of Facebook social plugins
     # ----------------------------------
 
     parse: (el) ->
-      FB.XFBML.parse(el)
+      FB.XFBML.parse el
 
     # Helper for subscribing to Facebook events
     # -----------------------------------------
@@ -215,10 +210,6 @@ define [
       FB.api ogResource, 'post', data, (response) ->
         callback response if callback
 
-    # Post a message to the user’s stream
-    postToStream: (data, callback) ->
-      @postToGraph '/me/feed', data, callback
-
     # Get the info for the given URLs
     # Pass a string or an array of strings along with a callback function
     getAccumulatedInfo: (urls, callback) ->
@@ -235,8 +226,8 @@ define [
     getInfo: (id, callback) ->
       FB.api id, callback
 
-    # Fetch additional user data from Facebook (name, gender etc.)
-    # ------------------------------------------------------------
+    # Fetch additional user data from Facebook
+    # ----------------------------------------
 
     getUserData: ->
       @getInfo '/me', @processUserData
@@ -250,4 +241,7 @@ define [
     dispose: ->
       return if @disposed
       @unregisterHandlers()
+      # Clear the status properties
+      delete @status
+      delete @accessToken
       super

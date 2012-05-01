@@ -23,8 +23,7 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     function Facebook() {
       this.processUserData = __bind(this.processUserData, this);
       this.facebookLogout = __bind(this.facebookLogout, this);
-      this.publishAbortionResult = __bind(this.publishAbortionResult, this);
-      this.loginAbort = __bind(this.loginAbort, this);
+      this.loginStatusAfterAbort = __bind(this.loginStatusAfterAbort, this);
       this.loginHandler = __bind(this.loginHandler, this);
       this.triggerLogin = __bind(this.triggerLogin, this);
       this.loginStatusHandler = __bind(this.loginStatusHandler, this);
@@ -37,7 +36,6 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
         onDeferral: this.load
       });
       utils.wrapAccumulators(this, ['getAccumulatedInfo']);
-      this.subscribeEvent('loginAbort', this.loginAbort);
       this.subscribeEvent('logout', this.logout);
     }
 
@@ -117,22 +115,37 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     };
 
     Facebook.prototype.loginHandler = function(loginContext, response) {
-      var authResponse;
+      var authResponse, eventPayload, loginStatusHandler;
       this.saveAuthResponse(response);
       authResponse = response.authResponse;
+      eventPayload = {
+        provider: this,
+        loginContext: loginContext
+      };
       if (authResponse) {
-        mediator.publish('loginSuccessful', {
-          provider: this,
-          loginContext: loginContext
-        });
+        mediator.publish('loginSuccessful', eventPayload);
         this.publishSession(authResponse);
         return this.getUserData();
       } else {
-        mediator.publish('loginAbort', {
-          provider: this,
-          loginContext: loginContext
-        });
-        return this.getLoginStatus(this.publishAbortionResult, true);
+        mediator.publish('loginAbort', eventPayload);
+        loginStatusHandler = _(this.loginStatusAfterAbort).bind(this, loginContext);
+        return this.getLoginStatus(loginStatusHandler, true);
+      }
+    };
+
+    Facebook.prototype.loginStatusAfterAbort = function(loginContext, response) {
+      var authResponse, eventPayload;
+      this.saveAuthResponse(response);
+      authResponse = response.authResponse;
+      eventPayload = {
+        provider: this,
+        loginContext: loginContext
+      };
+      if (authResponse) {
+        mediator.publish('loginSuccessful', eventPayload);
+        return this.publishSession(authResponse);
+      } else {
+        return mediator.publish('loginFail', eventPayload);
       }
     };
 
@@ -142,32 +155,6 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
         userId: authResponse.userID,
         accessToken: authResponse.accessToken
       });
-    };
-
-    Facebook.prototype.loginAbort = function() {
-      return this.getLoginStatus(this.publishAbortionResult, true);
-    };
-
-    Facebook.prototype.publishAbortionResult = function(response) {
-      var authResponse;
-      this.saveAuthResponse(response);
-      authResponse = response.authResponse;
-      if (authResponse) {
-        mediator.publish('loginSuccessful', {
-          provider: this,
-          loginContext: loginContext
-        });
-        mediator.publish('loginSuccessfulThoughAborted', {
-          provider: this,
-          loginContext: loginContext
-        });
-        return this.publishSession(authResponse);
-      } else {
-        return mediator.publish('loginFail', {
-          provider: this,
-          loginContext: loginContext
-        });
-      }
     };
 
     Facebook.prototype.facebookLogout = function(response) {
@@ -183,7 +170,7 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     };
 
     Facebook.prototype.processComment = function(comment) {
-      return mediator.publish('facebook_comment', comment.href);
+      return mediator.publish('facebook:comment', comment.href);
     };
 
     Facebook.prototype.parse = function(el) {
@@ -202,10 +189,6 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
       return FB.api(ogResource, 'post', data, function(response) {
         if (callback) return callback(response);
       });
-    };
-
-    Facebook.prototype.postToStream = function(data, callback) {
-      return this.postToGraph('/me/feed', data, callback);
     };
 
     Facebook.prototype.getAccumulatedInfo = function(urls, callback) {
@@ -232,6 +215,8 @@ define(['underscore', 'mediator', 'lib/utils', 'lib/services/service_provider'],
     Facebook.prototype.dispose = function() {
       if (this.disposed) return;
       this.unregisterHandlers();
+      delete this.status;
+      delete this.accessToken;
       return Facebook.__super__.dispose.apply(this, arguments);
     };
 
