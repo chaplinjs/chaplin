@@ -58,8 +58,6 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       if (autoRender) return this.render();
     };
 
-    View.prototype.delegateEvents = function() {};
-
     View.prototype.delegate = function(eventType, second, third) {
       var handler, selector;
       if (typeof eventType !== 'string') {
