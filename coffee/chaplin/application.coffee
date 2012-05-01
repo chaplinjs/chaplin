@@ -36,7 +36,7 @@ define [
     # Pass the function typically returned by routes.coffee
     initRouter: (routes, options) ->
       # Save the reference for testing introspection only.
-      # Module should communicate with each other via Pub/Sub.
+      # Modules should communicate with each other via Pub/Sub.
       @router = new Router options
 
       # Register all routes declared in routes.coffee
