@@ -1,7 +1,8 @@
 define [
   'chaplin/lib/create_mediator',
-  'chaplin/models/model'
-], (createMediator, Model) ->
+  'chaplin/models/model',
+  'chaplin/lib/support'
+], (createMediator, Model, support) ->
   'use strict'
 
   mediator = createMediator
@@ -11,17 +12,17 @@ define [
     #console.debug 'mediator spec'
 
     it 'should be a simple object', ->
-      expect(typeof mediator).toEqual 'object'
+      expect(typeof mediator).toBe 'object'
 
     it 'should have Pub/Sub methods', ->
-      expect(typeof mediator.subscribe).toEqual 'function'
-      expect(typeof mediator.unsubscribe).toEqual 'function'
-      expect(typeof mediator.publish).toEqual 'function'
+      expect(typeof mediator.subscribe).toBe 'function'
+      expect(typeof mediator.unsubscribe).toBe 'function'
+      expect(typeof mediator.publish).toBe 'function'
 
     it 'should have readonly Pub/Sub methods', ->
-      return unless Object.defineProperty
-      methods = [ 'subscribe', 'unsubscribe', 'publish' ]
-      methods.forEach (property) ->
+      return unless support.propertyDescriptors
+      methods = ['subscribe', 'unsubscribe', 'publish']
+      _(methods).forEach (property) ->
         expect(->
           mediator[property] = 'foo'
         ).toThrow()
@@ -59,13 +60,13 @@ define [
       expect(mediator.user).toBeNull()
 
     it 'should have a readonly user', ->
-      return unless Object.defineProperty
+      return unless support.propertyDescriptors
       expect(->
         mediator.user = 'foo'
       ).toThrow()
 
     it 'should have a setUser method', ->
-      expect(typeof mediator.setUser).toEqual 'function'
+      expect(typeof mediator.setUser).toBe 'function'
 
     it 'should have a user after calling setUser', ->
       user = new Model
