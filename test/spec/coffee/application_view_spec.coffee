@@ -66,17 +66,16 @@ define [
       expect($body.attr('class')).toBe 'logged-out'
 
     it 'should route clicks on internal links', ->
+      router = new Router root: '/test/'
+
       passedPath = passedCallback = undefined
       routerRoute = (path, callback) ->
         passedPath = path
         passedCallback = callback
 
-      # We need a router for that
-      router = new Router()
-
       mediator.subscribe '!router:route', routerRoute
       path = '/an/internal/link'
-      $("<a href='#{path}'>")
+      $("<a href='#{path}'>Hello World</a>")
         .appendTo(document.body)
         .click()
         .remove()
@@ -84,10 +83,49 @@ define [
       expect(typeof passedCallback).toBe 'function'
       mediator.unsubscribe '!router:route', routerRoute
 
+      router.dispose()
+
+    it 'should not route clicks on non-links', ->
+      router = new Router root: '/test/'
+
+      # Technically an empty string is a valid relative URL
+      # but it doesn’t make sense to route it
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
+      $("<a href=''>Hello World</a>")
+        .appendTo(document.body)
+        .click()
+        .remove()
+      expect(spy).not.toHaveBeenCalled()
+      mediator.unsubscribe '!router:route', spy
+
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
+      $("<a name='foo'>Hello World</a>")
+        .appendTo(document.body)
+        .click()
+        .remove()
+      expect(spy).not.toHaveBeenCalled()
+      mediator.unsubscribe '!router:route', spy
+
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
+      $("<a>Hello World</a>")
+        .appendTo(document.body)
+        .click()
+        .remove()
+      expect(spy).not.toHaveBeenCalled()
+      mediator.unsubscribe '!router:route', spy
+
+      router.dispose()
+
+    it 'should not route clicks on external links', ->
+      router = new Router root: '/test/'
+
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
       path = 'http://www.example.org/'
-      $("<a href='#{path}'>")
+      $("<a href='#{path}'>Hello World</a>")
         .appendTo(document.body)
         .click()
         .remove()

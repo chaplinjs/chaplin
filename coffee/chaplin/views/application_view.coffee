@@ -91,8 +91,13 @@ define [
     addDOMHandlers: ->
       # Handle links
       $(document)
-        .delegate('.go-to', 'click', @goToHandler)
-        .delegate('a', 'click', @openLink)
+        .on('click', '.go-to', @goToHandler)
+        .on('click', 'a', @openLink)
+
+    removeDOMHandlers: ->
+      $(document)
+        .off('click', '.go-to', @goToHandler)
+        .off('click', 'a', @openLink)
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) =>
@@ -100,13 +105,13 @@ define [
 
       el = event.currentTarget
       href = el.getAttribute 'href'
-      # Ignore empty path even if it is a valid relative URL
-      return if href is '' or href.charAt(0) is '#'
+      # Ignore empty paths even if it is a valid relative URL
+      # Ignore links to fragment identifiers
+      return if href is null or href is '' or href.charAt(0) is '#'
 
       # Is it an external link?
       currentHostname = location.hostname.replace('.', '\\.')
-      hostnameRegExp = ///#{currentHostname}$///i
-      external = not hostnameRegExp.test(el.hostname)
+      external = not ///#{currentHostname}$///i.test(el.hostname)
       if external
         # Open external links normally
         # You might want to enforce opening in a new tab here:
@@ -114,15 +119,13 @@ define [
         #window.open el.href
         return
 
-      @openInternalLink event
+      @openInternalLink el
 
     # Try to route a click on a link internally
-    openInternalLink: (event) ->
-      return if utils.modifierKeyPressed(event)
-
-      el = event.currentTarget
+    openInternalLink: (el) ->
       path = el.pathname
-      return unless path
+      # Append a leading slash if necessary (Internet Explorer 8)
+      path = "/#{path}" if path.charAt(0) isnt '/'
 
       # Pass to the router, try to route internally
       mediator.publish '!router:route', path, (routed) ->
@@ -161,6 +164,7 @@ define [
       ###console.debug 'ApplicationView#dispose'###
       return if @disposed
 
+      @removeDOMHandlers()
       @unsubscribeAllEvents()
 
       delete @title

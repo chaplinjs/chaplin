@@ -57,23 +57,54 @@ define(['jquery', 'mediator', 'chaplin/lib/router', 'chaplin/controllers/control
       return expect($body.attr('class')).toBe('logged-out');
     });
     it('should route clicks on internal links', function() {
-      var passedCallback, passedPath, path, router, routerRoute, spy;
+      var passedCallback, passedPath, path, router, routerRoute;
+      router = new Router({
+        root: '/test/'
+      });
       passedPath = passedCallback = void 0;
       routerRoute = function(path, callback) {
         passedPath = path;
         return passedCallback = callback;
       };
-      router = new Router();
       mediator.subscribe('!router:route', routerRoute);
       path = '/an/internal/link';
-      $("<a href='" + path + "'>").appendTo(document.body).click().remove();
+      $("<a href='" + path + "'>Hello World</a>").appendTo(document.body).click().remove();
       expect(passedPath).toBe(path);
       expect(typeof passedCallback).toBe('function');
       mediator.unsubscribe('!router:route', routerRoute);
+      return router.dispose();
+    });
+    it('should not route clicks on non-links', function() {
+      var router, spy;
+      router = new Router({
+        root: '/test/'
+      });
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $("<a href=''>Hello World</a>").appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      mediator.unsubscribe('!router:route', spy);
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $("<a name='foo'>Hello World</a>").appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      mediator.unsubscribe('!router:route', spy);
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $("<a>Hello World</a>").appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      mediator.unsubscribe('!router:route', spy);
+      return router.dispose();
+    });
+    it('should not route clicks on external links', function() {
+      var path, router, spy;
+      router = new Router({
+        root: '/test/'
+      });
       spy = jasmine.createSpy();
       mediator.subscribe('!router:route', spy);
       path = 'http://www.example.org/';
-      $("<a href='" + path + "'>").appendTo(document.body).click().remove();
+      $("<a href='" + path + "'>Hello World</a>").appendTo(document.body).click().remove();
       expect(spy).not.toHaveBeenCalled();
       mediator.unsubscribe('!router:route', spy);
       return router.dispose();

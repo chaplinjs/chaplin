@@ -63,28 +63,29 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     };
 
     ApplicationView.prototype.addDOMHandlers = function() {
-      return $(document).delegate('.go-to', 'click', this.goToHandler).delegate('a', 'click', this.openLink);
+      return $(document).on('click', '.go-to', this.goToHandler).on('click', 'a', this.openLink);
+    };
+
+    ApplicationView.prototype.removeDOMHandlers = function() {
+      return $(document).off('click', '.go-to', this.goToHandler).off('click', 'a', this.openLink);
     };
 
     ApplicationView.prototype.openLink = function(event) {
-      var currentHostname, el, external, hostnameRegExp, href;
+      var currentHostname, el, external, href;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       href = el.getAttribute('href');
-      if (href === '' || href.charAt(0) === '#') return;
+      if (href === null || href === '' || href.charAt(0) === '#') return;
       currentHostname = location.hostname.replace('.', '\\.');
-      hostnameRegExp = RegExp("" + currentHostname + "$", "i");
-      external = !hostnameRegExp.test(el.hostname);
+      external = !RegExp("" + currentHostname + "$", "i").test(el.hostname);
       if (external) return;
-      return this.openInternalLink(event);
+      return this.openInternalLink(el);
     };
 
-    ApplicationView.prototype.openInternalLink = function(event) {
-      var el, path;
-      if (utils.modifierKeyPressed(event)) return;
-      el = event.currentTarget;
+    ApplicationView.prototype.openInternalLink = function(el) {
+      var path;
       path = el.pathname;
-      if (!path) return;
+      if (path.charAt(0) !== '/') path = "/" + path;
       return mediator.publish('!router:route', path, function(routed) {
         if (routed) return event.preventDefault();
       });
@@ -110,6 +111,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     ApplicationView.prototype.dispose = function() {
       /*console.debug 'ApplicationView#dispose'
       */      if (this.disposed) return;
+      this.removeDOMHandlers();
       this.unsubscribeAllEvents();
       delete this.title;
       this.disposed = true;
