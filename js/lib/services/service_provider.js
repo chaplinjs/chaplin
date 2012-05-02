@@ -56,9 +56,10 @@ define(['underscore', 'lib/utils', 'chaplin/lib/subscriber'], function(_, utils,
       # Callback for the login popup
       loginHandler: (loginContext, response) =>
   
+        eventPayload = {provider: this, loginContext}
         if response
           # Publish successful login
-          mediator.publish 'loginSuccessful', {provider: this, loginContext}
+          mediator.publish 'loginSuccessful', eventPayload
   
           # Publish the session
           mediator.publish 'serviceProviderSession',
@@ -68,7 +69,7 @@ define(['underscore', 'lib/utils', 'chaplin/lib/subscriber'], function(_, utils,
             # etc.
   
         else
-          mediator.publish 'loginFail', {provider: this, loginContext}
+          mediator.publish 'loginFail', eventPayload
   
       getLoginStatus: (callback = @loginStatusHandler, force = false) ->
         ServiceProviderLibrary.getLoginStatus callback, force
