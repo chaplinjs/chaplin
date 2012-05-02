@@ -20,15 +20,10 @@ define [
       expect(typeof mediator.publish).toBe 'function'
 
     it 'should have readonly Pub/Sub methods', ->
-      return unless support.propertyDescriptors
+      return unless support.propertyDescriptors and
+        Object.getOwnPropertyDescriptor
       methods = ['subscribe', 'unsubscribe', 'publish']
       _(methods).forEach (property) ->
-        expect(->
-          mediator[property] = 'foo'
-        ).toThrow()
-
-      return unless Object.getOwnPropertyDescriptor
-      methods.forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).toBe true
         expect(desc.writable).toBe false

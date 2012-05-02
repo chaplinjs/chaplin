@@ -16,15 +16,11 @@ define(['chaplin/lib/create_mediator', 'chaplin/models/model', 'chaplin/lib/supp
     });
     it('should have readonly Pub/Sub methods', function() {
       var methods;
-      if (!support.propertyDescriptors) return;
+      if (!(support.propertyDescriptors && Object.getOwnPropertyDescriptor)) {
+        return;
+      }
       methods = ['subscribe', 'unsubscribe', 'publish'];
-      _(methods).forEach(function(property) {
-        return expect(function() {
-          return mediator[property] = 'foo';
-        }).toThrow();
-      });
-      if (!Object.getOwnPropertyDescriptor) return;
-      return methods.forEach(function(property) {
+      return _(methods).forEach(function(property) {
         var desc;
         desc = Object.getOwnPropertyDescriptor(mediator, property);
         expect(desc.enumerable).toBe(true);
