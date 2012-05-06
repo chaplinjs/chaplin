@@ -9,11 +9,11 @@ define [
   'use strict'
 
   describe 'ApplicationView', ->
-    applicationView = testController = startupControllerContext = undefined
+    # Initialize shared variables
+    applicationView = testController = startupControllerContext = router = null
 
     beforeEach ->
       # Create the application view
-      applicationView.dispose() if applicationView
       applicationView = new ApplicationView title: 'Test Site Title'
 
       # Create a test controller
@@ -27,6 +27,14 @@ define [
         controller: testController
         controllerName: 'test'
         params: {}
+
+      # Create a fresh router
+      router = new Router root: '/test/'
+
+    afterEach ->
+      applicationView.dispose()
+      testController.dispose()
+      router.dispose()
 
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
@@ -66,62 +74,86 @@ define [
       expect($body.attr('class')).toBe 'logged-out'
 
     it 'should route clicks on internal links', ->
-      router = new Router root: '/test/'
-
-      passedPath = passedCallback = undefined
-      routerRoute = (path, callback) ->
-        passedPath = path
-        passedCallback = callback
-
-      mediator.subscribe '!router:route', routerRoute
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
       path = '/an/internal/link'
       $("<a href='#{path}'>Hello World</a>")
         .appendTo(document.body)
         .click()
         .remove()
+      args = spy.mostRecentCall.args
+      passedPath = args[0]
+      passedCallback = args[1]
       expect(passedPath).toBe path
       expect(typeof passedCallback).toBe 'function'
-      mediator.unsubscribe '!router:route', routerRoute
 
-      router.dispose()
+    it 'should correctly pass the query string', ->
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
+      path = '/another/link?foo=bar&baz=qux'
+      $("<a href='#{path}'>Hello World</a>")
+        .appendTo(document.body)
+        .click()
+        .remove()
+      args = spy.mostRecentCall.args
+      passedPath = args[0]
+      passedCallback = args[1]
+      expect(passedPath).toBe path
+      expect(typeof passedCallback).toBe 'function'
+      mediator.unsubscribe '!router:route', spy
 
-    it 'should not route clicks on non-links', ->
-      router = new Router root: '/test/'
+    it 'should not route links without href attributes', ->
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
+      $('<a name="foo">Hello World</a>')
+        .appendTo(document.body)
+        .click()
+        .remove()
+      expect(spy).not.toHaveBeenCalled()
+      mediator.unsubscribe '!router:route', spy
 
+      spy = jasmine.createSpy()
+      mediator.subscribe '!router:route', spy
+      $('<a>Hello World</a>')
+        .appendTo(document.body)
+        .click()
+        .remove()
+      expect(spy).not.toHaveBeenCalled()
+      mediator.unsubscribe '!router:route', spy
+
+    it 'should not route links with empty href', ->
       # Technically an empty string is a valid relative URL
       # but it doesn’t make sense to route it
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $("<a href=''>Hello World</a>")
+      $('<a href="">Hello World</a>')
         .appendTo(document.body)
         .click()
         .remove()
       expect(spy).not.toHaveBeenCalled()
       mediator.unsubscribe '!router:route', spy
 
+    it 'should not route links to document fragments', ->
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $("<a name='foo'>Hello World</a>")
+      $('<a href="#foo">Hello World</a>')
         .appendTo(document.body)
         .click()
         .remove()
       expect(spy).not.toHaveBeenCalled()
       mediator.unsubscribe '!router:route', spy
 
+    it 'should not route links with a noscript class', ->
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $("<a>Hello World</a>")
+      $('<a href="/leave-the-app" class="noscript">Hello World</a>')
         .appendTo(document.body)
         .click()
         .remove()
       expect(spy).not.toHaveBeenCalled()
       mediator.unsubscribe '!router:route', spy
-
-      router.dispose()
 
     it 'should not route clicks on external links', ->
-      router = new Router root: '/test/'
-
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
       path = 'http://www.example.org/'
@@ -131,8 +163,6 @@ define [
         .remove()
       expect(spy).not.toHaveBeenCalled()
       mediator.unsubscribe '!router:route', spy
-
-      router.dispose()
 
     it 'should be disposable', ->
       expect(typeof applicationView.dispose).toBe 'function'

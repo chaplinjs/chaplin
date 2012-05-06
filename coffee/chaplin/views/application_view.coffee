@@ -19,20 +19,23 @@ define [
       ###console.debug 'ApplicationView#constructor', options###
 
       @title = options.title
+      _(options).defaults
+        loginClasses: true
+        routeLinks: true
 
-      # Listen to global events
-
-      # Starting and disposing of controllers
+      # Listen to global events: Starting and disposing of controllers
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
       @subscribeEvent 'startupController', @removeFallbackContent
       @subscribeEvent 'startupController', @adjustTitle
 
-      # Login and logout
-      @subscribeEvent 'loginStatus', @updateBodyClasses
+      if options.loginClasses
+        # Login and logout
+        @subscribeEvent 'loginStatus', @updateLoginClasses
+        @updateLoginClasses()
 
-      @updateBodyClasses()
-      @addDOMHandlers()
+      if options.routeLinks
+        @initLinkRouting()
 
     # Controller startup and disposal
     # -------------------------------
@@ -67,7 +70,7 @@ define [
     # Logged-in / logged-out classes for the body element
     # ---------------------------------------------------
 
-    updateBodyClasses: (loggedIn) ->
+    updateLoginClasses: (loggedIn) ->
       $(document.body)
         .toggleClass('logged-out', not loggedIn)
         .toggleClass('logged-in', loggedIn)
@@ -85,16 +88,16 @@ define [
       # Remove the handler after the first startupController event
       @unsubscribeEvent 'startupController', @removeFallbackContent
 
-    # DOM Event handling
-    # ------------------
+    # Automatic routing of internal links
+    # -----------------------------------
 
-    addDOMHandlers: ->
+    initLinkRouting: ->
       # Handle links
       $(document)
         .on('click', '.go-to', @goToHandler)
         .on('click', 'a', @openLink)
 
-    removeDOMHandlers: ->
+    stopLinkRouting: ->
       $(document)
         .off('click', '.go-to', @goToHandler)
         .off('click', 'a', @openLink)
@@ -107,7 +110,10 @@ define [
       href = el.getAttribute 'href'
       # Ignore empty paths even if it is a valid relative URL
       # Ignore links to fragment identifiers
-      return if href is null or href is '' or href.charAt(0) is '#'
+      return if href is null or
+        href is '' or
+        href.charAt(0) is '#' or
+        $(el).hasClass('noscript')
 
       # Is it an external link?
       currentHostname = location.hostname.replace('.', '\\.')
@@ -119,11 +125,10 @@ define [
         #window.open el.href
         return
 
-      @openInternalLink el
+      # Try to route the link internally
 
-    # Try to route a click on a link internally
-    openInternalLink: (el) ->
-      path = el.pathname
+      # Get the path with query string
+      path = el.pathname + el.search
       # Append a leading slash if necessary (Internet Explorer 8)
       path = "/#{path}" if path.charAt(0) isnt '/'
 
@@ -164,7 +169,7 @@ define [
       ###console.debug 'ApplicationView#dispose'###
       return if @disposed
 
-      @removeDOMHandlers()
+      @stopLinkRouting()
       @unsubscribeAllEvents()
 
       delete @title

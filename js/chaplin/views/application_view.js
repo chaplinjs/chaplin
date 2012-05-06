@@ -15,13 +15,19 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       /*console.debug 'ApplicationView#constructor', options
       */
       this.title = options.title;
+      _(options).defaults({
+        loginClasses: true,
+        routeLinks: true
+      });
       this.subscribeEvent('beforeControllerDispose', this.hideOldView);
       this.subscribeEvent('startupController', this.showNewView);
       this.subscribeEvent('startupController', this.removeFallbackContent);
       this.subscribeEvent('startupController', this.adjustTitle);
-      this.subscribeEvent('loginStatus', this.updateBodyClasses);
-      this.updateBodyClasses();
-      this.addDOMHandlers();
+      if (options.loginClasses) {
+        this.subscribeEvent('loginStatus', this.updateLoginClasses);
+        this.updateLoginClasses();
+      }
+      if (options.routeLinks) this.initLinkRouting();
     }
 
     ApplicationView.prototype.hideOldView = function(controller) {
@@ -53,7 +59,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       }), 50);
     };
 
-    ApplicationView.prototype.updateBodyClasses = function(loggedIn) {
+    ApplicationView.prototype.updateLoginClasses = function(loggedIn) {
       return $(document.body).toggleClass('logged-out', !loggedIn).toggleClass('logged-in', loggedIn);
     };
 
@@ -62,29 +68,26 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
       return this.unsubscribeEvent('startupController', this.removeFallbackContent);
     };
 
-    ApplicationView.prototype.addDOMHandlers = function() {
+    ApplicationView.prototype.initLinkRouting = function() {
       return $(document).on('click', '.go-to', this.goToHandler).on('click', 'a', this.openLink);
     };
 
-    ApplicationView.prototype.removeDOMHandlers = function() {
+    ApplicationView.prototype.stopLinkRouting = function() {
       return $(document).off('click', '.go-to', this.goToHandler).off('click', 'a', this.openLink);
     };
 
     ApplicationView.prototype.openLink = function(event) {
-      var currentHostname, el, external, href;
+      var currentHostname, el, external, href, path;
       if (utils.modifierKeyPressed(event)) return;
       el = event.currentTarget;
       href = el.getAttribute('href');
-      if (href === null || href === '' || href.charAt(0) === '#') return;
+      if (href === null || href === '' || href.charAt(0) === '#' || $(el).hasClass('noscript')) {
+        return;
+      }
       currentHostname = location.hostname.replace('.', '\\.');
       external = !RegExp("" + currentHostname + "$", "i").test(el.hostname);
       if (external) return;
-      return this.openInternalLink(el);
-    };
-
-    ApplicationView.prototype.openInternalLink = function(el) {
-      var path;
-      path = el.pathname;
+      path = el.pathname + el.search;
       if (path.charAt(0) !== '/') path = "/" + path;
       return mediator.publish('!router:route', path, function(routed) {
         if (routed) return event.preventDefault();
@@ -111,7 +114,7 @@ define(['jquery', 'underscore', 'mediator', 'chaplin/lib/utils', 'chaplin/lib/su
     ApplicationView.prototype.dispose = function() {
       /*console.debug 'ApplicationView#dispose'
       */      if (this.disposed) return;
-      this.removeDOMHandlers();
+      this.stopLinkRouting();
       this.unsubscribeAllEvents();
       delete this.title;
       this.disposed = true;
