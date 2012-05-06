@@ -29,7 +29,7 @@ define [
         .toBe true
 
     it 'should create a router', ->
-      passedMatch = undefined
+      passedMatch = null
       routesCalled = false
       routes = (match) ->
         routesCalled = true

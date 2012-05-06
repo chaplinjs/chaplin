@@ -4,7 +4,7 @@ var __hasProp = Object.prototype.hasOwnProperty,
 define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/views/view', 'chaplin/views/collection_view'], function(jQuery, Model, Collection, View, CollectionView) {
   'use strict';  return describe('CollectionView', function() {
     var ItemView, MixedCollectionView, TemplatedCollectionView, TestCollectionView, addOne, addThree, collection, collectionView, fillCollection, getAllChildren, getViewChildren, viewsMatchCollection;
-    collection = collectionView = void 0;
+    collection = collectionView = null;
     ItemView = (function(_super) {
 
       __extends(ItemView, _super);
@@ -91,7 +91,7 @@ define(['jquery', 'chaplin/models/model', 'chaplin/models/collection', 'chaplin/
       MixedCollectionView.prototype.itemSelector = 'li';
 
       MixedCollectionView.prototype.templateFunction = function(templateData) {
-        return "<p>foo</p>\n<div>bar</div>\n<article>quux</article>\n<ul>\n  <li>nested</li>\n</ul>";
+        return "<p>foo</p>\n<div>bar</div>\n<article>qux</article>\n<ul>\n  <li>nested</li>\n</ul>";
       };
 
       MixedCollectionView.prototype.getTemplateFunction = function() {

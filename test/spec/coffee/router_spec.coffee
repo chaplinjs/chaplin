@@ -9,7 +9,8 @@ define [
   describe 'Router and Route', ->
     #console.debug 'Router spec'
 
-    router = route = params = undefined
+    # Initialize shared variables
+    router = route = params = null
 
     # matchRoute handler to catch the params
     matchRoute = (_route, _params) ->
@@ -22,7 +23,7 @@ define [
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
-      route = params = undefined
+      route = params = null
       router.dispose()
       mediator.unsubscribe 'matchRoute', matchRoute
 

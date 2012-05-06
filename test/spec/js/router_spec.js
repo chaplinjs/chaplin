@@ -2,7 +2,7 @@
 define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], function(_, mediator, Router, Route) {
   'use strict';  return describe('Router and Route', function() {
     var matchRoute, params, route, router;
-    router = route = params = void 0;
+    router = route = params = null;
     matchRoute = function(_route, _params) {
       route = _route;
       return params = _params;
@@ -14,7 +14,7 @@ define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], fu
       return mediator.subscribe('matchRoute', matchRoute);
     });
     afterEach(function() {
-      route = params = void 0;
+      route = params = null;
       router.dispose();
       return mediator.unsubscribe('matchRoute', matchRoute);
     });

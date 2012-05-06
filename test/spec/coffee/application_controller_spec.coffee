@@ -9,9 +9,7 @@ define [
     #console.debug 'ApplicationController spec'
 
     # Initialize shared variables
-    applicationController = undefined
-
-    params = undefined
+    applicationController = params = null
 
     # Unique ID counter for creating params objects
     paramsId = 0

@@ -10,7 +10,8 @@ define [
   describe 'CollectionView', ->
     #console.debug 'CollectionView spec'
 
-    collection = collectionView = undefined
+    # Initialize shared variables
+    collection = collectionView = null
 
     # Test view classes
     # -----------------
@@ -69,7 +70,7 @@ define [
         """
         <p>foo</p>
         <div>bar</div>
-        <article>quux</article>
+        <article>qux</article>
         <ul>
           <li>nested</li>
         </ul>

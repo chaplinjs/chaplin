@@ -19,7 +19,7 @@ define(['mediator', 'chaplin/application', 'chaplin/lib/router', 'chaplin/contro
     });
     it('should create a router', function() {
       var passedMatch, routes, routesCalled;
-      passedMatch = void 0;
+      passedMatch = null;
       routesCalled = false;
       routes = function(match) {
         routesCalled = true;
