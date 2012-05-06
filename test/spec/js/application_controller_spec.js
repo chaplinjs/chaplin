@@ -4,8 +4,7 @@ var __hasProp = Object.prototype.hasOwnProperty,
 define(['mediator', 'chaplin/controllers/controller', 'chaplin/controllers/application_controller'], function(mediator, Controller, ApplicationController) {
   'use strict';  return describe('ApplicationController', function() {
     var TestController, applicationController, freshParams, params, paramsId, route;
-    applicationController = void 0;
-    params = void 0;
+    applicationController = params = null;
     paramsId = 0;
     route = {
       controller: 'test',

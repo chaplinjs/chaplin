@@ -13,6 +13,9 @@ define(['underscore', 'backbone', 'mediator', 'chaplin/lib/subscriber', 'chaplin
       this.match = __bind(this.match, this);
       /*console.debug 'Router#constructor'
       */
+      _(this.options).defaults({
+        pushState: true
+      });
       this.subscribeEvent('!router:route', this.routeHandler);
       this.subscribeEvent('!router:changeURL', this.changeURLHandler);
       this.createHistory();
@@ -23,11 +26,7 @@ define(['underscore', 'backbone', 'mediator', 'chaplin/lib/subscriber', 'chaplin
     };
 
     Router.prototype.startHistory = function() {
-      var pushState, _ref;
-      pushState = (_ref = this.options.pushState) != null ? _ref : true;
-      return Backbone.history.start({
-        pushState: pushState
-      });
+      return Backbone.history.start(this.options);
     };
 
     Router.prototype.stopHistory = function() {

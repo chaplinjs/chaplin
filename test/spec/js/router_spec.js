@@ -2,22 +2,27 @@
 define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], function(_, mediator, Router, Route) {
   'use strict';  return describe('Router and Route', function() {
     var matchRoute, params, route, router;
-    router = route = params = void 0;
+    router = route = params = null;
     matchRoute = function(_route, _params) {
       route = _route;
       return params = _params;
     };
     beforeEach(function() {
-      router = new Router();
+      router = new Router({
+        root: '/test/'
+      });
       return mediator.subscribe('matchRoute', matchRoute);
     });
     afterEach(function() {
-      route = params = void 0;
+      route = params = null;
       router.dispose();
       return mediator.unsubscribe('matchRoute', matchRoute);
     });
     it('should create a Backbone.History instance', function() {
       return expect(Backbone.history instanceof Backbone.History).toBe(true);
+    });
+    it('should not start the Backbone.History at once', function() {
+      return expect(Backbone.History.started).toBe(false);
     });
     it('should fire a matchRoute event', function() {
       var spy;
@@ -137,6 +142,32 @@ define(['underscore', 'mediator', 'chaplin/lib/router', 'chaplin/lib/route'], fu
       spyOn(router, 'changeURL').andCallThrough();
       mediator.publish('!router:changeURL', path);
       return expect(router.changeURL).toHaveBeenCalledWith(path);
+    });
+    it('should allow to start the Backbone.History', function() {
+      var spy;
+      spy = spyOn(Backbone.history, 'start').andCallThrough();
+      expect(typeof router.startHistory).toBe('function');
+      router.startHistory();
+      expect(Backbone.History.started).toBe(true);
+      return expect(spy).toHaveBeenCalled();
+    });
+    it('should default to pushState', function() {
+      router.startHistory();
+      expect(typeof router.options).toBe('object');
+      return expect(Backbone.history.options.pushState).toBe(router.options.pushState);
+    });
+    it('should pass the options to the Backbone.History instance', function() {
+      router.startHistory();
+      return expect(Backbone.history.options.root).toBe('/test/');
+    });
+    it('should allow to stop the Backbone.History', function() {
+      var spy;
+      router.startHistory();
+      spy = spyOn(Backbone.history, 'stop').andCallThrough();
+      expect(typeof router.stopHistory).toBe('function');
+      router.stopHistory();
+      expect(Backbone.History.started).toBe(false);
+      return expect(spy).toHaveBeenCalled();
     });
     return it('should be disposable', function() {
       expect(typeof router.dispose).toBe('function');
