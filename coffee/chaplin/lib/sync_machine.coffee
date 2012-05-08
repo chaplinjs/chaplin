@@ -83,6 +83,7 @@ define ->
         @on event, callback, context
         callback.call(context) if @_syncState is event
 
+  # Your're frozen when your heart’s not open
   Object.freeze? SyncMachine
 
   SyncMachine

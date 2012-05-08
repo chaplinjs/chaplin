@@ -1,5 +1,5 @@
 
-define(['chaplin/lib/create_mediator', 'chaplin/models/model'], function(createMediator, Model) {
+define(['chaplin/lib/create_mediator', 'chaplin/models/model', 'chaplin/lib/support'], function(createMediator, Model, support) {
   'use strict';
   var mediator;
   mediator = createMediator({
@@ -7,24 +7,20 @@ define(['chaplin/lib/create_mediator', 'chaplin/models/model'], function(createM
   });
   return describe('mediator', function() {
     it('should be a simple object', function() {
-      return expect(typeof mediator).toEqual('object');
+      return expect(typeof mediator).toBe('object');
     });
     it('should have Pub/Sub methods', function() {
-      expect(typeof mediator.subscribe).toEqual('function');
-      expect(typeof mediator.unsubscribe).toEqual('function');
-      return expect(typeof mediator.publish).toEqual('function');
+      expect(typeof mediator.subscribe).toBe('function');
+      expect(typeof mediator.unsubscribe).toBe('function');
+      return expect(typeof mediator.publish).toBe('function');
     });
     it('should have readonly Pub/Sub methods', function() {
       var methods;
-      if (!Object.defineProperty) return;
+      if (!(support.propertyDescriptors && Object.getOwnPropertyDescriptor)) {
+        return;
+      }
       methods = ['subscribe', 'unsubscribe', 'publish'];
-      methods.forEach(function(property) {
-        return expect(function() {
-          return mediator[property] = 'foo';
-        }).toThrow();
-      });
-      if (!Object.getOwnPropertyDescriptor) return;
-      return methods.forEach(function(property) {
+      return _(methods).forEach(function(property) {
         var desc;
         desc = Object.getOwnPropertyDescriptor(mediator, property);
         expect(desc.enumerable).toBe(true);
@@ -56,13 +52,13 @@ define(['chaplin/lib/create_mediator', 'chaplin/models/model'], function(createM
       return expect(mediator.user).toBeNull();
     });
     it('should have a readonly user', function() {
-      if (!Object.defineProperty) return;
+      if (!support.propertyDescriptors) return;
       return expect(function() {
         return mediator.user = 'foo';
       }).toThrow();
     });
     it('should have a setUser method', function() {
-      return expect(typeof mediator.setUser).toEqual('function');
+      return expect(typeof mediator.setUser).toBe('function');
     });
     return it('should have a user after calling setUser', function() {
       var user;

@@ -13,7 +13,7 @@ define [
     application = new Application()
 
     it 'should be a simple object', ->
-      expect(typeof application).toEqual 'object'
+      expect(typeof application).toBe 'object'
       expect(application instanceof Application).toBe true
 
     it 'should initialize', ->
@@ -22,23 +22,24 @@ define [
 
     it 'should create an application controller', ->
       expect(application.applicationController instanceof ApplicationController)
-        .toEqual true
+        .toBe true
 
     it 'should create an application view', ->
       expect(application.applicationView instanceof ApplicationView)
-        .toEqual true
+        .toBe true
 
     it 'should create a router', ->
-      passedMatch = undefined
+      passedMatch = null
       routesCalled = false
       routes = (match) ->
         routesCalled = true
         passedMatch = match
 
       expect(typeof application.initRouter).toBe 'function'
-      application.initRouter routes
+      expect(application.initRouter.length).toBe 2
+      application.initRouter routes, root: '/test/'
 
-      expect(application.router instanceof Router).toEqual true
+      expect(application.router instanceof Router).toBe true
       expect(routesCalled).toBe true
       expect(typeof passedMatch).toBe 'function'
 

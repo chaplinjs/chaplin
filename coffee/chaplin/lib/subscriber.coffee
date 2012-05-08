@@ -44,6 +44,7 @@ define ['mediator'], (mediator) ->
       # Remove all handlers with a context of this subscriber
       mediator.unsubscribe null, null, this
 
+  # Your're frozen when your heart’s not open
   Object.freeze? Subscriber
 
   Subscriber

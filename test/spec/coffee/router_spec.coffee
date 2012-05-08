@@ -9,7 +9,8 @@ define [
   describe 'Router and Route', ->
     #console.debug 'Router spec'
 
-    router = route = params = undefined
+    # Initialize shared variables
+    router = route = params = null
 
     # matchRoute handler to catch the params
     matchRoute = (_route, _params) ->
@@ -18,16 +19,19 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router()
+      router = new Router root: '/test/'
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
-      route = params = undefined
+      route = params = null
       router.dispose()
       mediator.unsubscribe 'matchRoute', matchRoute
 
     it 'should create a Backbone.History instance', ->
       expect(Backbone.history instanceof Backbone.History).toBe true
+
+    it 'should not start the Backbone.History at once', ->
+      expect(Backbone.History.started).toBe false
 
     it 'should fire a matchRoute event', ->
       spy = jasmine.createSpy()
@@ -151,6 +155,30 @@ define [
       mediator.publish '!router:changeURL', path
       expect(router.changeURL).toHaveBeenCalledWith path
 
+    it 'should allow to start the Backbone.History', ->
+      spy = spyOn(Backbone.history, 'start').andCallThrough()
+      expect(typeof router.startHistory).toBe 'function'
+      router.startHistory()
+      expect(Backbone.History.started).toBe true
+      expect(spy).toHaveBeenCalled()
+
+    it 'should default to pushState', ->
+      router.startHistory()
+      expect(typeof router.options).toBe 'object'
+      expect(Backbone.history.options.pushState).toBe router.options.pushState
+
+    it 'should pass the options to the Backbone.History instance', ->
+      router.startHistory()
+      expect(Backbone.history.options.root).toBe '/test/'
+
+    it 'should allow to stop the Backbone.History', ->
+      router.startHistory()
+      spy = spyOn(Backbone.history, 'stop').andCallThrough()
+      expect(typeof router.stopHistory).toBe 'function'
+      router.stopHistory()
+      expect(Backbone.History.started).toBe false
+      expect(spy).toHaveBeenCalled()
+
     it 'should be disposable', ->
       expect(typeof router.dispose).toBe 'function'
       router.dispose()
@@ -160,7 +188,7 @@ define [
       expect(->
         router.match '', 'x#y'
       ).toThrow()
-      
+
       expect(->
         router.route '/'
       ).toThrow()
@@ -168,4 +196,3 @@ define [
       expect(router.disposed).toBe true
       if Object.isFrozen
         expect(Object.isFrozen(router)).toBe true
-      

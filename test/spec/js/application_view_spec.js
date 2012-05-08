@@ -1,22 +1,29 @@
 
 define(['jquery', 'mediator', 'chaplin/lib/router', 'chaplin/controllers/controller', 'chaplin/views/application_view', 'chaplin/views/view'], function($, mediator, Router, Controller, ApplicationView, View) {
   'use strict';  return describe('ApplicationView', function() {
-    var applicationView, startupControllerContext, testController;
-    applicationView = testController = startupControllerContext = void 0;
+    var applicationView, router, startupControllerContext, testController;
+    applicationView = testController = startupControllerContext = router = null;
     beforeEach(function() {
-      if (applicationView) applicationView.dispose();
       applicationView = new ApplicationView({
         title: 'Test Site Title'
       });
       testController = new Controller();
       testController.view = new View();
       testController.title = 'Test Controller Title';
-      return startupControllerContext = {
+      startupControllerContext = {
         previousControllerName: 'null',
         controller: testController,
         controllerName: 'test',
         params: {}
       };
+      return router = new Router({
+        root: '/test/'
+      });
+    });
+    afterEach(function() {
+      applicationView.dispose();
+      testController.dispose();
+      return router.dispose();
     });
     it('should hide the view of an inactive controller', function() {
       testController.view.$el.css('display', 'block');
@@ -57,26 +64,75 @@ define(['jquery', 'mediator', 'chaplin/lib/router', 'chaplin/controllers/control
       return expect($body.attr('class')).toBe('logged-out');
     });
     it('should route clicks on internal links', function() {
-      var passedCallback, passedPath, path, router, routerRoute, spy;
-      passedPath = passedCallback = void 0;
-      routerRoute = function(path, callback) {
-        passedPath = path;
-        return passedCallback = callback;
-      };
-      router = new Router();
-      mediator.subscribe('!router:route', routerRoute);
+      var args, passedCallback, passedPath, path, spy;
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
       path = '/an/internal/link';
-      $("<a href='" + path + "'>").appendTo(document.body).click().remove();
+      $("<a href='" + path + "'>Hello World</a>").appendTo(document.body).click().remove();
+      args = spy.mostRecentCall.args;
+      passedPath = args[0];
+      passedCallback = args[1];
+      expect(passedPath).toBe(path);
+      return expect(typeof passedCallback).toBe('function');
+    });
+    it('should correctly pass the query string', function() {
+      var args, passedCallback, passedPath, path, spy;
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      path = '/another/link?foo=bar&baz=qux';
+      $("<a href='" + path + "'>Hello World</a>").appendTo(document.body).click().remove();
+      args = spy.mostRecentCall.args;
+      passedPath = args[0];
+      passedCallback = args[1];
       expect(passedPath).toBe(path);
       expect(typeof passedCallback).toBe('function');
-      mediator.unsubscribe('!router:route', routerRoute);
+      return mediator.unsubscribe('!router:route', spy);
+    });
+    it('should not route links without href attributes', function() {
+      var spy;
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $('<a name="foo">Hello World</a>').appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      mediator.unsubscribe('!router:route', spy);
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $('<a>Hello World</a>').appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      return mediator.unsubscribe('!router:route', spy);
+    });
+    it('should not route links with empty href', function() {
+      var spy;
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $('<a href="">Hello World</a>').appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      return mediator.unsubscribe('!router:route', spy);
+    });
+    it('should not route links to document fragments', function() {
+      var spy;
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $('<a href="#foo">Hello World</a>').appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      return mediator.unsubscribe('!router:route', spy);
+    });
+    it('should not route links with a noscript class', function() {
+      var spy;
+      spy = jasmine.createSpy();
+      mediator.subscribe('!router:route', spy);
+      $('<a href="/leave-the-app" class="noscript">Hello World</a>').appendTo(document.body).click().remove();
+      expect(spy).not.toHaveBeenCalled();
+      return mediator.unsubscribe('!router:route', spy);
+    });
+    it('should not route clicks on external links', function() {
+      var path, spy;
       spy = jasmine.createSpy();
       mediator.subscribe('!router:route', spy);
       path = 'http://www.example.org/';
-      $("<a href='" + path + "'>").appendTo(document.body).click().remove();
+      $("<a href='" + path + "'>Hello World</a>").appendTo(document.body).click().remove();
       expect(spy).not.toHaveBeenCalled();
-      mediator.unsubscribe('!router:route', spy);
-      return router.dispose();
+      return mediator.unsubscribe('!router:route', spy);
     });
     return it('should be disposable', function() {
       expect(typeof applicationView.dispose).toBe('function');

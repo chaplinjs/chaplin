@@ -17,7 +17,10 @@ define [
 
     constructor: (@options = {}) ->
       ###console.debug 'Router#constructor'###
-      
+
+      _(@options).defaults
+        pushState: true
+
       @subscribeEvent '!router:route', @routeHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
@@ -28,10 +31,9 @@ define [
       Backbone.history or= new Backbone.History()
 
     startHistory: ->
-      pushState = @options.pushState ? true
       # Start the Backbone.History instance to start routing
       # This should be called after all routes have been registered
-      Backbone.history.start {pushState}
+      Backbone.history.start @options
 
     # Stop the current Backbone.History instance from observing URL changes
     stopHistory: ->
@@ -88,10 +90,13 @@ define [
       ###console.debug 'Router#dispose'###
       return if @disposed
 
+      # Stop Backbone.History instance and remove it
       @stopHistory()
       delete Backbone.history
+
       @unsubscribeAllEvents()
 
+      # Finished
       @disposed = true
 
       # Your're frozen when your heart’s not open
