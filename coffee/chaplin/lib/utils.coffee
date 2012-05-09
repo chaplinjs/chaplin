@@ -85,12 +85,12 @@ define [
 
     # Get a cookie by its name
     getCookie: (key) ->
-      keyPosition = document.cookie.indexOf "#{key}="
-      return false if keyPosition is -1
-      start = keyPosition + key.length + 1
-      end = document.cookie.indexOf ';', start
-      end = document.cookie.length if end is -1
-      decodeURIComponent(document.cookie.substring(start, end))
+      pairs = document.cookie.split('; ')
+      for pair in pairs
+        val = pair.split('=')
+        if decodeURIComponent(val[0]) is key
+          return decodeURIComponent(val[1] or '')
+      null
 
     # Set a session cookie
 
