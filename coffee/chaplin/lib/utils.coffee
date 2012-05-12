@@ -85,17 +85,29 @@ define [
 
     # Get a cookie by its name
     getCookie: (key) ->
-      keyPosition = document.cookie.indexOf "#{key}="
-      return false if keyPosition is -1
-      start = keyPosition + key.length + 1
-      end = document.cookie.indexOf ';', start
-      end = document.cookie.length if end is -1
-      decodeURIComponent(document.cookie.substring(start, end))
+      pairs = document.cookie.split('; ')
+      for pair in pairs
+        val = pair.split('=')
+        if decodeURIComponent(val[0]) is key
+          return decodeURIComponent(val[1] or '')
+      null
 
     # Set a session cookie
 
-    setCookie: (key, value) ->
-      document.cookie = key + '=' + encodeURIComponent(value)
+    setCookie: (key, value, options = {}) ->
+      payload = "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}"
+      getOption = (name) ->
+        if options[name] then "; #{name}=#{options[name]}" else ''
+
+      expires = if options.expires
+        "; expires=#{options.expires.toUTCString()}"
+      else
+        ''
+
+      document.cookie = [
+        payload, expires,
+        (getOption 'path'), (getOption 'domain'), (getOption 'secure')
+      ].join('')
 
     expireCookie: (key) ->
       document.cookie = "#{key}=nil; expires=#{(new Date).toGMTString()}"
