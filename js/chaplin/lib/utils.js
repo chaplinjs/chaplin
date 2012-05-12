@@ -80,16 +80,30 @@ define(['jquery', 'underscore', 'mediator'], function($, _, mediator) {
       }
     })(),
     getCookie: function(key) {
-      var end, keyPosition, start;
-      keyPosition = document.cookie.indexOf("" + key + "=");
-      if (keyPosition === -1) return false;
-      start = keyPosition + key.length + 1;
-      end = document.cookie.indexOf(';', start);
-      if (end === -1) end = document.cookie.length;
-      return decodeURIComponent(document.cookie.substring(start, end));
+      var pair, pairs, val, _i, _len;
+      pairs = document.cookie.split('; ');
+      for (_i = 0, _len = pairs.length; _i < _len; _i++) {
+        pair = pairs[_i];
+        val = pair.split('=');
+        if (decodeURIComponent(val[0]) === key) {
+          return decodeURIComponent(val[1] || '');
+        }
+      }
+      return null;
     },
-    setCookie: function(key, value) {
-      return document.cookie = key + '=' + encodeURIComponent(value);
+    setCookie: function(key, value, options) {
+      var expires, getOption, payload;
+      if (options == null) options = {};
+      payload = "" + (encodeURIComponent(key)) + "=" + (encodeURIComponent(value));
+      getOption = function(name) {
+        if (options[name]) {
+          return "; " + name + "=" + options[name];
+        } else {
+          return '';
+        }
+      };
+      expires = options.expires ? "; expires=" + (options.expires.toUTCString()) : '';
+      return document.cookie = [payload, expires, getOption('path'), getOption('domain'), getOption('secure')].join('');
     },
     expireCookie: function(key) {
       return document.cookie = "" + key + "=nil; expires=" + ((new Date).toGMTString());
