@@ -28,7 +28,7 @@ define [
       # Save the references for testing introspection only.
       # Module should communicate with each other via Pub/Sub.
       @dispatcher = new Dispatcher()
-      #r @layout = new Layout title: @title
+      @layout = new Layout title: @title
 
     # Instantiate the dispatcher
     # --------------------------
