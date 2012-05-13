@@ -15,6 +15,7 @@ With input and contributions from (in chronological order):
 * Patrick Schneider (9elements) – [@padschneider](http://twitter.com/padschneider) – [padschneider.com](http://padschneider.com/)
 * Luis Merino (Moviepilot) – [@rendez](http://twitter.com/rendez)
 * Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
+* Karel Ledru-Mathé – [@karelledrumathe](http://twitter.com/karelledrumathe) – [ledrumathe.com](http://ledrumathe.com/)
 
 [See all Github contributors](https://github.com/moviepilot/chaplin/contributors)
 
