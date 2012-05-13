@@ -1,8 +1,7 @@
 define [
-  'jquery',
-  'underscore',
-  'mediator'
-], ($, _, mediator) ->
+  'chaplin/mediator'
+  'chaplin/lib/support'
+], (mediator, support) ->
   'use strict'
 
   # Utilities

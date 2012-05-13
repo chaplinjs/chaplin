@@ -1,4 +1,6 @@
-define ['mediator'], (mediator) ->
+define [
+  'chaplin/mediator'
+], (mediator) ->
   'use strict'
 
   # Add functionality to subscribe to global Publish/Subscribe events

@@ -1,6 +1,6 @@
 define [
-  'mediator',
-  'chaplin/dispatcher',
+  'chaplin/mediator'
+  'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
 ], (mediator, Dispatcher, Layout, Router) ->
