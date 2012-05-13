@@ -6,7 +6,7 @@ define [
 ], (_, mediator, utils, Subscriber) ->
   'use strict'
 
-  class ApplicationController # Do not inherit from Controller
+  class Dispatcher # Do not inherit from Controller
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
@@ -27,7 +27,7 @@ define [
       @initialize()
 
     initialize: ->
-      ###console.debug 'ApplicationController#initialize'###
+      ###console.debug 'Dispatcher#initialize'###
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
@@ -52,7 +52,7 @@ define [
     #   4. Show the new view
     #
     startupController: (controllerName, action = 'index', params = {}) ->
-      ###console.debug 'ApplicationController#startupController', controllerName, action, params###
+      ###console.debug 'Dispatcher#startupController', controllerName, action, params###
 
       # Set default flags
 
@@ -137,7 +137,7 @@ define [
         url = controller.historyURL
 
       else
-        throw new Error 'ApplicationController#adjustURL: controller for ' +
+        throw new Error 'Dispatcher#adjustURL: controller for ' +
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
@@ -153,7 +153,7 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'ApplicationController#dispose###
+      ###console.debug 'Dispatcher#dispose###
       return if @disposed
 
       @unsubscribeAllEvents()

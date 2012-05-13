@@ -1,7 +1,6 @@
 define [
   'jquery',
   'underscore',
-  'lib/utils',
   'chaplin/views/view'
 ], ($, _, utils, View) ->
   'use strict'
