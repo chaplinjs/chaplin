@@ -1,15 +1,14 @@
 define [
   'jquery',
   'underscore',
-  'lib/utils',
   'chaplin/views/view'
-], ($, _, utils, ChaplinView) ->
+], ($, _, utils, View) ->
   'use strict'
 
   # General class for rendering Collections. Derive this class and
   # overwrite at least getView. getView gets an item model
   # and should instantiate a corresponding item view.
-  class ChaplinCollectionView extends ChaplinView
+  class CollectionView extends View
 
     # Configuration options
     # ---------------------

@@ -7,7 +7,7 @@ define [
 ], ($, _, mediator, utils, Subscriber) ->
   'use strict'
 
-  class ChaplinLayout # This class does not extend View
+  class Layout # This class does not extend View
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber

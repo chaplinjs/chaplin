@@ -9,7 +9,7 @@ define [
   # The application bootstrapper
   # ----------------------------
 
-  class ChaplinApplication
+  class Application
 
     # The site title used in the document title
     title: ''
