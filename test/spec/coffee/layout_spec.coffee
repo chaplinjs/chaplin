@@ -1,20 +1,20 @@
 define [
-  'jquery',
-  'mediator',
-  'chaplin/lib/router',
-  'chaplin/controllers/controller',
-  'chaplin/views/application_view',
-  'chaplin/views/view',
-], ($, mediator, Router, Controller, ApplicationView, View) ->
+  'jquery'
+  'chaplin/mediator'
+  'chaplin/lib/router'
+  'chaplin/controllers/controller'
+  'chaplin/views/layout'
+  'chaplin/views/view'
+], ($, mediator, Router, Controller, Layout, View) ->
   'use strict'
 
-  describe 'ApplicationView', ->
+  describe 'Layout', ->
     # Initialize shared variables
-    applicationView = testController = startupControllerContext = router = null
+    layout = testController = startupControllerContext = router = null
 
     beforeEach ->
-      # Create the application view
-      applicationView = new ApplicationView title: 'Test Site Title'
+      # Create the layout
+      layout = new Layout title: 'Test Site Title'
 
       # Create a test controller
       testController = new Controller()
@@ -32,7 +32,7 @@ define [
       router = new Router root: '/test/'
 
     afterEach ->
-      applicationView.dispose()
+      layout.dispose()
       testController.dispose()
       router.dispose()
 
@@ -61,7 +61,7 @@ define [
         mediator.publish 'startupController', startupControllerContext
       waits 100
       runs ->
-        title = "#{testController.title} \u2013 #{applicationView.title}"
+        title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).toBe title
 
     it 'should set logged-in/logged-out body classes', ->
@@ -165,9 +165,9 @@ define [
       mediator.unsubscribe '!router:route', spy
 
     it 'should be disposable', ->
-      expect(typeof applicationView.dispose).toBe 'function'
-      applicationView.dispose()
+      expect(typeof layout.dispose).toBe 'function'
+      layout.dispose()
 
-      expect(applicationView.disposed).toBe true
+      expect(layout.disposed).toBe true
       if Object.isFrozen
-        expect(Object.isFrozen(applicationView)).toBe true
+        expect(Object.isFrozen(layout)).toBe true

@@ -1,10 +1,10 @@
 define [
-  'mediator',
-  'chaplin/application',
-  'chaplin/lib/router',
-  'chaplin/controllers/application_controller',
-  'chaplin/views/application_view'
-], (mediator, Application, Router, ApplicationController, ApplicationView) ->
+  'chaplin/mediator'
+  'chaplin/application'
+  'chaplin/lib/router'
+  'chaplin/dispatcher'
+  'chaplin/views/layout'
+], (mediator, Application, Router, Dispatcher, Layout) ->
   'use strict'
 
   describe 'Application', ->
@@ -20,12 +20,12 @@ define [
       expect(typeof application.initialize).toBe 'function'
       application.initialize()
 
-    it 'should create an application controller', ->
-      expect(application.applicationController instanceof ApplicationController)
+    it 'should create a dispatcher', ->
+      expect(application.dispatcher instanceof Dispatcher)
         .toBe true
 
-    it 'should create an application view', ->
-      expect(application.applicationView instanceof ApplicationView)
+    it 'should create a layout', ->
+      expect(application.layout instanceof Layout)
         .toBe true
 
     it 'should create a router', ->
@@ -50,8 +50,8 @@ define [
       expect(typeof application.dispose).toBe 'function'
       application.dispose()
 
-      expect(application.applicationController).toBe null
-      expect(application.applicationView).toBe null
+      expect(application.dispatcher).toBe null
+      expect(application.layout).toBe null
       expect(application.router).toBe null
 
       expect(application.disposed).toBe true
