@@ -3,8 +3,9 @@ define [
   'underscore',
   'backbone',
   'chaplin/lib/utils',
-  'chaplin/lib/subscriber'
-], ($, _, Backbone, utils, Subscriber) ->
+  'chaplin/lib/subscriber',
+  'chaplin/models/model'
+], ($, _, Backbone, utils, Subscriber, Model) ->
   'use strict'
 
   class View extends Backbone.View
@@ -256,13 +257,21 @@ define [
 
     # Get attributes from model or collection
     getTemplateData: ->
+      serialize = (object) ->
+        result = {}
+        for key, value of object
+          result[key] = if value instanceof Model
+            serialize value.getAttributes()
+          else
+            value
+        result
 
       modelAttributes = @model and @model.getAttributes()
       templateData = if modelAttributes
         # Return an object which delegates to the returned attributes
         # object so a custom getTemplateData might safely add and alter
         # properties (at least primitive values).
-        utils.beget modelAttributes
+        utils.beget serialize modelAttributes
       else
         {}
 
