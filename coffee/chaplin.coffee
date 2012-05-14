@@ -14,7 +14,7 @@ define [
   'chaplin/lib/support'
   'chaplin/lib/sync_machine'
   'chaplin/lib/utils'
-], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, Subscriber, Support, SyncMachine, Utils) ->
+], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, Subscriber, support, SyncMachine, utils) ->
   Application    : Application
   mediator       : mediator
   Dispatcher     : Dispatcher
@@ -27,6 +27,6 @@ define [
   Route          : Route
   Router         : Router
   Subscriber     : Subscriber
-  Support        : Support
+  support        : support
   SyncMachine    : SyncMachine
-  utils          : Utils
+  utils          : utils
