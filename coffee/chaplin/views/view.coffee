@@ -47,7 +47,7 @@ define [
     # Wrap a method in order to call the corresponding
     # `after-` method automatically
     wrapMethod: (name) ->
-      instance = @
+      instance = this
       # Enclose the original function
       func = instance[name]
       # Set a flag
