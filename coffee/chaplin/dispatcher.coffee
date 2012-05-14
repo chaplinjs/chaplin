@@ -6,7 +6,7 @@ define [
 ], (_, mediator, utils, Subscriber) ->
   'use strict'
 
-  class Dispatcher # Do not inherit from Controller
+  class Dispatcher
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
@@ -79,8 +79,14 @@ define [
       return if isSameController
 
       # Fetch the new controller, then go on
-      controllerFileName = utils.underscorize(controllerName) + '_controller'
       handler = _(@controllerLoaded).bind(this, controllerName, action, params)
+      @loadController controllerName, handler
+
+    # Load the constructor for a given controller name.
+    # The default implementation uses require() from a AMD module loader
+    # like RequireJS to fetch the constructor.
+    loadController: (controllerName, handler) ->
+      controllerFileName = utils.underscorize(controllerName) + '_controller'
       require ['controllers/' + controllerFileName], handler
 
     # Handler for the controller lazy-loading
