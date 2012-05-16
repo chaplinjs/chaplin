@@ -11,13 +11,16 @@ define(['jquery', 'underscore', 'chaplin/mediator', 'chaplin/lib/utils', 'chapli
 
     Layout.prototype.title = '';
 
-    function Layout(options) {
+    function Layout() {
+      this.openLink = __bind(this.openLink, this);
+      this.initialize.apply(this, arguments);
+    }
+
+    Layout.prototype.initialize = function(options) {
       if (options == null) {
         options = {};
       }
-      this.openLink = __bind(this.openLink, this);
-
-      /*console.debug 'Layout#constructor', options
+      /*console.debug 'Layout#initialize', options
       */
 
       this.title = options.title;
@@ -33,9 +36,9 @@ define(['jquery', 'underscore', 'chaplin/mediator', 'chaplin/lib/utils', 'chapli
         this.updateLoginClasses();
       }
       if (options.routeLinks) {
-        this.initLinkRouting();
+        return this.initLinkRouting();
       }
-    }
+    };
 
     Layout.prototype.hideOldView = function(controller) {
       var view;

@@ -20,16 +20,20 @@ define(['underscore', 'chaplin/mediator', 'chaplin/lib/utils', 'chaplin/lib/subs
 
     Dispatcher.prototype.url = null;
 
-    function Dispatcher(options) {
+    function Dispatcher() {
+      this.initialize.apply(this, arguments);
+    }
+
+    Dispatcher.prototype.initialize = function(options) {
       if (options == null) {
         options = {};
       }
-      /*console.debug 'Dispatcher#constructor'
+      /*console.debug 'Dispatcher#initialize'
       */
 
       this.subscribeEvent('matchRoute', this.matchRoute);
-      this.subscribeEvent('!startupController', this.startupController);
-    }
+      return this.subscribeEvent('!startupController', this.startupController);
+    };
 
     Dispatcher.prototype.matchRoute = function(route, params) {
       return this.startupController(route.controller, route.action, params);

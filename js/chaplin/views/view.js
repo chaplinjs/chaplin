@@ -7,7 +7,6 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
 
   var View;
   return View = (function(_super) {
-    var wrapMethod;
 
     __extends(View, _super);
 
@@ -15,7 +14,7 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
 
     View.prototype.autoRender = false;
 
-    View.prototype.containerSelector = null;
+    View.prototype.container = null;
 
     View.prototype.containerMethod = 'append';
 
@@ -23,21 +22,23 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
 
     View.prototype.subviewsByName = null;
 
-    wrapMethod = function(obj, name) {
-      var func;
-      func = obj[name];
-      return obj[name] = function() {
-        func.apply(obj, arguments);
-        return obj["after" + (utils.upcase(name))].apply(obj, arguments);
+    View.prototype.wrapMethod = function(name) {
+      var func, instance;
+      instance = this;
+      func = instance[name];
+      instance["" + name + "IsWrapped"] = true;
+      return instance[name] = function() {
+        func.apply(instance, arguments);
+        return instance["after" + (utils.upcase(name))].apply(instance, arguments);
       };
     };
 
     function View() {
       if (this.initialize !== View.prototype.initialize) {
-        wrapMethod(this, 'initialize');
+        this.wrapMethod('initialize');
       }
-      if (this.initialize !== View.prototype.initialize) {
-        wrapMethod(this, 'render');
+      if (this.render !== View.prototype.render) {
+        this.wrapMethod('render');
       } else {
         this.render = _(this.render).bind(this);
       }
@@ -47,20 +48,29 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
     View.prototype.initialize = function(options) {
       /*console.debug 'View#initialize', this, 'options', options
       */
+
+      var prop, _i, _len, _ref;
+      if (options) {
+        _ref = ['autoRender', 'container', 'containerMethod'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          prop = _ref[_i];
+          if (options[prop] != null) {
+            this[prop] = options[prop];
+          }
+        }
+      }
       this.subviews = [];
       this.subviewsByName = {};
       if (this.model || this.collection) {
         this.modelBind('dispose', this.dispose);
       }
-      if (this.initialize === View.prototype.initialize) {
+      if (!this.initializeIsWrapped) {
         return this.afterInitialize();
       }
     };
 
     View.prototype.afterInitialize = function() {
-      var autoRender;
-      autoRender = this.options.autoRender != null ? this.options.autoRender : this.autoRender;
-      if (autoRender) {
+      if (this.autoRender) {
         return this.render();
       }
     };
@@ -218,25 +228,24 @@ define(['jquery', 'underscore', 'backbone', 'chaplin/lib/utils', 'chaplin/lib/su
       /*console.debug 'View#render', this
       */
 
-      var html, templateData, templateFunc;
+      var html, templateFunc;
       if (this.disposed) {
         return;
       }
-      templateData = this.getTemplateData();
       templateFunc = this.getTemplateFunction();
       if (typeof templateFunc === 'function') {
-        html = templateFunc(templateData);
+        html = templateFunc(this.getTemplateData());
         this.$el.empty().append(html);
+      }
+      if (!this.renderIsWrapped) {
+        this.afterRender();
       }
       return this;
     };
 
     View.prototype.afterRender = function() {
-      var container, containerMethod;
-      container = this.options.container != null ? this.options.container : this.containerSelector;
-      if (container) {
-        containerMethod = this.options.containerMethod != null ? this.options.containerMethod : this.containerMethod;
-        $(container)[containerMethod](this.el);
+      if (this.container) {
+        $(this.container)[this.containerMethod](this.el);
         this.trigger('addedToDOM');
       }
       return this;

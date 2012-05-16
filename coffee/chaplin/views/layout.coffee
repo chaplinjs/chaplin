@@ -17,8 +17,11 @@ define [
     # and passed as an option
     title: ''
 
-    constructor: (options = {}) ->
-      ###console.debug 'Layout#constructor', options###
+    constructor: ->
+      @initialize arguments...
+
+    initialize: (options = {}) ->
+      ###console.debug 'Layout#initialize', options###
 
       @title = options.title
       _(options).defaults
