@@ -94,13 +94,13 @@ define [
     initLinkRouting: ->
       # Handle links
       $(document)
-        .on('click', '.go-to', @goToHandler)
-        .on('click', 'a', @openLink)
+        .on('touchstart mousedown', '.go-to', @goToHandler)
+        .on('touchstart mousedown', 'a', @openLink)
 
     stopLinkRouting: ->
       $(document)
-        .off('click', '.go-to', @goToHandler)
-        .off('click', 'a', @openLink)
+        .off('touchstart mousedown', '.go-to', @goToHandler)
+        .off('touchstart mousedown', 'a', @openLink)
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) =>
