@@ -22,13 +22,12 @@ define [
     initialize: ->
       ###console.debug 'Application#initialize'###
 
-      # Instantiate the AppController and AppView
-      # -----------------------------------------
+    initDispatcher: (options) ->
+      @dispatcher = new Dispatcher options
 
-      # Save the references for testing introspection only.
-      # Module should communicate with each other via Pub/Sub.
-      @dispatcher = new Dispatcher()
-      @layout = new Layout title: @title
+    initLayout: (options = {}) ->
+      options.title ?= @title
+      @layout = new Layout options
 
     # Instantiate the dispatcher
     # --------------------------

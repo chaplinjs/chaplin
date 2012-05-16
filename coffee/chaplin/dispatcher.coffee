@@ -23,11 +23,8 @@ define [
     # The current URL
     url: null
 
-    constructor: ->
-      @initialize()
-
-    initialize: ->
-      ###console.debug 'Dispatcher#initialize'###
+    constructor: (options = {}) ->
+      ###console.debug 'Dispatcher#constructor'###
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
