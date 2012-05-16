@@ -49,13 +49,6 @@ define [
       expect($el.css('opacity')).toBe '1'
       expect($el.css('visibility')).toBe 'visible'
 
-    it 'should hide accessible fallback content', ->
-      $(document.body).append(
-        '<p class="accessible-fallback" style="display: none">Accessible fallback</p>'
-      )
-      mediator.publish 'startupController', startupControllerContext
-      expect($('.accessible-fallback').length).toBe 0
-
     it 'should set the document title', ->
       runs ->
         mediator.publish 'startupController', startupControllerContext
