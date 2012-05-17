@@ -16,8 +16,6 @@ define [
     _(@prototype).extend Subscriber
 
     constructor: (@options = {}) ->
-      ###console.debug 'Router#constructor'###
-
       _(@options).defaults
         pushState: true
 
@@ -54,8 +52,6 @@ define [
     # accepts an absolute URL with a leading slash (e.g. /foo)
     # and passes a changeURL param to the callback function.
     route: (path) =>
-      ###console.debug 'Router#route', path###
-
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
 
@@ -74,7 +70,6 @@ define [
     # Do not trigger any routes (which is Backbone’s
     # default behavior, but added for clarity)
     changeURL: (url) ->
-      ###console.debug 'Router#changeURL', url###
       Backbone.history.navigate url, trigger: false
 
     # Handler for the global !router:changeURL event
@@ -87,7 +82,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'Router#dispose'###
       return if @disposed
 
       # Stop Backbone.History instance and remove it

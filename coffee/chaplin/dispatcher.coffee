@@ -27,8 +27,6 @@ define [
       @initialize arguments...
 
     initialize: (options = {}) ->
-      ###console.debug 'Dispatcher#initialize'###
-
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
       @subscribeEvent '!startupController', @startupController
@@ -52,8 +50,6 @@ define [
     #   4. Show the new view
     #
     startupController: (controllerName, action = 'index', params = {}) ->
-      ###console.debug 'Dispatcher#startupController', controllerName, action, params###
-
       # Set default flags
 
       # Whether to update the URL after controller startup
@@ -159,7 +155,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'Dispatcher#dispose###
       return if @disposed
 
       @unsubscribeAllEvents()

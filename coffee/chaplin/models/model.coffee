@@ -28,7 +28,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'Model#dispose', this, 'disposed?', @disposed###
       return if @disposed
 
       # Fire an event to notify associated collections and views

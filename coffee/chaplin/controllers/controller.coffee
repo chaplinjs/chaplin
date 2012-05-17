@@ -29,7 +29,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'Controller#dispose', this, 'disposed?', @disposed###
       return if @disposed
 
       # Dispose and delete all members which are disposable
