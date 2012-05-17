@@ -118,11 +118,12 @@ In separate repositories, you will find a example applications which can also be
 
 This example uses Facebook client-side authentication to display the user’s Likes.
 
-### Twitter Client
+### Brunch with Chaplin
+[github.com/paulmillr/brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin)
 
-[github.com/brunch/twitter](https://github.com/brunch/twitter)
+Brunch with Chaplin is a skeleton application, where [brunch](http://brunch.io) is used for assembling files & assets. It has ready-to-use classes for session management, html5boilerplate and stylus / handlebars.js as app languages.
 
-This example uses Twitter client-side authentication to display user’s feed and to create new tweets. It uses [brunch](http://brunch.io) for assembling files & assets.
+[github.com/brunch/twitter](https://github.com/brunch/twitter) is a twitter client, built on it. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
 
 ## The Architecture in Detail
 
