@@ -20,7 +20,7 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Router](#toc-router)
 * [Dispatcher](#toc-dispatcher)
 * [Layout](#toc-layout)
-* [The Controllers](#toc-controllers)
+* [Controllers](#toc-controllers)
 * [Models and Collections](#toc-models-and-collections)
 * [Views](#toc-views)
 * [Event Handling Overview](#toc-event-handling)
@@ -118,7 +118,7 @@ In separate repositories, you will find a example applications which can also be
 
 This example uses Facebook client-side authentication to display the user’s Likes.
 
-## Twitter Client
+### Twitter Client
 
 [github.com/brunch/twitter](https://github.com/brunch/twitter)
 
@@ -206,7 +206,7 @@ The Layout is the top-level application view. When a new controller was activate
 
 In addition, the `Layout` handles the activation of internal links. That is, you can use a normal `<a href="/foo">` element to link to another application module.
 
-## <a name="toc-controllers">The Controllers</a>
+## <a name="toc-controllers">Controllers</a>
 
 In the Chaplin concept, a controller is the place where a model and associated views are instantiated. A controller is also in charge of model and view disposal when another controller takes over. Typically, a controller represents a screen of the application.
 
@@ -354,13 +354,7 @@ Deferreds are a versatile pattern which can be used on different levels in an ap
 
 On moviepilot.com, methods of several Deferreds are called everywhere throughout the application. It would not be feasible for every caller to check the resolved state and register a callback if necessary. Instead, these methods are wrapped so they can be called safely before the Deferred is resolved. In this case, the calls are automatically saved as `done` callbacks, from later on they are passed through immediately. Of course this wrapping is only possible for asynchronous methods which don’t have a return value but expect a callback function.
 
-The helper method `utils.deferMethods` wraps methods so calls are postponed until a given Deferred object is resolved. The method is quite flexible and we’re using it in several situations.
-
-### Method Call Accumulators
-
-On moviepilot.com, several pieces of information are loaded from external APIs like the Facebook OpenGraph. To reduce the number of HTTP requests, we use again functional magic to automatically accumulate API calls, send them in one batch and distribute the response to the callers. This is a valuable tool for loading additional data without interfering with more important rendering and HTTP communication.
-
-This functionality can be found in `utils.wrapAccumulators` and `utils.createAccumulator`.
+The helper method `utils.deferMethods` in [the Facebook example repository](https://github.com/chaplinjs/facebook-example/blob/master/coffee/lib/utils.coffee) wraps methods so calls are postponed until a given Deferred object is resolved. The method is quite flexible and we’re using it in several situations.
 
 ### Publish/Subscribe
 
