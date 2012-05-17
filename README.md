@@ -26,16 +26,16 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Event Handling Overview](#toc-event-handling)
 * [Memory Management and Object Disposal](#toc-memory-management)
 * [Application Glue and Dependency Management](#toc-application-glue)
-* [The Cast](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-cast)
-* [The Producers](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-producers)
+* [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-cast)
+* [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-producers)
 
 ## <a name="toc-upcoming-version">Current Version</a>
 
 The current stable version is **0.3**, released on 2012-03-23.
 
-To use the stable version, please clone the repository and [check out the tag 0.3](https://github.com/moviepilot/chaplin/tree/0.3).
+To use the stable version, please clone the repository and [check out the tag 0.3](https://github.com/chaplinjs/chaplin/tree/0.3).
 
-See also the [Changelog](https://github.com/moviepilot/chaplin/blob/master/CHANGELOG.md).
+See also the [Changelog](https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md).
 
 ## <a name="toc-current-version">Upcoming Version: Chaplin as a Library</a>
 
@@ -48,7 +48,7 @@ There’s a major rewrite going on and the `master` branch already reflects thes
 - Writing an up-to-date documentation and writing a class & method reference
 - Creating a boilerplate app, outsourcing the current application examples
 
-How about joining us? You might also have a look at the [issue discussions](https://github.com/moviepilot/chaplin/issues) about changes on the structure. There is also a [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
+How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
 ).
 
 ## <a name="toc-updates">Stay tuned for updates</a>
@@ -368,6 +368,6 @@ The Publish/Subscribe pattern is the most important glue in Chaplin applications
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
-## [The Cast](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-cast)
+## [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-cast)
 
-## [The Producers](https://github.com/moviepilot/chaplin/blob/master/AUTHORS.md#toc-producers)
+## [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-producers)
