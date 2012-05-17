@@ -26,8 +26,8 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Event Handling Overview](#event-handling-overview)
 * [Memory Management and Object Disposal](#memory-management-and-object-disposal)
 * [Handling Asynchronous Dependencies](#handling-asynchronous-dependencies)
-* [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-cast)
-* [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-producers)
+* [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
+* [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)
 
 ## Current Version
 
@@ -362,6 +362,6 @@ The Publish/Subscribe pattern is the most important glue in Chaplin applications
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
-## [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-cast)
+## [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
 
-## [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-producers)
+## [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)

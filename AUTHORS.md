@@ -1,4 +1,4 @@
-## <a name="toc-cast">The Cast</a>
+## The Cast
 
 This software was mostly written by:
 
@@ -19,7 +19,7 @@ With input and contributions from (in chronological order):
 
 [See all Github contributors](https://github.com/moviepilot/chaplin/contributors)
 
-## <a name="toc-producers">The Producers</a>
+## The Producers
 
 The Chaplin architecture was derived from [moviepilot.com](http://moviepilot.com/), a project by Moviepilot with support from 9elements.
 
