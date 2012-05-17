@@ -2,7 +2,7 @@ define [
   'jquery',
   'underscore',
   'chaplin/views/view'
-], ($, _, utils, View) ->
+], ($, _, View) ->
   'use strict'
 
   # General class for rendering Collections. Derive this class and

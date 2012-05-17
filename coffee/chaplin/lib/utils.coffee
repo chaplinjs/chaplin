@@ -1,8 +1,7 @@
 define [
-  'jquery',
-  'underscore',
-  'mediator'
-], ($, _, mediator) ->
+  'chaplin/mediator'
+  'chaplin/lib/support'
+], (mediator, support) ->
   'use strict'
 
   # Utilities
@@ -13,15 +12,33 @@ define [
     # Object Helpers
     # --------------
 
+    # Prototypal delegation. Create an object which delegates
+    # to another object.
     beget: do ->
       if typeof Object.create is 'function'
         (obj) ->
-          Object.create(obj)
+          Object.create obj
       else
         ctor = ->
         (obj) ->
           ctor:: = obj
           new ctor
+
+    # Make properties readonly and not configurable
+    # using ECMAScript 5 property descriptors
+    readonly: do ->
+      if support.propertyDescriptors
+        readonlyDescriptor =
+          writable: false
+          enumerable: true
+          configurable: false
+        (obj, properties...) ->
+          for prop in properties
+            Object.defineProperty obj, prop, readonlyDescriptor
+          true
+      else
+        ->
+          false
 
     # String Helpers
     # --------------

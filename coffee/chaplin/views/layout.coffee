@@ -1,7 +1,7 @@
 define [
   'jquery',
   'underscore',
-  'mediator',
+  'chaplin/mediator',
   'chaplin/lib/utils',
   'chaplin/lib/subscriber'
 ], ($, _, mediator, utils, Subscriber) ->
@@ -13,10 +13,15 @@ define [
     _(@prototype).extend Subscriber
 
     # The site title used in the document title
+    # This should be set in your app-specific Application class
+    # and passed as an option
     title: ''
 
-    constructor: (options = {}) ->
-      ###console.debug 'Layout#constructor', options###
+    constructor: ->
+      @initialize arguments...
+
+    initialize: (options = {}) ->
+      ###console.debug 'Layout#initialize', options###
 
       @title = options.title
       _(options).defaults
@@ -24,13 +29,13 @@ define [
         routeLinks: true
 
       # Listen to global events: Starting and disposing of controllers
+      # Showing and hiding the main views
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
-      @subscribeEvent 'startupController', @removeFallbackContent
+      # Adjust the document titel to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
 
       if options.loginClasses
-        # Login and logout
         @subscribeEvent 'loginStatus', @updateLoginClasses
         @updateLoginClasses()
 
@@ -74,19 +79,6 @@ define [
       $(document.body)
         .toggleClass('logged-out', not loggedIn)
         .toggleClass('logged-in', loggedIn)
-
-    # Fallback content
-    # ----------------
-
-    # After the first controller has been started, remove all accessible
-    # content so the DOM is less complex and images and video do not lie
-    # in the background
-    removeFallbackContent: ->
-      # Hide fallback content and the loading screens
-      $('.accessible-fallback').remove()
-
-      # Remove the handler after the first startupController event
-      @unsubscribeEvent 'startupController', @removeFallbackContent
 
     # Automatic routing of internal links
     # -----------------------------------

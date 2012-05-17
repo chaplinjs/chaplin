@@ -1,9 +1,9 @@
 define [
-  'jquery',
-  'chaplin/models/model',
-  'chaplin/models/collection',
-  'chaplin/views/view',
-  'chaplin/views/collection_view',
+  'jquery'
+  'chaplin/models/model'
+  'chaplin/models/collection'
+  'chaplin/views/view'
+  'chaplin/views/collection_view'
 ], (jQuery, Model, Collection, View, CollectionView) ->
   'use strict'
 

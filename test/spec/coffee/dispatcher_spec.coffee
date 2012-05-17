@@ -1,15 +1,15 @@
 define [
-  'mediator',
-  'chaplin/controllers/controller',
-  'chaplin/controllers/application_controller'
-], (mediator, Controller, ApplicationController) ->
+  'chaplin/mediator'
+  'chaplin/controllers/controller'
+  'chaplin/dispatcher'
+], (mediator, Controller, Dispatcher) ->
   'use strict'
 
-  describe 'ApplicationController', ->
-    #console.debug 'ApplicationController spec'
+  describe 'Dispatcher', ->
+    #console.debug 'Dispatcher spec'
 
     # Initialize shared variables
-    applicationController = params = null
+    dispatcher = params = null
 
     # Unique ID counter for creating params objects
     paramsId = 0
@@ -48,7 +48,7 @@ define [
       freshParams()
 
     it 'should initialize', ->
-      applicationController = new ApplicationController()
+      dispatcher = new Dispatcher()
 
     it 'should dispatch routes to controller actions', ->
       proto = TestController.prototype
@@ -82,13 +82,13 @@ define [
 
     it 'should save the controller, action, params and url', ->
       mediator.publish 'matchRoute', route, params
-      c = applicationController
-      expect(c.previousControllerName).toBe 'test'
-      expect(c.currentControllerName).toBe 'test'
-      expect(c.currentController instanceof TestController).toBe true
-      expect(c.currentAction).toBe 'show'
-      expect(c.currentParams).toBe params
-      expect(c.url).toBe "test/#{params.id}"
+      d = dispatcher
+      expect(d.previousControllerName).toBe 'test'
+      expect(d.currentControllerName).toBe 'test'
+      expect(d.currentController instanceof TestController).toBe true
+      expect(d.currentAction).toBe 'show'
+      expect(d.currentParams).toBe params
+      expect(d.url).toBe "test/#{params.id}"
 
     it 'should dispose inactive controllers and fire beforeControllerDispose events', ->
       dispose = spyOn(TestController.prototype, 'dispose').andCallThrough()
@@ -120,13 +120,13 @@ define [
       mediator.unsubscribe 'startupController', startupController
 
     it 'should be disposable', ->
-      expect(typeof applicationController.dispose).toBe 'function'
-      applicationController.dispose()
+      expect(typeof dispatcher.dispose).toBe 'function'
+      dispatcher.dispose()
 
       initialize = spyOn(TestController.prototype, 'initialize')
       mediator.publish 'matchRoute', route, params
       expect(initialize).not.toHaveBeenCalled()
 
-      expect(applicationController.disposed).toBe true
+      expect(dispatcher.disposed).toBe true
       if Object.isFrozen
-        expect(Object.isFrozen(applicationController)).toBe true
+        expect(Object.isFrozen(dispatcher)).toBe true
