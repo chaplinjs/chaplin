@@ -6,30 +6,30 @@
 
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-* [Current Version: 0.4](#toc-current-version)
-* [Upcoming Version: Chaplin as a Library](#toc-upcoming-version)
-* [Stay Tuned for Updates](#toc-updates)
-* [Key Features](#toc-key-features)
-* [Motivation](#toc-motivation)
-* [Dependencies](#toc-dependencies)
-* [Building Chaplin](#toc-building)
-* [Boilerplate and Examples](#toc-examples)
-* [The Architecture in Detail](#toc-architecture-in-detail)
-* [Application](#toc-application)
-* [Mediator and Publish/Subscribe](#toc-mediator-and-pub-sub)
-* [Router](#toc-router)
-* [Dispatcher](#toc-dispatcher)
-* [Layout](#toc-layout)
-* [Controllers](#toc-controllers)
-* [Models and Collections](#toc-models-and-collections)
-* [Views](#toc-views)
-* [Event Handling Overview](#toc-event-handling)
-* [Memory Management and Object Disposal](#toc-memory-management)
-* [Application Glue and Dependency Management](#toc-application-glue)
+* [Current Version: 0.4](#current-version)
+* [Upcoming Version: Chaplin as a Library](#upcoming-version-chaplin-as-a-library)
+* [Stay Tuned for Updates](#stay-tuned-for-updates)
+* [Key Features](#key-features)
+* [Motivation](#motivation)
+* [Dependencies](#dependencies)
+* [Building Chaplin](#building-chaplin)
+* [Boilerplate and Examples](#boilerplate-and-examples)
+* [The Architecture in Detail](#architecture-in-detail)
+* [Application](#application)
+* [Mediator and Publish/Subscribe](#mediator-and-publish-subscribe)
+* [Router](#router)
+* [Dispatcher](#dispatcher)
+* [Layout](#layout)
+* [Controllers](#controllers)
+* [Models and Collections](#models-and-collections)
+* [Views](#views)
+* [Event Handling Overview](#event-handling-overview)
+* [Memory Management and Object Disposal](#memory-management-and-object-disposal)
+* [Application Glue and Dependency Management](#application-glue)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-cast)
 * [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#toc-producers)
 
-## <a name="toc-upcoming-version">Current Version</a>
+## Current Version
 
 The current stable version is **0.3**, released on 2012-03-23.
 
@@ -37,7 +37,7 @@ To use the stable version, please clone the repository and [check out the tag 0.
 
 See also the [Changelog](https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md).
 
-## <a name="toc-current-version">Upcoming Version: Chaplin as a Library</a>
+## Upcoming Version: Chaplin as a Library
 
 While the stable version is merely an example application structure, our goal is to generalize Chaplin into a separate, reusable and unit-tested library.
 
@@ -51,13 +51,13 @@ There’s a major rewrite going on and the `master` branch already reflects thes
 How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
 ).
 
-## <a name="toc-updates">Stay tuned for updates</a>
+## Stay tuned for updates
 
 [Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
 
 ---
 
-## <a name="toc-key-features">Key Features</a>
+## Key Features
 
 * CoffeeScript class hierarchies as well as object composition
 * Module encapsulation and lazy-loading using AMD modules
@@ -69,7 +69,7 @@ How about joining us? You might also have a look at the [issue discussions](http
 * Strict memory management and object disposal
 * A collection view for easy and intelligent list rendering
 
-## <a name="toc-motivation">Motivation</a>
+## Motivation
 
 ![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
@@ -81,7 +81,7 @@ Backbone is an easy starting point, but provides only basic, low-level patterns.
 
 To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this deliberate limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture. This is where Chaplin enters the stage.
 
-## <a name="toc-dependencies">Dependencies</a>
+## Dependencies
 
 Chaplin depends on the following libraries:
 
@@ -90,7 +90,7 @@ Chaplin depends on the following libraries:
 * [jQuery](http://jquery.com/)
 * An AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
-## <a name="toc-building">Building Chaplin</a>
+## Building Chaplin
 
 The individual source files of Chaplin are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. The Chaplin library file however is compiled JavaScript file which defines the `chaplin` AMD module.
 
@@ -108,7 +108,7 @@ This creates several files in ./build/:
 * `chaplin-min.js` – Minified
 * `chaplin-min.js.gz` – Minified and GZip-compressed
 
-## <a name="toc-examples">Boilerplate and Examples</a>
+## Boilerplate and Examples
 
 In separate repositories, you will find a example applications which can also be used as a boilerplate:
 
@@ -124,13 +124,13 @@ This example uses Facebook client-side authentication to display the user’s Li
 
 This example uses Twitter client-side authentication to display user’s feed and to create new tweets. It uses [brunch](http://brunch.io) for assembling files & assets.
 
-## <a name="toc-architecture-in-detail">The Architecture in Detail</a>
+## The Architecture in Detail
 
 The following chapters will discuss the core objects and classes of our application structure.
 
 ![Machine](http://img.ly/system/uploads/003/362/032/original_machine.jpg)
 
-## <a name="toc-application">Application</a>
+## Application
 
 The root object of the JavaScript application is just called `Application`. In practise, you might choose a more meaningful name. `Application` is merely a bootstrapper which starts up three other core modules:
 
@@ -141,7 +141,7 @@ The root object of the JavaScript application is just called `Application`. In p
 * `Layout`
 
 
-## <a name="toc-mediator-and-pub-sub">Mediator and Publish/Subscribe</a>
+## Mediator and Publish/Subscribe
 
 Using the AMD module convention, a script might load other objects it depends upon, like the class (constructor) it inherits from. Since most objects are encapsulated and not publicly accessible, a module normally does not have access to the actual instances of other classes.
 
@@ -166,7 +166,7 @@ mediator.publish 'login', user
 
 The second and all subsequent arguments are passed through to the handler functions.
 
-## <a name="toc-router">Router</a>
+## Router
 
 The Router is responsible for observing URL changes. If a declared route matches the current URL, an event is triggered.
 
@@ -188,7 +188,7 @@ Additional fixed parameters and parameter constraints may be specified in the `m
 match 'likes/:id', 'likes#show', constraints: { id: /^\d+$/ }, params: { foo: 'bar' }
 ```
 
-## <a name="toc-dispatcher">Dispatcher</a>
+## Dispatcher
 
 Between the router and the controllers, there is the `Dispatcher` which listens for routing events. On such events, it loads the target controller module, creates a controller instance and calls the target action. The previously active controller is automatically disposed.
 
@@ -200,13 +200,13 @@ mediator.publish '!startupController', 'controller', 'action', params
 
 The `Dispatcher` handles the `!startupController` event.
 
-## <a name="toc-layout">Layout</a>
+## Layout
 
 The Layout is the top-level application view. When a new controller was activated, the `Layout` is responsible for changing the main view to the view of the new controller.
 
 In addition, the `Layout` handles the activation of internal links. That is, you can use a normal `<a href="/foo">` element to link to another application module.
 
-## <a name="toc-controllers">Controllers</a>
+## Controllers
 
 In the Chaplin concept, a controller is the place where a model and associated views are instantiated. A controller is also in charge of model and view disposal when another controller takes over. Typically, a controller represents a screen of the application.
 
@@ -246,7 +246,7 @@ Per default, a controller is instantiated afresh with every route match. That me
 
 Most of the time, a controller is started following a route match. In this case, the URL representing the application state is already given. But a controller can also be started programatically by publishing a `!startupController` event. In this case, the URL has to be determined. This is the purpose of the `historyURL` method.
 
-## <a name="toc-models-and-collections">Models and Collections</a>
+## Models and Collections
 
 Chaplin extends the standard Backbone models and collections with some new methods. `dispose` is the destructor for cleaning up. The Chaplin `Collection` also has `addAtomic` for adding several items while fireing a `reset` event, and `update` for updating a collection while fireing several `add`/`remove` events instead of a single `reset` event.
 
@@ -254,7 +254,7 @@ Using these `Model` and `Collection` classes, we create a hierarchy of CoffeeScr
 
 Models and collections are Publish/Subscribe event subscribers by using the `Subscriber` mixin. Please do not register their methods directly as Pub/Sub listeners, use `subscribeEvent` instead. This forces the handler context so the handler might be removed again on model/collection disposal. It’s crucial to remove all references to model/collection methods to allow them to be garbage collected.
 
-## <a name="toc-views">Views</a>
+## Views
 
 Chaplin’s `View` class is a highly extended and adapted Backbone `View`. All views should inherit from this class to avoid repetition.
 
@@ -270,7 +270,7 @@ Also, `@model.bind()` should not be used directly. Chaplin has `@modelBind()` wh
 
 The `CollectionView` is responsible for displaying collections. For every item in a collection, it instantiates a given item view and inserts it into the DOM. It reacts to collection change events (`add`, `remove` and `reset`) and provides basic filtering, caching of views, fallback content and loading indicators.
 
-## <a name="toc-event-handling">Event Handling Overview</a>
+## Event Handling Overview
 
 ![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
 
@@ -324,7 +324,7 @@ In addition, `delegate` automatically binds the handler to the view object, so `
 @$el.off 'click', '.close'
 ```
 
-## <a name="toc-memory-management">Memory Management and Object Disposal</a>
+## Memory Management and Object Disposal
 
 One of the core concerns of the Chaplin architecture is a proper memory management. There isn’t a broad discussion about garbage collection in JavaScript applications, but in fact it’s an important topic. Backbone provides little out of the box so Chaplin ensures that every controller, model, collection and view cleans up after itself.
 
@@ -334,7 +334,7 @@ Before a new controller takes over and the user interface changes, the `dispose`
 
 This disposal process is quite complex and many objects needs a custom `dispose` method. But this is just the least Chaplin can do.
 
-## <a name="toc-application-glue">Handling Asynchronous Dependencies</a>
+## Handling Asynchronous Dependencies
 
 Most processes in a client-side JavaScript application run asynchronously. It is quite common that an applications is communicating with different external APIs. API bridges are established on demand and of course all API calls are asynchronous. Lazy-loading code and content is a key to perfomance. Therefore, handling asynchronous dependencies is a big challenges for JavaScript web applications. We’re using the following techniques to handle dependencies, from bottom-level to top-level.
 
