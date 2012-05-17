@@ -14,8 +14,6 @@ define [
     queryStringValueSeparator = '='
 
     constructor: (pattern, target, @options = {}) ->
-      ###console.debug 'Route#constructor', pattern, target, options###
-
       # Save the raw pattern
       @pattern = pattern
 
@@ -51,8 +49,6 @@ define [
 
     # Test if the route matches to a path (called by Backbone.History#loadUrl)
     test: (path) ->
-      ###console.debug 'Route#test', this, "path »#{path}«", typeof path###
-
       # Test the main RegExp
       matched = @regExp.test path
       return false unless matched
@@ -70,8 +66,6 @@ define [
     # The handler which is called by Backbone.History when the route matched.
     # It is also called by Router#follow which might pass options
     handler: (path, options) =>
-      ###console.debug 'Route#handler', this, path, options###
-
       # Build params hash
       params = @buildParams path, options
 

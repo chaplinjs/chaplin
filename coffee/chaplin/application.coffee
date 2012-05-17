@@ -20,7 +20,6 @@ define [
     router: null
 
     initialize: ->
-      ###console.debug 'Application#initialize'###
 
     initDispatcher: (options) ->
       @dispatcher = new Dispatcher options
@@ -50,7 +49,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'Application#dispose'###
       return if @disposed
 
       properties = ['dispatcher', 'layout', 'router']

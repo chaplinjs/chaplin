@@ -76,8 +76,6 @@ define [
 
     initialize: (options = {}) ->
       super
-      ###console.debug 'CollectionView#initialize', this, @collection, options###
-
       # Default options
       # These are stored as normal properties, not in Backbone’s options hash
       # so derived classes may override them when calling super.
@@ -91,12 +89,10 @@ define [
       @visibleItems = []
 
       # Debugging
-      ###
-      @bind 'visibilityChange', (visibleItems) ->
-        console.debug 'visibilityChange', visibleItems.length
-      @modelBind 'syncStateChange', (collection, syncState) ->
-        console.debug 'syncStateChange', syncState
-      ###
+      # @bind 'visibilityChange', (visibleItems) ->
+      #   console.debug 'visibilityChange', visibleItems.length
+      # @modelBind 'syncStateChange', (collection, syncState) ->
+      #   console.debug 'syncStateChange', syncState
 
       # Start observing the collection
       @addCollectionListeners()
@@ -397,7 +393,6 @@ define [
     # --------
 
     dispose: ->
-      ###console.debug 'CollectionView#dispose', this, 'disposed?', @disposed###
       return if @disposed
 
       # Remove all listeners registered in this context

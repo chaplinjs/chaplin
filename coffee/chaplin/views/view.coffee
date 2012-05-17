@@ -78,7 +78,6 @@ define [
       super
 
     initialize: (options) ->
-      ###console.debug 'View#initialize', this, 'options', options###
       # No super call here, Backbone’s `initialize` is a no-op
 
       # Copy some options to instance properties
@@ -301,8 +300,6 @@ define [
     # Main render function
     # This method is bound to the instance in the constructor (see above)
     render: ->
-      ###console.debug 'View#render', this###
-
       # Do not render if the object was disposed
       # (render might be called as an event handler which wasn’t
       # removed correctly)
@@ -346,7 +343,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'View#dispose', this, 'disposed?', @disposed###
       return if @disposed
 
       # Dispose subviews

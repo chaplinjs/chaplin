@@ -21,8 +21,6 @@ define [
       @initialize arguments...
 
     initialize: (options = {}) ->
-      ###console.debug 'Layout#initialize', options###
-
       @title = options.title
       _(options).defaults
         loginClasses: true
@@ -158,7 +156,6 @@ define [
     disposed: false
 
     dispose: ->
-      ###console.debug 'Layout#dispose'###
       return if @disposed
 
       @stopLinkRouting()
