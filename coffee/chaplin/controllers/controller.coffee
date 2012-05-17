@@ -1,5 +1,5 @@
 define [
-  'underscore',
+  'underscore'
   'chaplin/lib/subscriber'
 ], (_, Subscriber) ->
   'use strict'

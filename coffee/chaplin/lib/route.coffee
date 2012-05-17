@@ -1,6 +1,6 @@
 define [
-  'underscore',
-  'mediator'
+  'underscore'
+  'chaplin/mediator'
 ], (_, mediator) ->
   'use strict'
 

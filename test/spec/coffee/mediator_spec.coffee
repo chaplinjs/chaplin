@@ -1,12 +1,9 @@
 define [
-  'chaplin/lib/create_mediator',
-  'chaplin/models/model',
   'chaplin/lib/support'
-], (createMediator, Model, support) ->
+  'chaplin/mediator'
+  'chaplin/models/model'
+], (support, mediator, Model) ->
   'use strict'
-
-  mediator = createMediator
-    createUserProperty: true
 
   describe 'mediator', ->
     #console.debug 'mediator spec'
@@ -22,7 +19,8 @@ define [
     it 'should have readonly Pub/Sub methods', ->
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
-      methods = ['subscribe', 'unsubscribe', 'publish']
+      methods = ['subscribe', 'unsubscribe', 'publish',
+        'on', 'off', 'trigger']
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).toBe true
@@ -50,20 +48,3 @@ define [
       mediator.publish eventName, payload
 
       expect(spy).not.toHaveBeenCalledWith payload
-
-    it 'should have a user which is null', ->
-      expect(mediator.user).toBeNull()
-
-    it 'should have a readonly user', ->
-      return unless support.propertyDescriptors
-      expect(->
-        mediator.user = 'foo'
-      ).toThrow()
-
-    it 'should have a setUser method', ->
-      expect(typeof mediator.setUser).toBe 'function'
-
-    it 'should have a user after calling setUser', ->
-      user = new Model
-      mediator.setUser user
-      expect(mediator.user).toBe user

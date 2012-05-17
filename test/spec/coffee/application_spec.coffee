@@ -1,32 +1,34 @@
 define [
-  'mediator',
-  'chaplin/application',
-  'chaplin/lib/router',
-  'chaplin/controllers/application_controller',
-  'chaplin/views/application_view'
-], (mediator, Application, Router, ApplicationController, ApplicationView) ->
+  'chaplin/mediator'
+  'chaplin/application'
+  'chaplin/lib/router'
+  'chaplin/dispatcher'
+  'chaplin/views/layout'
+], (mediator, Application, Router, Dispatcher, Layout) ->
   'use strict'
 
   describe 'Application', ->
     #console.debug 'Application spec'
 
-    application = new Application()
+    app = new Application()
 
     it 'should be a simple object', ->
-      expect(typeof application).toBe 'object'
-      expect(application instanceof Application).toBe true
+      expect(typeof app).toBe 'object'
+      expect(app instanceof Application).toBe true
 
     it 'should initialize', ->
-      expect(typeof application.initialize).toBe 'function'
-      application.initialize()
+      expect(typeof app.initialize).toBe 'function'
+      app.initialize()
 
-    it 'should create an application controller', ->
-      expect(application.applicationController instanceof ApplicationController)
-        .toBe true
+    it 'should create a dispatcher', ->
+      expect(typeof app.initDispatcher).toBe 'function'
+      app.initDispatcher()
+      expect(app.dispatcher instanceof Dispatcher).toBe true
 
-    it 'should create an application view', ->
-      expect(application.applicationView instanceof ApplicationView)
-        .toBe true
+    it 'should create a layout', ->
+      expect(typeof app.initLayout).toBe 'function'
+      app.initLayout()
+      expect(app.layout instanceof Layout).toBe true
 
     it 'should create a router', ->
       passedMatch = null
@@ -35,11 +37,11 @@ define [
         routesCalled = true
         passedMatch = match
 
-      expect(typeof application.initRouter).toBe 'function'
-      expect(application.initRouter.length).toBe 2
-      application.initRouter routes, root: '/test/'
+      expect(typeof app.initRouter).toBe 'function'
+      expect(app.initRouter.length).toBe 2
+      app.initRouter routes, root: '/test/'
 
-      expect(application.router instanceof Router).toBe true
+      expect(app.router instanceof Router).toBe true
       expect(routesCalled).toBe true
       expect(typeof passedMatch).toBe 'function'
 
@@ -47,13 +49,13 @@ define [
       expect(Backbone.History.started).toBe true
 
     it 'should be disposable', ->
-      expect(typeof application.dispose).toBe 'function'
-      application.dispose()
+      expect(typeof app.dispose).toBe 'function'
+      app.dispose()
 
-      expect(application.applicationController).toBe null
-      expect(application.applicationView).toBe null
-      expect(application.router).toBe null
+      expect(app.dispatcher).toBe null
+      expect(app.layout).toBe null
+      expect(app.router).toBe null
 
-      expect(application.disposed).toBe true
+      expect(app.disposed).toBe true
       if Object.isFrozen
-        expect(Object.isFrozen(application)).toBe true
+        expect(Object.isFrozen(app)).toBe true

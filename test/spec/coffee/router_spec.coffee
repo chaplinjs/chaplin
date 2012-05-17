@@ -1,8 +1,8 @@
 define [
-  'underscore',
-  'mediator',
-  'chaplin/lib/router',
-  'chaplin/lib/route',
+  'underscore'
+  'chaplin/mediator'
+  'chaplin/lib/router'
+  'chaplin/lib/route'
 ], (_, mediator, Router, Route) ->
   'use strict'
 

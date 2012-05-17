@@ -1,7 +1,7 @@
 define [
-  'underscore',
-  'mediator',
-  'chaplin/lib/utils',
+  'underscore'
+  'chaplin/mediator'
+  'chaplin/lib/utils'
   'chaplin/lib/subscriber'
 ], (_, mediator, utils, Subscriber) ->
   'use strict'
@@ -24,9 +24,9 @@ define [
     url: null
 
     constructor: ->
-      @initialize()
+      @initialize arguments...
 
-    initialize: ->
+    initialize: (options = {}) ->
       ###console.debug 'Dispatcher#initialize'###
 
       # Listen to global events
