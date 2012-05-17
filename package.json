@@ -1,0 +1,16 @@
+{
+  "name": "chaplin",
+  "version": "0.3",
+  "description": "An Application Architecture Using Backbone.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chaplinjs/chaplin.git"
+  },
+  "engines": {
+    "node": ">=0.4.7"
+  },
+  // "bin": {
+  //   "chaplin": "./bin/chaplin"
+  // },
+  "main": "./build/chaplin.js"
+}
