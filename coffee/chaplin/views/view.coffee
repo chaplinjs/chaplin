@@ -3,8 +3,9 @@ define [
   'underscore',
   'backbone',
   'chaplin/lib/utils',
-  'chaplin/lib/subscriber'
-], ($, _, Backbone, utils, Subscriber) ->
+  'chaplin/lib/subscriber',
+  'chaplin/models/model'
+], ($, _, Backbone, utils, Subscriber, Model) ->
   'use strict'
 
   class View extends Backbone.View
@@ -23,11 +24,12 @@ define [
     # ----------------------------
 
     # View container element
-    # Set this property in a derived class to specify to selector
-    # of the container element. The view is automatically inserted
-    # into the container when it’s rendered.
+    # Set this property in a derived class to specify the container element.
+    # Normally this is a selector string but it might also be an element or
+    # jQuery object.
+    # The view is automatically inserted into the container when it’s rendered.
     # As an alternative you might pass a `container` option to the constructor.
-    containerSelector: null
+    container: null
 
     # Method which is used for adding the view to the DOM
     # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
@@ -39,29 +41,37 @@ define [
     # List of subviews
     subviews: null
     subviewsByName: null
-
-    # Wrap a `method` in order to call and `afterMethod`
-    wrapMethod = (obj, name) ->
-      func = obj[name]
-      # Create a method on the instance which wraps the inherited
-      obj[name] = ->
+    
+    # Method wrapping to enable `afterRender` and `afterInitialize`
+    # -------------------------------------------------------------
+    
+    # Wrap a method in order to call the corresponding
+    # `after-` method automatically
+    wrapMethod: (name) ->
+      instance = this
+      # Enclose the original function
+      func = instance[name]
+      # Set a flag
+      instance["#{name}IsWrapped"] = true
+      # Create the wrapper method
+      instance[name] = ->
         # Call the original method
-        func.apply obj, arguments
+        func.apply instance, arguments
         # Call the corresponding `after-` method
-        obj["after#{utils.upcase(name)}"].apply obj, arguments
+        instance["after#{utils.upcase(name)}"] arguments...
 
     constructor: ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
       # Only wrap if there is an overring method, otherwise we
-      # call the after method directly
-      unless @initialize is ChaplinView::initialize
-        wrapMethod this, 'initialize'
+      # can call the `after-` method directly
+      unless @initialize is View::initialize
+        @wrapMethod 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
-      unless @initialize is ChaplinView::initialize
-        wrapMethod this, 'render'
+      unless @render is View::render
+        @wrapMethod 'render'
       else
-        # Otherwise just bind the `render` method normally
+        # Otherwise just bind the `render` method
         @render = _(@render).bind this
 
       # Call Backbone’s constructor
@@ -70,6 +80,12 @@ define [
     initialize: (options) ->
       ###console.debug 'ChaplinView#initialize', this, 'options', options###
       # No super call here, Backbone’s `initialize` is a no-op
+
+      # Copy some options to instance properties
+      if options
+        for prop in ['autoRender', 'container', 'containerMethod']
+          if options[prop]?
+            @[prop] = options[prop]
 
       # Initialize subviews
       @subviews = []
@@ -80,19 +96,14 @@ define [
       if @model or @collection
         @modelBind 'dispose', @dispose
 
-      # Call afterInitialize manually if initialize did not wrap it
-      if @initialize is ChaplinView::initialize
+      # Call `afterInitialize` if `initialize` was not wrapped
+      unless @initializeIsWrapped
         @afterInitialize()
 
     # This method is called after a specific `initialize` of a derived class
     afterInitialize: ->
       # Render automatically if set by options or instance property
-      # `autoRender` option may override `autoRender` instance property
-      autoRender = if @options.autoRender?
-          @options.autoRender
-        else
-          @autoRender
-      @render() if autoRender
+      @render() if @autoRender
 
     # User input event handling
     # -------------------------
@@ -256,13 +267,21 @@ define [
 
     # Get attributes from model or collection
     getTemplateData: ->
+      serialize = (object) ->
+        result = {}
+        for key, value of object
+          result[key] = if value instanceof Model
+            serialize value.getAttributes()
+          else
+            value
+        result
 
       modelAttributes = @model and @model.getAttributes()
       templateData = if modelAttributes
         # Return an object which delegates to the returned attributes
         # object so a custom getTemplateData might safely add and alter
         # properties (at least primitive values).
-        utils.beget modelAttributes
+        utils.beget serialize modelAttributes
       else
         {}
 
@@ -284,14 +303,16 @@ define [
     render: ->
       ###console.debug 'ChaplinView#render', this###
 
+      # Do not render if the object was disposed
+      # (render might be called as an event handler which wasn’t
+      # removed correctly)
       return if @disposed
-      templateData = @getTemplateData()
-      templateFunc = @getTemplateFunction()
 
+      templateFunc = @getTemplateFunction()
       if typeof templateFunc is 'function'
 
         # Call the template function passing the template data
-        html = templateFunc templateData
+        html = templateFunc @getTemplateData()
 
         # Replace HTML
         # ------------
@@ -301,34 +322,22 @@ define [
         # HTML5-only tags in IE7 and IE8.
         @$el.empty().append html
 
+      # Call `afterRender` if `render` was not wrapped
+      @afterRender() unless @renderIsWrapped
+
       # Return the view
       this
 
     # This method is called after a specific `render` of a derived class
     afterRender: ->
-      # Create a shortcut to the container element
-      # The view will be automatically appended to the container when rendered
-      # `container` option may override `autoRender` instance property
-      container = if @options.container?
-          @options.container
-        else
-          @containerSelector
-
       # Automatically append to DOM if the container element is set
-      if container
-        # Get the attach method name
-        containerMethod = if @options.containerMethod?
-            @options.containerMethod
-          else
-            @containerMethod
-
+      if @container
         # Append the view to the DOM
-        $(container)[containerMethod] @el
-
+        $(@container)[@containerMethod] @el
         # Trigger an event
         @trigger 'addedToDOM'
 
-      # Return this
+      # Return the view
       this
 
     # Disposal
