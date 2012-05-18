@@ -7,7 +7,7 @@
     "url": "git://github.com/chaplinjs/chaplin.git"
   },
   "engines": {
-    "node": ">=0.4.7"
+    "node": ">=0.4.6"
   },
   "main": "./build/chaplin.js"
 }
