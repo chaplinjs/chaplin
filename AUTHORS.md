@@ -31,7 +31,7 @@ Find out more [about moviepilot.com](http://moviepilot.com/about) and [moviepilo
 
 ![9elements](http://molily.de/img/9elements.png)
 
-**9elements** is a software and design company from Bochum & Berlin, Germany, focussed on web applications with Ruby on Rails and JavaScript, as well as iOS app deveopment.
+**9elements** is a software and design company from Bochum & Berlin, Germany, focussed on web applications with Ruby on Rails and JavaScript, as well as iOS app development.
 
 Find out more [about 9elements](http://9elements.com/) or read our blog [IO 9elements](http://9elements.com/io/).
 
