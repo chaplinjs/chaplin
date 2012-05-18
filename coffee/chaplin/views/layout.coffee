@@ -33,12 +33,44 @@ define [
       # Adjust the document titel to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
 
+      # set app wide event handlers
+      @delegateEvents()
+
       if options.loginClasses
         @subscribeEvent 'loginStatus', @updateLoginClasses
         @updateLoginClasses()
 
       if options.routeLinks
         @initLinkRouting()
+
+
+
+    # Register DOM events based on the events hash
+    # --------------------------------------------
+
+    toggleEvents: (direction) ->
+      return if !@events || _.isEmpty(@events)
+      $document = $(document)
+
+      for key, handler of @events
+        match = key.match(/^(\S+)\s*(.*)$/);
+        eventName = match[1]
+        selector = match[2]
+        handler = this[handler] if !_.isFunction(handler)
+        handler = _.bind(handler, this)
+
+        if direction == 'on'
+          $document.on( eventName, selector, handler )
+        else if direction == 'off'
+          $document.off( eventName, selector, handler )
+
+    delegateEvents: ->
+      @undelegateEvents
+      @toggleEvents 'on'
+
+    undelegateEvents: ->
+      @toggleEvents 'off'
+
 
     # Controller startup and disposal
     # -------------------------------
