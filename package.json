@@ -9,8 +9,5 @@
   "engines": {
     "node": ">=0.4.7"
   },
-  // "bin": {
-  //   "chaplin": "./bin/chaplin"
-  // },
   "main": "./build/chaplin.js"
 }
