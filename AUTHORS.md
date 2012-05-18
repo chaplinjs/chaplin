@@ -17,7 +17,7 @@ With input and contributions from (in chronological order):
 * Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
 * Karel Ledru-Mathé – [@karelledrumathe](http://twitter.com/karelledrumathe) – [ledrumathe.com](http://ledrumathe.com/)
 
-[See all Github contributors](https://github.com/moviepilot/chaplin/contributors)
+[See all Github contributors](https://github.com/chaplinjs/chaplin/contributors)
 
 ## The Producers
 
