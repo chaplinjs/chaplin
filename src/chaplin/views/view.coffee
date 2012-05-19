@@ -150,6 +150,9 @@ define [
         # Register handler
         @$el.on eventType, handler
 
+      # Return the bound handler
+      handler
+
     # Remove all handlers registered with @delegate
 
     undelegate: ->
