@@ -27,7 +27,7 @@ ZIP = "chaplin-min.js.gz"
 puts 'Concatenate...'
 File.open(CAT, 'w') do |cat_file|
   MODULES.each do |module_name|
-    filename = "../coffee/#{module_name}.coffee"
+    filename = "../src/#{module_name}.coffee"
     string = File.open(filename, 'r') { |file| file.read }
     string.gsub! /^\s*define(?=(?:\s+\[.*?\],)?\s*(?:\(.*?\))?\s*->)/m, "define '#{module_name}',"
     string = string.strip.concat("\n\n")
