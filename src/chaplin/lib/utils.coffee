@@ -1,7 +1,6 @@
 define [
-  'chaplin/mediator'
   'chaplin/lib/support'
-], (mediator, support) ->
+], (support) ->
   'use strict'
 
   # Utilities

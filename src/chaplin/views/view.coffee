@@ -41,10 +41,10 @@ define [
     # List of subviews
     subviews: null
     subviewsByName: null
-    
+
     # Method wrapping to enable `afterRender` and `afterInitialize`
     # -------------------------------------------------------------
-    
+
     # Wrap a method in order to call the corresponding
     # `after-` method automatically
     wrapMethod: (name) ->
@@ -149,6 +149,9 @@ define [
       else
         # Register handler
         @$el.on eventType, handler
+
+      # Return the bound handler
+      handler
 
     # Remove all handlers registered with @delegate
 
