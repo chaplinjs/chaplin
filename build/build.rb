@@ -24,10 +24,10 @@ RAW = "chaplin.js"
 MIN = "chaplin-min.js"
 ZIP = "chaplin-min.js.gz"
 
-puts 'Concatenate'
+puts 'Concatenate...'
 File.open(CAT, 'w') do |cat_file|
   MODULES.each do |module_name|
-    filename = "../coffee/#{module_name}.coffee"
+    filename = "../src/#{module_name}.coffee"
     string = File.open(filename, 'r') { |file| file.read }
     string.gsub! /^\s*define(?=(?:\s+\[.*?\],)?\s*(?:\(.*?\))?\s*->)/m, "define '#{module_name}',"
     string = string.strip.concat("\n\n")
@@ -35,11 +35,13 @@ File.open(CAT, 'w') do |cat_file|
   end
 end
 
-puts 'Coffee'
+puts 'Coffee...'
 `coffee --compile #{CAT}`
 
-puts 'Uglify'
+puts 'Uglify...'
 `uglifyjs --output #{MIN} #{RAW}`
 
-puts 'Compress'
+puts 'Compress...'
 `gzip -9 -c #{MIN} > #{ZIP}`
+
+puts 'Done.'
