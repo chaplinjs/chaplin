@@ -1,10 +1,11 @@
 define [
   'jquery',
   'underscore',
+  'backbone',
   'chaplin/mediator',
   'chaplin/lib/utils',
   'chaplin/lib/subscriber'
-], ($, _, mediator, utils, Subscriber) ->
+], ($, _, Backbone, mediator, utils, Subscriber) ->
   'use strict'
 
   class Layout # This class does not extend View
@@ -16,6 +17,16 @@ define [
     # This should be set in your app-specific Application class
     # and passed as an option
     title: ''
+
+    # An hash to register events, like in Backbone.View
+    # It is only meant for events that are app-wide
+    # independent from any view
+    events: {}
+
+    # Register @el, @$el and @cid for delegating events
+    el: document
+    $el: $(document)
+    cid: 'chaplin-layout'
 
     constructor: ->
       @initialize arguments...
@@ -34,7 +45,7 @@ define [
       @subscribeEvent 'startupController', @adjustTitle
 
       # set app wide event handlers
-      @delegateEvents()
+      @delegateEvents(@events)
 
       if options.loginClasses
         @subscribeEvent 'loginStatus', @updateLoginClasses
@@ -44,32 +55,10 @@ define [
         @initLinkRouting()
 
 
-
-    # Register DOM events based on the events hash
-    # --------------------------------------------
-
-    toggleEvents: (direction) ->
-      return if !@events || _.isEmpty(@events)
-      $document = $(document)
-
-      for key, handler of @events
-        match = key.match(/^(\S+)\s*(.*)$/);
-        eventName = match[1]
-        selector = match[2]
-        handler = this[handler] if !_.isFunction(handler)
-        handler = _.bind(handler, this)
-
-        if direction == 'on'
-          $document.on( eventName, selector, handler )
-        else if direction == 'off'
-          $document.off( eventName, selector, handler )
-
-    delegateEvents: ->
-      @undelegateEvents
-      @toggleEvents 'on'
-
-    undelegateEvents: ->
-      @toggleEvents 'off'
+    # Take (un)delegateEvents from Backbone
+    # -------------------------------------
+    undelegateEvents: Backbone.View::undelegateEvents
+    delegateEvents: Backbone.View::delegateEvents
 
 
     # Controller startup and disposal
