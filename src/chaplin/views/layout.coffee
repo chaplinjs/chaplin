@@ -1,10 +1,11 @@
 define [
   'jquery',
   'underscore',
+  'backbone',
   'chaplin/mediator',
   'chaplin/lib/utils',
   'chaplin/lib/subscriber'
-], ($, _, mediator, utils, Subscriber) ->
+], ($, _, Backbone, mediator, utils, Subscriber) ->
   'use strict'
 
   class Layout # This class does not extend View
@@ -16,6 +17,16 @@ define [
     # This should be set in your app-specific Application class
     # and passed as an option
     title: ''
+
+    # An hash to register events, like in Backbone.View
+    # It is only meant for events that are app-wide
+    # independent from any view
+    events: {}
+
+    # Register @el, @$el and @cid for delegating events
+    el: document
+    $el: $(document)
+    cid: 'chaplin-layout'
 
     constructor: ->
       @initialize arguments...
@@ -33,12 +44,21 @@ define [
       # Adjust the document titel to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
 
+      # Set app wide event handlers
+      @delegateEvents()
+
       if options.loginClasses
         @subscribeEvent 'loginStatus', @updateLoginClasses
         @updateLoginClasses()
 
       if options.routeLinks
         @initLinkRouting()
+
+    # Take (un)delegateEvents from Backbone
+    # -------------------------------------
+
+    undelegateEvents: Backbone.View::undelegateEvents
+    delegateEvents: Backbone.View::delegateEvents
 
     # Controller startup and disposal
     # -------------------------------
@@ -160,6 +180,7 @@ define [
 
       @stopLinkRouting()
       @unsubscribeAllEvents()
+      @undelegateEvents()
 
       delete @title
 
