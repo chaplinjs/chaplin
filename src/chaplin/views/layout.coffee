@@ -44,8 +44,8 @@ define [
       # Adjust the document titel to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
 
-      # set app wide event handlers
-      @delegateEvents(@events)
+      # Set app wide event handlers
+      @delegateEvents()
 
       if options.loginClasses
         @subscribeEvent 'loginStatus', @updateLoginClasses
@@ -54,12 +54,11 @@ define [
       if options.routeLinks
         @initLinkRouting()
 
-
     # Take (un)delegateEvents from Backbone
     # -------------------------------------
+
     undelegateEvents: Backbone.View::undelegateEvents
     delegateEvents: Backbone.View::delegateEvents
-
 
     # Controller startup and disposal
     # -------------------------------
@@ -181,6 +180,7 @@ define [
 
       @stopLinkRouting()
       @unsubscribeAllEvents()
+      @undelegateEvents()
 
       delete @title
 
