@@ -1,0 +1,6 @@
+To compile the specs from CoffeeScript to JavaScript, run these commands:
+
+coffee --bare --output test/js/ src/
+coffee --bare --output test/js/ test/spec/
+
+Then open the test runner (index.html) in a browser.
