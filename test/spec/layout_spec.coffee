@@ -157,10 +157,65 @@ define [
       expect(spy).not.toHaveBeenCalled()
       mediator.unsubscribe '!router:route', spy
 
-    it 'should be disposable', ->
+    it 'should register event handlers on the document declaratively', ->
+      spy1 = jasmine.createSpy()
+      spy2 = jasmine.createSpy()
+      layout.dispose()
+      class TestLayout extends Layout
+        events:
+          'click #jasmine-root': 'testClickHandler'
+          click: spy2
+        testClickHandler: spy1
+      layout = new TestLayout
+      el = $('#jasmine-root')
+      el.click()
+      expect(spy1).toHaveBeenCalled()
+      expect(spy2).toHaveBeenCalled()
+      layout.dispose()
+      el.click()
+      expect(spy1.callCount).toBe 1
+      expect(spy2.callCount).toBe 1
+
+    it 'should register event handlers on the document programatically', ->
+      expect(layout.delegateEvents is Backbone.View::delegateEvents)
+        .toBe true
+      expect(layout.undelegateEvents is Backbone.View::undelegateEvents)
+        .toBe true
+      expect(typeof layout.delegateEvents).toBe 'function'
+      expect(typeof layout.undelegateEvents).toBe 'function'
+
+      spy1 = jasmine.createSpy()
+      spy2 = jasmine.createSpy()
+      layout.testClickHandler = spy1
+      layout.delegateEvents
+        'click #jasmine-root': 'testClickHandler'
+        click: spy2
+      el = $('#jasmine-root')
+      el.click()
+      expect(spy1).toHaveBeenCalled()
+      expect(spy2).toHaveBeenCalled()
+      layout.undelegateEvents()
+      el.click()
+      expect(spy1.callCount).toBe 1
+      expect(spy2.callCount).toBe 1
+
+    it 'should dispose itself correctly', ->
+      spy1 = jasmine.createSpy()
+      layout.subscribeEvent 'foo', spy1
+
+      spy2 = jasmine.createSpy()
+      layout.delegateEvents 'click #jasmine-root': spy2
+
       expect(typeof layout.dispose).toBe 'function'
       layout.dispose()
 
       expect(layout.disposed).toBe true
       if Object.isFrozen
         expect(Object.isFrozen(layout)).toBe true
+
+      mediator.publish 'foo'
+      $('#jasmine-root').click()
+
+      # It should unsubscribe from events
+      expect(spy1).not.toHaveBeenCalled()
+      expect(spy2).not.toHaveBeenCalled()
