@@ -347,6 +347,7 @@ define [
 
     dispose: ->
       return if @disposed
+      @trigger 'dispose'
 
       # Dispose subviews
       view.dispose() for view in @subviews
