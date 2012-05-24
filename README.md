@@ -13,6 +13,7 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Motivation](#motivation)
 * [Dependencies](#dependencies)
 * [Building Chaplin](#building-chaplin)
+* [Running the Tests](#running-the-tests)
 * [Boilerplate and Examples](#boilerplate-and-examples)
 * [The Architecture in Detail](#the-architecture-in-detail)
 * [Application](#application)
@@ -107,6 +108,19 @@ This creates several files in ./build/:
 * `chaplin.js` – The same as a compiled JavaScript file
 * `chaplin-min.js` – Minified
 * `chaplin-min.js.gz` – Minified and GZip-compressed
+
+## Running the Tests
+
+Chaplin aims to be fully unit-tested. At the moment most of the modules are covered by Jasmine tests.
+
+To run the tests, the source files and the specs need to be compiled using the CoffeeScript compiler first. Run these commands in the repository’s root directory:
+
+```
+coffee --bare --output test/js/ src/
+coffee --bare --output test/js/ test/spec/
+```
+
+Then open the test runner (`test/index.html`) in a browser.
 
 ## Boilerplate and Examples
 
