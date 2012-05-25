@@ -91,7 +91,8 @@ define [
       expect(d.url).toBe "test/#{params.id}"
 
     it 'should dispose inactive controllers and fire beforeControllerDispose events', ->
-      dispose = spyOn(TestController.prototype, 'dispose').andCallThrough()
+      proto = TestController.prototype
+      dispose = spyOn(proto, 'dispose').andCallThrough()
       beforeControllerDispose = jasmine.createSpy()
       mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
 
@@ -119,11 +120,12 @@ define [
 
       mediator.unsubscribe 'startupController', startupController
 
-    it 'should be disposable', ->
+    it 'should dispose itself correctly', ->
       expect(typeof dispatcher.dispose).toBe 'function'
       dispatcher.dispose()
 
-      initialize = spyOn(TestController.prototype, 'initialize')
+      proto = TestController.prototype
+      initialize = spyOn(proto, 'initialize').andCallThrough()
       mediator.publish 'matchRoute', route, params
       expect(initialize).not.toHaveBeenCalled()
 

@@ -252,7 +252,7 @@ define [
             name = otherName
             break
 
-      # Brak if no view and name were found
+      # Break if no view and name were found
       return unless name and view and view.dispose
 
       # Dispose the view
@@ -267,29 +267,62 @@ define [
     # Rendering
     # ---------
 
-    # Get attributes from model or collection
-    getTemplateData: ->
-      serialize = (object) ->
-        result = {}
-        for key, value of object
-          result[key] = if value instanceof Model
-            serialize value.getAttributes()
-          else
-            value
-        result
-
-      modelAttributes = @model and @model.getAttributes()
-      templateData = if modelAttributes
-        # Return an object which delegates to the returned attributes
-        # object so a custom getTemplateData might safely add and alter
-        # properties (at least primitive values).
-        utils.beget serialize modelAttributes
+    # Create an object which delegates to the model attributes
+    # so a custom getTemplateData might safely add and alter
+    # properties (at least primitive values).
+    # Nested models are mapped to their attributes, recursively.
+    serializeAttributes = (model, attributes, modelStack) ->
+      # Create a delegator on initial call
+      unless modelStack
+        delegator = utils.beget attributes
+        modelStack = [model]
       else
-        {}
+        # Add model to stack
+        modelStack.push model
+      # Map models to their attributes
+      for key, value of attributes when value instanceof Model
+        # Don’t change the original attribute, create a property
+        # on the delegator which shadows the original attribute
+        delegator = delegator or utils.beget attributes
+        delegator[key] = if value is model or value in modelStack
+          # Nullify circular references
+          null
+        else
+          # Serialize recursively
+          serializeAttributes(
+            value, value.getAttributes(), modelStack
+          )
+      # Remove model from stack
+      modelStack.pop()
+      # Return the delegator if it was created, otherwise the plain attributes
+      delegator or attributes
 
-      # If the model is a Deferred, add a flag to get the Deferred state
-      if @model and typeof @model.state is 'function'
-        templateData.resolved = @model.state() is 'resolved'
+    # Return the serialized attributes for a model
+    getModelAttributes = (model) ->
+      serializeAttributes model, model.getAttributes()
+
+    # Get the model/collection data for the templating function
+    getTemplateData: ->
+
+      if @model
+        # Serialize the models
+        templateData = getModelAttributes @model
+
+      else if @collection
+        # Serialize all models
+        items = (getModelAttributes model for model in @collection.models)
+        templateData = {items}
+
+      modelOrCollection = @model or @collection
+      if modelOrCollection
+
+        # If the model/collection is a Deferred, add a `resolved` flag
+        if typeof modelOrCollection.state is 'function'
+          templateData.resolved = modelOrCollection.state() is 'resolved'
+
+        # If the model/collection is a SyncMachine, add a `synced` flag
+        if typeof modelOrCollection.isSynced is 'function'
+          templateData.synced = modelOrCollection.isSynced()
 
       templateData
 
@@ -349,7 +382,7 @@ define [
       return if @disposed
 
       # Dispose subviews
-      view.dispose() for view in @subviews
+      subview.dispose() for subview in @subviews
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()
@@ -377,5 +410,5 @@ define [
       # Finished
       @disposed = true
 
-      # Your're frozen when your heart’s not open
+      # You’re frozen when your heart’s not open
       Object.freeze? this

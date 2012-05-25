@@ -10,11 +10,13 @@ define [
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
 
-    # Creates a new deferred and mixes it into the model
-    # This method can be called multiple times to reset the
-    # status of the Deferred to 'pending'.
+    # Mixin a Deferred
     initDeferred: ->
       _(this).extend $.Deferred()
+
+    # Mixin a synchronization state machine
+    initSyncMachine: ->
+      _(this).extend SyncMachine
 
     # This method is used to get the attributes for the view template
     # and might be overwritten by decorators which cannot create a
@@ -55,5 +57,5 @@ define [
       # Finished
       @disposed = true
 
-      # Your're frozen when your heart’s not open
+      # You’re frozen when your heart’s not open
       Object.freeze? this

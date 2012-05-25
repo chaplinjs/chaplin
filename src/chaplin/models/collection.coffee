@@ -17,9 +17,7 @@ define [
     # Use the Chaplin model per default, not Backbone.Model
     model: Model
 
-    # Creates a new deferred and mixes it into the collection
-    # This method can be called multiple times to reset the
-    # status of the Deferred to 'pending'.
+    # Mixin a Deferred
     initDeferred: ->
       _(this).extend $.Deferred()
 
@@ -32,44 +30,43 @@ define [
     addAtomic: (models, options = {}) ->
       return unless models.length
       options.silent = true
-      batch_direction = if typeof options.at is 'number' then 'pop' else 'shift'
-      @add(model, options) while model = models[batch_direction]()
+      direction = if typeof options.at is 'number' then 'pop' else 'shift'
+      while model = models[direction]()
+        @add model, options
       @trigger 'reset'
 
-    # Updates a collection with a list
+    # Updates a collection with a list of models
     # Just like the reset method, but only adds new items and
-    # removes items which are not in the new list
+    # removes items which are not in the new list.
+    # Fires individual `add` and `remove` event instead of one `reset`.
     #
     # options:
-    #   deep: Boolean flag to specify whether existing models should be updated
-    #         with new values
-    update: (newList, options = {}) ->
+    #   deep: Boolean flag to specify whether existing models
+    #         should be updated with new values
+    update: (models, options = {}) ->
       fingerPrint = @pluck('id').join()
-      ids = _(newList).pluck('id')
+      ids = _(models).pluck('id')
       newFingerPrint = ids.join()
 
-      # Only execute removal if ID fingerprints differ
-      unless fingerPrint is newFingerPrint
+      # Only remove if ID fingerprints differ
+      if newFingerPrint isnt fingerPrint
         # Remove items which are not in the new list
         _ids = _(ids) # Underscore wrapper
-
-        i = @models.length - 1
-        while i >= 0
+        i = @models.length
+        while i--
           model = @models[i]
           unless _ids.include model.id
             @remove model
-          i--
 
-      # Only add/update list if ID fingerprints differ or update
-      # is deep (member attributes)
-      unless fingerPrint is newFingerPrint and not options.deep
-        # Add item which are not yet in the list
-        for model, i in newList
+      # Only add/update list if ID fingerprints differ
+      # or update is deep (member attributes)
+      if newFingerPrint isnt fingerPrint or options.deep
+        # Add items which are not yet in the list
+        for model, i in models
           preexistent = @get model.id
           if preexistent
-            continue unless options.deep
             # Update existing model
-            preexistent.set model
+            preexistent.set model if options.deep
           else
             # Insert new model
             @add model, at: i
@@ -110,5 +107,5 @@ define [
       # Finished
       @disposed = true
 
-      # Your're frozen when your heart’s not open
+      # You’re frozen when your heart’s not open
       Object.freeze? this

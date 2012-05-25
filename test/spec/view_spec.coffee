@@ -1,9 +1,10 @@
 define [
   'jquery'
+  'chaplin/mediator'
   'chaplin/views/view'
   'chaplin/models/model'
   'chaplin/models/collection'
-], ($, View, Model, Collection) ->
+], ($, mediator, View, Model, Collection) ->
   'use strict'
 
   describe 'View', ->
@@ -11,6 +12,7 @@ define [
 
     renderCalled = false
     view = model = collection = null
+    template = '<p>content</p>'
 
     beforeEach ->
       renderCalled = false
@@ -27,7 +29,7 @@ define [
         collection = null
 
     setModel = ->
-      model = new Model
+      model = new Model()
       view.model = model
 
     setCollection = ->
@@ -39,7 +41,7 @@ define [
       id: 'test-view'
 
       getTemplateFunction: ->
-        -> '<p>content</p>'
+        -> template
 
       initialize: ->
         super
@@ -154,7 +156,7 @@ define [
       setCollection()
       spy = jasmine.createSpy()
       view.modelBind 'add', spy
-      collection.push new Model
+      collection.push new Model()
       expect(spy).toHaveBeenCalled()
 
     it 'should unbind handlers from model events', ->
@@ -172,7 +174,7 @@ define [
       spy = jasmine.createSpy()
       view.modelBind 'add', spy
       view.modelUnbind 'add', spy
-      collection.push new Model
+      collection.push new Model()
       expect(spy).not.toHaveBeenCalled()
 
     it 'should force the context of model event handlers', ->
@@ -230,47 +232,165 @@ define [
       model.set foo: 'bar'
       expect(input.val()).toBe 'bar'
 
-    it 'should add an return subviews', ->
+    it 'should add and return subviews', ->
       expect(typeof view.subview).toBe 'function'
 
-      subview = new View
+      subview = new View()
       view.subview 'fooSubview', subview
       expect(view.subview 'fooSubview').toBe subview
       expect(view.subviews.length).toBe 1
 
-      subview2 = new View
+      subview2 = new View()
       view.subview 'fooSubview', subview2
       expect(view.subview 'fooSubview').toBe subview2
       expect(view.subviews.length).toBe 1
 
     it 'should remove subviews', ->
-      subview = new View
-      view.subview 'fooSubview', subview
       expect(typeof view.removeSubview).toBe 'function'
+
+      # By name
+      subview = new View()
+      view.subview 'fooSubview', subview
+
       view.removeSubview 'fooSubview'
       expect(typeof view.subview('fooSubview')).toBe 'undefined'
+      expect(view.subviews.length).toBe 0
+
+      # By view
+      subview = new View()
+      view.subview 'barSubview', subview
+
+      view.removeSubview subview
+      expect(typeof view.subview('barSubview')).toBe 'undefined'
+      expect(view.subviews.length).toBe 0
 
     it 'should render a template', ->
+      view.render()
+      expect(view.$el.html()).toBe template
 
-    it 'should pass serialized attributes to the templating function', ->
+    it 'should pass model attributes to the template function', ->
+      model1 = new Model
+        id: 1
+        foo: 'foo'
+      model2 = new Model
+        id: 2
+        bar: 'bar'
+      model3 = new Model
+        id: 3
+        qux: 'qux'
+      model1.set model2: model2
+      model2.set model3: model3
+      model2.set model2: model2 # Circular fun!
+      model3.set model2: model2 # Even more fun!
+
+      view = new TestView model: model1
+
+      passedTemplateData = null
+      view.getTemplateFunction = ->
+        (templateData) ->
+          passedTemplateData = templateData
+          template
+      view.render()
+
+      e = expectedTemplateData =
+        foo: 'foo'
+        model2:
+          bar: 'bar'
+          # Circular references are nullified
+          model2: null
+          model3:
+            qux: 'qux'
+            # Circular references are nullified
+            model2: null
+      d = passedTemplateData
+
+      #console.debug 'passedTemplateData', d
+
+      expect(typeof d).toBe 'object'
+      expect(d.foo).toBe e.foo
+
+      expect(typeof d.model2).toBe 'object'
+      expect(d.model2.bar).toBe e.model2.bar
+      expect(d.model2.model2).toBe e.model2.model2
+
+      expect(typeof d.model2.model3).toBe 'object'
+      expect(d.model2.model3.qux).toBe e.model2.model3.qux
+      expect(d.model2.model3.model2).toBe e.model2.model3.model2
+
+    xit 'should pass collection items to the template function', ->
+      # TODO
 
     it 'should dispose itself correctly', ->
+      expect(typeof view.dispose).toBe 'function'
       view.dispose()
-      expect(view.disposed).toBe true
 
-      # To test:
-      # Dispose subviews
-      # Unbind handlers of global events
-      # Unbind all model handlers
-      # Remove all event handlers on this module
-      # Remove the topmost element from DOM
-      # Remove element references, options, model/collection references and subview lists
-      # Freezing
+      expect(view.disposed).toBe true
+      if Object.isFrozen
+        expect(Object.isFrozen(view)).toBe true
+
+    it 'should remove itself from the DOM', ->
+      view.$el
+        .attr('id', 'disposed-view')
+        .appendTo(document.body)
+      expect($('#disposed-view').length).toBe 1
+
+      view.dispose()
+
+      expect($('#disposed-view').length).toBe 0
+
+    it 'should dispose subviews', ->
+      subview = new View()
+      spyOn(subview, 'dispose').andCallThrough()
+      view.subview 'foo', subview
+
+      view.dispose()
+
+      expect(subview.disposed).toBe true
+      expect(subview.dispose).toHaveBeenCalled()
+
+    it 'should unsubscribe from Pub/Sub events', ->
+      pubSubSpy = jasmine.createSpy()
+      view.subscribeEvent 'foo', pubSubSpy
+
+      view.dispose()
+
+      mediator.publish 'foo'
+      expect(pubSubSpy).not.toHaveBeenCalled()
+
+    it 'should unsubscribe from model events', ->
+      setModel()
+      modelBindSpy = jasmine.createSpy()
+      view.modelBind 'foo', modelBindSpy
+
+      view.dispose()
+
+      model.trigger 'foo'
+      expect(modelBindSpy).not.toHaveBeenCalled()
+
+    it 'should remove all event handlers from itself', ->
+      viewBindSpy = jasmine.createSpy()
+      view.on 'foo', viewBindSpy
+
+      view.dispose()
+
+      view.trigger 'foo'
+      expect(viewBindSpy).not.toHaveBeenCalled()
+
+    it 'should remove instance properties', ->
+      view.dispose()
+
+      properties = [
+        'el', '$el',
+        'options', 'model', 'collection',
+        'subviews', 'subviewsByName',
+        '_callbacks'
+      ]
+      for prop in properties
+        expect(_(view).has prop).toBe false
 
     it 'should dispose itself when the model or collection is disposed', ->
-      model = new Model
+      model = new Model()
       view = new TestView model: model
-      spyOn view, 'dispose'
       model.dispose()
       expect(model.disposed).toBe true
       expect(view.disposed).toBe true

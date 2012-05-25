@@ -48,13 +48,12 @@ define [
     it 'should start Backbone.history', ->
       expect(Backbone.History.started).toBe true
 
-    it 'should be disposable', ->
+    it 'should dispose itself correctly', ->
       expect(typeof app.dispose).toBe 'function'
       app.dispose()
 
-      expect(app.dispatcher).toBe null
-      expect(app.layout).toBe null
-      expect(app.router).toBe null
+      for prop in ['dispatcher', 'layout', 'router']
+        expect(_(app).has prop).toBe false
 
       expect(app.disposed).toBe true
       if Object.isFrozen
