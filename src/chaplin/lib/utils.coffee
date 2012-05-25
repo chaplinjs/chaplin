@@ -15,8 +15,7 @@ define [
     # to another object.
     beget: do ->
       if typeof Object.create is 'function'
-        (obj) ->
-          Object.create obj
+        Object.create
       else
         ctor = ->
         (obj) ->
