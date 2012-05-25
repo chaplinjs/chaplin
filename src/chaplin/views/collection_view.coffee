@@ -395,9 +395,6 @@ define [
     dispose: ->
       return if @disposed
 
-      # Remove all listeners registered in this context
-      @collection.off null, null, this
-
       # Dispose all item views
       view.dispose() for own cid, view of @viewsByCid
 
