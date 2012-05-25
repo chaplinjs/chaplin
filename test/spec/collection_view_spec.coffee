@@ -227,19 +227,21 @@ define [
       collectionView.filter null
       expect(collectionView.visibleItems.length).toBe collection.length
 
-    it 'should be disposable and dispose all item views', ->
+    it 'should dispose itself correctly', ->
       expect(typeof collectionView.dispose).toBe 'function'
       model = collection.at 0
       viewsByCid = collectionView.viewsByCid
 
       expect(collectionView.disposed).toBe false
       expect(view.disposed).toBe false for cid, view of viewsByCid
+
       collectionView.dispose()
       expect(collectionView.disposed).toBe true
+      # All item views have been disposed, too
       expect(view.disposed).toBe true for cid, view of viewsByCid
 
-      expect(collectionView.viewsByCid).toBe null
-      expect(collectionView.visibleItems).toBe null
+      for prop in ['viewsByCid', 'visibleItems']
+        expect(_(collectionView).has prop).toBe false
 
     it 'should initialize with a template', ->
       # Mix in SyncMachine into Collection
@@ -354,9 +356,8 @@ define [
     it 'should also dispose when templated', ->
       collectionView.dispose()
 
-      expect(collectionView.$list).toBe null
-      expect(collectionView.$fallback).toBe null
-      expect(collectionView.$loading).toBe null
+      for prop in ['$list', '$fallback', '$loading']
+        expect(_(collectionView).has prop).toBe false
 
     it 'should respect the render options', ->
       collectionView = new TemplatedCollectionView
@@ -366,7 +367,7 @@ define [
 
       children = getAllChildren()
       expect(children.length).toBe 0
-      expect(collectionView.$list).toBe null
+      expect(_(collectionView).has '$list').toBe false
 
       collectionView.render()
       children = getAllChildren()

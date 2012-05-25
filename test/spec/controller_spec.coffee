@@ -6,4 +6,4 @@ define [
   describe 'Controller', ->
     #console.debug 'Controller spec'
 
-    it 'should be tested properly', ->
+    xit 'should be tested properly', ->

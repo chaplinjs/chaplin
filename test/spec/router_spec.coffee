@@ -179,7 +179,7 @@ define [
       expect(Backbone.History.started).toBe false
       expect(spy).toHaveBeenCalled()
 
-    it 'should be disposable', ->
+    it 'should dispose itself correctly', ->
       expect(typeof router.dispose).toBe 'function'
       router.dispose()
 
