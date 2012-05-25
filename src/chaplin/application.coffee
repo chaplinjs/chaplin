@@ -58,5 +58,5 @@ define [
 
       @disposed = true
 
-      # Your're frozen when your heart’s not open
+      # You’re frozen when your heart’s not open
       Object.freeze? this
