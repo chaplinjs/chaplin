@@ -356,7 +356,7 @@ define [
     it 'should also dispose when templated', ->
       collectionView.dispose()
 
-      for prop in '$list', '$fallback', '$loading'
+      for prop in ['$list', '$fallback', '$loading']
         expect(_(collectionView).has prop).toBe false
 
     it 'should respect the render options', ->
