@@ -59,7 +59,7 @@ define [
     # so primitive values might be added and altered safely.
     # Map models to their attributes, recursively.
     serialize: (model) ->
-      serializeAttributes @, @getAttributes()
+      serializeAttributes this, @getAttributes()
 
     # Disposal
     # --------
