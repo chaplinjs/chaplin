@@ -20,9 +20,9 @@ define [
       for id, index in order
         expect(collection.at(index).id).toBe id
 
-    it 'should mixin a subscriber', ->
+    it 'should mixin a Subscriber', ->
       for own name, value of Subscriber
-        expect(Collection::[name]).toBe Subscriber[name]
+        expect(collection[name]).toBe Subscriber[name]
 
     it 'should init a Deferred', ->
       expect(typeof collection.initDeferred).toBe 'function'

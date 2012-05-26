@@ -4,7 +4,8 @@ define [
   'chaplin/views/view'
   'chaplin/models/model'
   'chaplin/models/collection'
-], ($, mediator, View, Model, Collection) ->
+  'chaplin/lib/subscriber'
+], ($, mediator, View, Model, Collection, Subscriber) ->
   'use strict'
 
   describe 'View', ->
@@ -29,7 +30,7 @@ define [
         collection = null
 
     setModel = ->
-      model = new Model()
+      model = new Model foo: 'foo'
       view.model = model
 
     setCollection = ->
@@ -55,6 +56,10 @@ define [
       autoRender: true
       container: '#jasmine-root'
       containerMethod: 'before'
+
+    it 'should mixin a Subscriber', ->
+      for own name, value of Subscriber
+        expect(view[name]).toBe Subscriber[name]
 
     it 'should render automatically', ->
       view = new TestView autoRender: true
@@ -269,21 +274,7 @@ define [
       expect(view.$el.html()).toBe template
 
     it 'should pass model attributes to the template function', ->
-      model1 = new Model
-        id: 1
-        foo: 'foo'
-      model2 = new Model
-        id: 2
-        bar: 'bar'
-      model3 = new Model
-        id: 3
-        qux: 'qux'
-      model1.set model2: model2
-      model2.set model3: model3
-      model2.set model2: model2 # Circular fun!
-      model3.set model2: model2 # Even more fun!
-
-      view = new TestView model: model1
+      setModel()
 
       passedTemplateData = null
       view.getTemplateFunction = ->
@@ -292,33 +283,29 @@ define [
           template
       view.render()
 
-      e = expectedTemplateData =
-        foo: 'foo'
-        model2:
-          bar: 'bar'
-          # Circular references are nullified
-          model2: null
-          model3:
-            qux: 'qux'
-            # Circular references are nullified
-            model2: null
+      expect(typeof passedTemplateData).toBe 'object'
+      expect(passedTemplateData.foo).toBe 'foo'
+
+    it 'should pass collection items to the template function', ->
+      model1 = new Model foo: 'foo'
+      model2 = new Model bar: 'bar'
+      collection = new Collection [model1, model2]
+      view.collection = collection
+
+      passedTemplateData = null
+      view.getTemplateFunction = ->
+        (templateData) ->
+          passedTemplateData = templateData
+          template
+      view.render()
+
       d = passedTemplateData
-
-      #console.debug 'passedTemplateData', d
-
       expect(typeof d).toBe 'object'
-      expect(d.foo).toBe e.foo
-
-      expect(typeof d.model2).toBe 'object'
-      expect(d.model2.bar).toBe e.model2.bar
-      expect(d.model2.model2).toBe e.model2.model2
-
-      expect(typeof d.model2.model3).toBe 'object'
-      expect(d.model2.model3.qux).toBe e.model2.model3.qux
-      expect(d.model2.model3.model2).toBe e.model2.model3.model2
-
-    xit 'should pass collection items to the template function', ->
-      # TODO
+      expect(typeof d.items).toBe 'object'
+      expect(typeof d.items[0]).toBe 'object'
+      expect(d.items[0].foo).toBe 'foo'
+      expect(typeof d.items[1]).toBe 'object'
+      expect(d.items[1].bar).toBe 'bar'
 
     it 'should dispose itself correctly', ->
       expect(typeof view.dispose).toBe 'function'
