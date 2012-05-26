@@ -2,7 +2,8 @@ define [
   'chaplin/mediator'
   'chaplin/models/model'
   'chaplin/lib/subscriber'
-], (mediator, Model, Subscriber) ->
+  'chaplin/lib/sync_machine'
+], (mediator, Model, Subscriber, SyncMachine) ->
   'use strict'
 
   describe 'Model', ->
@@ -20,7 +21,25 @@ define [
       for own name, value of Subscriber
         expect(model[name]).toBe Subscriber[name]
 
-    it 'should serialize', ->
+    it 'should initialize a Deferred', ->
+      expect(typeof model.initDeferred).toBe 'function'
+      model.initDeferred()
+      for method in ['done', 'fail', 'progress', 'state', 'promise']
+        expect(typeof model[method]).toBe 'function'
+      expect(model.state()).toBe 'pending'
+
+    it 'should initialize a SyncMachine', ->
+      expect(typeof model.initSyncMachine).toBe 'function'
+      model.initSyncMachine()
+      for own name, value of SyncMachine
+        if typeof value is 'function'
+          expect(model[name]).toBe value
+      expect(model.syncState()).toBe 'unsynced'
+
+    it 'should return the attributes per default', ->
+      expect(model.getAttributes()).toBe model.attributes
+
+    it 'should serialize the attributes', ->
       model1 = model
       model2 = new Model
         id: 2

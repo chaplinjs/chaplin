@@ -3,7 +3,8 @@ define [
   'backbone',
   'chaplin/lib/utils'
   'chaplin/lib/subscriber'
-], (_, Backbone, utils, Subscriber) ->
+  'chaplin/lib/sync_machine'
+], (_, Backbone, utils, Subscriber, SyncMachine) ->
   'use strict'
 
   class Model extends Backbone.Model

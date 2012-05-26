@@ -2,7 +2,8 @@ define [
   'chaplin/mediator'
   'chaplin/models/collection'
   'chaplin/lib/subscriber'
-], (mediator, Collection, Subscriber) ->
+  'chaplin/lib/sync_machine'
+], (mediator, Collection, Subscriber, SyncMachine) ->
   'use strict'
 
   describe 'Collection', ->
@@ -24,17 +25,20 @@ define [
       for own name, value of Subscriber
         expect(collection[name]).toBe Subscriber[name]
 
-    it 'should init a Deferred', ->
+    it 'should initialize a Deferred', ->
       expect(typeof collection.initDeferred).toBe 'function'
       collection.initDeferred()
       for method in ['done', 'fail', 'progress', 'state', 'promise']
         expect(typeof collection[method]).toBe 'function'
+      expect(collection.state()).toBe 'pending'
 
-    it 'should init a SyncMachine', ->
-      expect(typeof collection.initDeferred).toBe 'function'
-      for own name, value of Subscriber
+    it 'should initialize a SyncMachine', ->
+      expect(typeof collection.initSyncMachine).toBe 'function'
+      collection.initSyncMachine()
+      for own name, value of SyncMachine
         if typeof value is 'function'
           expect(collection[name]).toBe value
+      expect(collection.syncState()).toBe 'unsynced'
 
     it 'should add models atomically', ->
       expect(typeof collection.addAtomic).toBe 'function'
