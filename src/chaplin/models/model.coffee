@@ -86,7 +86,8 @@ define [
       # and event handlers
       properties = [
         'collection',
-        'attributes', '_escapedAttributes', '_previousAttributes',
+        'attributes', 'changed'
+        '_escapedAttributes', '_previousAttributes',
         '_silent', '_pending',
         '_callbacks'
       ]
