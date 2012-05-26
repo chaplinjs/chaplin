@@ -30,7 +30,7 @@ define [
         collection = null
 
     setModel = ->
-      model = new Model foo: 'foo'
+      model = new Model foo: 'foo', bar: 'bar'
       view.model = model
 
     setCollection = ->
@@ -273,39 +273,79 @@ define [
       view.render()
       expect(view.$el.html()).toBe template
 
-    it 'should pass model attributes to the template function', ->
+    it 'should return empty template data without a model', ->
+      templateData = view.getTemplateData()
+      expect(typeof templateData).toBe 'object'
+      expect(_(templateData).isEmpty()).toBe true
+
+    it 'should return proper template data for a model', ->
       setModel()
+      templateData = view.getTemplateData()
+      expect(typeof templateData).toBe 'object'
+      expect(templateData.foo).toBe 'foo'
+      expect(templateData.bar).toBe 'bar'
 
-      passedTemplateData = null
-      view.getTemplateFunction = ->
-        (templateData) ->
-          passedTemplateData = templateData
-          template
-      view.render()
-
-      expect(typeof passedTemplateData).toBe 'object'
-      expect(passedTemplateData.foo).toBe 'foo'
-
-    it 'should pass collection items to the template function', ->
+    it 'should return proper template data for collections', ->
       model1 = new Model foo: 'foo'
       model2 = new Model bar: 'bar'
       collection = new Collection [model1, model2]
       view.collection = collection
 
-      passedTemplateData = null
-      view.getTemplateFunction = ->
-        (templateData) ->
-          passedTemplateData = templateData
-          template
-      view.render()
-
-      d = passedTemplateData
+      d = view.getTemplateData()
       expect(typeof d).toBe 'object'
       expect(typeof d.items).toBe 'object'
       expect(typeof d.items[0]).toBe 'object'
       expect(d.items[0].foo).toBe 'foo'
       expect(typeof d.items[1]).toBe 'object'
       expect(d.items[1].bar).toBe 'bar'
+
+    it 'should add the Deferred state to the template data', ->
+      setModel()
+      model.initDeferred()
+      templateData = view.getTemplateData()
+      expect(templateData.resolved).toBe false
+      model.resolve()
+      templateData = view.getTemplateData()
+      expect(templateData.resolved).toBe true
+
+    it 'should add the SyncMachine state to the template data', ->
+      setModel()
+      model.initSyncMachine()
+      templateData = view.getTemplateData()
+      expect(templateData.synced).toBe false
+      model.beginSync()
+      model.finishSync()
+      templateData = view.getTemplateData()
+      expect(templateData.synced).toBe true
+
+    it 'should not cover existing synced and resolved properties', ->
+      setModel()
+      model.initDeferred()
+      model.initSyncMachine()
+      model.set resolved: 'foo', synced: 'bar'
+      templateData = view.getTemplateData()
+      expect(templateData.resolved).toBe 'foo'
+      expect(templateData.synced).toBe 'bar'
+
+    it 'should pass model attributes to the template function', ->
+      setModel()
+
+      spyOn(view, 'getTemplateData').andCallThrough()
+
+      passedTemplateData = null
+      templateFunc = jasmine.createSpy().andReturn(template)
+      spyOn(view, 'getTemplateFunction').andReturn(templateFunc)
+
+      view.render()
+
+      expect(view.getTemplateFunction).toHaveBeenCalled()
+      expect(view.getTemplateData).toHaveBeenCalled()
+      expect(templateFunc).toHaveBeenCalled()
+
+      templateData = templateFunc.mostRecentCall.args[0]
+      expect(typeof templateData).toBe 'object'
+      expect(templateData.foo).toBe 'foo'
+      expect(templateData.bar).toBe 'bar'
 
     it 'should dispose itself correctly', ->
       expect(typeof view.dispose).toBe 'function'

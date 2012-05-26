@@ -274,19 +274,28 @@ define [
         templateData = @model.serialize()
       else if @collection
         # Collection: Serialize all models
-        items = (model.serialize() for model in @collection.models)
+        items = []
+        for model in @collection.models
+          items.push model.serialize()
         templateData = {items}
+      else
+        # Empty object
+        templateData = {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
 
-        # If the model/collection is a Deferred, add a `resolved` flag
-        if typeof modelOrCollection.state is 'function'
-          templateData.resolved = modelOrCollection.state() is 'resolved'
+        # If the model/collection is a Deferred, add a `resolved` flag,
+        # but only if it’s not present yet
+        if typeof modelOrCollection.state is 'function' and
+          not ('resolved' of templateData)
+            templateData.resolved = modelOrCollection.state() is 'resolved'
 
-        # If the model/collection is a SyncMachine, add a `synced` flag
-        if typeof modelOrCollection.isSynced is 'function'
-          templateData.synced = modelOrCollection.isSynced()
+        # If the model/collection is a SyncMachine, add a `synced` flag,
+        # but only if it’s not present yet
+        if typeof modelOrCollection.isSynced is 'function' and
+          not ('synced' of templateData)
+            templateData.synced = modelOrCollection.isSynced()
 
       templateData
 
