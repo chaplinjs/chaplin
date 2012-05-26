@@ -267,50 +267,14 @@ define [
     # Rendering
     # ---------
 
-    # Create an object which delegates to the model attributes
-    # so a custom getTemplateData might safely add and alter
-    # properties (at least primitive values).
-    # Nested models are mapped to their attributes, recursively.
-    serializeAttributes = (model, attributes, modelStack) ->
-      # Create a delegator on initial call
-      unless modelStack
-        delegator = utils.beget attributes
-        modelStack = [model]
-      else
-        # Add model to stack
-        modelStack.push model
-      # Map models to their attributes
-      for key, value of attributes when value instanceof Model
-        # Don’t change the original attribute, create a property
-        # on the delegator which shadows the original attribute
-        delegator = delegator or utils.beget attributes
-        delegator[key] = if value is model or value in modelStack
-          # Nullify circular references
-          null
-        else
-          # Serialize recursively
-          serializeAttributes(
-            value, value.getAttributes(), modelStack
-          )
-      # Remove model from stack
-      modelStack.pop()
-      # Return the delegator if it was created, otherwise the plain attributes
-      delegator or attributes
-
-    # Return the serialized attributes for a model
-    getModelAttributes = (model) ->
-      serializeAttributes model, model.getAttributes()
-
     # Get the model/collection data for the templating function
     getTemplateData: ->
-
       if @model
-        # Serialize the models
-        templateData = getModelAttributes @model
-
+        # Serialize the model
+        templateData = @model.serialize()
       else if @collection
-        # Serialize all models
-        items = (getModelAttributes model for model in @collection.models)
+        # Collection: Serialize all models
+        items = (model.serialize() for model in @collection.models)
         templateData = {items}
 
       modelOrCollection = @model or @collection

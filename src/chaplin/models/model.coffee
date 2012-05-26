@@ -1,8 +1,9 @@
 define [
   'underscore',
   'backbone',
+  'chaplin/lib/utils'
   'chaplin/lib/subscriber'
-], (_, Backbone, Subscriber) ->
+], (_, Backbone, utils, Subscriber) ->
   'use strict'
 
   class Model extends Backbone.Model
@@ -23,6 +24,42 @@ define [
     # proper `attributes` getter due to ECMAScript 3 limits.
     getAttributes: ->
       @attributes
+
+    # Private helper function for serializing attributes recursively,
+    # creating objects which delegate to the original attributes
+    # when a property needs to be overwritten.
+    serializeAttributes = (model, attributes, modelStack) ->
+      # Create a delegator on initial call
+      unless modelStack
+        delegator = utils.beget attributes
+        modelStack = [model]
+      else
+        # Add model to stack
+        modelStack.push model
+      # Map models to their attributes
+      for key, value of attributes when value instanceof Model
+        # Don’t change the original attribute, create a property
+        # on the delegator which shadows the original attribute
+        delegator = delegator or utils.beget attributes
+        delegator[key] = if value is model or value in modelStack
+          # Nullify circular references
+          null
+        else
+          # Serialize recursively
+          serializeAttributes(
+            value, value.getAttributes(), modelStack
+          )
+      # Remove model from stack
+      modelStack.pop()
+      # Return the delegator if it was created, otherwise the plain attributes
+      delegator or attributes
+
+    # Return an object which delegates to the attributes
+    # (i.e. an object which has the attributes as prototype)
+    # so primitive values might be added and altered safely.
+    # Map models to their attributes, recursively.
+    serialize: (model) ->
+      serializeAttributes @, @getAttributes()
 
     # Disposal
     # --------
