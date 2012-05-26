@@ -172,15 +172,15 @@ define [
           'handler argument must be function'
 
       # Get model/collection reference
-      model = @model or @collection
-      unless model
+      modelOrCollection = @model or @collection
+      unless modelOrCollection
         throw new TypeError 'View#modelBind: no model or collection set'
 
       # Ensure that a handler isn’t registered twice
-      model.off type, handler, this
+      modelOrCollection.off type, handler, this
 
       # Register model handler, force context to the view
-      model.on type, handler, this
+      modelOrCollection.on type, handler, this
 
     # Unbind from a model event
 
@@ -193,20 +193,20 @@ define [
           'handler argument must be a function'
 
       # Get model/collection reference
-      model = @model or @collection
-      return unless model
+      modelOrCollection = @model or @collection
+      return unless modelOrCollection
 
       # Remove model handler
-      model.off type, handler
+      modelOrCollection.off type, handler
 
     # Unbind all recorded model event handlers
     modelUnbindAll: () ->
       # Get model/collection reference
-      model = @model or @collection
-      return unless model
+      modelOrCollection = @model or @collection
+      return unless modelOrCollection
 
       # Remove all handlers with a context of this view
-      model.off null, null, this
+      modelOrCollection.off null, null, this
 
     # Setup a simple one-way model-view binding
     # Pass changed attribute values to specific elements in the view

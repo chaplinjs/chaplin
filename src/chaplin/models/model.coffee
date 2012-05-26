@@ -82,7 +82,8 @@ define [
       # This does nothing if it was resolved before
       @reject?()
 
-      # Remove the collection reference and attributes
+      # Remove the collection reference, internal attribute hashes
+      # and event handlers
       properties = [
         'collection',
         'attributes', '_escapedAttributes', '_previousAttributes',
