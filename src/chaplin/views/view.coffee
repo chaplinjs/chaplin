@@ -172,15 +172,15 @@ define [
           'handler argument must be function'
 
       # Get model/collection reference
-      model = @model or @collection
-      unless model
+      modelOrCollection = @model or @collection
+      unless modelOrCollection
         throw new TypeError 'View#modelBind: no model or collection set'
 
       # Ensure that a handler isn’t registered twice
-      model.off type, handler, this
+      modelOrCollection.off type, handler, this
 
       # Register model handler, force context to the view
-      model.on type, handler, this
+      modelOrCollection.on type, handler, this
 
     # Unbind from a model event
 
@@ -193,20 +193,20 @@ define [
           'handler argument must be a function'
 
       # Get model/collection reference
-      model = @model or @collection
-      return unless model
+      modelOrCollection = @model or @collection
+      return unless modelOrCollection
 
       # Remove model handler
-      model.off type, handler
+      modelOrCollection.off type, handler
 
     # Unbind all recorded model event handlers
     modelUnbindAll: () ->
       # Get model/collection reference
-      model = @model or @collection
-      return unless model
+      modelOrCollection = @model or @collection
+      return unless modelOrCollection
 
       # Remove all handlers with a context of this view
-      model.off null, null, this
+      modelOrCollection.off null, null, this
 
     # Setup a simple one-way model-view binding
     # Pass changed attribute values to specific elements in the view
@@ -267,62 +267,35 @@ define [
     # Rendering
     # ---------
 
-    # Create an object which delegates to the model attributes
-    # so a custom getTemplateData might safely add and alter
-    # properties (at least primitive values).
-    # Nested models are mapped to their attributes, recursively.
-    serializeAttributes = (model, attributes, modelStack) ->
-      # Create a delegator on initial call
-      unless modelStack
-        delegator = utils.beget attributes
-        modelStack = [model]
-      else
-        # Add model to stack
-        modelStack.push model
-      # Map models to their attributes
-      for key, value of attributes when value instanceof Model
-        # Don’t change the original attribute, create a property
-        # on the delegator which shadows the original attribute
-        delegator = delegator or utils.beget attributes
-        delegator[key] = if value is model or value in modelStack
-          # Nullify circular references
-          null
-        else
-          # Serialize recursively
-          serializeAttributes(
-            value, value.getAttributes(), modelStack
-          )
-      # Remove model from stack
-      modelStack.pop()
-      # Return the delegator if it was created, otherwise the plain attributes
-      delegator or attributes
-
-    # Return the serialized attributes for a model
-    getModelAttributes = (model) ->
-      serializeAttributes model, model.getAttributes()
-
     # Get the model/collection data for the templating function
     getTemplateData: ->
-
       if @model
-        # Serialize the models
-        templateData = getModelAttributes @model
-
+        # Serialize the model
+        templateData = @model.serialize()
       else if @collection
-        # Serialize all models
-        items = (getModelAttributes model for model in @collection.models)
+        # Collection: Serialize all models
+        items = []
+        for model in @collection.models
+          items.push model.serialize()
         templateData = {items}
+      else
+        # Empty object
+        templateData = {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
 
-        # If the model/collection is a Deferred, add a `resolved` flag
-        if typeof modelOrCollection.state is 'function'
-          templateData.resolved = modelOrCollection.state() is 'resolved'
+        # If the model/collection is a Deferred, add a `resolved` flag,
+        # but only if it’s not present yet
+        if typeof modelOrCollection.state is 'function' and
+          not ('resolved' of templateData)
+            templateData.resolved = modelOrCollection.state() is 'resolved'
 
-        # If the model/collection is a SyncMachine, add a `synced` flag
-        if typeof modelOrCollection.isSynced is 'function'
-          templateData.synced = modelOrCollection.isSynced()
+        # If the model/collection is a SyncMachine, add a `synced` flag,
+        # but only if it’s not present yet
+        if typeof modelOrCollection.isSynced is 'function' and
+          not ('synced' of templateData)
+            templateData.synced = modelOrCollection.isSynced()
 
       templateData
 

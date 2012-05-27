@@ -1,8 +1,14 @@
 ## The Cast
 
-This software was initially written by:
+Chaplin is currently maintained by:
 
 * Mathias Schäfer ([9elements](http://9elements.com/)) – [mathias.schaefer@9elements.com](mailto:mathias.schaefer@9elements.com) – [@molily](https://twitter.com/molily) – [molily.de](http://molily.de/)
+* Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
+* Karel Ledru-Mathé – [@karelledrumathe](http://twitter.com/karelledrumathe) – [ledrumathe.com](http://ledrumathe.com/)
+
+Chaplin was initially written by:
+
+* Mathias Schäfer
 * Johannes Emerich – [@knuton](https://twitter.com/knuton) – [johannes.emerich.de](http://johannes.emerich.de/)
 
 With input and contributions from (in chronological order):
@@ -14,8 +20,6 @@ With input and contributions from (in chronological order):
 * Jan Varwig (9elements) – [@agento](http://twitter.com/agento) – [jan.varwig.org](http://jan.varwig.org/)
 * Patrick Schneider (9elements) – [@padschneider](http://twitter.com/padschneider) – [padschneider.com](http://padschneider.com/)
 * Luis Merino (Moviepilot) – [@rendez](http://twitter.com/rendez)
-* Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
-* Karel Ledru-Mathé – [@karelledrumathe](http://twitter.com/karelledrumathe) – [ledrumathe.com](http://ledrumathe.com/)
 
 [See all Github contributors](https://github.com/chaplinjs/chaplin/contributors)
 

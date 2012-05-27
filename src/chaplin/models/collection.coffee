@@ -96,7 +96,8 @@ define [
       # This does nothing if it was resolved before
       @reject?()
 
-      # Remove model constructor reference, internal lists and event handlers
+      # Remove model constructor reference, internal model lists
+      # and event handlers
       properties = [
         'model',
         'models', '_byId', '_byCid',
