@@ -73,6 +73,10 @@ define [
       else
         # Otherwise just bind the `render` method
         @render = _(@render).bind this
+      
+      # If the parent class has events too, merge them together
+      if @constructor.__super__.events and @events
+        @events = _.defaults @events, @constructor.__super__.events
 
       # Call Backbone’s constructor
       super
