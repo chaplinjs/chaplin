@@ -75,8 +75,9 @@ define [
         @render = _(@render).bind this
       
       # If the parent class has events too, merge them together
-      if @constructor.__super__.events and @events
-        @events = _.defaults @events, @constructor.__super__.events
+      parentEvents = @constructor.__super__.events
+      unless _.isFunction(parentEvents) or _.isFunction(@events)
+        _.defaults @events, parentEvents
 
       # Call Backbone’s constructor
       super
