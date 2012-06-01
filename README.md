@@ -49,7 +49,7 @@ There’s a major rewrite going on and the `master` branch already reflects thes
 - Writing an up-to-date documentation and writing a class & method reference
 - Creating a boilerplate app, outsourcing the current application examples
 
-How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
+How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [forum](http://ost.io/chaplinjs/chaplin) and [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
 ).
 
 ## Stay tuned for updates
