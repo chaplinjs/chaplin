@@ -93,7 +93,7 @@ define [
     # Logged-in / logged-out classes for the body element
     # ---------------------------------------------------
 
-    updateLoginClasses: (loggedIn) ->
+    updateLoginClasses: (loggedIn = no) ->
       $(document.body)
         .toggleClass('logged-out', not loggedIn)
         .toggleClass('logged-in', loggedIn)
