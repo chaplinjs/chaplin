@@ -49,7 +49,7 @@ There’s a major rewrite going on and the `master` branch already reflects thes
 - Writing an up-to-date documentation and writing a class & method reference
 - Creating a boilerplate app, outsourcing the current application examples
 
-How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
+How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [forum](http://ost.io/chaplinjs/chaplin) and [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
 ).
 
 ## Stay tuned for updates
@@ -137,7 +137,9 @@ This example uses Facebook client-side authentication to display the user’s Li
 
 Brunch with Chaplin is a skeleton application, where [brunch](http://brunch.io) is used for assembling files & assets. It has ready-to-use classes for session management, html5boilerplate and stylus / handlebars.js as app languages.
 
-[github.com/brunch/twitter](https://github.com/brunch/twitter) is a twitter client, built on it. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
+Example of apps built on it:
+* [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
+* [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
 
 ## The Architecture in Detail
 
