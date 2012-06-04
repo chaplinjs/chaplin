@@ -319,7 +319,7 @@ define [
       $list = @$list
 
       # Get the children which originate from item views
-      children = $list.children @itemSelector
+      children = $list.children (@itemSelector or undefined)
       length = children.length
 
       if length is 0 or position is length
