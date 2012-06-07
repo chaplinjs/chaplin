@@ -55,10 +55,14 @@ define [
       instance["#{name}IsWrapped"] = true
       # Create the wrapper method
       instance[name] = ->
+        # Stop if the view was already disposed
+        return false if @disposed
         # Call the original method
         func.apply instance, arguments
         # Call the corresponding `after-` method
         instance["after#{utils.upcase(name)}"] arguments...
+        # Return the view
+        instance
 
     constructor: ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
@@ -299,11 +303,20 @@ define [
 
       templateData
 
+    # Returns the compiled template function
     getTemplateFunction: ->
       # Chaplin doesn’t define how you load and compile templates in order to
       # render views. The example application uses Handlebars and RequireJS
       # to load and compile templates on the client side. See the derived
-      # View class in the example application.
+      # View class in the example application:
+      # https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/base/view.coffee
+      #
+      # If you precompile templates to JavaScript functions on the server,
+      # you might just return a reference to that function.
+      # Several precompilers create a global `JST` hash which stores the
+      # template functions. You can get the function by the template name:
+      # JST[@templateName]
+
       throw new Error 'View#getTemplateFunction must be overridden'
 
     # Main render function
@@ -312,7 +325,7 @@ define [
       # Do not render if the object was disposed
       # (render might be called as an event handler which wasn’t
       # removed correctly)
-      return if @disposed
+      return false if @disposed
 
       templateFunc = @getTemplateFunction()
       if typeof templateFunc is 'function'
@@ -342,9 +355,6 @@ define [
         $(@container)[@containerMethod] @el
         # Trigger an event
         @trigger 'addedToDOM'
-
-      # Return the view
-      this
 
     # Disposal
     # --------
