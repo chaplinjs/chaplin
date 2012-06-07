@@ -450,7 +450,6 @@ define [
       expect(renderResult).toBe view
       expect(view.afterRender.callCount).toBe 1
       expect(renderCalled).toBe true
-      testbed = document.getElementById 'testbed'
       expect(view.el.parentNode).toBe testbed
 
       view.dispose()
