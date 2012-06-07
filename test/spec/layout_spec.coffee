@@ -163,11 +163,11 @@ define [
       layout.dispose()
       class TestLayout extends Layout
         events:
-          'click #jasmine-root': 'testClickHandler'
+          'click #testbed': 'testClickHandler'
           click: spy2
         testClickHandler: spy1
       layout = new TestLayout
-      el = $('#jasmine-root')
+      el = $('#testbed')
       el.click()
       expect(spy1).toHaveBeenCalled()
       expect(spy2).toHaveBeenCalled()
@@ -188,9 +188,9 @@ define [
       spy2 = jasmine.createSpy()
       layout.testClickHandler = spy1
       layout.delegateEvents
-        'click #jasmine-root': 'testClickHandler'
+        'click #testbed': 'testClickHandler'
         click: spy2
-      el = $('#jasmine-root')
+      el = $('#testbed')
       el.click()
       expect(spy1).toHaveBeenCalled()
       expect(spy2).toHaveBeenCalled()
@@ -204,7 +204,7 @@ define [
       layout.subscribeEvent 'foo', spy1
 
       spy2 = jasmine.createSpy()
-      layout.delegateEvents 'click #jasmine-root': spy2
+      layout.delegateEvents 'click #testbed': spy2
 
       expect(typeof layout.dispose).toBe 'function'
       layout.dispose()
@@ -214,7 +214,7 @@ define [
         expect(Object.isFrozen(layout)).toBe true
 
       mediator.publish 'foo'
-      $('#jasmine-root').click()
+      $('#testbed').click()
 
       # It should unsubscribe from events
       expect(spy1).not.toHaveBeenCalled()

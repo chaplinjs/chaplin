@@ -14,6 +14,7 @@ define [
     renderCalled = false
     view = model = collection = null
     template = '<p>content</p>'
+    testbed = document.getElementById 'testbed'
 
     beforeEach ->
       renderCalled = false
@@ -44,9 +45,11 @@ define [
       getTemplateFunction: ->
         -> template
 
+      # Overrides super
       initialize: ->
         super
 
+      # Overrides render
       render: ->
         super
         renderCalled = true
@@ -74,45 +77,44 @@ define [
       view = new TestView autoRender: true
       expect(renderCalled).toBe true
       expect(view.el.parentNode).toBe null
-      view.dispose()
 
     it 'should attach itself to an element automatically', ->
-      view = new TestView container: document.body
+      view = new TestView container: testbed
       expect(renderCalled).toBe false
       # Expect that the view is attached to the DOM *on first render*,
       # not immediately after initialize
       expect(view.el.parentNode).toBe null
       view.render()
-      expect(view.el.parentNode).toBe document.body
-      view.dispose()
+      expect(view.el.parentNode).toBe testbed
 
     it 'should attach itself to a selector automatically', ->
-      view = new TestView container: 'body'
+      view = new TestView container: '#testbed'
       view.render()
-      expect(view.el.parentNode).toBe document.body
-      view.dispose()
+      expect(view.el.parentNode).toBe testbed
 
     it 'should attach itself to a jQuery object automatically', ->
-      view = new TestView container: $('body')
+      view = new TestView container: $('#testbed')
       view.render()
-      expect(view.el.parentNode).toBe document.body
-      view.dispose()
+      expect(view.el.parentNode).toBe testbed
 
     it 'should use the given attach method', ->
-      refEl = document.getElementById 'testbed'
-      view = new TestView container: refEl, containerMethod: 'after'
+      view = new TestView container: testbed, containerMethod: 'after'
       view.render()
-      expect(view.el).toBe refEl.nextSibling
-      expect(view.el.parentNode).toBe refEl.parentNode
-      view.dispose()
+      expect(view.el).toBe testbed.nextSibling
+      expect(view.el.parentNode).toBe testbed.parentNode
 
-    it 'should consider configuration properties', ->
-      refEl = document.getElementById 'testbed'
-      view = new ConfiguredTestView
+    it 'should consider autoRender, container and containerMethod properties', ->
+      view = new ConfiguredTestView()
       expect(renderCalled).toBe true
-      expect(view.el).toBe refEl.previousSibling
-      expect(view.el.parentNode).toBe refEl.parentNode
-      view.dispose()
+      expect(view.el).toBe testbed.previousSibling
+      expect(view.el.parentNode).toBe testbed.parentNode
+
+    it 'should fire an addedToDOM event attching itself to the DOM', ->
+      view = new TestView container: testbed
+      spy = jasmine.createSpy()
+      view.on 'addedToDOM', spy
+      view.render()
+      expect(spy).toHaveBeenCalled()
 
     it 'should register user input events', ->
       expect(typeof view.delegate).toBe 'function'
@@ -427,13 +429,35 @@ define [
       expect(model.disposed).toBe true
       expect(view.disposed).toBe true
 
-    it 'should not render when disposed', ->
+    it 'should not render when disposed given render wasn’t overridden', ->
+      # Vanilla View which doesn’t override render
+      view = new View()
+      view.getTemplateFunction = TestView::getTemplateFunction
       spyOn(view, 'afterRender').andCallThrough()
-      view.render()
+      renderResult = view.render()
+      expect(renderResult).toBe view
+
       view.dispose()
+
+      renderResult = view.render()
+      expect(renderResult).toBe false
+      expect(view.afterRender.callCount).toBe 1
+
+    it 'should not render when disposed given render was overridden', ->
+      view = new TestView container: '#testbed'
+      spyOn(view, 'afterRender').andCallThrough()
+      renderResult = view.render()
+      expect(renderResult).toBe view
+      expect(view.afterRender.callCount).toBe 1
+      expect(renderCalled).toBe true
+      testbed = document.getElementById 'testbed'
+      expect(view.el.parentNode).toBe testbed
+
+      view.dispose()
+
       renderResult = view.render()
       expect(renderResult).toBe false
       # Render was called but super call should not do anything
       expect(renderCalled).toBe true
-      expect($('#testbed').html()).toBe ''
+      expect($(testbed).children().length).toBe 0
       expect(view.afterRender.callCount).toBe 1
