@@ -38,7 +38,9 @@
   var reporter = new jasmine.TrivialReporter(document.getElementById('jasmine-root'));
   var jasmineEnv = new jasmine.getEnv();
   jasmineEnv.addReporter(reporter);
-  jasmineEnv.specFilter = reporter.specFilter.bind(reporter);
+  jasmineEnv.specFilter = function () {
+    reporter.specFilter.call(reporter);
+  };
 
   var specs = [
     'mediator',
