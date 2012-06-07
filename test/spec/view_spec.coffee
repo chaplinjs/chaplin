@@ -54,12 +54,21 @@ define [
     class ConfiguredTestView extends TestView
 
       autoRender: true
-      container: '#jasmine-root'
+      container: '#testbed'
       containerMethod: 'before'
 
     it 'should mixin a Subscriber', ->
       for own name, value of Subscriber
         expect(view[name]).toBe Subscriber[name]
+
+    it 'should render', ->
+      expect(typeof view.render).toBe 'function'
+      renderResult = view.render()
+      expect(renderResult).toBe view
+
+    it 'should render a template', ->
+      view.render()
+      expect(view.$el.html()).toBe template
 
     it 'should render automatically', ->
       view = new TestView autoRender: true
@@ -90,7 +99,7 @@ define [
       view.dispose()
 
     it 'should use the given attach method', ->
-      refEl = document.getElementById 'jasmine-root'
+      refEl = document.getElementById 'testbed'
       view = new TestView container: refEl, containerMethod: 'after'
       view.render()
       expect(view.el).toBe refEl.nextSibling
@@ -98,7 +107,7 @@ define [
       view.dispose()
 
     it 'should consider configuration properties', ->
-      refEl = document.getElementById 'jasmine-root'
+      refEl = document.getElementById 'testbed'
       view = new ConfiguredTestView
       expect(renderCalled).toBe true
       expect(view.el).toBe refEl.previousSibling
@@ -269,10 +278,6 @@ define [
       expect(typeof view.subview('barSubview')).toBe 'undefined'
       expect(view.subviews.length).toBe 0
 
-    it 'should render a template', ->
-      view.render()
-      expect(view.$el.html()).toBe template
-
     it 'should return empty template data without a model', ->
       templateData = view.getTemplateData()
       expect(typeof templateData).toBe 'object'
@@ -421,3 +426,14 @@ define [
       model.dispose()
       expect(model.disposed).toBe true
       expect(view.disposed).toBe true
+
+    it 'should not render when disposed', ->
+      spyOn(view, 'afterRender').andCallThrough()
+      view.render()
+      view.dispose()
+      renderResult = view.render()
+      expect(renderResult).toBe false
+      # Render was called but super call should not do anything
+      expect(renderCalled).toBe true
+      expect($('#testbed').html()).toBe ''
+      expect(view.afterRender.callCount).toBe 1
