@@ -37,7 +37,7 @@ define [
     # while the collection is syncing.
     loadingSelector: null
 
-    # The actual element which is fetched using `fallbackSelector`
+    # The actual element which is fetched using `loadingSelector`
     $loading: null
 
     # Selector which identifies child elements belonging to collection
@@ -195,7 +195,7 @@ define [
     # ---------
 
     # Applies a filter to the collection view.
-    # Expects an interator function as parameter.
+    # Expects an iterator function as parameter.
     # Hides all items for which the iterator returns false.
     filter: (filterer) ->
       # Save the new filterer function
