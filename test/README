@@ -1,6 +1,9 @@
-To compile the specs from CoffeeScript to JavaScript, run these commands:
+To compile the source and the specs from CoffeeScript to JavaScript,
+run these commands in the repository root:
 
 coffee --bare --output test/js/ src/
 coffee --bare --output test/js/ test/spec/
 
-Then open the test runner (index.html) in a browser.
+This compiles both to the directory test/js/.
+
+Now open test/index.html in a browser to run the tests.

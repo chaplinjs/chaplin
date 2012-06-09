@@ -310,6 +310,7 @@ define [
 
       if included
         # Make view transparent if animation is enabled
+        $viewEl.addClass 'opacity-transitionable' if animationDuration
         $viewEl.css 'opacity', 0 if animationDuration
       else
         # Hide the view if it’s filtered
@@ -319,7 +320,7 @@ define [
       $list = @$list
 
       # Get the children which originate from item views
-      children = $list.children @itemSelector
+      children = $list.children (@itemSelector or undefined)
       length = children.length
 
       if length is 0 or position is length
@@ -342,6 +343,7 @@ define [
 
       # Fade the view in if it was made transparent before
       if animationDuration and included
+        $viewEl.addClass 'opacity-transitionable-end'
         $viewEl.animate {opacity: 1}, animationDuration
 
     # Remove the view for an item

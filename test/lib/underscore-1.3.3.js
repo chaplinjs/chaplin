@@ -1,4 +1,4 @@
-//     Underscore.js 1.3.2
+//     Underscore.js 1.3.3
 //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
 //     Portions of Underscore are inspired or borrowed from Prototype,
@@ -48,11 +48,10 @@
   // Create a safe reference to the Underscore object for use below.
   var _ = function(obj) { return new wrapper(obj); };
 
-  // Export the Underscore object for **Node.js** and **"CommonJS"**, with
-  // backwards-compatibility for the old `require()` API. If we're not in
-  // CommonJS, add `_` to the global object via a string identifier for
-  // the Closure Compiler "advanced" mode. Registration as an AMD module
-  // via define() happens at the end of this file.
+  // Export the Underscore object for **Node.js**, with
+  // backwards-compatibility for the old `require()` API. If we're in
+  // the browser, add `_` as a global object via a string identifier,
+  // for Closure Compiler "advanced" mode.
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
       exports = module.exports = _;
@@ -63,7 +62,7 @@
   }
 
   // Current version.
-  _.VERSION = '1.3.2';
+  _.VERSION = '1.3.3';
 
   // Collection Functions
   // --------------------
@@ -953,7 +952,7 @@
   // Underscore templating handles arbitrary delimiters, preserves whitespace,
   // and correctly escapes quotes within interpolated code.
   _.template = function(text, data, settings) {
-    settings = _.extend(_.templateSettings, settings);
+    settings = _.defaults(settings || {}, _.templateSettings);
 
     // Compile the template source, taking care to escape characters that
     // cannot be included in a string literal and then unescape them in code
@@ -1056,13 +1055,5 @@
   wrapper.prototype.value = function() {
     return this._wrapped;
   };
-
-  // AMD define happens at the end for compatibility with AMD loaders
-  // that don't enforce next-turn semantics on modules.
-  if (typeof define === 'function' && define.amd) {
-    define('underscore', function() {
-      return _;
-    });
-  }
 
 }).call(this);
