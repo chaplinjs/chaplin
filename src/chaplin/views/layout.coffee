@@ -41,7 +41,7 @@ define [
       # Showing and hiding the main views
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
-      # Adjust the document titel to reflect the current controller
+      # Adjust the document title to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
 
       # Set app wide event handlers
