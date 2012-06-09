@@ -77,11 +77,6 @@ define [
       else
         # Otherwise just bind the `render` method
         @render = _(@render).bind this
-      
-      # If the parent class has events too, merge them together
-      parentEvents = @constructor.__super__.events
-      unless _.isFunction(parentEvents) or _.isFunction(@events)
-        _.defaults @events, parentEvents
 
       # Call Backbone’s constructor
       super
@@ -166,6 +161,22 @@ define [
 
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
+      
+    # Override Backbones method to combine the events
+    # of the parent view if it exists
+    delegateEvents: (events)->      
+      childEvents = events or @events or {}
+      parentEvents = @constructor.__super__.events or {}
+      
+      # If either of the events are functions, execute them before merging them
+      if typeof childEvents is 'function' then childEvents = childEvents()
+      if typeof parentEvents is 'function' then parentEvents = parentEvents()
+      
+      # Merge the parent events with the child events
+      events = _.extend {},parentEvents,childEvents
+      
+      super(events)
+
 
     # Model binding
     # The following implementation resembles subscriber.coffee
