@@ -173,7 +173,7 @@ define [
       if typeof parentEvents is 'function' then parentEvents = parentEvents()
       
       # Merge the parent events with the child events
-      events = _.extend {},parentEvents,childEvents
+      events = _.extend {}, parentEvents, childEvents
       
       super(events)
 
