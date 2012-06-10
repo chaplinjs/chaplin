@@ -47,8 +47,16 @@ define [
       model3 = new Model
         id: 3
         qux: 'qux'
+      model4 = new Model
+        id: 4
+        foo: 'foo'
+      model5 = new Model
+        id: 5
+        baz: 'baz'
+      collection = new Backbone.Collection [model4, model5]
       model1.set model2: model2
       model2.set model3: model3
+      model2.set collection: collection
       model2.set model2: model2 # Circular fun!
       model3.set model2: model2 # Even more fun!
 
@@ -65,6 +73,10 @@ define [
             qux: 'qux'
             # Circular references are nullified
             model2: null
+          collection: [
+            {foo: 'foo'},
+            {baz: 'baz'}
+          ]
 
       #console.debug 'passedTemplateData', d
 
@@ -74,6 +86,10 @@ define [
       expect(typeof d.model2).toBe 'object'
       expect(d.model2.bar).toBe e.model2.bar
       expect(d.model2.model2).toBe e.model2.model2
+
+      expect(typeof d.model2.collection).toBe 'object'
+      expect(d.model2.collection[0].foo).toBe e.model2.collection[0].foo
+      expect(d.model2.collection[1].baz).toBe e.model2.collection[1].baz
 
       expect(typeof d.model2.model3).toBe 'object'
       expect(d.model2.model3.qux).toBe e.model2.model3.qux
