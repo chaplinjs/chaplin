@@ -42,7 +42,7 @@ define [
         if value instanceof Model
           # Don’t change the original attribute, create a property
           # on the delegator which shadows the original attribute
-          delegator or delegator = utils.beget attributes
+          delegator ?= utils.beget attributes
           delegator[key] = if value is model or value in modelStack
             # Nullify circular references
             null
@@ -52,7 +52,7 @@ define [
               value, value.getAttributes(), modelStack
             )
         else if value instanceof Backbone.Collection
-          delegator or delegator = utils.beget attributes
+          delegator ?= utils.beget attributes
           delegator[key] = for item in value.models
             serializeAttributes(
               item, item.getAttributes(), modelStack
