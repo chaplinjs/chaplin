@@ -28,9 +28,9 @@ define [
 
     initialize: (options = {}) ->
       # Merge the options
-      defaults =
-        controller_path: 'controllers/'
-        controller_suffix: '_controller'
+      @settings = _(options).defaults
+        controllerPath: 'controllers/'
+        controllerSuffix: '_controller'
 
       @settings = _.extend(defaults, options)
 
@@ -89,8 +89,8 @@ define [
     # The default implementation uses require() from a AMD module loader
     # like RequireJS to fetch the constructor.
     loadController: (controllerName, handler) ->
-      controllerFileName = utils.underscorize(controllerName) + @settings.controller_suffix
-      require [@settings.controller_path + controllerFileName], handler
+      controllerFileName = utils.underscorize(controllerName) + @settings.controllerSuffix
+      require [@settings.controllerPath + controllerFileName], handler
 
     # Handler for the controller lazy-loading
     controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
