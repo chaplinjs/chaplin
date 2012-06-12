@@ -33,9 +33,9 @@ define [
 
     initialize: (options = {}) ->
       @title = options.title
-      _(options).defaults
-        loginClasses: true
+      @settings = _(options).defaults
         routeLinks: true
+        scrollTo: [0, 0]
 
       # Listen to global events: Starting and disposing of controllers
       # Showing and hiding the main views
@@ -47,11 +47,7 @@ define [
       # Set app wide event handlers
       @delegateEvents()
 
-      if options.loginClasses
-        @subscribeEvent 'loginStatus', @updateLoginClasses
-        @updateLoginClasses()
-
-      if options.routeLinks
+      if @settings.routeLinks
         @initLinkRouting()
 
     # Take (un)delegateEvents from Backbone
@@ -66,7 +62,7 @@ define [
     # Handler for the global beforeControllerDispose event
     hideOldView: (controller) ->
       # Jump to the top of the page
-      scrollTo 0, 0
+      scrollTo @settings.scrollTo if @settings.scrollTo
 
       # Hide the current view
       view = controller.view
@@ -90,13 +86,6 @@ define [
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
 
-    # Logged-in / logged-out classes for the body element
-    # ---------------------------------------------------
-
-    updateLoginClasses: (loggedIn = no) ->
-      $(document.body)
-        .toggleClass('logged-out', not loggedIn)
-        .toggleClass('logged-in', loggedIn)
 
     # Automatic routing of internal links
     # -----------------------------------
