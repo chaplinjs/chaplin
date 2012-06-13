@@ -98,12 +98,15 @@ define [
       el = event.currentTarget
       $el = $(el)
       href = el.getAttribute('href') || $(el).data('href') || null
+      target = $(el).attr('target')
+
 
       # Link test ---------------
       hrefTest = if _.isFunction(@settings.linkTest) then @settings.linkTest(href) else @settings.linkTest
       return if href is null or
                 href is '' or
                 href.charAt(0) is '#' or
+                target == "_blank" or
                 hrefTest
 
 
