@@ -15,18 +15,20 @@ define [
   'chaplin/lib/sync_machine'
   'chaplin/lib/utils'
 ], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, Subscriber, support, SyncMachine, utils) ->
-  Application    : Application
-  mediator       : mediator
-  Dispatcher     : Dispatcher
-  Controller     : Controller
-  Collection     : Collection
-  Model          : Model
-  Layout         : Layout
-  View           : View
-  CollectionView : CollectionView
-  Route          : Route
-  Router         : Router
-  Subscriber     : Subscriber
-  support        : support
-  SyncMachine    : SyncMachine
-  utils          : utils
+  {
+    Application,
+    mediator,
+    Dispatcher,
+    Controller,
+    Collection,
+    Model,
+    Layout,
+    View,
+    CollectionView,
+    Route,
+    Router,
+    Subscriber,
+    support,
+    SyncMachine,
+    utils
+  }
