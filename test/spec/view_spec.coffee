@@ -1,11 +1,7 @@
 define [
   'jquery'
-  'chaplin/mediator'
-  'chaplin/views/view'
-  'chaplin/models/model'
-  'chaplin/models/collection'
-  'chaplin/lib/subscriber'
-], ($, mediator, View, Model, Collection, Subscriber) ->
+  'chaplin'
+], ($, Chaplin) ->
   'use strict'
 
   describe 'View', ->
@@ -31,14 +27,14 @@ define [
         collection = null
 
     setModel = ->
-      model = new Model foo: 'foo', bar: 'bar'
+      model = new Chaplin.Model foo: 'foo', bar: 'bar'
       view.model = model
 
     setCollection = ->
-      collection = new Collection
+      collection = new Chaplin.Collection
       view.collection = collection
 
-    class TestView extends View
+    class TestView extends Chaplin.View
 
       id: 'test-view'
 
@@ -61,7 +57,7 @@ define [
       containerMethod: 'before'
 
     it 'should mixin a Subscriber', ->
-      for own name, value of Subscriber
+      for own name, value of Chaplin.Subscriber
         expect(view[name]).toBe Subscriber[name]
 
     it 'should render', ->
@@ -172,7 +168,7 @@ define [
       setCollection()
       spy = jasmine.createSpy()
       view.modelBind 'add', spy
-      collection.push new Model()
+      collection.push new Chaplin.Model()
       expect(spy).toHaveBeenCalled()
 
     it 'should unbind handlers from model events', ->
@@ -190,7 +186,7 @@ define [
       spy = jasmine.createSpy()
       view.modelBind 'add', spy
       view.modelUnbind 'add', spy
-      collection.push new Model()
+      collection.push new Chaplin.Model()
       expect(spy).not.toHaveBeenCalled()
 
     it 'should force the context of model event handlers', ->
@@ -251,12 +247,12 @@ define [
     it 'should add and return subviews', ->
       expect(typeof view.subview).toBe 'function'
 
-      subview = new View()
+      subview = new Chaplin.View()
       view.subview 'fooSubview', subview
       expect(view.subview 'fooSubview').toBe subview
       expect(view.subviews.length).toBe 1
 
-      subview2 = new View()
+      subview2 = new Chaplin.View()
       view.subview 'fooSubview', subview2
       expect(view.subview 'fooSubview').toBe subview2
       expect(view.subviews.length).toBe 1
@@ -265,7 +261,7 @@ define [
       expect(typeof view.removeSubview).toBe 'function'
 
       # By name
-      subview = new View()
+      subview = new Chaplin.View()
       view.subview 'fooSubview', subview
 
       view.removeSubview 'fooSubview'
@@ -273,7 +269,7 @@ define [
       expect(view.subviews.length).toBe 0
 
       # By view
-      subview = new View()
+      subview = new Chaplin.View()
       view.subview 'barSubview', subview
 
       view.removeSubview subview
@@ -293,9 +289,9 @@ define [
       expect(templateData.bar).toBe 'bar'
 
     it 'should return proper template data for collections', ->
-      model1 = new Model foo: 'foo'
-      model2 = new Model bar: 'bar'
-      collection = new Collection [model1, model2]
+      model1 = new Chaplin.Model foo: 'foo'
+      model2 = new Chaplin.Model bar: 'bar'
+      collection = new Chaplin.Collection [model1, model2]
       view.collection = collection
 
       d = view.getTemplateData()
@@ -373,7 +369,7 @@ define [
       expect($('#disposed-view').length).toBe 0
 
     it 'should dispose subviews', ->
-      subview = new View()
+      subview = new Chaplin.View()
       spyOn(subview, 'dispose').andCallThrough()
       view.subview 'foo', subview
 
@@ -388,7 +384,7 @@ define [
 
       view.dispose()
 
-      mediator.publish 'foo'
+      Chaplin.mediator.publish 'foo'
       expect(pubSubSpy).not.toHaveBeenCalled()
 
     it 'should unsubscribe from model events', ->
@@ -423,7 +419,7 @@ define [
         expect(_(view).has prop).toBe false
 
     it 'should dispose itself when the model or collection is disposed', ->
-      model = new Model()
+      model = new Chaplin.Model()
       view = new TestView model: model
       model.dispose()
       expect(model.disposed).toBe true
@@ -431,7 +427,7 @@ define [
 
     it 'should not render when disposed given render wasn’t overridden', ->
       # Vanilla View which doesn’t override render
-      view = new View()
+      view = new Chaplin.View()
       view.getTemplateFunction = TestView::getTemplateFunction
       spyOn(view, 'afterRender').andCallThrough()
       renderResult = view.render()

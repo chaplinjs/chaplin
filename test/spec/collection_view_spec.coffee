@@ -1,10 +1,7 @@
 define [
   'jquery'
-  'chaplin/models/model'
-  'chaplin/models/collection'
-  'chaplin/views/view'
-  'chaplin/views/collection_view'
-], (jQuery, Model, Collection, View, CollectionView) ->
+  'chaplin'
+], (jQuery, Chaplin) ->
   'use strict'
 
   describe 'CollectionView', ->
@@ -17,7 +14,7 @@ define [
     # -----------------
 
     # Item view class
-    class ItemView extends View
+    class ItemView extends Chaplin.View
 
       tagName: 'li'
 
@@ -34,7 +31,7 @@ define [
         @templateFunction
 
     # Main CollectionView testing class
-    class TestCollectionView extends CollectionView
+    class TestCollectionView extends Chaplin.CollectionView
 
       tagName: 'ul'
 
@@ -90,14 +87,14 @@ define [
       collection.reset models
 
     addOne = ->
-      model = new Model id: 'one', title: 'one'
+      model = new Chaplin.Model id: 'one', title: 'one'
       collection.add model
       model
 
     addThree = ->
-      model1 = new Model id: 'new1', title: 'new'
-      model2 = new Model id: 'new2', title: 'new'
-      model3 = new Model id: 'new3', title: 'new'
+      model1 = new Chaplin.Model id: 'new1', title: 'new'
+      model2 = new Chaplin.Model id: 'new2', title: 'new'
+      model3 = new Chaplin.Model id: 'new3', title: 'new'
       collection.add model1, at: 0
       collection.add model2, at: 10
       collection.add model3
@@ -118,7 +115,7 @@ define [
         expect(actual).toBe expected
 
     # Create the collection
-    collection = new Collection()
+    collection = new Chaplin.Collection()
 
     # Fill the collection with models before each test
     beforeEach ->
@@ -205,7 +202,7 @@ define [
     it 'should filter views', ->
       addThree()
       filterer = (model, position) ->
-        expect(model instanceof Model).toBe true
+        expect(model instanceof Chaplin.Model).toBe true
         expect(typeof position).toBe 'number'
         model.get('title') is 'new'
       collectionView.filter filterer

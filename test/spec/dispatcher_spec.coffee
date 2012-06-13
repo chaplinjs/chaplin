@@ -1,8 +1,6 @@
 define [
-  'chaplin/mediator'
-  'chaplin/controllers/controller'
-  'chaplin/dispatcher'
-], (mediator, Controller, Dispatcher) ->
+  'chaplin'
+], (Chaplin) ->
   'use strict'
 
   describe 'Dispatcher', ->
@@ -24,7 +22,7 @@ define [
       params = changeURL: false, id: paramsId++
 
     # Define a test controller
-    class TestController extends Controller
+    class TestController extends Chaplin.Controller
 
       historyURL: (params) ->
         #console.debug 'TestController#historyURL'
@@ -48,7 +46,7 @@ define [
       freshParams()
 
     it 'should initialize', ->
-      dispatcher = new Dispatcher()
+      dispatcher = new Chaplin.Dispatcher()
 
     it 'should dispatch routes to controller actions', ->
       proto = TestController.prototype
@@ -56,14 +54,14 @@ define [
       initialize = spyOn(proto, 'initialize').andCallThrough()
       action     = spyOn(proto, 'show').andCallThrough()
 
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.publish 'matchRoute', route, params
 
       expect(initialize).toHaveBeenCalledWith params, null
       expect(action).toHaveBeenCalledWith params, null
       expect(historyURL).toHaveBeenCalledWith params
 
     it 'should start a controller anyway when forced', ->
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.publish 'matchRoute', route, params
 
       proto = TestController.prototype
       historyURL = spyOn(proto, 'historyURL').andCallThrough()
@@ -71,7 +69,7 @@ define [
       action     = spyOn(proto, 'show').andCallThrough()
 
       params.forceStartup = true
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.publish 'matchRoute', route, params
 
       expect(initialize).toHaveBeenCalledWith params, 'test'
       expect(initialize.callCount).toBe 1
@@ -81,7 +79,7 @@ define [
       expect(historyURL.callCount).toBe 1
 
     it 'should save the controller, action, params and url', ->
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.publish 'matchRoute', route, params
       d = dispatcher
       expect(d.previousControllerName).toBe 'test'
       expect(d.currentControllerName).toBe 'test'
@@ -94,22 +92,22 @@ define [
       proto = TestController.prototype
       dispose = spyOn(proto, 'dispose').andCallThrough()
       beforeControllerDispose = jasmine.createSpy()
-      mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
+      Chaplin.mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
 
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.publish 'matchRoute', route, params
 
       expect(dispose).toHaveBeenCalledWith params, 'test'
       passedController = beforeControllerDispose.mostRecentCall.args[0]
       expect(passedController instanceof TestController).toBe true
       expect(passedController.disposed).toBe true
 
-      mediator.unsubscribe 'beforeControllerDispose', beforeControllerDispose
+      Chaplin.mediator.unsubscribe 'beforeControllerDispose', beforeControllerDispose
 
     it 'should publish startupController events', ->
       startupController = jasmine.createSpy()
 
-      mediator.subscribe 'startupController', startupController
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.subscribe 'startupController', startupController
+      Chaplin.mediator.publish 'matchRoute', route, params
 
       passedEvent = startupController.mostRecentCall.args[0]
       expect(typeof passedEvent).toBe 'object'
@@ -118,7 +116,7 @@ define [
       expect(passedEvent.params).toBe params
       expect(passedEvent.previousControllerName).toBe 'test'
 
-      mediator.unsubscribe 'startupController', startupController
+      Chaplin.mediator.unsubscribe 'startupController', startupController
 
     it 'should dispose itself correctly', ->
       expect(typeof dispatcher.dispose).toBe 'function'
@@ -126,7 +124,7 @@ define [
 
       proto = TestController.prototype
       initialize = spyOn(proto, 'initialize').andCallThrough()
-      mediator.publish 'matchRoute', route, params
+      Chaplin.mediator.publish 'matchRoute', route, params
       expect(initialize).not.toHaveBeenCalled()
 
       expect(dispatcher.disposed).toBe true

@@ -1,11 +1,7 @@
 define [
   'jquery'
-  'chaplin/mediator'
-  'chaplin/lib/router'
-  'chaplin/controllers/controller'
-  'chaplin/views/layout'
-  'chaplin/views/view'
-], ($, mediator, Router, Controller, Layout, View) ->
+  'chaplin'
+], ($, Chaplin) ->
   'use strict'
 
   describe 'Layout', ->
@@ -14,11 +10,11 @@ define [
 
     beforeEach ->
       # Create the layout
-      layout = new Layout title: 'Test Site Title'
+      layout = new Chaplin.Layout title: 'Test Site Title'
 
       # Create a test controller
-      testController = new Controller()
-      testController.view = new View()
+      testController = new Chaplin.Controller()
+      testController.view = new Chaplin.View()
       testController.title = 'Test Controller Title'
 
       # Payload for startupController event
@@ -29,7 +25,7 @@ define [
         params: {}
 
       # Create a fresh router
-      router = new Router root: '/test/'
+      router = new Chaplin.Router root: '/test/'
 
     afterEach ->
       layout.dispose()

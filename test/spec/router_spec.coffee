@@ -1,9 +1,7 @@
 define [
   'underscore'
-  'chaplin/mediator'
-  'chaplin/lib/router'
-  'chaplin/lib/route'
-], (_, mediator, Router, Route) ->
+  'chaplin'
+], (_, Chaplin) ->
   'use strict'
 
   describe 'Router and Route', ->
@@ -19,13 +17,13 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router root: '/test/'
-      mediator.subscribe 'matchRoute', matchRoute
+      router = new Chaplin.Router root: '/test/'
+      Chaplin.mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
       route = params = null
       router.dispose()
-      mediator.unsubscribe 'matchRoute', matchRoute
+      Chaplin.mediator.unsubscribe 'matchRoute', matchRoute
 
     it 'should create a Backbone.History instance', ->
       expect(Backbone.history instanceof Backbone.History).toBe true
@@ -35,17 +33,17 @@ define [
 
     it 'should fire a matchRoute event', ->
       spy = jasmine.createSpy()
-      mediator.subscribe 'matchRoute', spy
+      Chaplin.mediator.subscribe 'matchRoute', spy
       router.match '', 'x#y'
 
       router.route '/'
       expect(spy).toHaveBeenCalled()
 
-      mediator.unsubscribe 'matchRoute', spy
+      Chaplin.mediator.unsubscribe 'matchRoute', spy
 
     it 'should match correctly', ->
       spy = jasmine.createSpy()
-      mediator.subscribe 'matchRoute', spy
+      Chaplin.mediator.subscribe 'matchRoute', spy
       router.match 'correct-match1', 'null#null'
       router.match 'correct-match2', 'null#null'
 
@@ -53,12 +51,12 @@ define [
       expect(routed).toBe true
       expect(spy.calls.length).toBe 1
 
-      mediator.unsubscribe 'matchRoute', spy
+      Chaplin.mediator.unsubscribe 'matchRoute', spy
 
     it 'should pass the route to the matchRoute handler', ->
       router.match 'passing-the-route', 'null#null'
       router.route '/passing-the-route'
-      expect(route instanceof Route).toBe true
+      expect(route instanceof Chaplin.Route).toBe true
 
     it 'should provide controller name and action', ->
       router.match 'controller/action', 'controller#action'
@@ -84,7 +82,7 @@ define [
 
     it 'should impose constraints', ->
       spy = jasmine.createSpy()
-      mediator.subscribe 'matchRoute', spy
+      Chaplin.mediator.subscribe 'matchRoute', spy
       router.match 'constraints/:id', 'null#null',
         constraints:
           id: /^\d+$/
@@ -95,7 +93,7 @@ define [
       router.route '/constraints/123'
       expect(spy).toHaveBeenCalled()
 
-      mediator.unsubscribe 'matchRoute', spy
+      Chaplin.mediator.unsubscribe 'matchRoute', spy
 
     it 'should pass fixed parameters', ->
       router.match 'fixed-params/:id', 'null#null',
@@ -138,21 +136,21 @@ define [
       spy = jasmine.createSpy()
       router.match path, 'router#route'
 
-      mediator.publish '!router:route', path, spy
+      Chaplin.mediator.publish '!router:route', path, spy
       expect(router.route).toHaveBeenCalledWith path
       expect(spy).toHaveBeenCalledWith true
       expect(route.controller).toBe 'router'
       expect(route.action).toBe 'route'
 
       spy = jasmine.createSpy()
-      mediator.publish '!router:route', 'different-path', spy
+      Chaplin.mediator.publish '!router:route', 'different-path', spy
       expect(spy).toHaveBeenCalledWith false
 
     it 'should listen to the !router:changeURL event', ->
       path = 'router-changeurl-events'
       spyOn(router, 'changeURL').andCallThrough()
 
-      mediator.publish '!router:changeURL', path
+      Chaplin.mediator.publish '!router:changeURL', path
       expect(router.changeURL).toHaveBeenCalledWith path
 
     it 'should allow to start the Backbone.History', ->

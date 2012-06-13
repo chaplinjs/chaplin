@@ -1,9 +1,6 @@
 define [
-  'chaplin/mediator'
-  'chaplin/models/model'
-  'chaplin/lib/subscriber'
-  'chaplin/lib/sync_machine'
-], (mediator, Model, Subscriber, SyncMachine) ->
+  'chaplin'
+], (Chaplin) ->
   'use strict'
 
   describe 'Model', ->
@@ -12,14 +9,14 @@ define [
     model = null
 
     beforeEach ->
-      model = new Model id: 1, foo: 'foo'
+      model = new Chaplin.Model id: 1, foo: 'foo'
 
     afterEach ->
       model.dispose()
 
     it 'should mixin a Subscriber', ->
-      for own name, value of Subscriber
-        expect(model[name]).toBe Subscriber[name]
+      for own name, value of Chaplin.Subscriber
+        expect(model[name]).toBe Chaplin.Subscriber[name]
 
     it 'should initialize a Deferred', ->
       expect(typeof model.initDeferred).toBe 'function'
@@ -31,7 +28,7 @@ define [
     it 'should initialize a SyncMachine', ->
       expect(typeof model.initSyncMachine).toBe 'function'
       model.initSyncMachine()
-      for own name, value of SyncMachine
+      for own name, value of Chaplin.SyncMachine
         if typeof value is 'function'
           expect(model[name]).toBe value
       expect(model.syncState()).toBe 'unsynced'
@@ -41,10 +38,10 @@ define [
 
     it 'should serialize the attributes', ->
       model1 = model
-      model2 = new Model
+      model2 = new Chaplin.Model
         id: 2
         bar: 'bar'
-      model3 = new Model
+      model3 = new Chaplin.Model
         id: 3
         qux: 'qux'
       model4 = new Model
@@ -117,7 +114,7 @@ define [
 
       model.dispose()
 
-      mediator.publish 'foo'
+      Chaplin.mediator.publish 'foo'
       expect(pubSubSpy).not.toHaveBeenCalled()
 
     it 'should remove all event handlers from itself', ->
