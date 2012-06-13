@@ -39,7 +39,7 @@
   var jasmineEnv = new jasmine.getEnv();
   jasmineEnv.addReporter(reporter);
   jasmineEnv.specFilter = function () {
-    reporter.specFilter.call(reporter);
+    return reporter.specFilter.call(reporter);
   };
 
   var specs = [
