@@ -44,4 +44,7 @@ puts 'Uglify...'
 puts 'Compress...'
 `gzip -9 -c #{MIN} > #{ZIP}`
 
+puts 'Copy to test folder...'
+`cp #{RAW} ../test/lib/chaplin.js`
+
 puts 'Done.'
