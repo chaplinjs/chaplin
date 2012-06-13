@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require './convert'
 
 MODULES = %w(
 chaplin/application
@@ -19,29 +20,65 @@ chaplin/lib/utils
 chaplin
 )
 
-CAT = "chaplin.coffee"
-RAW = "chaplin.js"
-MIN = "chaplin-min.js"
-ZIP = "chaplin-min.js.gz"
+LOADERS = %w(amd commonjs)
 
-puts 'Concatenate...'
-File.open(CAT, 'w') do |cat_file|
-  MODULES.each do |module_name|
+LOADERS.each do |loader|
+
+end
+
+def concat_path(loader)
+  "chaplin-#{loader}.coffee"
+end
+
+def compile_path(loader)
+  "chaplin-#{loader}.js"
+end
+
+def minify_path(loader)
+  "chaplin-#{loader}-min.js"
+end
+
+def gzip_path(loader)
+  "chaplin-#{loader}-min.js.gz"
+end
+
+def concat
+  puts 'Concatenate...'
+
+  amd = MODULES.map do |module_name|
     filename = "../src/#{module_name}.coffee"
     string = File.open(filename, 'r') { |file| file.read }
     string.gsub! /^\s*define(?=(?:\s+\[.*?\],)?\s*(?:\(.*?\))?\s*->)/m, "define '#{module_name}',"
-    string = string.strip.concat("\n\n")
-    cat_file.write string
-  end
+    string.strip.concat("\n\n")
+  end.join('')
+
+  commonjs = convert(amd)
+
+  File.open(concat_path('amd'), 'w') { |file| file.write(amd) }
+  File.open(concat_path('commonjs'), 'w') { |file| file.write(commonjs) }
 end
 
-puts 'Coffee...'
-`coffee --compile #{CAT}`
+def compile(loader)
+  puts 'Compile...'
+  `coffee --compile #{concat_path(loader)}`
+end
 
-puts 'Uglify...'
-`uglifyjs --output #{MIN} #{RAW}`
+def minify(loader)
+  puts 'Minify...'
+  `uglifyjs --output #{minify_path(loader)} #{compile_path(loader)}`
+end
 
-puts 'Compress...'
-`gzip -9 -c #{MIN} > #{ZIP}`
+def gzip(loader)
+  puts 'Gzip...'
+  `gzip -9 -c #{minify_path(loader)} > #{gzip_path(loader)}`
+end
+
+concat
+LOADERS.each do |loader|
+  puts "Doing stuff for #{loader}"
+  compile(loader)
+  minify(loader)
+  gzip(loader)
+end
 
 puts 'Done.'
