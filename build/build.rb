@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'json'
 require './convert'
 
 MODULES = %w(
@@ -42,6 +43,23 @@ def gzip_path(loader)
   "chaplin-#{loader}-min.js.gz"
 end
 
+def get_version
+  File.open(File.join('..', 'package.json'), 'r') do |file|
+    JSON.parse(file.read)['version']
+  end
+end
+
+HEADER = <<HERE
+###
+Chaplin #{get_version}.
+
+Chaplin may be freely distributed under the MIT license.
+For all details and documentation:
+http://github.com/chaplinjs/chaplin
+###
+
+HERE
+
 def concat
   puts 'Concatenate...'
 
@@ -54,8 +72,12 @@ def concat
 
   commonjs = convert(amd)
 
-  File.open(concat_path('amd'), 'w') { |file| file.write(amd) }
-  File.open(concat_path('commonjs'), 'w') { |file| file.write(commonjs) }
+  File.open(concat_path('amd'), 'w') do |file|
+    file.write(HEADER + amd)
+  end
+  File.open(concat_path('commonjs'), 'w') do |file|
+    file.write(HEADER + commonjs)
+  end
 end
 
 def compile(loader)
