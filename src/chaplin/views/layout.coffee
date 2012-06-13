@@ -34,27 +34,22 @@ define [
     initialize: (options = {}) ->
       @title = options.title
       @settings = _(options).defaults
-        routeLinks: true
+        titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
         scrollTo: [0, 0]
 
-      # Listen to global events: Starting and disposing of controllers
-      # Showing and hiding the main views
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
-      # Adjust the document titel to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
 
       # Set app wide event handlers
       @delegateEvents()
 
-      if @settings.routeLinks
-        @initLinkRouting()
 
     # Take (un)delegateEvents from Backbone
     # -------------------------------------
-
-    undelegateEvents: Backbone.View::undelegateEvents
     delegateEvents: Backbone.View::delegateEvents
+    undelegateEvents: Backbone.View::undelegateEvents
+
 
     # Controller startup and disposal
     # -------------------------------
@@ -80,26 +75,19 @@ define [
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
     adjustTitle: (context) ->
-      title = @title
-      subtitle = context.controller.title
-      title = "#{subtitle} \u2013 #{title}" if subtitle
+      title = @title || ''
+      subtitle = context.controller.title || ''
+
+      title = @settings.titleTemplate
+        title: title
+        subtitle: subtitle
+
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
 
 
     # Automatic routing of internal links
     # -----------------------------------
-
-    initLinkRouting: ->
-      # Handle links
-      $(document)
-        .on('click', '.go-to', @goToHandler)
-        .on('click', 'a', @openLink)
-
-    stopLinkRouting: ->
-      $(document)
-        .off('click', '.go-to', @goToHandler)
-        .off('click', 'a', @openLink)
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) =>
@@ -137,6 +125,7 @@ define [
         event.preventDefault() if routed
         # Otherwise navigate to the URL normally
 
+
     # Not only A elements might act as internal links,
     # every element might have:
     # class="go-to" data-href="/something"
@@ -158,6 +147,7 @@ define [
         else
           # Navigate to the URL normally
           location.href = path
+
 
     # Disposal
     # --------
