@@ -35,6 +35,8 @@ define [
       @title = options.title
       @settings = _(options).defaults
         titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
+        openExternalLinksInNewWindow: true
+        linkTest: false
         scrollTo: [0, 0]
 
       @subscribeEvent 'beforeControllerDispose', @hideOldView
@@ -90,63 +92,40 @@ define [
     # -----------------------------------
 
     # Handle all clicks on A elements and try to route them internally
-    openLink: (event) =>
+    openLink: (event) ->
       return if utils.modifierKeyPressed(event)
 
       el = event.currentTarget
-      href = el.getAttribute 'href'
-      # Ignore empty paths even if it is a valid relative URL
-      # Ignore links to fragment identifiers
-      return if href is null or
-        href is '' or
-        href.charAt(0) is '#' or
-        $(el).hasClass('noscript')
+      $el = $(el)
+      href = el.getAttribute('href') || $(el).data('href') || null
 
-      # Is it an external link?
+      # Link test ---------------
+      hrefTest = if _.isFunction(@settings.linkTest) then @settings.linkTest(href) else @settings.linkTest
+      return if href is null or
+                href is '' or
+                href.charAt(0) is '#' or
+                hrefTest
+
+
+      # External link -----------
       currentHostname = location.hostname.replace('.', '\\.')
       external = not ///#{currentHostname}$///i.test(el.hostname)
+
       if external
-        # Open external links normally
-        # You might want to enforce opening in a new tab here:
-        #event.preventDefault()
-        #window.open el.href
+        if @settings.openExternalLinksInNewWindow
+          event.preventDefault() && window.open el.href
+
         return
 
-      # Try to route the link internally
 
-      # Get the path with query string
-      path = el.pathname + el.search
-      # Append a leading slash if necessary (Internet Explorer 8)
-      path = "/#{path}" if path.charAt(0) isnt '/'
+      # Internal link -----------
+      path = el.pathname + el.search                  # path + query string
+      path = "/#{path}" if path.charAt(0) isnt '/'    # starting '/' for IE8
 
       # Pass to the router, try to route internally
       mediator.publish '!router:route', path, (routed) ->
-        # Prevent default handling if the URL could be routed
         event.preventDefault() if routed
-        # Otherwise navigate to the URL normally
 
-
-    # Not only A elements might act as internal links,
-    # every element might have:
-    # class="go-to" data-href="/something"
-    goToHandler: (event) ->
-      el = event.currentTarget
-
-      # Do not handle A elements
-      return if event.nodeName is 'A'
-
-      path = $(el).data('href')
-      # Ignore empty path even if it is a valid relative URL
-      return unless path
-
-      # Pass to the router, try to route internally
-      mediator.publish '!router:route', path, (routed) ->
-        if routed
-          # Prevent default handling if the URL could be routed
-          event.preventDefault()
-        else
-          # Navigate to the URL normally
-          location.href = path
 
 
     # Disposal
