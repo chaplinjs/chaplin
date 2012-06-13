@@ -32,8 +32,6 @@ define [
         controllerPath: 'controllers/'
         controllerSuffix: '_controller'
 
-      @settings = _.extend(defaults, options)
-
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
       @subscribeEvent '!startupController', @startupController
@@ -90,7 +88,11 @@ define [
     # like RequireJS to fetch the constructor.
     loadController: (controllerName, handler) ->
       controllerFileName = utils.underscorize(controllerName) + @settings.controllerSuffix
-      require [@settings.controllerPath + controllerFileName], handler
+      path = @settings.controllerPath + controllerFileName
+      if define?.amd
+        require [path], handler
+      else
+        handler require path
 
     # Handler for the controller lazy-loading
     controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
