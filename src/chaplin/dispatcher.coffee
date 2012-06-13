@@ -32,8 +32,6 @@ define [
         controllerPath: 'controllers/'
         controllerSuffix: '_controller'
 
-      @settings = _.extend(defaults, options)
-
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
       @subscribeEvent '!startupController', @startupController
