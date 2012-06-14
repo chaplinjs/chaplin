@@ -97,10 +97,12 @@ define [
     # -----------------------------------
 
     initLinkRouting: ->
-      $(document).on('click', @settings.routeLinks, @openLink)
+      if @settings.routeLinks
+        $(document).on 'click', @settings.routeLinks, _.bind(@openLink, this)
 
     stopLinkRouting: ->
-      $(document).off('click', @settings.routeLinks, @openLink)
+      if @settings.routeLinks
+        $(document).off 'click', @settings.routeLinks
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) ->
@@ -113,12 +115,13 @@ define [
 
 
       # Link test ---------------
-      if typeof @settings.skipRouting is "function"
-        skipRouting = @settings.skipRouting(href)
-      else if typeof @settings.skipRouting is "string"
-        skipRouting = $el.is(@settings.skipRouting)
+      skipRouting = @settings.skipRouting
+      if typeof skipRouting is "function"
+        skipRouting = skipRouting(href)
+      else if typeof skipRouting is "string"
+        skipRouting = $el.is(skipRouting)
       else
-        skipRouting = @settings.skipRouting
+        skipRouting = skipRouting
 
       return if href is null or
                 href is '' or
