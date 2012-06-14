@@ -44,6 +44,10 @@ define [
     # If empty, all children of $list are considered
     itemSelector: null
 
+    # A class of item in collection.
+    # This property has to be overridden by a derived class.
+    itemView: null
+
     # Filtering
     # ---------
 
@@ -60,14 +64,15 @@ define [
     visibleItems: null
 
     # Returns an instance of the view class
-    # This method has to be overridden by a derived class.
     # This is not simply a property with a constructor so that
     # several item view constructors are possible depending
     # on the item model type.
     getView: (model) ->
-      throw new Error 'CollectionView#getView must be overridden'
-      # Example:
-      # new SomeItemView model: model
+      if @itemView?
+        new @itemView({model})
+      else
+        throw new Error 'The CollectionView#itemView property must be
+defined (or the getView() must be overridden)'
 
     # In contrast to normal views, a template is not mandatory
     # for CollectionViews. Provide an empty `getTemplateFunction`
@@ -83,6 +88,8 @@ define [
         render: true      # Render the view immediately per default
         renderItems: true # Render all items immediately per default
         filterer: null    # No filter function
+
+      @itemView = options.itemView if options.itemView?
 
       # Initialize lists for views and visible items
       @viewsByCid = {}
