@@ -71,7 +71,8 @@ define [
       if @itemView?
         new @itemView({model})
       else
-        throw new Error 'CollectionView#itemView must be overridden'
+        throw new Error 'The CollectionView#itemView property must be
+defined (or the getView() must be overridden)'
 
     # In contrast to normal views, a template is not mandatory
     # for CollectionViews. Provide an empty `getTemplateFunction`
