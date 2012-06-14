@@ -35,13 +35,18 @@ define [
       @title = options.title
       @settings = _(options).defaults
         titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
-        openExternalLinksInNewWindow: true
-        linkTest: false
+        openExternalToBlank: true
+        routeLinks: 'a'
+        skipRouting: '.noscript'
         scrollTo: [0, 0]
 
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
       @subscribeEvent 'startupController', @adjustTitle
+
+      # Set the app link routing
+      if @settings.routeLinks
+        @initLinkRouting()
 
       # Set app wide event handlers
       @delegateEvents()
@@ -91,6 +96,12 @@ define [
     # Automatic routing of internal links
     # -----------------------------------
 
+    initLinkRouting: ->
+      $(document).on('click', @settings.routeLinks, @openLink)
+
+    stopLinkRouting: ->
+      $(document).off('click', @settings.routeLinks, @openLink)
+
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) ->
       return if utils.modifierKeyPressed(event)
@@ -102,12 +113,18 @@ define [
 
 
       # Link test ---------------
-      hrefTest = if _.isFunction(@settings.linkTest) then @settings.linkTest(href) else @settings.linkTest
+      if typeof @settings.skipRouting is "function"
+        skipRouting = @settings.skipRouting(href)
+      else if typeof @settings.skipRouting is "string"
+        skipRouting = $el.is(@settings.skipRouting)
+      else
+        skipRouting = @settings.skipRouting
+
       return if href is null or
                 href is '' or
                 href.charAt(0) is '#' or
                 target == "_blank" or
-                hrefTest
+                skipRouting
 
 
       # External link -----------
@@ -115,19 +132,26 @@ define [
       external = not ///#{currentHostname}$///i.test(el.hostname)
 
       if external
-        if @settings.openExternalLinksInNewWindow
+        if @settings.openExternalToBlank
           event.preventDefault() && window.open el.href
 
         return
 
 
       # Internal link -----------
-      path = el.pathname + el.search                  # path + query string
-      path = "/#{path}" if path.charAt(0) isnt '/'    # starting '/' for IE8
+      if el.nodeName is 'A'
+        path = el.pathname + el.search                  # path + query string
+        path = "/#{path}" if path.charAt(0) isnt '/'    # starting '/' for IE8
+        callback = (routed) -> event.preventDefault() if routed
+      else
+        path = href
+        callback = (routed) -> if routed then event.preventDefault() else location.href = path
 
       # Pass to the router, try to route internally
-      mediator.publish '!router:route', path, (routed) ->
-        event.preventDefault() if routed
+      mediator.publish '!router:route', path, callback
+
+      # mediator.publish '!router:route', path, (routed) ->
+      #   event.preventDefault() if routed
 
 
 
