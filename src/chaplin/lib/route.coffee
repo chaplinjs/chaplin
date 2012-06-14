@@ -31,7 +31,7 @@ define [
         # Escape magic characters
         .replace(escapeRegExp, '\\$&')
         # Replace named parameters, collecting their names
-        .replace(/:(\w+)/g, @addParamName)
+        .replace(/:([a-zA-Z0-9%\-]+)/g, @addParamName)
 
       # Create the actual regular expression
       # Match until the end of the URL or the begin of query string
