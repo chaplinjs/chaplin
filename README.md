@@ -43,7 +43,7 @@ There’s a major rewrite going on and the `master` branch already reflects thes
 Most of this is already done, so the code is already quite stable and successfully used in production. We don’t expect breaking API changes since version 1.0. There are only a few things to polish up before the 1.0 release:
 
 - [A comprehensive documentation](http://chaplinjs.github.com/)
-- Flexibility, like use in non-CoffeeScript and non-RequireJS environments
+- Flexibility, like use in non-CoffeeScript and non-AMD environments
 - Easier configurability of the default behavior
 
 How about joining us? You might have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues). There is also a [forum](http://ost.io/chaplinjs/chaplin) and [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
