@@ -1,5 +1,5 @@
 ({
-  baseUrl: '../js/',
+  baseUrl: './js/',
   name: "chaplin",
   out: "chaplin.js",
   paths: {
