@@ -1,6 +1,6 @@
 define [
-  'chaplin/controllers/controller'
-], (Controller) ->
+  'chaplin'
+], (Chaplin) ->
   'use strict'
 
   describe 'Controller', ->

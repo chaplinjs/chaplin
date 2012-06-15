@@ -1,20 +1,16 @@
 define [
-  'chaplin/mediator'
-  'chaplin/application'
-  'chaplin/lib/router'
-  'chaplin/dispatcher'
-  'chaplin/views/layout'
-], (mediator, Application, Router, Dispatcher, Layout) ->
+  'chaplin'
+], (Chaplin) ->
   'use strict'
 
   describe 'Application', ->
     #console.debug 'Application spec'
 
-    app = new Application()
+    app = new Chaplin.Application()
 
     it 'should be a simple object', ->
       expect(typeof app).toBe 'object'
-      expect(app instanceof Application).toBe true
+      expect(app instanceof Chaplin.Application).toBe true
 
     it 'should initialize', ->
       expect(typeof app.initialize).toBe 'function'
@@ -23,12 +19,12 @@ define [
     it 'should create a dispatcher', ->
       expect(typeof app.initDispatcher).toBe 'function'
       app.initDispatcher()
-      expect(app.dispatcher instanceof Dispatcher).toBe true
+      expect(app.dispatcher instanceof Chaplin.Dispatcher).toBe true
 
     it 'should create a layout', ->
       expect(typeof app.initLayout).toBe 'function'
       app.initLayout()
-      expect(app.layout instanceof Layout).toBe true
+      expect(app.layout instanceof Chaplin.Layout).toBe true
 
     it 'should create a router', ->
       passedMatch = null
@@ -41,7 +37,7 @@ define [
       expect(app.initRouter.length).toBe 2
       app.initRouter routes, root: '/test/'
 
-      expect(app.router instanceof Router).toBe true
+      expect(app.router instanceof Chaplin.Router).toBe true
       expect(routesCalled).toBe true
       expect(typeof passedMatch).toBe 'function'
 

@@ -103,4 +103,7 @@ LOADERS.each do |loader|
   gzip(loader)
 end
 
+puts 'Copy to test folder...'
+`cp #{RAW} ../test/lib/chaplin.js`
+
 puts 'Done.'

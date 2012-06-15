@@ -1,9 +1,6 @@
 define [
-  'chaplin/mediator'
-  'chaplin/models/collection'
-  'chaplin/lib/subscriber'
-  'chaplin/lib/sync_machine'
-], (mediator, Collection, Subscriber, SyncMachine) ->
+  'chaplin'
+], (Chaplin) ->
   'use strict'
 
   describe 'Collection', ->
@@ -12,7 +9,7 @@ define [
     collection = null
 
     beforeEach ->
-      collection = new Collection
+      collection = new Chaplin.Collection
 
     afterEach ->
       collection.dispose()
@@ -35,7 +32,7 @@ define [
     it 'should initialize a SyncMachine', ->
       expect(typeof collection.initSyncMachine).toBe 'function'
       collection.initSyncMachine()
-      for own name, value of SyncMachine
+      for own name, value of Chaplin.SyncMachine
         if typeof value is 'function'
           expect(collection[name]).toBe value
       expect(collection.syncState()).toBe 'unsynced'
@@ -133,7 +130,7 @@ define [
 
       collection.dispose()
 
-      mediator.publish 'foo'
+      Chaplin.mediator.publish 'foo'
       expect(pubSubSpy).not.toHaveBeenCalled()
 
     it 'should remove all event handlers from itself', ->
