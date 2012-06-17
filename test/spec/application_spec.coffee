@@ -17,6 +17,14 @@ define [
       expect(_.isObject app).toBe true
       expect(app instanceof Application).toBe true
 
+    it 'should be extendable', ->
+      expect(typeof Application.extend).toBe 'function'
+
+      DerivedApplication = Application.extend()
+      derivedApp = new DerivedApplication()
+      expect(derivedApp instanceof Application).toBe true
+
+      expect(app instanceof Application).toBe true
     it 'should initialize', ->
       expect(typeof app.initialize).toBe 'function'
       app.initialize()
