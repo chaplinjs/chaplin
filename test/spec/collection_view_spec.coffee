@@ -1,10 +1,11 @@
 define [
+  'underscore'
   'jquery'
   'chaplin/models/model'
   'chaplin/models/collection'
   'chaplin/views/view'
   'chaplin/views/collection_view'
-], (jQuery, Model, Collection, View, CollectionView) ->
+], (_, jQuery, Model, Collection, View, CollectionView) ->
   'use strict'
 
   describe 'CollectionView', ->
