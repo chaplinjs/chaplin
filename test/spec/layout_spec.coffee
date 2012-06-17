@@ -36,6 +36,13 @@ define [
       testController.dispose()
       router.dispose()
 
+    it 'should be extendable', ->
+      expect(typeof Layout.extend).toBe 'function'
+
+      DerivedLayout = Layout.extend()
+      derivedLayout = new DerivedLayout()
+      expect(derivedLayout instanceof Layout).toBe true
+
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
       mediator.publish 'beforeControllerDispose', testController

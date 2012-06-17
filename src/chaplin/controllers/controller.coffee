@@ -1,11 +1,15 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
   'chaplin/lib/subscriber'
-], (_, mediator, Subscriber) ->
+], (_, Backbone, mediator, Subscriber) ->
   'use strict'
 
   class Controller
+
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
