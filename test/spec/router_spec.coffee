@@ -73,6 +73,15 @@ define [
       expect(params.one).toBe '123-foo'
       expect(params.p_two_123).toBe '456-bar'
 
+    it 'should extract non-ascii URL parameters', ->
+      router.match 'params/:one/:two/:three/:four', 'null#null'
+      router.route "/params/o_O/*.*/ü~ö~ä/#{encodeURIComponent('éêè')}"
+      expect(_.isObject params).toBe true
+      expect(params.one).toBe 'o_O'
+      expect(params.two).toBe '*.*'
+      expect(params.three).toBe 'ü~ö~ä'
+      expect(params.four).toBe encodeURIComponent('éêè')
+
     it 'should accept a regular expression as pattern', ->
       router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
       router.route '/raw/regular/expression'
