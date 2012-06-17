@@ -2,7 +2,8 @@ define [
   'underscore'
   'backbone'
   'chaplin/mediator'
-], (_, Backbone, mediator) ->
+  'chaplin/controllers/controller'
+], (_, Backbone, mediator, Controller) ->
   'use strict'
 
   class Route
@@ -10,7 +11,7 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    reservedParams = 'path changeURL'.split(' ')
+    reservedParams = ['path', 'changeURL']
     # Taken from Backbone.Router
     escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
 
@@ -25,6 +26,10 @@ define [
 
       # Separate target into controller and controller action
       [@controller, @action] = target.split('#')
+
+      # Check if the action is a reserved name
+      if _(Controller.prototype).has @action
+        throw new Error 'Route: You should not use existing controller properties as action names'
 
       @createRegExp()
 

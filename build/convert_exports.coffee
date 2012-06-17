@@ -1,44 +1,46 @@
 fs = require('fs')
 
+# Functional purity FTW.
+
 String::startsWith = (subString) ->
   this.lastIndexOf(subString, 0) is 0
 
 String::repeat = (times) ->
   Array(times + 1).join(this)
 
+createLineObject = (line, index) -> {line, index}
+
+nonEmpty = (line) -> line.line isnt ''
+
+addTypes = (line) ->
+  if line.line.startsWith(' '.repeat(2))
+    if line.line.startsWith(' '.repeat(4)) or line.line.charAt(2) is '}'
+      line.type = 'invalid'
+    else
+      line.type = 'indented'
+  else
+    line.type = 'default'
+  line
+
+nonInvalid = (line) -> line.type isnt 'invalid'
+
+groupByNonIndented = (array, line) ->
+  if line.type is 'indented'
+    array[array.length - 1].push line
+  else
+    array.push []
+  array
+
+nonNull = (variable) -> variable?
+
+last = (array) ->
+  array[array.length - 1]
+
+addModuleExports = (line) ->
+  line.line = "  module.exports = #{line.line.trim()}"
+  line
+
 convertExports = (string) ->
-  createLineObject = (line, index) -> {line, index}
-
-  nonEmpty = (line) -> line.line isnt ''
-
-  addTypes = (line) ->
-    if line.line.startsWith(' '.repeat(2))
-      if line.line.startsWith(' '.repeat(4)) or line.line.charAt(2) is '}'
-        line.type = 'invalid'
-      else
-        line.type = 'indented'
-    else
-      line.type = 'default'
-    line
-
-  nonInvalid = (line) -> line.type isnt 'invalid'
-
-  groupByNonIndented = (array, line) ->
-    if line.type is 'indented'
-      array[array.length - 1].push line
-    else
-      array.push []
-    array
-
-  nonNull = (variable) -> variable?
-
-  last = (array) ->
-    array[array.length - 1]
-
-  addModuleExports = (line) ->
-    line.line = "  module.exports = #{line.line.trim()}"
-    line
-
   lines = string.split('\n')
   lines
     .map(createLineObject)

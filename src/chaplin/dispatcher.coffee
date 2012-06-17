@@ -120,6 +120,9 @@ define [
       # Passing the params and the old controller name
       controller[action] params, currentControllerName
 
+      # Stop if the action triggered a redirect
+      return if controller.redirected
+
       # Save the new controller
       @previousControllerName = currentControllerName
       @currentControllerName = controllerName
