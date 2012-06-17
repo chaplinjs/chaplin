@@ -85,3 +85,5 @@ define [
       DerivedController = Controller.extend()
       derivedController = new DerivedController()
       expect(derivedController instanceof Controller).toBe true
+
+      derivedController.dispose()
