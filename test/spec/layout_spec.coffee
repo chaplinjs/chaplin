@@ -36,13 +36,6 @@ define [
       testController.dispose()
       router.dispose()
 
-    it 'should be extendable', ->
-      expect(typeof Layout.extend).toBe 'function'
-
-      DerivedLayout = Layout.extend()
-      derivedLayout = new DerivedLayout()
-      expect(derivedLayout instanceof Layout).toBe true
-
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
       mediator.publish 'beforeControllerDispose', testController
@@ -217,3 +210,12 @@ define [
       # It should unsubscribe from events
       expect(spy1).not.toHaveBeenCalled()
       expect(spy2).not.toHaveBeenCalled()
+
+    it 'should be extendable', ->
+      expect(typeof Layout.extend).toBe 'function'
+
+      DerivedLayout = Layout.extend()
+      derivedLayout = new DerivedLayout()
+      expect(derivedLayout instanceof Layout).toBe true
+
+      derivedLayout.dispose()
