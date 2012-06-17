@@ -112,16 +112,16 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      # Call the specific controller action
-      # Passing the params and the old controller name
-      controller[action] params, currentControllerName
-
       # Save the new controller
       @previousControllerName = currentControllerName
       @currentControllerName = controllerName
       @currentController = controller
       @currentAction = action
       @currentParams = params
+
+      # Call the specific controller action
+      # Passing the params and the old controller name
+      controller[action] params, currentControllerName
 
       @adjustURL controller, params
 
