@@ -1,20 +1,30 @@
-fs = require('fs')
+fs = require 'fs'
 
 # Functional purity FTW.
+# Warning: this converter doesn't detect following case
+#   define ->
+#     a: a
+#     b: b
+# so you'll need to write module exports hashes in `{}`.
 
-String::startsWith = (subString) ->
-  this.lastIndexOf(subString, 0) is 0
+startsWith = (string, subString) ->
+  string.lastIndexOf(subString, 0) is 0
 
-String::repeat = (times) ->
-  Array(times + 1).join(this)
+repeat = (string, times) ->
+  Array(times + 1).join(string)
 
-createLineObject = (line, index) -> {line, index}
+TWO_SPACES = repeat ' ', 2
+FOUR_SPACES = repeat ' ', 4
 
-nonEmpty = (line) -> line.line isnt ''
+createLineObject = (line, index) ->
+  {line, index}
+
+nonEmpty = (line) ->
+  line.line isnt ''
 
 addTypes = (line) ->
-  if line.line.startsWith(' '.repeat(2))
-    if line.line.startsWith(' '.repeat(4)) or line.line.charAt(2) is '}'
+  if startsWith(line.line, TWO_SPACES)
+    if startsWith(line.line, FOUR_SPACES) or line.line.charAt(2) is '}'
       line.type = 'invalid'
     else
       line.type = 'indented'
@@ -22,7 +32,8 @@ addTypes = (line) ->
     line.type = 'default'
   line
 
-nonInvalid = (line) -> line.type isnt 'invalid'
+valid = (line) ->
+  line.type isnt 'invalid'
 
 groupByNonIndented = (array, line) ->
   if line.type is 'indented'
@@ -31,7 +42,8 @@ groupByNonIndented = (array, line) ->
     array.push []
   array
 
-nonNull = (variable) -> variable?
+defined = (variable) ->
+  variable?
 
 last = (array) ->
   array[array.length - 1]
@@ -40,19 +52,21 @@ addModuleExports = (line) ->
   line.line = "  module.exports = #{line.line.trim()}"
   line
 
+replaceOriginalLine = (lines) -> (line) ->
+  lines[line.index] = line.line
+
 convertExports = (string) ->
   lines = string.split('\n')
   lines
     .map(createLineObject)
     .filter(nonEmpty)
     .map(addTypes)
-    .filter(nonInvalid)
+    .filter(valid)
     .reduce(groupByNonIndented, [])
     .map(last)
-    .filter(nonNull)
+    .filter(defined)
     .map(addModuleExports)
-    .forEach (line) ->
-      lines[line.index] = line.line
+    .forEach(replaceOriginalLine lines)
   lines.join('\n')
 
 testConvertExports = ->
@@ -81,8 +95,17 @@ testConvertExports = ->
       c2
     c1
     c-true
+
+  d
+    d2
+      d3
+    d5
+    {
+      d6
+    }
   """
 
   console.log convertExports test
 
+# testConvertExports()
 console.log convertExports fs.readFileSync('/dev/stdin').toString()
