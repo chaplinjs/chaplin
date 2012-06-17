@@ -1,15 +1,19 @@
 define [
+  'backbone'
   'chaplin/mediator'
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
-], (mediator, Dispatcher, Layout, Router) ->
+], (Backbone, mediator, Dispatcher, Layout, Router) ->
   'use strict'
 
   # The application bootstrapper
   # ----------------------------
 
   class Application
+
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
 
     # The site title used in the document title
     title: ''
