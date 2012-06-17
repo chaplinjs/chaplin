@@ -1,9 +1,10 @@
 define [
+  'underscore'
   'chaplin/mediator'
   'chaplin/models/collection'
   'chaplin/lib/subscriber'
   'chaplin/lib/sync_machine'
-], (mediator, Collection, Subscriber, SyncMachine) ->
+], (_, mediator, Collection, Subscriber, SyncMachine) ->
   'use strict'
 
   describe 'Collection', ->
