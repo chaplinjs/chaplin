@@ -80,18 +80,18 @@ define [
 
       #console.debug 'passedTemplateData', d
 
-      expect(typeof d).toBe 'object'
+      expect(_.isObject d).toBe true
       expect(d.foo).toBe e.foo
 
-      expect(typeof d.model2).toBe 'object'
+      expect(_.isObject d.model2).toBe true
       expect(d.model2.bar).toBe e.model2.bar
       expect(d.model2.model2).toBe e.model2.model2
 
-      expect(typeof d.model2.collection).toBe 'object'
+      expect(_.isObject d.model2.collection).toBe true
       expect(d.model2.collection[0].foo).toBe e.model2.collection[0].foo
       expect(d.model2.collection[1].baz).toBe e.model2.collection[1].baz
 
-      expect(typeof d.model2.model3).toBe 'object'
+      expect(_.isObject d.model2.model3).toBe true
       expect(d.model2.model3.qux).toBe e.model2.model3.qux
       expect(d.model2.model3.model2).toBe e.model2.model3.model2
 
