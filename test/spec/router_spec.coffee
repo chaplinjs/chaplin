@@ -55,6 +55,10 @@ define [
 
       mediator.unsubscribe 'matchRoute', spy
 
+    it 'should reject reserved controller action names', ->
+      for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
+        expect(-> router.match '', "null##{prop}").toThrow()
+
     it 'should pass the route to the matchRoute handler', ->
       router.match 'passing-the-route', 'null#null'
       router.route '/passing-the-route'
