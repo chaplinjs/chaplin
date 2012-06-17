@@ -30,6 +30,9 @@ define [
     it 'should create a Backbone.History instance', ->
       expect(Backbone.history instanceof Backbone.History).toBe true
 
+    it 'should create a Backbone.History instance', ->
+      expect(Backbone.history instanceof Backbone.History).toBe true
+
     it 'should not start the Backbone.History at once', ->
       expect(Backbone.History.started).toBe false
 
@@ -205,3 +208,18 @@ define [
       expect(router.disposed).toBe true
       if Object.isFrozen
         expect(Object.isFrozen(router)).toBe true
+
+    it 'should be extendable', ->
+      expect(typeof Router.extend).toBe 'function'
+      # Also test Route
+      expect(typeof Route.extend).toBe 'function'
+
+      DerivedRouter = Router.extend()
+      derivedRouter = new DerivedRouter()
+      expect(derivedRouter instanceof Router).toBe true
+
+      DerivedRoute = Route.extend()
+      derivedRoute = new DerivedRoute 'foo', 'foo#bar'
+      expect(derivedRoute instanceof Route).toBe true
+
+      derivedRouter.dispose()

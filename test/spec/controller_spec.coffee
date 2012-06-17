@@ -13,4 +13,6 @@ define [
       derivedController = new DerivedController()
       expect(derivedController instanceof Controller).toBe true
 
+      derivedController.dispose()
+
     xit 'should be tested properly', ->

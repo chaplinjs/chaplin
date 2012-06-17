@@ -57,7 +57,7 @@ define [
 
       properties = ['dispatcher', 'layout', 'router']
       for prop in properties
-        this[prop].dispose()
+        this[prop]?.dispose()
         delete this[prop]
 
       @disposed = true

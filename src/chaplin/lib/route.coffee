@@ -1,10 +1,14 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
-], (_, mediator) ->
+], (_, Backbone, mediator) ->
   'use strict'
 
   class Route
+
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
 
     reservedParams = 'path changeURL'.split(' ')
     # Taken from Backbone.Router
@@ -13,6 +17,8 @@ define [
     queryStringFieldSeparator = '&'
     queryStringValueSeparator = '='
 
+    # Create a route for a URL pattern and a controller action
+    # e.g. new Route '/users/:id', 'users#show'
     constructor: (pattern, target, @options = {}) ->
       # Save the raw pattern
       @pattern = pattern

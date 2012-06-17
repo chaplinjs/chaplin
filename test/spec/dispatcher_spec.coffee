@@ -133,3 +133,12 @@ define [
       expect(dispatcher.disposed).toBe true
       if Object.isFrozen
         expect(Object.isFrozen(dispatcher)).toBe true
+
+    it 'should be extendable', ->
+      expect(typeof Dispatcher.extend).toBe 'function'
+
+      DerivedDispatcher = Dispatcher.extend()
+      derivedDispatcher = new DerivedDispatcher()
+      expect(derivedDispatcher instanceof Dispatcher).toBe true
+
+      derivedDispatcher.dispose()
