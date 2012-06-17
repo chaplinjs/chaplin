@@ -56,8 +56,8 @@ define [
       return if @disposed
 
       properties = ['dispatcher', 'layout', 'router']
-      for prop in properties
-        this[prop]?.dispose()
+      for prop in properties when this[prop]?
+        this[prop].dispose()
         delete this[prop]
 
       @disposed = true
