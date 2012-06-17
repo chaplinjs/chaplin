@@ -1,11 +1,12 @@
 define [
+  'underscore'
   'jquery'
   'chaplin/mediator'
   'chaplin/views/view'
   'chaplin/models/model'
   'chaplin/models/collection'
   'chaplin/lib/subscriber'
-], ($, mediator, View, Model, Collection, Subscriber) ->
+], (_, $, mediator, View, Model, Collection, Subscriber) ->
   'use strict'
 
   describe 'View', ->
@@ -282,13 +283,13 @@ define [
 
     it 'should return empty template data without a model', ->
       templateData = view.getTemplateData()
-      expect(typeof templateData).toBe 'object'
-      expect(_(templateData).isEmpty()).toBe true
+      expect(_.isObject templateData).toBe true
+      expect(_.isEmpty templateData).toBe true
 
     it 'should return proper template data for a model', ->
       setModel()
       templateData = view.getTemplateData()
-      expect(typeof templateData).toBe 'object'
+      expect(_.isObject templateData).toBe true
       expect(templateData.foo).toBe 'foo'
       expect(templateData.bar).toBe 'bar'
 
@@ -299,11 +300,11 @@ define [
       view.collection = collection
 
       d = view.getTemplateData()
-      expect(typeof d).toBe 'object'
-      expect(typeof d.items).toBe 'object'
-      expect(typeof d.items[0]).toBe 'object'
+      expect(_.isObject d).toBe true
+      expect(_.isObject d.items).toBe true
+      expect(_.isObject d.items[0]).toBe true
       expect(d.items[0].foo).toBe 'foo'
-      expect(typeof d.items[1]).toBe 'object'
+      expect(_.isObject d.items[1]).toBe true
       expect(d.items[1].bar).toBe 'bar'
 
     it 'should add the Deferred state to the template data', ->

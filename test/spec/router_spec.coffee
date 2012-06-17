@@ -69,15 +69,15 @@ define [
     it 'should extract URL parameters', ->
       router.match 'params/:one/:p_two_123/three', 'null#null'
       router.route '/params/123-foo/456-bar/three'
-      expect(typeof params).toBe 'object'
+      expect(_.isObject params).toBe true
       expect(params.one).toBe '123-foo'
       expect(params.p_two_123).toBe '456-bar'
 
     it 'should accept a regular expression as pattern', ->
       router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
       router.route '/raw/regular/expression'
-      expect(typeof route).toBe 'object'
-      expect(typeof params).toBe 'object'
+      expect(_.isObject route).toBe true
+      expect(_.isObject params).toBe true
       expect(params[0]).toBe 'raw'
       expect(params[1]).toBe 'regular'
       expect(params[2]).toBe 'expression'
@@ -164,7 +164,7 @@ define [
 
     it 'should default to pushState', ->
       router.startHistory()
-      expect(typeof router.options).toBe 'object'
+      expect(_.isObject router.options).toBe true
       expect(Backbone.history.options.pushState).toBe router.options.pushState
 
     it 'should pass the options to the Backbone.History instance', ->
