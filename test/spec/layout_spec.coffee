@@ -57,15 +57,6 @@ define [
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).toBe title
 
-    it 'should set logged-in/logged-out body classes', ->
-      $body = $(document.body).attr('class', '')
-
-      mediator.publish 'loginStatus', true
-      expect($body.attr('class')).toBe 'logged-in'
-
-      mediator.publish 'loginStatus', false
-      expect($body.attr('class')).toBe 'logged-out'
-
     it 'should route clicks on internal links', ->
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy

@@ -1,15 +1,16 @@
 define [
+  'underscore'
   'chaplin/lib/support'
   'chaplin/mediator'
   'chaplin/models/model'
-], (support, mediator, Model) ->
+], (_, support, mediator, Model) ->
   'use strict'
 
   describe 'mediator', ->
     #console.debug 'mediator spec'
 
     it 'should be a simple object', ->
-      expect(typeof mediator).toBe 'object'
+      expect(_.isObject mediator).toBe true
 
     it 'should have Pub/Sub methods', ->
       expect(typeof mediator.subscribe).toBe 'function'

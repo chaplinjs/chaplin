@@ -1,8 +1,9 @@
 define [
+  'underscore'
   'chaplin/mediator'
   'chaplin/controllers/controller'
   'chaplin/dispatcher'
-], (mediator, Controller, Dispatcher) ->
+], (_, mediator, Controller, Dispatcher) ->
   'use strict'
 
   describe 'Dispatcher', ->
@@ -112,7 +113,7 @@ define [
       mediator.publish 'matchRoute', route, params
 
       passedEvent = startupController.mostRecentCall.args[0]
-      expect(typeof passedEvent).toBe 'object'
+      expect(_.isObject passedEvent).toBe true
       expect(passedEvent.controller instanceof TestController).toBe true
       expect(passedEvent.controllerName).toBe 'test'
       expect(passedEvent.params).toBe params
