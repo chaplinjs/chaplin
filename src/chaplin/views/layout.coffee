@@ -10,6 +10,9 @@ define [
 
   class Layout # This class does not extend View
 
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
+
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
 

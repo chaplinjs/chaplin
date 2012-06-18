@@ -13,6 +13,10 @@ define [
 
   class Router # This class does not extend Backbone.Router
 
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
+
+    # Mixin a Subscriber
     _(@prototype).extend Subscriber
 
     constructor: (@options = {}) ->
@@ -35,7 +39,7 @@ define [
 
     # Stop the current Backbone.History instance from observing URL changes
     stopHistory: ->
-      Backbone.history.stop()
+      Backbone.history.stop() if Backbone.History.started
 
     # Connect an address with a controller action
     # Directly create a route on the Backbone.History instance

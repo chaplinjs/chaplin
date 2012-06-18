@@ -1,3 +1,4 @@
+build/chaplin*
 test/js/*.js
 test/js/*/*.js
 test/js/*/*/*.js

@@ -1,24 +1,35 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
-], (_, mediator) ->
+  'chaplin/controllers/controller'
+], (_, Backbone, mediator, Controller) ->
   'use strict'
 
   class Route
 
-    reservedParams = 'path changeURL'.split(' ')
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
+
+    reservedParams = ['path', 'changeURL']
     # Taken from Backbone.Router
     escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
 
     queryStringFieldSeparator = '&'
     queryStringValueSeparator = '='
 
+    # Create a route for a URL pattern and a controller action
+    # e.g. new Route '/users/:id', 'users#show'
     constructor: (pattern, target, @options = {}) ->
       # Save the raw pattern
       @pattern = pattern
 
       # Separate target into controller and controller action
       [@controller, @action] = target.split('#')
+
+      # Check if the action is a reserved name
+      if _(Controller.prototype).has @action
+        throw new Error 'Route: You should not use existing controller properties as action names'
 
       @createRegExp()
 
@@ -45,7 +56,7 @@ define [
       # Save parameter name
       @paramNames.push paramName
       # Replace with a character class
-      '([\\w-]+)'
+      '([^\/]+)'
 
     # Test if the route matches to a path (called by Backbone.History#loadUrl)
     test: (path) ->

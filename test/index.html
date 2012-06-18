@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <title>Chaplin Test Runner</title>
-<link rel="stylesheet" type="text/css" href="lib/jasmine-1.1.0/jasmine.css">
+<link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
 </head>
 <body>
 
 <div id="testbed"></div>
 <div id="jasmine-root"></div>
 
-<script src="lib/jasmine-1.1.0/jasmine.js"></script>
-<script src="lib/jasmine-1.1.0/jasmine-html.js"></script>
-<script src="lib/require-2.0.1.js"></script>
+<script src="lib/jasmine-1.2.0/jasmine.js"></script>
+<script src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+<script src="lib/require-2.0.2.js"></script>
 <script>
 (function () {
   requirejs.config({
@@ -35,11 +35,12 @@
     urlArgs: 'bust=' +  (new Date()).getTime()
   });
 
-  var reporter = new jasmine.TrivialReporter(document.getElementById('jasmine-root'));
   var jasmineEnv = new jasmine.getEnv();
+
+  var reporter = new jasmine.HtmlReporter();
   jasmineEnv.addReporter(reporter);
-  jasmineEnv.specFilter = function () {
-    return reporter.specFilter.call(reporter);
+  jasmineEnv.specFilter = function(spec) {
+    return reporter.specFilter(spec);
   };
 
   var specs = [
@@ -47,6 +48,7 @@
     'router',
     'application',
     'layout',
+    'dispatcher',
     'collection_view',
     'model',
     'collection',

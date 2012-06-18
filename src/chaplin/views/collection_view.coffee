@@ -191,7 +191,7 @@ defined (or the getView() must be overridden)'
 
     showHideLoadingIndicator: ->
       # Only show the loading indicator if the collection is empty.
-      # Otherwise loading more items in order to appendthem would
+      # Otherwise loading more items in order to append them would
       # show the loading indicator. If you want the indicator to
       # show up in this case, you need to overwrite this method to
       # disable the check.

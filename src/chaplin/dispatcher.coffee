@@ -1,12 +1,16 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
   'chaplin/lib/utils'
   'chaplin/lib/subscriber'
-], (_, mediator, utils, Subscriber) ->
+], (_, Backbone, mediator, utils, Subscriber) ->
   'use strict'
 
   class Dispatcher
+
+    # Borrow the static extend method from Backbone
+    @extend = Backbone.Model.extend
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
@@ -115,6 +119,9 @@ define [
       # Call the specific controller action
       # Passing the params and the old controller name
       controller[action] params, currentControllerName
+
+      # Stop if the action triggered a redirect
+      return if controller.redirected
 
       # Save the new controller
       @previousControllerName = currentControllerName

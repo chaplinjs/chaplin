@@ -6,8 +6,7 @@
 
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-* [Current Version: 0.3](#current-version-03)
-* [Upcoming Version: Chaplin as a Library](#upcoming-version-chaplin-as-a-library)
+* [Upcoming Version: Chaplin as a Library](#upcoming-version-10-chaplin-as-a-library)
 * [Stay Tuned for Updates](#stay-tuned-for-updates)
 * [Key Features](#key-features)
 * [Motivation](#motivation)
@@ -30,26 +29,24 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
 * [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)
 
-## Current Version: 0.3
+## Upcoming Version 1.0: Chaplin as a Library
 
-The current stable version is **0.3**, released on 2012-03-23.
+While the [initial release of Chaplin](https://github.com/chaplinjs/chaplin/tree/0.3) was merely an example application structure, our goal is to generalize Chaplin into a separate, reusable and unit-tested library.
 
-To use the stable version, please clone the repository and [check out the tag 0.3](https://github.com/chaplinjs/chaplin/tree/0.3).
-
-See also the [Changelog](https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md).
-
-## Upcoming Version: Chaplin as a Library
-
-While the stable version is merely an example application structure, our goal is to generalize Chaplin into a separate, reusable and unit-tested library.
-
-There’s a major rewrite going on and the `master` branch already reflects these changes. We’re working on several topics:
+There’s a major rewrite going on and the `master` branch already reflects these changes. This includes several topics:
 
 - Improving and generalizing the Chaplin architecture
-- Writing tests for all Chaplin core components
+- Writing unit-tests for all Chaplin components
+- Creating a [boilerplate app](https://github.com/chaplinjs/chaplin-boilerplate) and [application examples](#boilerplate-and-examples)
 - Writing an up-to-date documentation and writing a class & method reference
-- Creating a boilerplate app, outsourcing the current application examples
 
-How about joining us? You might also have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues) about changes on the structure. There is also a [forum](http://ost.io/chaplinjs/chaplin) and [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
+Most of this is already done, so the code is already quite stable and successfully used in production. We don’t expect breaking API changes since version 1.0. There are only a few things to polish up before the 1.0 release:
+
+- [A comprehensive documentation](http://chaplinjs.github.com/)
+- Flexibility, like use in non-CoffeeScript and non-AMD environments
+- Easier configurability of the default behavior
+
+How about joining us? You might have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues). There is also a [forum](http://ost.io/chaplinjs/chaplin) and [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
 ).
 
 ## Stay tuned for updates

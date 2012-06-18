@@ -57,15 +57,6 @@ define [
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).toBe title
 
-    it 'should set logged-in/logged-out body classes', ->
-      $body = $(document.body).attr('class', '')
-
-      mediator.publish 'loginStatus', true
-      expect($body.attr('class')).toBe 'logged-in'
-
-      mediator.publish 'loginStatus', false
-      expect($body.attr('class')).toBe 'logged-out'
-
 
     # Routing
     # =======
@@ -206,7 +197,6 @@ define [
 
     # Events hash
     # ===========
-
     it 'should register event handlers on the document declaratively', ->
       spy1 = jasmine.createSpy()
       spy2 = jasmine.createSpy()
@@ -269,3 +259,12 @@ define [
       # It should unsubscribe from events
       expect(spy1).not.toHaveBeenCalled()
       expect(spy2).not.toHaveBeenCalled()
+
+    it 'should be extendable', ->
+      expect(typeof Layout.extend).toBe 'function'
+
+      DerivedLayout = Layout.extend()
+      derivedLayout = new DerivedLayout()
+      expect(derivedLayout instanceof Layout).toBe true
+
+      derivedLayout.dispose()

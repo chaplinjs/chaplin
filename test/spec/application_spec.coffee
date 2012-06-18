@@ -1,10 +1,11 @@
 define [
+  'underscore'
   'chaplin/mediator'
   'chaplin/application'
   'chaplin/lib/router'
   'chaplin/dispatcher'
   'chaplin/views/layout'
-], (mediator, Application, Router, Dispatcher, Layout) ->
+], (_, mediator, Application, Router, Dispatcher, Layout) ->
   'use strict'
 
   describe 'Application', ->
@@ -13,7 +14,7 @@ define [
     app = new Application()
 
     it 'should be a simple object', ->
-      expect(typeof app).toBe 'object'
+      expect(_.isObject app).toBe true
       expect(app instanceof Application).toBe true
 
     it 'should initialize', ->
@@ -58,3 +59,12 @@ define [
       expect(app.disposed).toBe true
       if Object.isFrozen
         expect(Object.isFrozen(app)).toBe true
+
+    it 'should be extendable', ->
+      expect(typeof Application.extend).toBe 'function'
+
+      DerivedApplication = Application.extend()
+      derivedApp = new DerivedApplication()
+      expect(derivedApp instanceof Application).toBe true
+
+      derivedApp.dispose()
