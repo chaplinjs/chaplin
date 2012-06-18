@@ -82,12 +82,9 @@ define [
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
     adjustTitle: (context) ->
-      title = @title || ''
-      subtitle = context.controller.title || ''
-
-      title = @settings.titleTemplate
-        title: title
-        subtitle: subtitle
+      title = @title or ''
+      subtitle = context.controller.title or ''
+      title = @settings.titleTemplate {title, subtitle}
 
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
@@ -110,15 +107,15 @@ define [
 
       el = event.currentTarget
       $el = $(el)
-      href = el.getAttribute('href') || $(el).data('href') || null
+      href = el.getAttribute('href') or $(el).data('href') or null
       target = $(el).attr('target')
 
 
       # Link test ---------------
       skipRouting = @settings.skipRouting
-      if typeof skipRouting is "function"
+      if typeof skipRouting is 'function'
         skipRouting = skipRouting(href)
-      else if typeof skipRouting is "string"
+      else if typeof skipRouting is 'string'
         skipRouting = $el.is(skipRouting)
       else
         skipRouting = skipRouting
@@ -126,7 +123,7 @@ define [
       return if href is null or
                 href is '' or
                 href.charAt(0) is '#' or
-                target == "_blank" or
+                target is '_blank' or
                 skipRouting
 
 
@@ -136,7 +133,7 @@ define [
 
       if external
         if @settings.openExternalToBlank
-          event.preventDefault() && window.open el.href
+          event.preventDefault() and window.open el.href
 
         return
 
