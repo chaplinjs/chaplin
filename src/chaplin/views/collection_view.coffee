@@ -22,6 +22,7 @@ define [
     # By default, fading in is done by javascript function which can be
     # slow on mobile devices. CSS animations are faster,
     # but require user's manual definitions.
+    # CSS classes used are: animated-item-view, animated-item-view-end.
     useCssAnimation: false
 
     # A collection view may have a template and use one of its child elements
@@ -359,6 +360,7 @@ defined (or the getView() must be overridden)'
       # Fade the view in if it was made transparent before
       if enableAnimation and included
         if @useCssAnimation
+          # Wait for DOM state change.
           setTimeout =>
             $viewEl.addClass 'animated-item-view-end'
           , 0
