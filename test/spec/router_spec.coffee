@@ -89,6 +89,15 @@ define [
       expect(params.three).toBe 'ü~ö~ä'
       expect(params.four).toBe encodeURIComponent('éêè')
 
+    it 'should extract URL path params along with query params', ->
+      router.match 'params/:one/:two/:three', 'null#null'
+      router.route '/params/123-foo/456-bar/3-three?referrer=mdp'
+      expect(_.isObject params).toBe true
+      expect(params.one).toBe '123-foo'
+      expect(params.two).toBe '456-bar'
+      expect(params.three).toBe '3-three'
+      expect(params.referrer).toBe 'mdp'
+
     it 'should accept a regular expression as pattern', ->
       router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
       router.route '/raw/regular/expression'
