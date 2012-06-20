@@ -65,7 +65,7 @@ define [
     # Handler for the global beforeControllerDispose event
     hideOldView: (controller) ->
       # Jump to the top of the page
-      scrollTo @settings.scrollTo if @settings.scrollTo
+      window.scrollTo.apply window, @settings.scrollTo if @settings.scrollTo
 
       # Hide the current view
       view = controller.view
