@@ -67,7 +67,7 @@ define [
     # (i.e. an object which has the attributes as prototype)
     # so primitive values might be added and altered safely.
     # Map models to their attributes, recursively.
-    serialize: (model) ->
+    serialize: ->
       serializeAttributes this, @getAttributes()
 
     # Disposal
