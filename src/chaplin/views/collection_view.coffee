@@ -19,6 +19,12 @@ define [
     # Animation duration in milliseconds (set to 0 to disable fade in)
     animationDuration: 500
 
+    # By default, fading in is done by javascript function which can be
+    # slow on mobile devices. CSS animations are faster,
+    # but require user's manual definitions.
+    # CSS classes used are: animated-item-view, animated-item-view-end.
+    useCssAnimation: false
+
     # A collection view may have a template and use one of its child elements
     # as the container of the item views. If you specify `listSelector`, the
     # item views will be appended to this element. If empty, $el is used.
@@ -267,7 +273,7 @@ defined (or the getView() must be overridden)'
         view = @viewsByCid[item.cid]
         if view
           # Re-insert the view
-          @insertView item, view, index, 0
+          @insertView item, view, index, false
         else
           # Create a new view, render and insert it
           @renderAndInsertItem item, index
@@ -298,7 +304,7 @@ defined (or the getView() must be overridden)'
       view
 
     # Inserts a view into the list at the proper position
-    insertView: (item, view, index = null, animationDuration = @animationDuration) ->
+    insertView: (item, view, index = null, enableAnimation = true) ->
       # Get the insertion offset
       position = if typeof index is 'number'
         index
@@ -317,8 +323,11 @@ defined (or the getView() must be overridden)'
 
       if included
         # Make view transparent if animation is enabled
-        $viewEl.addClass 'opacity-transitionable' if animationDuration
-        $viewEl.css 'opacity', 0 if animationDuration
+        if enableAnimation
+          if @useCssAnimation
+            $viewEl.addClass 'animated-item-view' 
+          else
+            $viewEl.css 'opacity', 0
       else
         # Hide the view if it’s filtered
         $viewEl.css 'display', 'none'
@@ -349,9 +358,14 @@ defined (or the getView() must be overridden)'
       @updateVisibleItems item, included
 
       # Fade the view in if it was made transparent before
-      if animationDuration and included
-        $viewEl.addClass 'opacity-transitionable-end'
-        $viewEl.animate {opacity: 1}, animationDuration
+      if enableAnimation and included
+        if @useCssAnimation
+          # Wait for DOM state change.
+          setTimeout =>
+            $viewEl.addClass 'animated-item-view-end'
+          , 0
+        else
+          $viewEl.animate {opacity: 1}, @animationDuration
 
     # Remove the view for an item
     removeViewForItem: (item) ->
