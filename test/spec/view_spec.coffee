@@ -461,3 +461,7 @@ define [
       expect(renderCalled).toBe true
       expect($(testbed).children().length).toBe 0
       expect(view.afterRender.callCount).toBe 1
+
+    it 'should map destroy to dispose', ->
+      expect(typeof view.destroy).toBe 'function'
+      expect(view.destroy).toBe view.dispose

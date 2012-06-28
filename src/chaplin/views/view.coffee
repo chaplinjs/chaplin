@@ -395,3 +395,6 @@ define [
 
       # You’re frozen when your heart’s not open
       Object.freeze? this
+
+    # Map the destroy method to Chaplin’s dispose
+    destroy: @prototype.dispose
