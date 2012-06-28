@@ -40,7 +40,7 @@ define [
 
       expect(typeof app.initRouter).toBe 'function'
       expect(app.initRouter.length).toBe 2
-      app.initRouter routes, root: '/test/'
+      app.initRouter routes, root: '/'
 
       expect(app.router instanceof Router).toBe true
       expect(routesCalled).toBe true
