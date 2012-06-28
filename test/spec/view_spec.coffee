@@ -72,12 +72,15 @@ define [
 
     it 'should render a template', ->
       view.render()
-      expect(view.$el.html()).toBe template
+      innerHTML = view.$el.html().toLowerCase()
+      lowerCaseTemplate = template.toLowerCase()
+      expect(innerHTML).toBe lowerCaseTemplate
 
     it 'should render automatically', ->
       view = new TestView autoRender: true
       expect(renderCalled).toBe true
-      expect(view.el.parentNode).toBe null
+      # should not be in the DOM
+      expect(view.$el.parent().length).toBe 0
 
     it 'should attach itself to an element automatically', ->
       view = new TestView container: testbed

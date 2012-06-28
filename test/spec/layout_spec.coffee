@@ -29,7 +29,7 @@ define [
         params: {}
 
       # Create a fresh router
-      router = new Router root: '/test/'
+      router = new Router()
 
     afterEach ->
       layout.dispose()
@@ -61,10 +61,11 @@ define [
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
       path = '/an/internal/link'
-      $("<a href='#{path}'>Hello World</a>")
+      a = $('<a>').attr('href', path).text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
+      expect(spy).toHaveBeenCalled()
       args = spy.mostRecentCall.args
       passedPath = args[0]
       passedCallback = args[1]
@@ -75,7 +76,7 @@ define [
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
       path = '/another/link?foo=bar&baz=qux'
-      $("<a href='#{path}'>Hello World</a>")
+      $('<a>').attr('href', path).text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
@@ -89,7 +90,7 @@ define [
     it 'should not route links without href attributes', ->
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $('<a name="foo">Hello World</a>')
+      $('<a>').attr('name', 'foo').text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
@@ -110,7 +111,7 @@ define [
       # but it doesn’t make sense to route it
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $('<a href="">Hello World</a>')
+      $('<a>').attr('href', '').text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
@@ -120,7 +121,7 @@ define [
     it 'should not route links to document fragments', ->
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $('<a href="#foo">Hello World</a>')
+      $('<a>').attr('href', '#foo').text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
@@ -130,7 +131,7 @@ define [
     it 'should not route links with a noscript class', ->
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
-      $('<a href="/leave-the-app" class="noscript">Hello World</a>')
+      $('<a>').attr('href', '/leave-the-app').addClass('noscript').text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
@@ -141,7 +142,7 @@ define [
       spy = jasmine.createSpy()
       mediator.subscribe '!router:route', spy
       path = 'http://www.example.org/'
-      $("<a href='#{path}'>Hello World</a>")
+      $('<a>').attr('href', path).text('Hello World')
         .appendTo(document.body)
         .click()
         .remove()
