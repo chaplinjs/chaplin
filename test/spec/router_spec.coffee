@@ -19,7 +19,7 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router root: '/test/'
+      router = new Router randomOption: 'foo'
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
@@ -194,7 +194,7 @@ define [
 
     it 'should pass the options to the Backbone.History instance', ->
       router.startHistory()
-      expect(Backbone.history.options.root).toBe '/test/'
+      expect(Backbone.history.options.randomOption).toBe 'foo'
 
     it 'should allow to stop the Backbone.History', ->
       router.startHistory()

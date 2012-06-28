@@ -38,6 +38,7 @@ define [
       @title = options.title
       @settings = _(options).defaults
         routeLinks: true
+        # Per default, jump to the top of the page
         scrollTo: [0, 0]
 
       # Listen to global events: Starting and disposing of controllers
@@ -64,8 +65,10 @@ define [
 
     # Handler for the global beforeControllerDispose event
     hideOldView: (controller) ->
-      # Jump to the top of the page
-      window.scrollTo.apply window, @settings.scrollTo if @settings.scrollTo
+      # Reset the scroll position
+      scrollTo = @settings.scrollTo
+      if scrollTo
+        window.scrollTo scrollTo[0], scrollTo[1]
 
       # Hide the current view
       view = controller.view
@@ -109,17 +112,19 @@ define [
       return if utils.modifierKeyPressed(event)
 
       el = event.currentTarget
-      href = el.getAttribute 'href'
+      $el = $(el)
+      href = $el.attr 'href'
       # Ignore empty paths even if it is a valid relative URL
       # Ignore links to fragment identifiers
-      return if href is null or
-        href is '' or
+      return if href is '' or
+        href is undefined or
         href.charAt(0) is '#' or
-        $(el).hasClass('noscript')
+        $el.hasClass('noscript')
 
       # Is it an external link?
       currentHostname = location.hostname.replace('.', '\\.')
-      external = not ///#{currentHostname}$///i.test(el.hostname)
+      external = el.hostname isnt '' and
+        not ///#{currentHostname}$///i.test(el.hostname)
       if external
         # Open external links normally
         # You might want to enforce opening in a new tab here:
