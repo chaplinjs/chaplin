@@ -17,7 +17,6 @@ define [
       route = _route
       params = _params
 
-
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
       router = new Router randomOption: 'foo'
@@ -41,7 +40,6 @@ define [
       spy = jasmine.createSpy()
       mediator.subscribe 'matchRoute', spy
       router.match '', 'x#y'
-      router.match '', 'z#q'
 
       router.route '/'
       expect(spy).toHaveBeenCalled()
