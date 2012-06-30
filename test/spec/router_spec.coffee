@@ -17,6 +17,7 @@ define [
       route = _route
       params = _params
 
+
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
       router = new Router randomOption: 'foo'
@@ -40,6 +41,7 @@ define [
       spy = jasmine.createSpy()
       mediator.subscribe 'matchRoute', spy
       router.match '', 'x#y'
+      router.match '', 'z#q'
 
       router.route '/'
       expect(spy).toHaveBeenCalled()
@@ -57,6 +59,17 @@ define [
       expect(spy.calls.length).toBe 1
 
       mediator.unsubscribe 'matchRoute', spy
+
+    it 'should match in order specified', ->
+      spy = jasmine.createSpy()
+      mediator.subscribe 'matchRoute', spy
+      router.match 'params/:one', 'null#null'
+      router.match 'params/:two', 'null#null'
+
+      routed = router.route '/params/1'
+
+      expect(params.one).toBe '1'
+      expect(params.two).toBe undefined
 
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']

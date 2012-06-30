@@ -44,10 +44,8 @@ define [
     # Connect an address with a controller action
     # Directly create a route on the Backbone.History instance
     match: (pattern, target, options = {}) =>
-
       # Create a route
       route = new Route pattern, target, options
-
       # Register the route at the Backbone.History instance
       Backbone.history.route route, route.handler
 
@@ -59,7 +57,7 @@ define [
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
 
-      for handler in Backbone.history.handlers
+      for handler in Backbone.history.handlers.reverse()
         if handler.route.test(path)
           handler.callback path, changeURL: true
           return true
