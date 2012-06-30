@@ -57,7 +57,7 @@ define [
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
 
-      for handler in Backbone.history.handlers.reverse()
+      for handler in Backbone.history.handlers.slice().reverse()
         if handler.route.test(path)
           handler.callback path, changeURL: true
           return true
