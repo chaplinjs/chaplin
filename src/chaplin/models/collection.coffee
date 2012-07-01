@@ -71,6 +71,8 @@ define [
             # Insert new model
             @add model, at: i
 
+      return
+
     # Disposal
     # --------
 

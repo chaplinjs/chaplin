@@ -325,7 +325,7 @@ defined (or the getView() must be overridden)'
         # Make view transparent if animation is enabled
         if enableAnimation
           if @useCssAnimation
-            $viewEl.addClass 'animated-item-view' 
+            $viewEl.addClass 'animated-item-view'
           else
             $viewEl.css 'opacity', 0
       else
@@ -366,6 +366,8 @@ defined (or the getView() must be overridden)'
           , 0
         else
           $viewEl.animate {opacity: 1}, @animationDuration
+
+      return
 
     # Remove the view for an item
     removeViewForItem: (item) ->
