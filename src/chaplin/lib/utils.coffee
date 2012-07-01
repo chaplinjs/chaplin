@@ -32,6 +32,7 @@ define [
           configurable: false
         (obj, properties...) ->
           for prop in properties
+            readonlyDescriptor.value = obj[prop]
             Object.defineProperty obj, prop, readonlyDescriptor
           true
       else
