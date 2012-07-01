@@ -69,6 +69,8 @@ define [
       expect(params.one).toBe '1'
       expect(params.two).toBe undefined
 
+      mediator.unsubscribe 'matchRoute', spy
+
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").toThrow()
