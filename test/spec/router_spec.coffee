@@ -58,6 +58,19 @@ define [
 
       mediator.unsubscribe 'matchRoute', spy
 
+    it 'should match in order specified', ->
+      spy = jasmine.createSpy()
+      mediator.subscribe 'matchRoute', spy
+      router.match 'params/:one', 'null#null'
+      router.match 'params/:two', 'null#null'
+
+      routed = router.route '/params/1'
+
+      expect(params.one).toBe '1'
+      expect(params.two).toBe undefined
+
+      mediator.unsubscribe 'matchRoute', spy
+
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").toThrow()
