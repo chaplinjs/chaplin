@@ -23,36 +23,26 @@ chaplin
 )
 
 LOADERS = %w(amd commonjs)
-
-LOADERS.each do |loader|
-
+COMMIT_HASH = `git rev-parse --verify HEAD`.slice(0, 7)
+VERSION = File.open(File.join('..', 'package.json'), 'r') do |file|
+  JSON.parse(file.read)['version']
 end
+SUFFIX = VERSION.include?('-pre') ? "#{VERSION}-#{COMMIT_HASH}" : VERSION
 
-def concat_path(loader)
-  "chaplin-#{loader}.coffee"
-end
-
-def compile_path(loader)
-  "chaplin-#{loader}.js"
-end
-
-def minify_path(loader)
-  "chaplin-#{loader}-min.js"
-end
-
-def gzip_path(loader)
-  "chaplin-#{loader}-min.js.gz"
-end
-
-def get_version
-  File.open(File.join('..', 'package.json'), 'r') do |file|
-    JSON.parse(file.read)['version']
+def get_path(loader, type)
+  extension = case type
+  when 'concat' then '.coffee'
+  when 'compile' then '.js'
+  when 'minify' then '-min.js'
+  when 'gzip' then '-min.js.gz'
   end
+
+  File.join("#{loader}", "chaplin-#{SUFFIX}") + extension
 end
 
 HEADER = <<HERE
 ###
-Chaplin #{get_version}.
+Chaplin #{VERSION}.
 
 Chaplin may be freely distributed under the MIT license.
 For all details and documentation:
@@ -73,35 +63,43 @@ def concat
 
   commonjs = convert(amd)
 
-  File.open(concat_path('amd'), 'w') do |file|
+  FileUtils.rm_rf(%w[amd commonjs])
+  Dir.mkdir('amd')
+  Dir.mkdir('commonjs')
+
+  File.open(get_path('amd', 'concat'), 'w') do |file|
     file.write(HEADER + amd)
   end
-  File.open(concat_path('commonjs'), 'w') do |file|
+  File.open(get_path('commonjs', 'concat'), 'w') do |file|
     file.write(HEADER + commonjs)
   end
 end
 
 def compile(loader)
   puts 'Compile...'
-  `coffee --compile #{concat_path(loader)}`
+  `coffee --compile #{get_path(loader, 'concat')}`
 end
 
 def minify(loader)
   puts 'Minify...'
-  `uglifyjs --output #{minify_path(loader)} #{compile_path(loader)}`
+  `uglifyjs --output #{get_path(loader, 'minify')} #{get_path(loader, 'compile')}`
 end
 
 def gzip(loader)
   puts 'Gzip...'
-  `gzip -9 -c #{minify_path(loader)} > #{gzip_path(loader)}`
+  `gzip -9 -c #{get_path(loader, 'minify')} > #{get_path(loader, 'gzip')}`
 end
 
-concat
-LOADERS.each do |loader|
-  puts "Doing stuff for #{loader}"
-  compile(loader)
-  minify(loader)
-  gzip(loader)
+def build
+  concat()
+  LOADERS.each do |loader|
+    puts "Doing stuff for #{loader}"
+    compile(loader)
+    minify(loader)
+    gzip(loader)
+  end
+
+  puts 'Done.'
 end
 
-puts 'Done.'
+build()
