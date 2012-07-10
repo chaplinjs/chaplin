@@ -141,7 +141,7 @@ define [
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params) ->
-      if params.path
+      if params.path or params.path is ''
         # Just use the matched path
         url = params.path
 
