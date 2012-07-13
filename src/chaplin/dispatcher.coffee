@@ -91,8 +91,11 @@ define [
     # The default implementation uses require() from a AMD module loader
     # like RequireJS to fetch the constructor.
     loadController: (controllerName, handler) ->
+      # Look for the controller in the module path specified by :: (ex. modules/mymodule::helloWorld#show)
+      [controllerRedirectionPath, controllerName] = controllerName.split('::') if controllerName.indexOf('::') isnt -1
       controllerFileName = utils.underscorize(controllerName) + @settings.controllerSuffix
-      path = @settings.controllerPath + controllerFileName
+      path = if controllerRedirectionPath? then controllerRedirectionPath + '/' else '' # Prefix module path
+      path += @settings.controllerPath + controllerFileName
       if define?.amd
         require [path], handler
       else
