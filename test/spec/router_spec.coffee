@@ -30,13 +30,34 @@ define [
     it 'should create a Backbone.History instance', ->
       expect(Backbone.history instanceof Backbone.History).toBe true
 
-    it 'should create a Backbone.History instance', ->
-      expect(Backbone.history instanceof Backbone.History).toBe true
-
     it 'should not start the Backbone.History at once', ->
       expect(Backbone.History.started).toBe false
 
-    it 'should fire a matchRoute event', ->
+    it 'should allow to start the Backbone.History', ->
+      spy = spyOn(Backbone.history, 'start').andCallThrough()
+      expect(typeof router.startHistory).toBe 'function'
+      router.startHistory()
+      expect(Backbone.History.started).toBe true
+      expect(spy).toHaveBeenCalled()
+
+    it 'should default to pushState', ->
+      router.startHistory()
+      expect(_.isObject router.options).toBe true
+      expect(Backbone.history.options.pushState).toBe router.options.pushState
+
+    it 'should pass the options to the Backbone.History instance', ->
+      router.startHistory()
+      expect(Backbone.history.options.randomOption).toBe 'foo'
+
+    it 'should allow to stop the Backbone.History', ->
+      router.startHistory()
+      spy = spyOn(Backbone.history, 'stop').andCallThrough()
+      expect(typeof router.stopHistory).toBe 'function'
+      router.stopHistory()
+      expect(Backbone.History.started).toBe false
+      expect(spy).toHaveBeenCalled()
+
+    it 'should fire a matchRoute event when a route matches', ->
       spy = jasmine.createSpy()
       mediator.subscribe 'matchRoute', spy
       router.match '', 'x#y'
@@ -58,7 +79,7 @@ define [
 
       mediator.unsubscribe 'matchRoute', spy
 
-    it 'should match in order specified', ->
+    it 'should match in order specified when calling router.route', ->
       spy = jasmine.createSpy()
       mediator.subscribe 'matchRoute', spy
       router.match 'params/:one', 'null#null'
@@ -66,6 +87,24 @@ define [
 
       routed = router.route '/params/1'
 
+      expect(routed).toBe true
+      expect(spy.calls.length).toBe 1
+      expect(params.one).toBe '1'
+      expect(params.two).toBe undefined
+
+      mediator.unsubscribe 'matchRoute', spy
+
+    it 'should match in order specified when called by Backbone.History', ->
+      spy = jasmine.createSpy()
+      mediator.subscribe 'matchRoute', spy
+      router.match 'params/:one', 'null#null'
+      router.match 'params/:two', 'null#null'
+
+      router.startHistory()
+      routed = Backbone.history.loadUrl '/params/1'
+
+      expect(routed).toBe true
+      expect(spy.calls.length).toBe 1
       expect(params.one).toBe '1'
       expect(params.two).toBe undefined
 
@@ -192,30 +231,6 @@ define [
 
       mediator.publish '!router:changeURL', path
       expect(router.changeURL).toHaveBeenCalledWith path
-
-    it 'should allow to start the Backbone.History', ->
-      spy = spyOn(Backbone.history, 'start').andCallThrough()
-      expect(typeof router.startHistory).toBe 'function'
-      router.startHistory()
-      expect(Backbone.History.started).toBe true
-      expect(spy).toHaveBeenCalled()
-
-    it 'should default to pushState', ->
-      router.startHistory()
-      expect(_.isObject router.options).toBe true
-      expect(Backbone.history.options.pushState).toBe router.options.pushState
-
-    it 'should pass the options to the Backbone.History instance', ->
-      router.startHistory()
-      expect(Backbone.history.options.randomOption).toBe 'foo'
-
-    it 'should allow to stop the Backbone.History', ->
-      router.startHistory()
-      spy = spyOn(Backbone.history, 'stop').andCallThrough()
-      expect(typeof router.stopHistory).toBe 'function'
-      router.stopHistory()
-      expect(Backbone.History.started).toBe false
-      expect(spy).toHaveBeenCalled()
 
     it 'should dispose itself correctly', ->
       expect(typeof router.dispose).toBe 'function'
