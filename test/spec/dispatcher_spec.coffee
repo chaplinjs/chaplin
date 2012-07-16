@@ -80,9 +80,9 @@ define [
 
     it 'should dispatch routes to controller actions', ->
       proto = Test1Controller.prototype
-      historyURL = sinon.stub(proto, 'historyURL')
-      initialize = sinon.stub(proto, 'initialize')
-      action     = sinon.stub(proto, 'show')
+      historyURL = sinon.spy(proto, 'historyURL')
+      initialize = sinon.spy(proto, 'initialize')
+      action     = sinon.spy(proto, 'show')
 
       mediator.publish 'matchRoute', route1, params
 
@@ -94,9 +94,9 @@ define [
       mediator.publish 'matchRoute', route1, params
 
       proto = Test1Controller.prototype
-      historyURL = sinon.stub(proto, 'historyURL')
-      initialize = sinon.stub(proto, 'initialize')
-      action     = sinon.stub(proto, 'show')
+      historyURL = sinon.spy(proto, 'historyURL')
+      initialize = sinon.spy(proto, 'initialize')
+      action     = sinon.spy(proto, 'show')
 
       mediator.publish 'matchRoute', route1, params
 
@@ -108,9 +108,9 @@ define [
       mediator.publish 'matchRoute', route1, params
 
       proto = Test1Controller.prototype
-      historyURL = sinon.stub(proto, 'historyURL')
-      initialize = sinon.stub(proto, 'initialize')
-      action     = sinon.stub(proto, 'show')
+      historyURL = sinon.spy(proto, 'historyURL')
+      initialize = sinon.spy(proto, 'initialize')
+      action     = sinon.spy(proto, 'show')
 
       refreshParams()
       mediator.publish 'matchRoute', route1, params
@@ -123,9 +123,9 @@ define [
       mediator.publish 'matchRoute', route1, params
 
       proto = Test1Controller.prototype
-      historyURL = sinon.stub(proto, 'historyURL')
-      initialize = sinon.stub(proto, 'initialize')
-      action     = sinon.stub(proto, 'show')
+      historyURL = sinon.spy(proto, 'historyURL')
+      initialize = sinon.spy(proto, 'initialize')
+      action     = sinon.spy(proto, 'show')
 
       params.forceStartup = true
       mediator.publish 'matchRoute', route1, params
@@ -148,7 +148,7 @@ define [
 
     it 'should dispose inactive controllers and fire beforeControllerDispose events', ->
       proto = Test2Controller.prototype
-      dispose = sinon.stub(proto, 'dispose')
+      dispose = sinon.spy(proto, 'dispose')
 
       # Route back to Test1Controller
       mediator.publish 'matchRoute', route1, params
@@ -187,9 +187,9 @@ define [
 
     it 'should listen to !startupController events', ->
       proto = Test1Controller.prototype
-      historyURL = sinon.stub(proto, 'historyURL')
-      initialize = sinon.stub(proto, 'initialize')
-      action     = sinon.stub(proto, 'show')
+      historyURL = sinon.spy(proto, 'historyURL')
+      initialize = sinon.spy(proto, 'initialize')
+      action     = sinon.spy(proto, 'show')
 
       mediator.publish '!startupController', 'test1', 'show', params
 
@@ -207,7 +207,7 @@ define [
 
     it 'should support redirection to a URL', ->
       proto = Test1Controller.prototype
-      action = sinon.stub(proto, 'redirectToURL')
+      action = sinon.spy(proto, 'redirectToURL')
 
       startupController = sinon.spy()
       mediator.subscribe 'startupController', startupController
@@ -233,10 +233,10 @@ define [
 
     it 'should support redirection to a controller action', ->
       proto = Test1Controller.prototype
-      redirectAction = sinon.stub(proto, 'redirectToController')
+      redirectAction = sinon.spy(proto, 'redirectToController')
 
       proto = Test2Controller.prototype
-      targetAction = sinon.stub(proto, 'show')
+      targetAction = sinon.spy(proto, 'show')
 
       startupController = sinon.spy()
       mediator.subscribe 'startupController', startupController
@@ -268,7 +268,7 @@ define [
       dispatcher.dispose()
 
       proto = Test1Controller.prototype
-      initialize = sinon.stub(proto, 'initialize')
+      initialize = sinon.spy(proto, 'initialize')
       mediator.publish 'matchRoute', route1, params
       expect(initialize).to.not.have.been.called
 

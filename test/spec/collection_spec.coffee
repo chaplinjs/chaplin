@@ -46,8 +46,10 @@ define [
 
       collection.reset ({id: i} for i in [0..2])
 
-      addSpy = sinon.spy collection.on 'add', addSpy
-      resetSpy = sinon.spy collection.on 'reset', resetSpy
+      addSpy = sinon.spy()
+      collection.on 'add', addSpy
+      resetSpy = sinon.spy()
+      collection.on 'reset', resetSpy
 
       collection.addAtomic ({id: i} for i in [3..5])
       expectOrder [0, 1, 2, 3, 4, 5]

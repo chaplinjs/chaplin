@@ -34,7 +34,7 @@ define [
       expect(Backbone.History.started).to.not.be.ok
 
     it 'should allow to start the Backbone.History', ->
-      spy = sinon.stub(Backbone.history, 'start')
+      spy = sinon.spy(Backbone.history, 'start')
       expect(router.startHistory).to.be.a 'function'
       router.startHistory()
       expect(Backbone.History.started).to.be.ok
@@ -51,7 +51,7 @@ define [
 
     it 'should allow to stop the Backbone.History', ->
       router.startHistory()
-      spy = sinon.stub(Backbone.history, 'stop')
+      spy = sinon.spy(Backbone.history, 'stop')
       expect(router.stopHistory).to.be.a 'function'
       router.stopHistory()
       expect(Backbone.History.started).to.not.be.ok
@@ -211,7 +211,7 @@ define [
 
     it 'should listen to the !router:route event', ->
       path = 'router-route-events'
-      sinon.stub(router, 'route')
+      sinon.spy(router, 'route')
       spy = sinon.spy()
       router.match path, 'router#route'
 
@@ -227,7 +227,7 @@ define [
 
     it 'should listen to the !router:changeURL event', ->
       path = 'router-changeurl-events'
-      sinon.stub(router, 'changeURL')
+      sinon.spy(router, 'changeURL')
 
       mediator.publish '!router:changeURL', path
       expect(router.changeURL).to.have.been.calledWith path

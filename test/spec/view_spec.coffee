@@ -341,7 +341,7 @@ define [
     it 'should pass model attributes to the template function', ->
       setModel()
 
-      sinon.stub(view, 'getTemplateData')
+      sinon.spy(view, 'getTemplateData')
 
       passedTemplateData = null
       templateFunc = sinon.stub().returns(template)
@@ -378,7 +378,7 @@ define [
 
     it 'should dispose subviews', ->
       subview = new View()
-      sinon.stub(subview, 'dispose')
+      sinon.spy(subview, 'dispose')
       view.subview 'foo', subview
 
       view.dispose()
@@ -437,7 +437,7 @@ define [
       # Vanilla View which doesn’t override render
       view = new View()
       view.getTemplateFunction = TestView::getTemplateFunction
-      sinon.stub(view, 'afterRender')
+      sinon.spy(view, 'afterRender')
       renderResult = view.render()
       expect(renderResult).to.equal view
 
@@ -449,7 +449,7 @@ define [
 
     it 'should not render when disposed given render was overridden', ->
       view = new TestView container: '#testbed'
-      sinon.stub(view, 'afterRender')
+      sinon.spy(view, 'afterRender')
       renderResult = view.render()
       expect(renderResult).to.equal view
       expect(view.afterRender.callCount).to.equal 1
