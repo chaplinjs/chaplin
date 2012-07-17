@@ -53,7 +53,7 @@
         }
         require(loaded, function () {
           var runner = mocha.run();
-          runner.globals(['foo', 'bar', 'baz']);
+          runner.globals(['jQuery*']);
         });
       };
     </script>

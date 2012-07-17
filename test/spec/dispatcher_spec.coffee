@@ -89,6 +89,9 @@ define [
       expect(initialize).to.have.been.calledWith params, null
       expect(action).to.have.been.calledWith params, null
       expect(historyURL).to.have.been.calledWith params
+      historyURL.restore()
+      initialize.restore()
+      action.restore()
 
     it 'should not start the same controller if params match', ->
       mediator.publish 'matchRoute', route1, params
@@ -103,6 +106,9 @@ define [
       expect(initialize).to.not.have.been.called
       expect(action).to.not.have.been.called
       expect(historyURL).to.not.have.been.called
+      historyURL.restore()
+      initialize.restore()
+      action.restore()
 
     it 'should start the same controller if params differ', ->
       mediator.publish 'matchRoute', route1, params
@@ -118,6 +124,9 @@ define [
       expect(initialize).to.have.been.calledWith params, 'test1'
       expect(action).to.have.been.calledWith params, 'test1'
       expect(historyURL).to.have.been.calledWith params
+      historyURL.restore()
+      initialize.restore()
+      action.restore()
 
     it 'should start the same controller if forced', ->
       mediator.publish 'matchRoute', route1, params
@@ -133,6 +142,9 @@ define [
       expect(initialize).to.have.been.calledWith params, 'test1'
       expect(action).to.have.been.calledWith params, 'test1'
       expect(historyURL).to.have.been.calledWith params
+      historyURL.restore()
+      initialize.restore()
+      action.restore()
 
     it 'should save the controller, action, params and url', ->
       # Now route to Test2Controller
@@ -154,6 +166,7 @@ define [
       mediator.publish 'matchRoute', route1, params
 
       expect(dispose).to.have.been.calledWith params, 'test1'
+      dispose.restore()
 
     it 'should fire beforeControllerDispose events', ->
       beforeControllerDispose = sinon.spy()
@@ -204,6 +217,9 @@ define [
       expect(d.currentAction).to.equal 'show'
       expect(d.currentParams).to.equal params
       expect(d.url).to.equal "test1/#{params.id}"
+      historyURL.restore()
+      initialize.restore()
+      action.restore()
 
     it 'should support redirection to a URL', ->
       proto = Test1Controller.prototype
@@ -230,6 +246,7 @@ define [
       expect(startupController).to.not.have.been.called
 
       mediator.unsubscribe 'startupController', startupController
+      action.restore()
 
     it 'should support redirection to a controller action', ->
       proto = Test1Controller.prototype
@@ -262,6 +279,7 @@ define [
       expect(startupController.callCount).to.equal 1
 
       mediator.unsubscribe 'startupController', startupController
+      redirectAction.restore()
 
     it 'should dispose itself correctly', ->
       expect(dispatcher.dispose).to.be.a 'function'
@@ -275,6 +293,7 @@ define [
       expect(dispatcher.disposed).to.be.ok
       if Object.isFrozen
         expect(Object.isFrozen(dispatcher)).to.be.ok
+      initialize.restore()
 
     it 'should be extendable', ->
       expect(Dispatcher.extend).to.be.a 'function'
