@@ -100,9 +100,9 @@ define [
       expect(model.dispose).to.be.a 'function'
       model.dispose()
 
-      expect(model.disposed).to.be.ok
+      expect(model.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(model)).to.be.ok
+        expect(Object.isFrozen(model)).to.be.ok()
 
     it 'should fire a dispose event', ->
       disposeSpy = sinon.spy()
@@ -110,7 +110,7 @@ define [
 
       model.dispose()
 
-      expect(disposeSpy).to.have.been.called
+      expect(disposeSpy).was.called()
 
     it 'should unsubscribe from Pub/Sub events', ->
       pubSubSpy = sinon.spy()
@@ -119,7 +119,7 @@ define [
       model.dispose()
 
       mediator.publish 'foo'
-      expect(pubSubSpy).to.not.have.been.called
+      expect(pubSubSpy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->
       modelBindSpy = sinon.spy()
@@ -128,7 +128,7 @@ define [
       model.dispose()
 
       model.trigger 'foo'
-      expect(modelBindSpy).to.not.have.been.called
+      expect(modelBindSpy).was.notCalled()
 
     it 'should reject the Deferred on disposal', ->
       model.initDeferred()
@@ -138,7 +138,7 @@ define [
       model.dispose()
 
       expect(model.state()).to.equal 'rejected'
-      expect(failSpy).to.have.been.called
+      expect(failSpy).was.called()
 
     it 'should remove instance properties', ->
       model.dispose()
@@ -151,4 +151,4 @@ define [
         '_callbacks'
       ]
       for prop in properties
-        expect(_(model).has prop).to.not.be.ok
+        expect(_(model).has prop).to.not.be.ok()

@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="lib/mocha-1.3.0.css" />
     <script src="lib/mocha-1.3.0.js"></script>
-    <script src="lib/chai-1.1.1.js"></script>
+    <script src="lib/expect-0.1.2.js"></script>
     <script src="lib/sinon-1.4.2.js"></script>
-    <script src="lib/sinon-chai-2.1.2.js"></script>
+    <script src="lib/sinon-expect-d3365d35.js"></script>
     <script src="lib/require-2.0.4.js"></script>
     <script>
       (function () {
@@ -33,8 +33,8 @@
       mocha.setup('bdd');
     </script>
     <script>
+      window.expect = SinonExpect.enhance(expect, sinon, 'was');
       window.onload = function() {
-        window.expect = chai.expect;
         var specs = [
           'mediator',
           'router',

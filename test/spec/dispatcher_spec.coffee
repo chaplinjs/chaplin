@@ -86,9 +86,9 @@ define [
 
       mediator.publish 'matchRoute', route1, params
 
-      expect(initialize).to.have.been.calledWith params, null
-      expect(action).to.have.been.calledWith params, null
-      expect(historyURL).to.have.been.calledWith params
+      expect(initialize).was.calledWith params, null
+      expect(action).was.calledWith params, null
+      expect(historyURL).was.calledWith params
       historyURL.restore()
       initialize.restore()
       action.restore()
@@ -103,9 +103,9 @@ define [
 
       mediator.publish 'matchRoute', route1, params
 
-      expect(initialize).to.not.have.been.called
-      expect(action).to.not.have.been.called
-      expect(historyURL).to.not.have.been.called
+      expect(initialize).was.notCalled()
+      expect(action).was.notCalled()
+      expect(historyURL).was.notCalled()
       historyURL.restore()
       initialize.restore()
       action.restore()
@@ -121,9 +121,9 @@ define [
       refreshParams()
       mediator.publish 'matchRoute', route1, params
 
-      expect(initialize).to.have.been.calledWith params, 'test1'
-      expect(action).to.have.been.calledWith params, 'test1'
-      expect(historyURL).to.have.been.calledWith params
+      expect(initialize).was.calledWith params, 'test1'
+      expect(action).was.calledWith params, 'test1'
+      expect(historyURL).was.calledWith params
       historyURL.restore()
       initialize.restore()
       action.restore()
@@ -139,9 +139,9 @@ define [
       params.forceStartup = true
       mediator.publish 'matchRoute', route1, params
 
-      expect(initialize).to.have.been.calledWith params, 'test1'
-      expect(action).to.have.been.calledWith params, 'test1'
-      expect(historyURL).to.have.been.calledWith params
+      expect(initialize).was.calledWith params, 'test1'
+      expect(action).was.calledWith params, 'test1'
+      expect(historyURL).was.calledWith params
       historyURL.restore()
       initialize.restore()
       action.restore()
@@ -153,7 +153,7 @@ define [
       d = dispatcher
       expect(d.previousControllerName).to.equal 'test1'
       expect(d.currentControllerName).to.equal 'test2'
-      expect(d.currentController).to.be.instanceof Test2Controller
+      expect(d.currentController).to.be.a Test2Controller
       expect(d.currentAction).to.equal 'show'
       expect(d.currentParams).to.equal params
       expect(d.url).to.equal "test2/#{params.id}"
@@ -165,7 +165,7 @@ define [
       # Route back to Test1Controller
       mediator.publish 'matchRoute', route1, params
 
-      expect(dispose).to.have.been.calledWith params, 'test1'
+      expect(dispose).was.calledWith params, 'test1'
       dispose.restore()
 
     it 'should fire beforeControllerDispose events', ->
@@ -175,10 +175,10 @@ define [
       # Now route to Test2Controller
       mediator.publish 'matchRoute', route2, params
 
-      expect(beforeControllerDispose).to.have.been.called
+      expect(beforeControllerDispose).was.called()
       passedController = beforeControllerDispose.lastCall.args[0]
-      expect(passedController).to.be.instanceof Test1Controller
-      expect(passedController.disposed).to.be.ok
+      expect(passedController).to.be.a Test1Controller
+      expect(passedController.disposed).to.be.ok()
 
       mediator.unsubscribe 'beforeControllerDispose', beforeControllerDispose
 
@@ -191,7 +191,7 @@ define [
 
       passedEvent = startupController.lastCall.args[0]
       expect(passedEvent).to.be.an 'object'
-      expect(passedEvent.controller).to.be.instanceof Test1Controller
+      expect(passedEvent.controller).to.be.a Test1Controller
       expect(passedEvent.controllerName).to.equal 'test1'
       expect(passedEvent.params).to.equal params
       expect(passedEvent.previousControllerName).to.equal 'test2'
@@ -206,14 +206,14 @@ define [
 
       mediator.publish '!startupController', 'test1', 'show', params
 
-      expect(initialize).to.have.been.calledWith params, 'test1'
-      expect(action).to.have.been.calledWith params, 'test1'
-      expect(historyURL).to.have.been.calledWith params
+      expect(initialize).was.calledWith params, 'test1'
+      expect(action).was.calledWith params, 'test1'
+      expect(historyURL).was.calledWith params
 
       d = dispatcher
       expect(d.previousControllerName).to.equal 'test1'
       expect(d.currentControllerName).to.equal 'test1'
-      expect(d.currentController).to.be.instanceof Test1Controller
+      expect(d.currentController).to.be.a Test1Controller
       expect(d.currentAction).to.equal 'show'
       expect(d.currentParams).to.equal params
       expect(d.url).to.equal "test1/#{params.id}"
@@ -230,7 +230,7 @@ define [
 
       mediator.publish 'matchRoute', redirectToURLRoute, params
 
-      expect(action).to.have.been.calledWith(params, 'test1')
+      expect(action).was.calledWith(params, 'test1')
 
       # Don’t expect that the new controller was called
       # because we’re not testing the router. Just test
@@ -238,12 +238,12 @@ define [
       d = dispatcher
       expect(d.previousControllerName).to.equal 'test1'
       expect(d.currentControllerName).to.equal 'test1'
-      expect(d.currentController).to.be.instanceof Test1Controller
+      expect(d.currentController).to.be.a Test1Controller
       expect(d.currentAction).to.equal 'show'
       expect(d.currentParams).not.to.equal params
       expect(d.url).not.to.equal "test1/#{params.id}"
 
-      expect(startupController).to.not.have.been.called
+      expect(startupController).was.notCalled()
 
       mediator.unsubscribe 'startupController', startupController
       action.restore()
@@ -261,21 +261,21 @@ define [
       # Redirects from Test1Controller to Test2Controller
       mediator.publish 'matchRoute', redirectToControllerRoute, params
 
-      expect(redirectAction).to.have.been.calledWith params, 'test1'
-      expect(targetAction).to.have.been.calledWith params, 'test1'
+      expect(redirectAction).was.calledWith params, 'test1'
+      expect(targetAction).was.calledWith params, 'test1'
 
       # Expect that the new controller was called because this does not require
       # the router but the controller to fire a !startupController event
       d = dispatcher
       expect(d.previousControllerName).to.equal 'test1'
       expect(d.currentControllerName).to.equal 'test2'
-      expect(d.currentController).to.be.instanceof Test2Controller
+      expect(d.currentController).to.be.a Test2Controller
       expect(d.currentAction).to.equal 'show'
       expect(d.currentParams).to.equal params
       expect(d.url).to.equal "test2/#{params.id}"
 
       # startupController event was only triggered once
-      expect(startupController).to.have.been.called
+      expect(startupController).was.called()
       expect(startupController.callCount).to.equal 1
 
       mediator.unsubscribe 'startupController', startupController
@@ -288,11 +288,11 @@ define [
       proto = Test1Controller.prototype
       initialize = sinon.spy(proto, 'initialize')
       mediator.publish 'matchRoute', route1, params
-      expect(initialize).to.not.have.been.called
+      expect(initialize).was.notCalled()
 
-      expect(dispatcher.disposed).to.be.ok
+      expect(dispatcher.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(dispatcher)).to.be.ok
+        expect(Object.isFrozen(dispatcher)).to.be.ok()
       initialize.restore()
 
     it 'should be extendable', ->
@@ -300,6 +300,6 @@ define [
 
       DerivedDispatcher = Dispatcher.extend()
       derivedDispatcher = new DerivedDispatcher()
-      expect(derivedDispatcher).to.be.instanceof Dispatcher
+      expect(derivedDispatcher).to.be.a Dispatcher
 
       derivedDispatcher.dispose()

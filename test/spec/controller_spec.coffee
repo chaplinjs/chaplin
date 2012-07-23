@@ -32,8 +32,8 @@ define [
       url = 'redirect-target/123'
       controller.redirectTo url
 
-      expect(controller.redirected).to.be.ok
-      expect(routerRoute).to.have.been.called
+      expect(controller.redirected).to.be.ok()
+      expect(routerRoute).was.called()
       expect(routerRoute.lastCall.args[0]).to.equal url
 
     it 'should redirect to a controller action', ->
@@ -45,8 +45,8 @@ define [
       params = redirectParams: true
       controller.redirectTo controllerName, action, params
 
-      expect(controller.redirected).to.be.ok
-      expect(startupController).to.have.been.calledWith(
+      expect(controller.redirected).to.be.ok()
+      expect(startupController).was.calledWith(
         controllerName, action, params
       )
 
@@ -54,9 +54,9 @@ define [
       expect(controller.dispose).to.be.a 'function'
       controller.dispose()
 
-      expect(controller.disposed).to.be.ok
+      expect(controller.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(controller)).to.be.ok
+        expect(Object.isFrozen(controller)).to.be.ok()
 
     it 'should dispose disposable properties', ->
       model = controller.model = new Model()
@@ -64,11 +64,11 @@ define [
 
       controller.dispose()
 
-      expect(_(controller).has 'model').to.not.be.ok
-      expect(_(controller).has 'view').to.not.be.ok
+      expect(_(controller).has 'model').to.not.be.ok()
+      expect(_(controller).has 'view').to.not.be.ok()
 
-      expect(model.disposed).to.be.ok
-      expect(view.disposed).to.be.ok
+      expect(model.disposed).to.be.ok()
+      expect(view.disposed).to.be.ok()
 
     it 'should unsubscribe from Pub/Sub events', ->
       pubSubSpy = sinon.spy()
@@ -77,13 +77,13 @@ define [
       controller.dispose()
 
       mediator.publish 'foo'
-      expect(pubSubSpy).to.not.have.been.called
+      expect(pubSubSpy).was.notCalled()
 
     it 'should be extendable', ->
       expect(Controller.extend).to.be.a 'function'
 
       DerivedController = Controller.extend()
       derivedController = new DerivedController()
-      expect(derivedController).to.be.instanceof Controller
+      expect(derivedController).to.be.a Controller
 
       derivedController.dispose()

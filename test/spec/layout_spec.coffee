@@ -65,7 +65,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
       args = spy.lastCall.args
       passedPath = args[0]
       passedCallback = args[1]
@@ -94,7 +94,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
 
       spy = sinon.spy()
@@ -103,7 +103,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route links with empty href', ->
@@ -115,7 +115,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route links to document fragments', ->
@@ -125,7 +125,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route links with a noscript class', ->
@@ -135,7 +135,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route clicks on external links', ->
@@ -146,7 +146,7 @@ define [
         .appendTo(document.body)
         .click()
         .remove()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
 
     it 'should register event handlers on the document declaratively', ->
@@ -161,8 +161,8 @@ define [
       layout = new TestLayout
       el = $('#testbed')
       el.click()
-      expect(spy1).to.have.been.called
-      expect(spy2).to.have.been.called
+      expect(spy1).was.called()
+      expect(spy2).was.called()
       layout.dispose()
       el.click()
       expect(spy1.callCount).to.equal 1
@@ -184,8 +184,8 @@ define [
         click: spy2
       el = $('#testbed')
       el.click()
-      expect(spy1).to.have.been.called
-      expect(spy2).to.have.been.called
+      expect(spy1).was.called()
+      expect(spy2).was.called()
       layout.undelegateEvents()
       el.click()
       expect(spy1.callCount).to.equal 1
@@ -201,22 +201,22 @@ define [
       expect(layout.dispose).to.be.a 'function'
       layout.dispose()
 
-      expect(layout.disposed).to.be.ok
+      expect(layout.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(layout)).to.be.ok
+        expect(Object.isFrozen(layout)).to.be.ok()
 
       mediator.publish 'foo'
       $('#testbed').click()
 
       # It should unsubscribe from events
-      expect(spy1).to.not.have.been.called
-      expect(spy2).to.not.have.been.called
+      expect(spy1).was.notCalled()
+      expect(spy2).was.notCalled()
 
     it 'should be extendable', ->
       expect(Layout.extend).to.be.a 'function'
 
       DerivedLayout = Layout.extend()
       derivedLayout = new DerivedLayout()
-      expect(derivedLayout).to.be.instanceof Layout
+      expect(derivedLayout).to.be.a Layout
 
       derivedLayout.dispose()

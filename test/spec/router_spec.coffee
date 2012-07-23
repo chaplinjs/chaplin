@@ -28,17 +28,17 @@ define [
       mediator.unsubscribe 'matchRoute', matchRoute
 
     it 'should create a Backbone.History instance', ->
-      expect(Backbone.history).to.be.instanceof Backbone.History
+      expect(Backbone.history).to.be.a Backbone.History
 
     it 'should not start the Backbone.History at once', ->
-      expect(Backbone.History.started).to.not.be.ok
+      expect(Backbone.History.started).to.not.be.ok()
 
     it 'should allow to start the Backbone.History', ->
       spy = sinon.spy(Backbone.history, 'start')
       expect(router.startHistory).to.be.a 'function'
       router.startHistory()
-      expect(Backbone.History.started).to.be.ok
-      expect(spy).to.have.been.called
+      expect(Backbone.History.started).to.be.ok()
+      expect(spy).was.called()
 
     it 'should default to pushState', ->
       router.startHistory()
@@ -54,8 +54,8 @@ define [
       spy = sinon.spy(Backbone.history, 'stop')
       expect(router.stopHistory).to.be.a 'function'
       router.stopHistory()
-      expect(Backbone.History.started).to.not.be.ok
-      expect(spy).to.have.been.called
+      expect(Backbone.History.started).to.not.be.ok()
+      expect(spy).was.called()
 
     it 'should fire a matchRoute event when a route matches', ->
       spy = sinon.spy()
@@ -63,7 +63,7 @@ define [
       router.match '', 'x#y'
 
       router.route '/'
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
       mediator.unsubscribe 'matchRoute', spy
 
@@ -74,7 +74,7 @@ define [
       router.match 'correct-match2', 'null#null'
 
       routed = router.route '/correct-match1'
-      expect(routed).to.be.ok
+      expect(routed).to.be.ok()
       expect(spy.callCount).to.equal 1
 
       mediator.unsubscribe 'matchRoute', spy
@@ -87,7 +87,7 @@ define [
 
       routed = router.route '/params/1'
 
-      expect(routed).to.be.ok
+      expect(routed).to.be.ok()
       expect(spy.callCount).to.equal 1
       expect(params.one).to.equal '1'
       expect(params.two).to.equal undefined
@@ -103,7 +103,7 @@ define [
       router.startHistory()
       routed = Backbone.history.loadUrl '/params/1'
 
-      expect(routed).to.be.ok
+      expect(routed).to.be.ok()
       expect(spy.callCount).to.equal 1
       expect(params.one).to.equal '1'
       expect(params.two).to.equal undefined
@@ -112,12 +112,12 @@ define [
 
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
-        expect(-> router.match '', "null##{prop}").to.throw()
+        expect(-> router.match '', "null##{prop}").to.throwError()
 
     it 'should pass the route to the matchRoute handler', ->
       router.match 'passing-the-route', 'null#null'
       router.route '/passing-the-route'
-      expect(route).to.be.instanceof Route
+      expect(route).to.be.a Route
 
     it 'should provide controller name and action', ->
       router.match 'controller/action', 'controller#action'
@@ -167,10 +167,10 @@ define [
           id: /^\d+$/
 
       router.route '/constraints/123-foo'
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
 
       router.route '/constraints/123'
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
       mediator.unsubscribe 'matchRoute', spy
 
@@ -216,21 +216,21 @@ define [
       router.match path, 'router#route'
 
       mediator.publish '!router:route', path, spy
-      expect(router.route).to.have.been.calledWith path
-      expect(spy).to.have.been.calledWith true
+      expect(router.route).was.calledWith path
+      expect(spy).was.calledWith true
       expect(route.controller).to.equal 'router'
       expect(route.action).to.equal 'route'
 
       spy = sinon.spy()
       mediator.publish '!router:route', 'different-path', spy
-      expect(spy).to.have.been.calledWith false
+      expect(spy).was.calledWith false
 
     it 'should listen to the !router:changeURL event', ->
       path = 'router-changeurl-events'
       sinon.spy(router, 'changeURL')
 
       mediator.publish '!router:changeURL', path
-      expect(router.changeURL).to.have.been.calledWith path
+      expect(router.changeURL).was.calledWith path
 
     it 'should dispose itself correctly', ->
       expect(router.dispose).to.be.a 'function'
@@ -240,15 +240,15 @@ define [
 
       expect(->
         router.match '', 'x#y'
-      ).to.throw()
+      ).to.throwError()
 
       expect(->
         router.route '/'
-      ).to.throw()
+      ).to.throwError()
 
-      expect(router.disposed).to.be.ok
+      expect(router.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(router)).to.be.ok
+        expect(Object.isFrozen(router)).to.be.ok()
 
     it 'should be extendable', ->
       expect(Router.extend).to.be.a 'function'
@@ -257,10 +257,10 @@ define [
 
       DerivedRouter = Router.extend()
       derivedRouter = new DerivedRouter()
-      expect(derivedRouter).to.be.instanceof Router
+      expect(derivedRouter).to.be.a Router
 
       DerivedRoute = Route.extend()
       derivedRoute = new DerivedRoute 'foo', 'foo#bar'
-      expect(derivedRoute).to.be.instanceof Route
+      expect(derivedRoute).to.be.a Route
 
       derivedRouter.dispose()

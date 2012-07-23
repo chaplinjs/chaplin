@@ -24,9 +24,9 @@ define [
         'on', 'off', 'trigger']
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
-        expect(desc.enumerable).to.be.ok
-        expect(desc.writable).to.not.be.ok
-        expect(desc.configurable).to.not.be.ok
+        expect(desc.enumerable).to.be.ok()
+        expect(desc.writable).to.not.be.ok()
+        expect(desc.configurable).to.not.be.ok()
 
     it 'should publish messages to subscribers', ->
       spy = sinon.spy()
@@ -36,7 +36,7 @@ define [
       mediator.subscribe eventName, spy
       mediator.publish eventName, payload
 
-      expect(spy).to.have.been.calledWith payload
+      expect(spy).was.calledWith payload
       mediator.unsubscribe eventName, spy
 
     it 'should allow to unsubscribe to events', ->
@@ -48,4 +48,4 @@ define [
       mediator.unsubscribe eventName, spy
       mediator.publish eventName, payload
 
-      expect(spy).to.not.have.been.calledWith payload
+      expect(spy).was.neverCalledWith payload

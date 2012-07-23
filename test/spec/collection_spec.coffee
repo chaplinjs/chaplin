@@ -54,8 +54,8 @@ define [
       collection.addAtomic ({id: i} for i in [3..5])
       expectOrder [0, 1, 2, 3, 4, 5]
 
-      expect(addSpy).to.not.have.been.called
-      expect(resetSpy).to.have.been.called
+      expect(addSpy).was.notCalled()
+      expect(resetSpy).was.called()
 
     it 'should add models atomically at a specific position', ->
       collection.reset ({id: i} for i in [0..2])
@@ -68,8 +68,8 @@ define [
       collection.addAtomic ({id: i} for i in [3..5]), at: 1
       expectOrder [0, 3, 4, 5, 1, 2]
 
-      expect(addSpy).to.not.have.been.called
-      expect(resetSpy).to.have.been.called
+      expect(addSpy).was.notCalled()
+      expect(resetSpy).was.called()
 
     it 'should update models', ->
       expect(collection.update).to.be.a 'function'
@@ -89,7 +89,7 @@ define [
 
       expect(addSpy.callCount).to.equal 3
       expect(removeSpy.callCount).to.equal 3
-      expect(resetSpy).to.not.have.been.called
+      expect(resetSpy).was.notCalled()
 
     it 'should update models deeply', ->
       collection.reset ({id: i, old1: true, old2: false} for i in [0..5])
@@ -101,14 +101,14 @@ define [
 
       for id in [1, 3, 5]
         model = collection.get id
-        expect(model.get('old1')).to.be.ok
-        expect(model.get('old2')).to.be.ok
-        expect(model.get('new')).to.be.ok
+        expect(model.get('old1')).to.be.ok()
+        expect(model.get('old2')).to.be.ok()
+        expect(model.get('new')).to.be.ok()
       for id in [7, 9, 11]
         model = collection.get id
         expect(model.get('old1')).to.equal undefined
-        expect(model.get('old2')).to.be.ok
-        expect(model.get('new')).to.be.ok
+        expect(model.get('old2')).to.be.ok()
+        expect(model.get('new')).to.be.ok()
 
     it 'should dispose itself correctly', ->
       expect(collection.dispose).to.be.a 'function'
@@ -116,9 +116,9 @@ define [
 
       expect(collection.length).to.equal 0
 
-      expect(collection.disposed).to.be.ok
+      expect(collection.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(collection)).to.be.ok
+        expect(Object.isFrozen(collection)).to.be.ok()
 
     it 'should fire a dispose event', ->
       disposeSpy = sinon.spy()
@@ -126,7 +126,7 @@ define [
 
       collection.dispose()
 
-      expect(disposeSpy).to.have.been.called
+      expect(disposeSpy).was.called()
 
     it 'should unsubscribe from Pub/Sub events', ->
       pubSubSpy = sinon.spy()
@@ -135,7 +135,7 @@ define [
       collection.dispose()
 
       mediator.publish 'foo'
-      expect(pubSubSpy).to.not.have.been.called
+      expect(pubSubSpy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->
       collectionBindSpy = sinon.spy()
@@ -144,7 +144,7 @@ define [
       collection.dispose()
 
       collection.trigger 'foo'
-      expect(collectionBindSpy).to.not.have.been.called
+      expect(collectionBindSpy).was.notCalled()
 
     it 'should reject the Deferred on disposal', ->
       collection.initDeferred()
@@ -154,10 +154,10 @@ define [
       collection.dispose()
 
       expect(collection.state()).to.equal 'rejected'
-      expect(failSpy).to.have.been.called
+      expect(failSpy).was.called()
 
     it 'should remove instance properties', ->
       collection.dispose()
 
       for prop in ['model', 'models', '_byId', '_byCid']
-        expect(_(collection).has prop).to.not.be.ok
+        expect(_(collection).has prop).to.not.be.ok()

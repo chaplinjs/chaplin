@@ -15,7 +15,7 @@ define [
 
     it 'should be a simple object', ->
       expect(app).to.be.an 'object'
-      expect(app).to.be.instanceof Application
+      expect(app).to.be.a Application
 
     it 'should initialize', ->
       expect(app.initialize).to.be.a 'function'
@@ -24,12 +24,12 @@ define [
     it 'should create a dispatcher', ->
       expect(app.initDispatcher).to.be.a 'function'
       app.initDispatcher()
-      expect(app.dispatcher).to.be.instanceof Dispatcher
+      expect(app.dispatcher).to.be.a Dispatcher
 
     it 'should create a layout', ->
       expect(app.initLayout).to.be.a 'function'
       app.initLayout()
-      expect(app.layout).to.be.instanceof Layout
+      expect(app.layout).to.be.a Layout
 
     it 'should create a router', ->
       passedMatch = null
@@ -42,29 +42,29 @@ define [
       expect(app.initRouter.length).to.equal 2
       app.initRouter routes, root: '/'
 
-      expect(app.router).to.be.instanceof Router
-      expect(routesCalled).to.be.ok
+      expect(app.router).to.be.a Router
+      expect(routesCalled).to.be.ok()
       expect(passedMatch).to.be.a 'function'
 
     it 'should start Backbone.history', ->
-      expect(Backbone.History.started).to.be.ok
+      expect(Backbone.History.started).to.be.ok()
 
     it 'should dispose itself correctly', ->
       expect(app.dispose).to.be.a 'function'
       app.dispose()
 
       for prop in ['dispatcher', 'layout', 'router']
-        expect(_(app).has prop).to.not.be.ok
+        expect(_(app).has prop).to.not.be.ok()
 
-      expect(app.disposed).to.be.ok
+      expect(app.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(app)).to.be.ok
+        expect(Object.isFrozen(app)).to.be.ok()
 
     it 'should be extendable', ->
       expect(Application.extend).to.be.a 'function'
 
       DerivedApplication = Application.extend()
       derivedApp = new DerivedApplication()
-      expect(derivedApp).to.be.instanceof Application
+      expect(derivedApp).to.be.a Application
 
       derivedApp.dispose()

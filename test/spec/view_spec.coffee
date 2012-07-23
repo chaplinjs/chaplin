@@ -78,13 +78,13 @@ define [
 
     it 'should render automatically', ->
       view = new TestView autoRender: true
-      expect(renderCalled).to.be.ok
+      expect(renderCalled).to.be.ok()
       # should not be in the DOM
       expect(view.$el.parent().length).to.equal 0
 
     it 'should attach itself to an element automatically', ->
       view = new TestView container: testbed
-      expect(renderCalled).to.not.be.ok
+      expect(renderCalled).to.not.be.ok()
       # Expect that the view is attached to the DOM *on first render*,
       # not immediately after initialize
       expect(view.el.parentNode).to.equal null
@@ -109,7 +109,7 @@ define [
 
     it 'should consider autoRender, container and containerMethod properties', ->
       view = new ConfiguredTestView()
-      expect(renderCalled).to.be.ok
+      expect(renderCalled).to.be.ok()
       expect(view.el).to.equal testbed.previousSibling
       expect(view.el.parentNode).to.equal testbed.parentNode
 
@@ -118,7 +118,7 @@ define [
       spy = sinon.spy()
       view.on 'addedToDOM', spy
       view.render()
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
     it 'should register user input events', ->
       expect(view.delegate).to.be.a 'function'
@@ -128,7 +128,7 @@ define [
       handler = view.delegate 'click', spy
       expect(handler).to.be.a 'function'
       $(view.el).trigger 'click'
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
       view.undelegate()
       $(view.el).trigger 'click'
@@ -141,32 +141,32 @@ define [
       p = view.$('p')
       expect(p.length).to.equal 1
       p.trigger 'click'
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
       view.undelegate()
       p.trigger 'click'
       expect(spy.callCount).to.equal 1
 
     it 'should check delegate parameters', ->
-      expect(-> view.delegate()).to.throw()
-      expect(-> view.delegate(1, 2, 3)).to.throw()
-      expect(-> view.delegate('click', 'foo')).to.throw()
-      expect(-> view.delegate('click', 'foo', 'bar')).to.throw()
-      expect(-> view.delegate('click', 123)).to.throw()
-      expect(-> view.delegate('click', (->), 123)).to.throw()
+      expect(-> view.delegate()).to.throwError()
+      expect(-> view.delegate(1, 2, 3)).to.throwError()
+      expect(-> view.delegate('click', 'foo')).to.throwError()
+      expect(-> view.delegate('click', 'foo', 'bar')).to.throwError()
+      expect(-> view.delegate('click', 123)).to.throwError()
+      expect(-> view.delegate('click', (->), 123)).to.throwError()
 
     it 'should bind handlers to model events', ->
       expect(view.modelBind).to.be.a 'function'
-      expect(-> view.modelBind()).to.throw()
-      expect(-> view.modelBind(1, 2)).to.throw()
-      expect(-> view.modelBind(1, ->)).to.throw()
-      expect(-> view.modelBind('change:foo', ->)).to.throw()
+      expect(-> view.modelBind()).to.throwError()
+      expect(-> view.modelBind(1, 2)).to.throwError()
+      expect(-> view.modelBind(1, ->)).to.throwError()
+      expect(-> view.modelBind('change:foo', ->)).to.throwError()
 
       setModel()
       spy = sinon.spy()
       view.modelBind 'change:foo', spy
       model.set foo: 'bar'
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
       view.modelBind 'change:foo', spy
       model.set foo: 'qux'
@@ -177,7 +177,7 @@ define [
       spy = sinon.spy()
       view.modelBind 'add', spy
       collection.push new Model()
-      expect(spy).to.have.been.called
+      expect(spy).was.called()
 
     it 'should unbind handlers from model events', ->
       expect(view.modelUnbind).to.be.a 'function'
@@ -187,7 +187,7 @@ define [
       view.modelBind 'change:foo', spy
       view.modelUnbind 'change:foo', spy
       model.set foo: 'bar'
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
 
     it 'should unbind handlers from collection events', ->
       setCollection()
@@ -195,7 +195,7 @@ define [
       view.modelBind 'add', spy
       view.modelUnbind 'add', spy
       collection.push new Model()
-      expect(spy).to.not.have.been.called
+      expect(spy).was.notCalled()
 
     it 'should force the context of model event handlers', ->
       setModel()
@@ -287,7 +287,7 @@ define [
     it 'should return empty template data without a model', ->
       templateData = view.getTemplateData()
       expect(templateData).to.be.an 'object'
-      expect(_.isEmpty templateData).to.be.ok
+      expect(_.isEmpty templateData).to.be.ok()
 
     it 'should return proper template data for a model', ->
       setModel()
@@ -305,29 +305,29 @@ define [
       d = view.getTemplateData()
       expect(d).to.be.an 'object'
       expect(d.items).to.be.an 'array'
-      expect(_.isObject d.items[0]).to.be.ok
+      expect(_.isObject d.items[0]).to.be.ok()
       expect(d.items[0].foo).to.equal 'foo'
-      expect(_.isObject d.items[1]).to.be.ok
+      expect(_.isObject d.items[1]).to.be.ok()
       expect(d.items[1].bar).to.equal 'bar'
 
     it 'should add the Deferred state to the template data', ->
       setModel()
       model.initDeferred()
       templateData = view.getTemplateData()
-      expect(templateData.resolved).to.not.be.ok
+      expect(templateData.resolved).to.not.be.ok()
       model.resolve()
       templateData = view.getTemplateData()
-      expect(templateData.resolved).to.be.ok
+      expect(templateData.resolved).to.be.ok()
 
     it 'should add the SyncMachine state to the template data', ->
       setModel()
       model.initSyncMachine()
       templateData = view.getTemplateData()
-      expect(templateData.synced).to.not.be.ok
+      expect(templateData.synced).to.not.be.ok()
       model.beginSync()
       model.finishSync()
       templateData = view.getTemplateData()
-      expect(templateData.synced).to.be.ok
+      expect(templateData.synced).to.be.ok()
 
     it 'should not cover existing synced and resolved properties', ->
       setModel()
@@ -349,9 +349,9 @@ define [
 
       view.render()
 
-      expect(view.getTemplateFunction).to.have.been.called
-      expect(view.getTemplateData).to.have.been.called
-      expect(templateFunc).to.have.been.called
+      expect(view.getTemplateFunction).was.called()
+      expect(view.getTemplateData).was.called()
+      expect(templateFunc).was.called()
 
       templateData = templateFunc.lastCall.args[0]
       expect(templateData).to.be.an 'object'
@@ -362,9 +362,9 @@ define [
       expect(view.dispose).to.be.a 'function'
       view.dispose()
 
-      expect(view.disposed).to.be.ok
+      expect(view.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(view)).to.be.ok
+        expect(Object.isFrozen(view)).to.be.ok()
 
     it 'should remove itself from the DOM', ->
       view.$el
@@ -383,8 +383,8 @@ define [
 
       view.dispose()
 
-      expect(subview.disposed).to.be.ok
-      expect(subview.dispose).to.have.been.called
+      expect(subview.disposed).to.be.ok()
+      expect(subview.dispose).was.called()
 
     it 'should unsubscribe from Pub/Sub events', ->
       pubSubSpy = sinon.spy()
@@ -393,7 +393,7 @@ define [
       view.dispose()
 
       mediator.publish 'foo'
-      expect(pubSubSpy).to.not.have.been.called
+      expect(pubSubSpy).was.notCalled()
 
     it 'should unsubscribe from model events', ->
       setModel()
@@ -403,7 +403,7 @@ define [
       view.dispose()
 
       model.trigger 'foo'
-      expect(modelBindSpy).to.not.have.been.called
+      expect(modelBindSpy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->
       viewBindSpy = sinon.spy()
@@ -412,7 +412,7 @@ define [
       view.dispose()
 
       view.trigger 'foo'
-      expect(viewBindSpy).to.not.have.been.called
+      expect(viewBindSpy).was.notCalled()
 
     it 'should remove instance properties', ->
       view.dispose()
@@ -424,14 +424,14 @@ define [
         '_callbacks'
       ]
       for prop in properties
-        expect(_(view).has prop).to.not.be.ok
+        expect(_(view).has prop).to.not.be.ok()
 
     it 'should dispose itself when the model or collection is disposed', ->
       model = new Model()
       view = new TestView model: model
       model.dispose()
-      expect(model.disposed).to.be.ok
-      expect(view.disposed).to.be.ok
+      expect(model.disposed).to.be.ok()
+      expect(view.disposed).to.be.ok()
 
     it 'should not render when disposed given render wasn’t overridden', ->
       # Vanilla View which doesn’t override render
@@ -444,7 +444,7 @@ define [
       view.dispose()
 
       renderResult = view.render()
-      expect(renderResult).to.not.be.ok
+      expect(renderResult).to.not.be.ok()
       expect(view.afterRender.callCount).to.equal 1
 
     it 'should not render when disposed given render was overridden', ->
@@ -453,14 +453,14 @@ define [
       renderResult = view.render()
       expect(renderResult).to.equal view
       expect(view.afterRender.callCount).to.equal 1
-      expect(renderCalled).to.be.ok
+      expect(renderCalled).to.be.ok()
       expect(view.el.parentNode).to.equal testbed
 
       view.dispose()
 
       renderResult = view.render()
-      expect(renderResult).to.not.be.ok
+      expect(renderResult).to.not.be.ok()
       # Render was called but super call should not do anything
-      expect(renderCalled).to.be.ok
+      expect(renderCalled).to.be.ok()
       expect($(testbed).children().length).to.equal 0
       expect(view.afterRender.callCount).to.equal 1
