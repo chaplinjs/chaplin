@@ -117,6 +117,7 @@ define [
       # Ignore empty paths even if it is a valid relative URL
       # Ignore links to fragment identifiers
       return if href is '' or
+        href.indexOf('javascript:') is 0 or # Return if href is a javascript snippet.
         href is undefined or
         href.charAt(0) is '#' or
         $el.hasClass('noscript')
