@@ -20,25 +20,25 @@ define [
 
     it 'should mixin a Subscriber', ->
       for own name, value of Subscriber
-        expect(model[name]).toBe Subscriber[name]
+        expect(model[name]).to.equal Subscriber[name]
 
     it 'should initialize a Deferred', ->
-      expect(typeof model.initDeferred).toBe 'function'
+      expect(model.initDeferred).to.be.a 'function'
       model.initDeferred()
       for method in ['done', 'fail', 'progress', 'state', 'promise']
-        expect(typeof model[method]).toBe 'function'
-      expect(model.state()).toBe 'pending'
+        expect(typeof model[method]).to.equal 'function'
+      expect(model.state()).to.equal 'pending'
 
     it 'should initialize a SyncMachine', ->
-      expect(typeof model.initSyncMachine).toBe 'function'
+      expect(model.initSyncMachine).to.be.a 'function'
       model.initSyncMachine()
       for own name, value of SyncMachine
         if typeof value is 'function'
-          expect(model[name]).toBe value
-      expect(model.syncState()).toBe 'unsynced'
+          expect(model[name]).to.equal value
+      expect(model.syncState()).to.equal 'unsynced'
 
     it 'should return the attributes per default', ->
-      expect(model.getAttributes()).toBe model.attributes
+      expect(model.getAttributes()).to.equal model.attributes
 
     it 'should serialize the attributes', ->
       model1 = model
@@ -81,64 +81,64 @@ define [
 
       #console.debug 'passedTemplateData', d
 
-      expect(_.isObject d).toBe true
-      expect(d.foo).toBe e.foo
+      expect(d).to.be.an 'object'
+      expect(d.foo).to.equal e.foo
 
-      expect(_.isObject d.model2).toBe true
-      expect(d.model2.bar).toBe e.model2.bar
-      expect(d.model2.model2).toBe e.model2.model2
+      expect(d.model2).to.be.an 'object'
+      expect(d.model2.bar).to.equal e.model2.bar
+      expect(d.model2.model2).to.equal e.model2.model2
 
-      expect(_.isObject d.model2.collection).toBe true
-      expect(d.model2.collection[0].foo).toBe e.model2.collection[0].foo
-      expect(d.model2.collection[1].baz).toBe e.model2.collection[1].baz
+      expect(d.model2.collection).to.be.an 'array'
+      expect(d.model2.collection[0].foo).to.equal e.model2.collection[0].foo
+      expect(d.model2.collection[1].baz).to.equal e.model2.collection[1].baz
 
-      expect(_.isObject d.model2.model3).toBe true
-      expect(d.model2.model3.qux).toBe e.model2.model3.qux
-      expect(d.model2.model3.model2).toBe e.model2.model3.model2
+      expect(d.model2.model3).to.be.an 'object'
+      expect(d.model2.model3.qux).to.equal e.model2.model3.qux
+      expect(d.model2.model3.model2).to.equal e.model2.model3.model2
 
     it 'should dispose itself correctly', ->
-      expect(typeof model.dispose).toBe 'function'
+      expect(model.dispose).to.be.a 'function'
       model.dispose()
 
-      expect(model.disposed).toBe true
+      expect(model.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(model)).toBe true
+        expect(Object.isFrozen(model)).to.be.ok()
 
     it 'should fire a dispose event', ->
-      disposeSpy = jasmine.createSpy()
+      disposeSpy = sinon.spy()
       model.on 'dispose', disposeSpy
 
       model.dispose()
 
-      expect(disposeSpy).toHaveBeenCalled()
+      expect(disposeSpy).was.called()
 
     it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = jasmine.createSpy()
+      pubSubSpy = sinon.spy()
       model.subscribeEvent 'foo', pubSubSpy
 
       model.dispose()
 
       mediator.publish 'foo'
-      expect(pubSubSpy).not.toHaveBeenCalled()
+      expect(pubSubSpy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->
-      modelBindSpy = jasmine.createSpy()
+      modelBindSpy = sinon.spy()
       model.on 'foo', modelBindSpy
 
       model.dispose()
 
       model.trigger 'foo'
-      expect(modelBindSpy).not.toHaveBeenCalled()
+      expect(modelBindSpy).was.notCalled()
 
     it 'should reject the Deferred on disposal', ->
       model.initDeferred()
-      failSpy = jasmine.createSpy()
+      failSpy = sinon.spy()
       model.fail failSpy
 
       model.dispose()
 
-      expect(model.state()).toBe 'rejected'
-      expect(failSpy).toHaveBeenCalled()
+      expect(model.state()).to.equal 'rejected'
+      expect(failSpy).was.called()
 
     it 'should remove instance properties', ->
       model.dispose()
@@ -151,4 +151,4 @@ define [
         '_callbacks'
       ]
       for prop in properties
-        expect(_(model).has prop).toBe false
+        expect(_(model).has prop).to.not.be.ok()

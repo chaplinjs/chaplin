@@ -21,23 +21,23 @@ define [
 
     it 'should mixin a Subscriber', ->
       for own name, value of Subscriber
-        expect(controller[name]).toBe Subscriber[name]
+        expect(controller[name]).to.equal Subscriber[name]
 
     it 'should redirect to a URL', ->
-      expect(typeof controller.redirectTo).toBe 'function'
+      expect(controller.redirectTo).to.be.a 'function'
 
-      routerRoute = jasmine.createSpy()
+      routerRoute = sinon.spy()
       mediator.subscribe '!router:route', routerRoute
 
       url = 'redirect-target/123'
       controller.redirectTo url
 
-      expect(controller.redirected).toBe true
-      expect(routerRoute).toHaveBeenCalled()
-      expect(routerRoute.mostRecentCall.args[0]).toBe url
+      expect(controller.redirected).to.be.ok()
+      expect(routerRoute).was.called()
+      expect(routerRoute.lastCall.args[0]).to.equal url
 
     it 'should redirect to a controller action', ->
-      startupController = jasmine.createSpy()
+      startupController = sinon.spy()
       mediator.subscribe '!startupController', startupController
 
       controllerName = 'redirect-controller'
@@ -45,18 +45,18 @@ define [
       params = redirectParams: true
       controller.redirectTo controllerName, action, params
 
-      expect(controller.redirected).toBe true
-      expect(startupController).toHaveBeenCalledWith(
+      expect(controller.redirected).to.be.ok()
+      expect(startupController).was.calledWith(
         controllerName, action, params
       )
 
     it 'should dispose itself correctly', ->
-      expect(typeof controller.dispose).toBe 'function'
+      expect(controller.dispose).to.be.a 'function'
       controller.dispose()
 
-      expect(controller.disposed).toBe true
+      expect(controller.disposed).to.be.ok()
       if Object.isFrozen
-        expect(Object.isFrozen(controller)).toBe true
+        expect(Object.isFrozen(controller)).to.be.ok()
 
     it 'should dispose disposable properties', ->
       model = controller.model = new Model()
@@ -64,26 +64,26 @@ define [
 
       controller.dispose()
 
-      expect(_(controller).has 'model').toBe false
-      expect(_(controller).has 'view').toBe false
+      expect(_(controller).has 'model').to.not.be.ok()
+      expect(_(controller).has 'view').to.not.be.ok()
 
-      expect(model.disposed).toBe true
-      expect(view.disposed).toBe true
+      expect(model.disposed).to.be.ok()
+      expect(view.disposed).to.be.ok()
 
     it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = jasmine.createSpy()
+      pubSubSpy = sinon.spy()
       controller.subscribeEvent 'foo', pubSubSpy
 
       controller.dispose()
 
       mediator.publish 'foo'
-      expect(pubSubSpy).not.toHaveBeenCalled()
+      expect(pubSubSpy).was.notCalled()
 
     it 'should be extendable', ->
-      expect(typeof Controller.extend).toBe 'function'
+      expect(Controller.extend).to.be.a 'function'
 
       DerivedController = Controller.extend()
       derivedController = new DerivedController()
-      expect(derivedController instanceof Controller).toBe true
+      expect(derivedController).to.be.a Controller
 
       derivedController.dispose()
