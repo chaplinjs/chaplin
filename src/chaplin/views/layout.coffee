@@ -118,6 +118,7 @@ define [
       # Ignore links to fragment identifiers
       return if href is '' or
         href is undefined or
+        href.indexOf('javascript:') is 0 or # Return if href is a javascript snippet.
         href.charAt(0) is '#' or
         $el.hasClass('noscript')
 
