@@ -31,7 +31,7 @@ define [
       # Create a fresh router
       router = new Router()
       
-      @testLink = (callback) ->
+      @expectWasNotRouted = (callback) ->
         spy = sinon.spy()
         mediator.subscribe '!router:route', spy
         link = $('<a>').text('Hello World')
@@ -97,31 +97,31 @@ define [
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route links without href attributes', ->
-      @testLink (link) -> link.attr('name', 'foo')
+      @expectWasNotRouted (link) -> link.attr('name', 'foo')
 
     it 'should not route links with empty href', ->
-      @testLink (link) -> link.attr('href', '')
+      @expectWasNotRouted (link) -> link.attr('href', '')
 
     it 'should not route links to document fragments', ->
-      @testLink (link) -> link.attr('href', '#foo')
+      @expectWasNotRouted (link) -> link.attr('href', '#foo')
 
     it 'should not route links with a noscript class', ->
-      @testLink (link) -> link.attr('href', 'url').addClass('noscript')
+      @expectWasNotRouted (link) -> link.attr('href', 'u').addClass('noscript')
 
     it 'should not route rel=external links', ->
-      @testLink (link) -> link.attr('rel', 'external')
+      @expectWasNotRouted (link) -> link.attr('rel', 'external')
 
     it 'should not route target=blank links', ->
-      @testLink (link) -> link.attr('target', '_blank')
+      @expectWasNotRouted (link) -> link.attr('target', '_blank')
 
     it 'should not route non-http(s) links', ->
-      @testLink (link) -> link.attr('href', 'mailto:a@a.com')
-      @testLink (link) -> link.attr('href', 'javascript:1+1')
-      @testLink (link) -> link.attr('href', 'tel:1488')
+      @expectWasNotRouted (link) -> link.attr('href', 'mailto:a@a.com')
+      @expectWasNotRouted (link) -> link.attr('href', 'javascript:1+1')
+      @expectWasNotRouted (link) -> link.attr('href', 'tel:1488')
 
     it 'should not route clicks on external links', ->
-      @testLink (link) -> link.attr('href', 'http://example.com/')
-      @testLink (link) -> link.attr('href', 'https://example.com/')
+      @expectWasNotRouted (link) -> link.attr('href', 'http://example.com/')
+      @expectWasNotRouted (link) -> link.attr('href', 'https://example.com/')
 
     it 'should register event handlers on the document declaratively', ->
       spy1 = sinon.spy()
