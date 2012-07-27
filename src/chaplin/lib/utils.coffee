@@ -42,10 +42,6 @@ define [
     # String Helpers
     # --------------
 
-    # Check if string starts with substring.
-    startsWith: (string, substring) ->
-      string.lastIndexOf(substring, 0) is 0
-
     # Upcase the first character
     upcase: (str) ->
       str.charAt(0).toUpperCase() + str.substring(1)

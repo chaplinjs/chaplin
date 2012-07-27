@@ -114,15 +114,20 @@ define [
       el = event.currentTarget
       $el = $(el)
       href = $el.attr 'href'
+      protocol = el.protocol
+      
+      protocolIsExternal = if protocol
+        protocol not in ['http:', 'https:', 'file:']
+      else
+        no
+
       # Ignore external URLs.
       # Technically an empty string is a valid relative URL
       # but it doesn’t make sense to route it.')
       return if href is undefined or
         href is '' or
-        utils.startsWith(href, '#') or
-        utils.startsWith(href, 'mailto:') or
-        utils.startsWith(href, 'tel:') or
-        utils.startsWith(href, 'javascript:') or
+        href.charAt(0) is '#' or
+        protocolIsExternal or
         $el.attr('target') is '_blank' or
         $el.attr('rel') is 'external' or
         $el.hasClass('noscript')
