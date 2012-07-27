@@ -129,9 +129,8 @@ define [
 
       # Is it an external link?
       currentHostname = location.hostname.replace('.', '\\.')
-      external = el.hostname isnt '' and
-        not ///#{currentHostname}$///i.test(el.hostname)
-      if external
+      internal = el.hostname is '' or currentHostname is el.hostname
+      unless internal
         # Open external links normally
         # You might want to enforce opening in a new tab here:
         #event.preventDefault()
