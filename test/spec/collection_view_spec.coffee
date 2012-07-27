@@ -112,11 +112,11 @@ define [
 
     viewsMatchCollection = ->
       children = getViewChildren()
-      expect(children.length).toBe collection.length
+      expect(children.length).to.equal collection.length
       collection.each (model, index) ->
         expected = model.id
         actual = children.eq(index).attr('id')
-        expect(actual).toBe expected
+        expect(actual).to.equal expected
 
     # Create the collection
     collection = new Collection()
@@ -134,18 +134,18 @@ define [
 
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
-      expect(_(visibleItems).isArray()).toBe true
-      expect(visibleItems.length).toBe collection.length
+      expect(_(visibleItems).isArray()).to.be.ok()
+      expect(visibleItems.length).to.equal collection.length
       collection.each (model, index) ->
-        expect(visibleItems[index]).toBe model
+        expect(visibleItems[index]).to.equal model
 
     it 'should fire visibilityChange events', ->
       collection.reset()
-      visibilityChange = jasmine.createSpy()
+      visibilityChange = sinon.spy()
       collectionView.on 'visibilityChange', visibilityChange
       addOne()
-      expect(visibilityChange).toHaveBeenCalledWith collectionView.visibleItems
-      expect(collectionView.visibleItems.length).toBe 1
+      expect(visibilityChange).was.calledWith collectionView.visibleItems
+      expect(collectionView.visibleItems.length).to.equal 1
 
     it 'should add views when collection items are added', ->
       [model1, model2, model3] = addThree()
@@ -153,16 +153,16 @@ define [
       children = getViewChildren()
 
       first = children.first()
-      expect(first.attr('id')).toBe model1.id
-      expect(first.text()).toBe model1.get('title')
+      expect(first.attr('id')).to.equal model1.id
+      expect(first.text()).to.equal model1.get('title')
 
       tenth = children.eq 10
-      expect(tenth.attr('id')).toBe model2.id
-      expect(tenth.text()).toBe model2.get('title')
+      expect(tenth.attr('id')).to.equal model2.id
+      expect(tenth.text()).to.equal model2.get('title')
 
       last = children.last()
-      expect(last.attr('id')).toBe model3.id
-      expect(last.text()).toBe model3.get('title')
+      expect(last.attr('id')).to.equal model3.id
+      expect(last.text()).to.equal model3.get('title')
 
     it 'should remove views when collection items are removed', ->
       models = addThree()
@@ -172,24 +172,24 @@ define [
     it 'should remove all views when collection is emptied', ->
       collection.reset()
       children = getViewChildren()
-      expect(children.length).toBe 0
+      expect(children.length).to.equal 0
 
     it 'should reuse views on reset', ->
       model1 = collection.at 0
       view1 = collectionView.viewsByCid[model1.cid]
-      expect(view1 instanceof ItemView).toBe true
+      expect(view1).to.be.a ItemView
 
       model2 = collection.at 1
       view2 = collectionView.viewsByCid[model2.cid]
-      expect(view2 instanceof ItemView).toBe true
+      expect(view2).to.be.a ItemView
 
       collection.reset model1
 
-      expect(view1.disposed).toBe false
-      expect(view2.disposed).toBe true
+      expect(view1.disposed).to.not.be.ok()
+      expect(view2.disposed).to.be.ok()
 
       newView1 = collectionView.viewsByCid[model1.cid]
-      expect(newView1).toBe view1
+      expect(newView1).to.equal view1
 
     it 'should append views in the right order', ->
       collection.comparator = (model) -> model.id
@@ -206,43 +206,43 @@ define [
     it 'should filter views', ->
       addThree()
       filterer = (model, position) ->
-        expect(model instanceof Model).toBe true
-        expect(typeof position).toBe 'number'
+        expect(model).to.be.a Model
+        expect(position).to.be.a 'number'
         model.get('title') is 'new'
       collectionView.filter filterer
 
-      expect(collectionView.visibleItems.length).toBe 3
+      expect(collectionView.visibleItems.length).to.equal 3
 
       children = getViewChildren()
-      expect(children.length).toBe collection.length
+      expect(children.length).to.equal collection.length
 
       collection.each (model, index) ->
         $el = children.eq(index)
         visible = model.get('title') is 'new'
         displayValue = $el.css('display')
         if visible
-          expect(displayValue).not.toBe 'none'
+          expect(displayValue).not.to.equal 'none'
         else
-          expect(displayValue).toBe 'none'
+          expect(displayValue).to.equal 'none'
 
       collectionView.filter null
-      expect(collectionView.visibleItems.length).toBe collection.length
+      expect(collectionView.visibleItems.length).to.equal collection.length
 
     it 'should dispose itself correctly', ->
-      expect(typeof collectionView.dispose).toBe 'function'
+      expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
       viewsByCid = collectionView.viewsByCid
 
-      expect(collectionView.disposed).toBe false
-      expect(view.disposed).toBe false for cid, view of viewsByCid
+      expect(collectionView.disposed).to.not.be.ok()
+      expect(view.disposed).to.not.be.ok() for cid, view of viewsByCid
 
       collectionView.dispose()
-      expect(collectionView.disposed).toBe true
+      expect(collectionView.disposed).to.be.ok()
       # All item views have been disposed, too
-      expect(view.disposed).toBe true for cid, view of viewsByCid
+      expect(view.disposed).to.be.ok() for cid, view of viewsByCid
 
       for prop in ['viewsByCid', 'visibleItems']
-        expect(_(collectionView).has prop).toBe false
+        expect(_(collectionView).has prop).to.not.be.ok()
 
     it 'should initialize with a template', ->
       # Mix in SyncMachine into Collection
@@ -255,110 +255,110 @@ define [
 
     it 'should render the template', ->
       children = getAllChildren()
-      expect(children.length).toBe 3
+      expect(children.length).to.equal 3
 
     it 'should append views to the listSelector', ->
       $list = collectionView.$list
-      expect($list instanceof jQuery).toBe true
-      expect($list.length).toBe 1
+      expect($list).to.be.a jQuery
+      expect($list.length).to.equal 1
 
       $list2 = collectionView.$(collectionView.listSelector)
-      expect($list.get(0) is $list2.get(0)).toBe true
+      expect($list.get(0) is $list2.get(0)).to.be.ok()
 
       children = getViewChildren()
-      expect(children.length).toBe collection.length
+      expect(children.length).to.equal collection.length
 
     it 'should set the fallback element properly', ->
       $fallback = collectionView.$fallback
-      expect($fallback instanceof jQuery).toBe true
-      expect($fallback.length).toBe 1
+      expect($fallback).to.be.a jQuery
+      expect($fallback.length).to.equal 1
 
       $fallback2 = collectionView.$(collectionView.fallbackSelector)
-      expect($fallback.get(0) is $fallback2.get(0)).toBe true
+      expect($fallback.get(0) is $fallback2.get(0)).to.be.ok()
 
     it 'should show the fallback element properly', ->
       $fallback = collectionView.$fallback
 
       # Filled + unsynced = not visible
       collection.unsync()
-      expect($fallback.css('display')).toBe 'none'
+      expect($fallback.css('display')).to.equal 'none'
 
       # Filled + syncing = not visible
       collection.beginSync()
-      expect($fallback.css('display')).toBe 'none'
+      expect($fallback.css('display')).to.equal 'none'
 
       # Filled + synced = not visible
       collection.finishSync()
-      expect($fallback.css('display')).toBe 'none'
+      expect($fallback.css('display')).to.equal 'none'
 
       # Empty the list
       collection.reset()
 
       # Empty + unsynced = not visible
       collection.unsync()
-      expect($fallback.css('display')).toBe 'none'
+      expect($fallback.css('display')).to.equal 'none'
 
       # Empty + syncing = not visible
       collection.beginSync()
-      expect($fallback.css('display')).toBe 'none'
+      expect($fallback.css('display')).to.equal 'none'
 
       # Empty + synced = visible
       collection.finishSync()
-      expect($fallback.css('display')).toBe 'block'
+      expect($fallback.css('display')).to.equal 'block'
 
       # Cross-check
       # Filled + synced = not visible
       addOne()
-      expect($fallback.css('display')).toBe 'none'
+      expect($fallback.css('display')).to.equal 'none'
 
     it 'should set the loading indicator properly', ->
       $loading = collectionView.$loading
-      expect($loading instanceof jQuery).toBe true
-      expect($loading.length).toBe 1
+      expect($loading).to.be.a jQuery
+      expect($loading.length).to.equal 1
 
       $loading2 = collectionView.$(collectionView.loadingSelector)
-      expect($loading.get(0) is $loading.get(0)).toBe true
+      expect($loading.get(0) is $loading.get(0)).to.be.ok()
 
     it 'should show the loading indicator properly', ->
       $loading = collectionView.$loading
 
       # Filled + unsynced = not visible
       collection.unsync()
-      expect($loading.css('display')).toBe 'none'
+      expect($loading.css('display')).to.equal 'none'
 
       # Filled + syncing = not visible
       collection.beginSync()
-      expect($loading.css('display')).toBe 'none'
+      expect($loading.css('display')).to.equal 'none'
 
       # Filled + synced = not visible
       collection.finishSync()
-      expect($loading.css('display')).toBe 'none'
+      expect($loading.css('display')).to.equal 'none'
 
       # Empty the list
       collection.reset()
 
       # Empty + unsynced = not visible
       collection.unsync()
-      expect($loading.css('display')).toBe 'none'
+      expect($loading.css('display')).to.equal 'none'
 
       # Empty + syncing = visible
       collection.beginSync()
-      expect($loading.css('display')).toBe 'block'
+      expect($loading.css('display')).to.equal 'block'
 
       # Empty + synced = not visible
       collection.finishSync()
-      expect($loading.css('display')).toBe 'none'
+      expect($loading.css('display')).to.equal 'none'
 
       # Cross-check
       # Filled + synced = not visible
       addOne()
-      expect($loading.css('display')).toBe 'none'
+      expect($loading.css('display')).to.equal 'none'
 
     it 'should also dispose when templated', ->
       collectionView.dispose()
 
       for prop in ['$list', '$fallback', '$loading']
-        expect(_(collectionView).has prop).toBe false
+        expect(_(collectionView).has prop).to.not.be.ok()
 
     it 'should respect the render options', ->
       collectionView = new TemplatedCollectionView
@@ -367,14 +367,14 @@ define [
         renderItems: false
 
       children = getAllChildren()
-      expect(children.length).toBe 0
-      expect(_(collectionView).has '$list').toBe false
+      expect(children.length).to.equal 0
+      expect(_(collectionView).has '$list').to.not.be.ok()
 
       collectionView.render()
       children = getAllChildren()
-      expect(children.length).toBe 3
-      expect(collectionView.$list instanceof jQuery).toBe true
-      expect(collectionView.$list.length).toBe 1
+      expect(children.length).to.equal 3
+      expect(collectionView.$list).to.be.a jQuery
+      expect(collectionView.$list.length).to.equal 1
 
       collectionView.renderAllItems()
       viewsMatchCollection()
@@ -386,11 +386,11 @@ define [
         collection: collection
         filterer: filterer
 
-      expect(collectionView.filterer).toBe filterer
-      expect(collectionView.visibleItems.length).toBe 1
+      expect(collectionView.filterer).to.equal filterer
+      expect(collectionView.visibleItems.length).to.equal 1
 
       children = getViewChildren()
-      expect(children.length).toBe collection.length
+      expect(children.length).to.equal collection.length
 
     it 'should respect the itemSelector property', ->
       collectionView.dispose()
@@ -399,16 +399,16 @@ define [
 
       additionalLength = 4
       allChildren = getAllChildren()
-      expect(allChildren.length).toBe collection.length + additionalLength
+      expect(allChildren.length).to.equal collection.length + additionalLength
       viewChildren = getViewChildren()
-      expect(viewChildren.length).toBe collection.length
+      expect(viewChildren.length).to.equal collection.length
 
       expect(
         allChildren.eq(0).get(0) is viewChildren.get(0)
-      ).toBe false
+      ).to.not.be.ok()
 
       expect(
         allChildren.eq(additionalLength).get(0) is viewChildren.get(0)
-      ).toBe true
+      ).to.be.ok()
 
       collectionView.dispose()
