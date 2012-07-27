@@ -30,6 +30,15 @@ define [
 
       # Create a fresh router
       router = new Router()
+      
+      @testLink = (callback) ->
+        spy = sinon.spy()
+        mediator.subscribe '!router:route', spy
+        link = $('<a>').text('Hello World')
+        callback(link)
+        link.appendTo(document.body).click().remove()
+        expect(spy).was.notCalled()
+        mediator.unsubscribe '!router:route', spy
 
     afterEach ->
       layout.dispose()
@@ -88,66 +97,31 @@ define [
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route links without href attributes', ->
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      $('<a>').attr('name', 'foo').text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
-      expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
-
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      $('<a>Hello World</a>')
-        .appendTo(document.body)
-        .click()
-        .remove()
-      expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      @testLink (link) -> link.attr('name', 'foo')
 
     it 'should not route links with empty href', ->
-      # Technically an empty string is a valid relative URL
-      # but it doesn’t make sense to route it
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      $('<a>').attr('href', '').text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
-      expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      @testLink (link) -> link.attr('href', '')
 
     it 'should not route links to document fragments', ->
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      $('<a>').attr('href', '#foo').text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
-      expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      @testLink (link) -> link.attr('href', '#foo')
 
     it 'should not route links with a noscript class', ->
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      $('<a>').attr('href', '/leave-the-app').addClass('noscript').text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
-      expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      @testLink (link) -> link.attr('href', 'url').addClass('noscript')
+
+    it 'should not route rel=external links', ->
+      @testLink (link) -> link.attr('rel', 'external')
+
+    it 'should not route target=blank links', ->
+      @testLink (link) -> link.attr('target', '_blank')
+
+    it 'should not route non-http(s) links', ->
+      @testLink (link) -> link.attr('href', 'mailto:a@a.com')
+      @testLink (link) -> link.attr('href', 'javascript:1+1')
+      @testLink (link) -> link.attr('href', 'tel:1488')
 
     it 'should not route clicks on external links', ->
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      path = 'http://www.example.org/'
-      $('<a>').attr('href', path).text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
-      expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      @testLink (link) -> link.attr('href', 'http://example.com/')
+      @testLink (link) -> link.attr('href', 'https://example.com/')
 
     it 'should register event handlers on the document declaratively', ->
       spy1 = sinon.spy()
