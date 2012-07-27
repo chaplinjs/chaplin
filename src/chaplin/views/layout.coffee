@@ -114,12 +114,15 @@ define [
       el = event.currentTarget
       $el = $(el)
       href = $el.attr 'href'
-      # Ignore empty paths even if it is a valid relative URL
-      # Ignore links to fragment identifiers
-      return if href is '' or
-        href is undefined or
-        href.indexOf('javascript:') is 0 or # Return if href is a javascript snippet.
-        href.charAt(0) is '#' or
+      # Ignore external URLs.
+      return if href is undefined or
+        href is '' or
+        utils.startsWith(href, '#') or
+        utils.startsWith(href, 'mailto:') or
+        utils.startsWith(href, 'tel:') or
+        utils.startsWith(href, 'javascript:') or
+        $el.attr('target') is '_blank' or
+        $el.attr('rel') is 'external'
         $el.hasClass('noscript')
 
       # Is it an external link?
