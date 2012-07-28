@@ -1,16 +1,39 @@
 define [
   'jquery'
+  'underscore'
   'chaplin/mediator'
   'chaplin/lib/router'
   'chaplin/controllers/controller'
   'chaplin/views/layout'
   'chaplin/views/view'
-], ($, mediator, Router, Controller, Layout, View) ->
+], ($, _, mediator, Router, Controller, Layout, View) ->
   'use strict'
 
   describe 'Layout', ->
     # Initialize shared variables
     layout = testController = startupControllerContext = router = null
+
+    createLink = (attributes) ->
+      attributes = if _.isObject(attributes) then _.clone(attributes) else {}
+      # Yes, this is ugly. We’re doing it because IE8-10 reports an incorrect
+      # protocol if the href attribute is set programatically.
+      if attributes.href?
+        div = document.createElement 'div'
+        div.innerHTML = "<a href='#{attributes.href}'>Hello World</a>"
+        link = div.firstChild
+        delete attributes.href
+        $link = $(link)
+      else
+        $link = $(document.createElement 'a')
+      $link.attr attributes
+
+    expectWasNotRouted = (linkAttributes) ->
+      spy = sinon.spy()
+      mediator.subscribe '!router:route', spy
+      $link = createLink linkAttributes
+      $link.appendTo(document.body).click().remove()
+      expect(spy).was.notCalled()
+      mediator.unsubscribe '!router:route', spy
 
     beforeEach ->
       # Create the layout
@@ -30,15 +53,6 @@ define [
 
       # Create a fresh router
       router = new Router()
-      
-      @expectWasNotRouted = (callback) ->
-        spy = sinon.spy()
-        mediator.subscribe '!router:route', spy
-        link = $('<a>').text('Hello World')
-        callback(link)
-        link.appendTo(document.body).click().remove()
-        expect(spy).was.notCalled()
-        mediator.unsubscribe '!router:route', spy
 
     afterEach ->
       layout.dispose()
@@ -70,10 +84,7 @@ define [
       spy = sinon.spy()
       mediator.subscribe '!router:route', spy
       path = '/an/internal/link'
-      a = $('<a>').attr('href', path).text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
+      createLink(href: path).appendTo(document.body).click().remove()
       expect(spy).was.called()
       args = spy.lastCall.args
       passedPath = args[0]
@@ -85,10 +96,7 @@ define [
       spy = sinon.spy()
       mediator.subscribe '!router:route', spy
       path = '/another/link?foo=bar&baz=qux'
-      $('<a>').attr('href', path).text('Hello World')
-        .appendTo(document.body)
-        .click()
-        .remove()
+      createLink(href: path).appendTo(document.body).click().remove()
       args = spy.lastCall.args
       passedPath = args[0]
       passedCallback = args[1]
@@ -97,31 +105,31 @@ define [
       mediator.unsubscribe '!router:route', spy
 
     it 'should not route links without href attributes', ->
-      @expectWasNotRouted (link) -> link.attr('name', 'foo')
+      expectWasNotRouted name: 'foo'
 
     it 'should not route links with empty href', ->
-      @expectWasNotRouted (link) -> link.attr('href', '')
+      expectWasNotRouted href: ''
 
     it 'should not route links to document fragments', ->
-      @expectWasNotRouted (link) -> link.attr('href', '#foo')
+      expectWasNotRouted href: '#foo'
 
     it 'should not route links with a noscript class', ->
-      @expectWasNotRouted (link) -> link.attr('href', 'u').addClass('noscript')
+      expectWasNotRouted href: '/foo', class: 'noscript'
 
     it 'should not route rel=external links', ->
-      @expectWasNotRouted (link) -> link.attr('rel', 'external')
+      expectWasNotRouted href: '/foo', rel: 'external'
 
     it 'should not route target=blank links', ->
-      @expectWasNotRouted (link) -> link.attr('target', '_blank')
+      expectWasNotRouted href: '/foo', target: '_blank'
 
     it 'should not route non-http(s) links', ->
-      @expectWasNotRouted (link) -> link.attr('href', 'mailto:a@a.com')
-      @expectWasNotRouted (link) -> link.attr('href', 'javascript:1+1')
-      @expectWasNotRouted (link) -> link.attr('href', 'tel:1488')
+      expectWasNotRouted href: 'mailto:a@a.com'
+      expectWasNotRouted href: 'javascript:1+1'
+      expectWasNotRouted href: 'tel:1488'
 
     it 'should not route clicks on external links', ->
-      @expectWasNotRouted (link) -> link.attr('href', 'http://example.com/')
-      @expectWasNotRouted (link) -> link.attr('href', 'https://example.com/')
+      expectWasNotRouted href: 'http://example.com/'
+      expectWasNotRouted href: 'https://example.com/'
 
     it 'should register event handlers on the document declaratively', ->
       spy1 = sinon.spy()
