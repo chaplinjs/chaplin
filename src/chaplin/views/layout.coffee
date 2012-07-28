@@ -133,8 +133,7 @@ define [
         $el.hasClass('noscript')
 
       # Is it an external link?
-      currentHostname = location.hostname.replace('.', '\\.')
-      internal = el.hostname is '' or currentHostname is el.hostname
+      internal = el.hostname is '' or location.hostname is el.hostname
       unless internal
         # Open external links normally
         # You might want to enforce opening in a new tab here:
