@@ -509,6 +509,36 @@
     return j <= i ? -1 : i;
   };
 
+  // https://gist.github.com/1044128/
+  var getOuterHTML = function(element) {
+    if ('outerHTML' in element) return element.outerHTML;
+    var ns = "http://www.w3.org/1999/xhtml";
+    var container = document.createElementNS(ns, '_');
+    var elemProto = (window.HTMLElement || window.Element).prototype;
+    var xmlSerializer = new XMLSerializer();
+    var html;
+    if (document.xmlVersion) {
+      return xmlSerializer.serializeToString(element);
+    } else {
+      container.appendChild(element.cloneNode(false));
+      html = container.innerHTML.replace('><', '>' + element.innerHTML + '<');
+      container.innerHTML = '';
+      return html;
+    }
+  };
+  
+  // Returns true if object is a DOM element.
+  var isDOMElement = function (object) {
+    if (typeof HTMLElement === 'object') {
+      return object instanceof HTMLElement;
+    } else {
+      return object &&
+        typeof object === 'object' &&
+        object.nodeType === 1 &&
+        typeof object.nodeName === 'string';
+    }
+  };
+
   /**
    * Inspects an object.
    *
@@ -554,6 +584,10 @@
       // For some reason typeof null is "object", so special case here.
       if (value === null) {
         return stylize('null', 'null');
+      }
+
+      if (isDOMElement(value)) {
+        return getOuterHTML(value);
       }
 
       // Look up the keys of the object.
