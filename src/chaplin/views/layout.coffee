@@ -115,11 +115,11 @@ define [
       $el = $(el)
       href = $el.attr 'href'
       protocol = el.protocol
-      
+
       protocolIsExternal = if protocol
         protocol not in ['http:', 'https:', 'file:']
       else
-        no
+        false
 
       # Ignore external URLs.
       # Technically an empty string is a valid relative URL
