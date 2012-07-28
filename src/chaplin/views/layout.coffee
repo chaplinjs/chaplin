@@ -114,19 +114,27 @@ define [
       el = event.currentTarget
       $el = $(el)
       href = $el.attr 'href'
-      # Ignore empty paths even if it is a valid relative URL
-      # Ignore links to fragment identifiers
-      return if href is '' or
-        href is undefined or
-        href.indexOf('javascript:') is 0 or # Return if href is a javascript snippet.
+      protocol = el.protocol
+
+      protocolIsExternal = if protocol
+        protocol not in ['http:', 'https:', 'file:']
+      else
+        false
+
+      # Ignore external URLs.
+      # Technically an empty string is a valid relative URL
+      # but it doesn’t make sense to route it.')
+      return if href is undefined or
+        href is '' or
         href.charAt(0) is '#' or
+        protocolIsExternal or
+        $el.attr('target') is '_blank' or
+        $el.attr('rel') is 'external' or
         $el.hasClass('noscript')
 
       # Is it an external link?
-      currentHostname = location.hostname.replace('.', '\\.')
-      external = el.hostname isnt '' and
-        not ///#{currentHostname}$///i.test(el.hostname)
-      if external
+      internal = el.hostname is '' or location.hostname is el.hostname
+      unless internal
         # Open external links normally
         # You might want to enforce opening in a new tab here:
         #event.preventDefault()
