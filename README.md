@@ -85,7 +85,7 @@ Chaplin depends on the following libraries:
 
 * [Underscore](http://documentcloud.github.com/underscore/)
 * [Backbone](http://documentcloud.github.com/backbone/)
-* [jQuery](http://jquery.com/)
+* [jQuery](http://jquery.com/) or [Zepto](http://zeptojs.com)
 * An AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
 ## Building Chaplin
@@ -375,7 +375,7 @@ Of course, model-view-binding, Backbone’s key feature, is still a building blo
 
 Models, collections and third-party scripts typically have a loaded state. At the beginning, they aren’t ready to use. The data is fetched from the server, they need to wait for the user login or rely upon other asynchronous input.
 
-For these purpose, [jQuery Deferreds](http://api.jquery.com/category/deferred-object/) can be mixed into appliation objects. They allow to register load handlers using the [done](http://api.jquery.com/deferred.done/) method. The handlers will be called once the Deferred is resolved.
+For these purpose, [jQuery Deferreds](http://api.jquery.com/category/deferred-object/) (or [standalone-deferreds](https://github.com/Mumakil/Standalone-Deferred) if you're using Zepto) can be mixed into appliation objects. They allow to register load handlers using the [done](http://api.jquery.com/deferred.done/) method. The handlers will be called once the Deferred is resolved.
 
 Deferreds are a versatile pattern which can be used on different levels in an application, but they are rather simple because they only have three states (pending, resolved, rejected) and two transitions (resolve, reject). For more complex synchronization tasks, Chaplin offers the `SyncMachine` which is a state machine 
 
