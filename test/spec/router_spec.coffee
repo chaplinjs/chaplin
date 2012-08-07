@@ -57,6 +57,11 @@ define [
       expect(Backbone.History.started).to.not.be.ok()
       expect(spy).was.called()
 
+    it 'should have a match method which returns a route', ->
+      expect(router.match).to.be.a 'function'
+      route = router.match '', 'null#null'
+      expect(route).to.be.a Route
+
     it 'should fire a matchRoute event when a route matches', ->
       spy = sinon.spy()
       mediator.subscribe 'matchRoute', spy
