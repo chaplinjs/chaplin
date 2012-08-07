@@ -57,10 +57,15 @@ define [
       expect(Backbone.History.started).to.not.be.ok()
       expect(spy).was.called()
 
+    it 'should have a match method which returns a route', ->
+      expect(router.match).to.be.a 'function'
+      route = router.match '', 'null#null'
+      expect(route).to.be.a Route
+
     it 'should fire a matchRoute event when a route matches', ->
       spy = sinon.spy()
       mediator.subscribe 'matchRoute', spy
-      router.match '', 'x#y'
+      router.match '', 'null#null'
 
       router.route '/'
       expect(spy).was.called()
@@ -125,14 +130,28 @@ define [
       expect(route.controller).to.equal 'controller'
       expect(route.action).to.equal 'action'
 
-    it 'should extract URL parameters', ->
+    it 'should accept a regular expression as pattern', ->
+      router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
+      router.route '/raw/regular/expression'
+      expect(params).to.be.an 'object'
+      expect(params[0]).to.equal 'raw'
+      expect(params[1]).to.equal 'regular'
+      expect(params[2]).to.equal 'expression'
+
+    it 'should accept a empty regular expression as catch-all', ->
+      router.match '', 'null#null'
+      router.match /(?:)/, 'null#null'
+      router.route "#{Math.random()}"
+      expect(params).to.be.an 'object'
+
+    it 'should extract named parameters', ->
       router.match 'params/:one/:p_two_123/three', 'null#null'
       router.route '/params/123-foo/456-bar/three'
       expect(params).to.be.an 'object'
       expect(params.one).to.equal '123-foo'
       expect(params.p_two_123).to.equal '456-bar'
 
-    it 'should extract non-ascii URL parameters', ->
+    it 'should extract non-ascii named parameters', ->
       router.match 'params/:one/:two/:three/:four', 'null#null'
       router.route "/params/o_O/*.*/ü~ö~ä/#{encodeURIComponent('éêè')}"
       expect(params).to.be.an 'object'
@@ -141,23 +160,26 @@ define [
       expect(params.three).to.equal 'ü~ö~ä'
       expect(params.four).to.equal encodeURIComponent('éêè')
 
-    it 'should extract URL path params along with query params', ->
-      router.match 'params/:one/:two/:three', 'null#null'
-      router.route '/params/123-foo/456-bar/3-three?referrer=mdp'
+    it 'should match splat parameters', ->
+      router.match 'params/:one/*two', 'null#null'
+      router.route '/params/123-foo/456-bar/789-qux'
       expect(params).to.be.an 'object'
       expect(params.one).to.equal '123-foo'
-      expect(params.two).to.equal '456-bar'
-      expect(params.three).to.equal '3-three'
-      expect(params.referrer).to.equal 'mdp'
+      expect(params.two).to.equal '456-bar/789-qux'
 
-    it 'should accept a regular expression as pattern', ->
-      router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
-      router.route '/raw/regular/expression'
-      expect(route).to.be.an 'object'
+    it 'should match splat parameters at the beginning', ->
+      router.match 'params/*one/:two', 'null#null'
+      router.route '/params/123-foo/456-bar/789-qux'
       expect(params).to.be.an 'object'
-      expect(params[0]).to.equal 'raw'
-      expect(params[1]).to.equal 'regular'
-      expect(params[2]).to.equal 'expression'
+      expect(params.one).to.equal '123-foo/456-bar'
+      expect(params.two).to.equal '789-qux'
+
+    it 'should match splat parameters before a named parameter', ->
+      router.match 'params/*one:two', 'null#null'
+      router.route '/params/123-foo/456-bar/789-qux'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.equal '123-foo/456-bar/'
+      expect(params.two).to.equal '789-qux'
 
     it 'should impose constraints', ->
       spy = sinon.spy()
@@ -209,6 +231,24 @@ define [
       expect(params.bar).to.equal input.bar
       expect(params['q&uu=x']).to.equal input['q&uu=x']
 
+    it 'should extract named parameters along with query params', ->
+      router.match 'params/:one', 'null#null'
+      router.route '/params/named?foo=query123&bar=query_456&qux=789%20query'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.equal 'named'
+      expect(params.foo).to.equal 'query123'
+      expect(params.bar).to.equal 'query_456'
+      expect(params.qux).to.equal '789 query'
+
+    it 'should extract named parameters along with splats', ->
+      router.match 'params/*one', 'null#null'
+      router.route '/params/foo/bar/qux?foo=query123&bar=query_456&qux=789%20query'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.equal 'foo/bar/qux'
+      expect(params.foo).to.equal 'query123'
+      expect(params.bar).to.equal 'query_456'
+      expect(params.qux).to.equal '789 query'
+
     it 'should listen to the !router:route event', ->
       path = 'router-route-events'
       sinon.spy(router, 'route')
@@ -239,7 +279,7 @@ define [
       expect(Backbone.history).to.equal undefined
 
       expect(->
-        router.match '', 'x#y'
+        router.match '', 'null#null'
       ).to.throwError()
 
       expect(->
