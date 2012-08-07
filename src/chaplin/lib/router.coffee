@@ -52,6 +52,7 @@ define [
       # Since we want routes to match in the order they were specified,
       # we’re appending the route at the end.
       Backbone.history.handlers.push {route, callback: route.handler}
+      route
 
     # Route a given URL path manually, returns whether a route matched
     # This looks quite like Backbone.History::loadUrl but it

@@ -42,7 +42,7 @@ define [
         # Escape magic characters
         .replace(escapeRegExp, '\\$&')
         # Replace named parameters, collecting their names
-        .replace(/:(\w+)/g, @addParamName)
+        .replace(/(?::|\*)(\w+)/g, @addParamName)
 
       # Create the actual regular expression
       # Match until the end of the URL or the begin of query string
@@ -56,7 +56,12 @@ define [
       # Save parameter name
       @paramNames.push paramName
       # Replace with a character class
-      '([^\/\?]+)'
+      if match.charAt(0) is ':'
+        # Regexp for :foo
+        '([^\/\?]+)'
+      else
+        # Regexp for *foo
+        '(.*?)'
 
     # Test if the route matches to a path (called by Backbone.History#loadUrl)
     test: (path) ->
