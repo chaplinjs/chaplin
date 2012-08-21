@@ -114,9 +114,16 @@ define [
       children = getViewChildren()
       expect(children.length).to.equal collection.length
       collection.each (model, index) ->
-        expected = model.id
-        actual = children.eq(index).attr('id')
-        expect(actual).to.equal expected
+        $el = children.eq index
+
+        expectedId = String model.id
+        actualId = $el.attr('id')
+        expect(actualId).to.equal expectedId
+
+        expectedTitle = model.get('title')
+        if expectedTitle?
+          actualTitle = $el.text()
+          expect(actualTitle).to.equal expectedTitle
 
     # Create the collection
     collection = new Collection()
@@ -148,21 +155,8 @@ define [
       expect(collectionView.visibleItems.length).to.equal 1
 
     it 'should add views when collection items are added', ->
-      [model1, model2, model3] = addThree()
-
-      children = getViewChildren()
-
-      first = children.first()
-      expect(first.attr('id')).to.equal model1.id
-      expect(first.text()).to.equal model1.get('title')
-
-      tenth = children.eq 10
-      expect(tenth.attr('id')).to.equal model2.id
-      expect(tenth.text()).to.equal model2.get('title')
-
-      last = children.last()
-      expect(last.attr('id')).to.equal model3.id
-      expect(last.text()).to.equal model3.get('title')
+      addThree()
+      viewsMatchCollection()
 
     it 'should remove views when collection items are removed', ->
       models = addThree()
@@ -191,17 +185,64 @@ define [
       newView1 = collectionView.viewsByCid[model1.cid]
       expect(newView1).to.equal view1
 
-    it 'should append views in the right order', ->
-      collection.comparator = (model) -> model.id
-      collection.reset {id: '2'}
-      collection.addAtomic [
-        {id: '0'}
-        {id: '1'}
-        {id: '3'}
-        {id: '4'}
-      ]
-      viewsMatchCollection()
-      delete collection.comparator
+    it 'should insert views in the right order', ->
+      m0 = new Model id: 0
+      m1 = new Model id: 1
+      m2 = new Model id: 2
+      m3 = new Model id: 3
+      m4 = new Model id: 4
+      m5 = new Model id: 5
+
+      baseResetAndCheck = (setup, models) ->
+        collection.reset setup
+        collection.reset models
+        viewsMatchCollection()
+
+      makeResetAndCheck = (setup) ->
+        (models) ->
+          baseResetAndCheck setup, models
+
+      full = [ m0, m1, m2, m3, m4, m5 ]
+
+      # Removal tests
+      resetAndCheck = makeResetAndCheck full
+      # Remove first
+      resetAndCheck [ m1, m2, m3, m4, m5 ]
+      # Remove last
+      resetAndCheck [ m0, m1, m2, m3, m4 ]
+      # Remove two in the middle
+      resetAndCheck [ m0, m1, m4, m5 ]
+      # Remove every first
+      resetAndCheck [ m1, m3, m5 ]
+      # Remove every second
+      resetAndCheck [ m0, m2, m4 ]
+
+      # Addition tests
+      resetAndCheck = makeResetAndCheck [ m1, m2, m3 ]
+      # Add at the beginning
+      resetAndCheck [ m0, m1, m2, m3 ]
+      # Add at the end
+      resetAndCheck [ m1, m2, m3, m4 ]
+      # Add two in the middle
+      baseResetAndCheck [ m0, m1, m4, m5 ], full
+      # Add every first
+      makeResetAndCheck [m1, m3, m5], full
+      # Add every second
+      makeResetAndCheck [m0, m2, m4], full
+
+      # Addition/removal tests
+      # Replace first
+      baseResetAndCheck [ m0, m2, m3 ], [ m1, m2, m3 ]
+      # Replace last
+      baseResetAndCheck [ m0, m2, m5 ], [ m0, m3, m5 ]
+      # Replace in the middle
+      baseResetAndCheck [ m0, m2, m5 ], [ m0, m3, m5 ]
+      # Change two in the middle
+      baseResetAndCheck [ m0, m2, m3, m5 ], [ m0, m3, m4, m5 ]
+      # Flip two in the middle
+      baseResetAndCheck [ m0, m1, m2, m3 ], [ m0, m2, m1, m3 ]
+      # Complete replacement
+      baseResetAndCheck [ m0, m1, m2 ], [ m3, m4, m5 ]
 
     it 'should filter views', ->
       addThree()
@@ -360,7 +401,7 @@ define [
       for prop in ['$list', '$fallback', '$loading']
         expect(_(collectionView).has prop).to.not.be.ok()
 
-    it 'should respect the render options', ->
+    it 'should respect the render and renderItems options', ->
       collectionView = new TemplatedCollectionView
         collection: collection
         render: false
