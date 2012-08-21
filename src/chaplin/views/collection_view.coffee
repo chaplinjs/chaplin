@@ -21,7 +21,7 @@ define [
 
     # By default, fading in is done by javascript function which can be
     # slow on mobile devices. CSS animations are faster,
-    # but require user's manual definitions.
+    # but require user’s manual definitions.
     # CSS classes used are: animated-item-view, animated-item-view-end.
     useCssAnimation: false
 
@@ -144,7 +144,7 @@ defined (or the getView() must be overridden)'
     render: ->
       super
 
-      # Set the $list property
+      # Set the $list property with the actual list container
       @$list = if @listSelector then @$(@listSelector) else @$el
 
       @initFallback()
@@ -220,9 +220,9 @@ defined (or the getView() must be overridden)'
 
           # Apply filter to the item
           included = if typeof filterer is 'function'
-              filterer item, index
-            else
-              true
+            filterer item, index
+          else
+            true
 
           # Show/hide the view accordingly
           view = @viewsByCid[item.cid]
@@ -287,7 +287,7 @@ defined (or the getView() must be overridden)'
       view = @renderItem item
       @insertView item, view, index
 
-    # Instantiate and render an item using the viewsByCid hash as a cache
+    # Instantiate and render an item using the `viewsByCid` hash as a cache
     renderItem: (item) ->
       # Get the existing view
       view = @viewsByCid[item.cid]
@@ -313,9 +313,9 @@ defined (or the getView() must be overridden)'
 
       # Is the item included in the filter?
       included = if typeof @filterer is 'function'
-          @filterer item, position
-        else
-          true
+        @filterer item, position
+      else
+        true
 
       # Get the view’s top element
       viewEl = view.el
