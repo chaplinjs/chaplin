@@ -209,10 +209,11 @@ defined (or the getView() must be overridden)'
 
     # Applies a filter to the collection view.
     # Expects an iterator function as parameter.
-    # Hides all items for which the iterator returns false.
-    filter: (filterer) ->
+    # If no callback, hides all items for which the iterator returns false.
+    filter: (filterer, callback) ->
       # Save the new filterer function
       @filterer = filterer
+      hasCallback = callback if typeof callback is 'function'
 
       # Show/hide existing views
       unless _(@viewsByCid).isEmpty()
@@ -231,13 +232,17 @@ defined (or the getView() must be overridden)'
             throw new Error 'CollectionView#filter: ' +
               "no view found for #{item.cid}"
 
-          view.$el
-            .stop(true, true)
-            .css('display', if included then '' else 'none')
+          # apply a callback, or hide if none
+          if hasCallback
+            callback view, included
+          else
+            view.$el
+              .stop(true, true)
+              .css('display', if included then '' else 'none')
 
-          # Update visibleItems list, but do not trigger
-          # a `visibilityChange` event immediately
-          @updateVisibleItems item, included, false
+            # Update visibleItems list, but do not trigger
+            # a `visibilityChange` event immediately
+            @updateVisibleItems item, included, false
 
       # Trigger a combined `visibilityChange` event
       @trigger 'visibilityChange', @visibleItems
