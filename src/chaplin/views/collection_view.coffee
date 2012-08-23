@@ -346,10 +346,10 @@ defined (or the getView() must be overridden)'
         # Insert at the right position
         if position is 0
           $next = children.eq position
-          $next.before viewEl
+          $next.before viewEl unless $next[0] is viewEl
         else
           $previous = children.eq position - 1
-          $previous.after viewEl
+          $previous.after viewEl unless $previous[0] is viewEl
 
       # Tell the view that it was added to the DOM
       view.trigger 'addedToDOM'
