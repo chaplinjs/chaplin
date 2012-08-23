@@ -97,7 +97,7 @@ There’s a Ruby build script in `build/build.rb` which compiles the CoffeeScrip
 Also, you need to install the Node packages for CoffeeScript and UglifierJS globally:
 
 ```
-sudo npm install -g coffee 
+sudo npm install -g coffee-script
 sudo npm install -g uglify-js
 ```
 
