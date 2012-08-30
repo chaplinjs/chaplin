@@ -202,29 +202,29 @@ define [
         (models) ->
           baseResetAndCheck setup, models
 
-      full = [ m0, m1, m2, m3, m4, m5 ]
+      full = [m0, m1, m2, m3, m4, m5]
 
       # Removal tests
       resetAndCheck = makeResetAndCheck full
       # Remove first
-      resetAndCheck [ m1, m2, m3, m4, m5 ]
+      resetAndCheck [m1, m2, m3, m4, m5]
       # Remove last
-      resetAndCheck [ m0, m1, m2, m3, m4 ]
+      resetAndCheck [m0, m1, m2, m3, m4]
       # Remove two in the middle
-      resetAndCheck [ m0, m1, m4, m5 ]
+      resetAndCheck [m0, m1, m4, m5]
       # Remove every first
-      resetAndCheck [ m1, m3, m5 ]
+      resetAndCheck [m1, m3, m5]
       # Remove every second
-      resetAndCheck [ m0, m2, m4 ]
+      resetAndCheck [m0, m2, m4]
 
       # Addition tests
-      resetAndCheck = makeResetAndCheck [ m1, m2, m3 ]
+      resetAndCheck = makeResetAndCheck [m1, m2, m3]
       # Add at the beginning
-      resetAndCheck [ m0, m1, m2, m3 ]
+      resetAndCheck [m0, m1, m2, m3]
       # Add at the end
-      resetAndCheck [ m1, m2, m3, m4 ]
+      resetAndCheck [m1, m2, m3, m4]
       # Add two in the middle
-      baseResetAndCheck [ m0, m1, m4, m5 ], full
+      baseResetAndCheck [m0, m1, m4, m5], full
       # Add every first
       makeResetAndCheck [m1, m3, m5], full
       # Add every second
@@ -232,17 +232,17 @@ define [
 
       # Addition/removal tests
       # Replace first
-      baseResetAndCheck [ m0, m2, m3 ], [ m1, m2, m3 ]
+      baseResetAndCheck [m0, m2, m3], [m1, m2, m3]
       # Replace last
-      baseResetAndCheck [ m0, m2, m5 ], [ m0, m3, m5 ]
+      baseResetAndCheck [m0, m2, m5], [m0, m3, m5]
       # Replace in the middle
-      baseResetAndCheck [ m0, m2, m5 ], [ m0, m3, m5 ]
+      baseResetAndCheck [m0, m2, m5], [m0, m3, m5]
       # Change two in the middle
-      baseResetAndCheck [ m0, m2, m3, m5 ], [ m0, m3, m4, m5 ]
+      baseResetAndCheck [m0, m2, m3, m5], [m0, m3, m4, m5]
       # Flip two in the middle
-      baseResetAndCheck [ m0, m1, m2, m3 ], [ m0, m2, m1, m3 ]
+      baseResetAndCheck [m0, m1, m2, m3], [m0, m2, m1, m3]
       # Complete replacement
-      baseResetAndCheck [ m0, m1, m2 ], [ m3, m4, m5 ]
+      baseResetAndCheck [m0, m1, m2], [m3, m4, m5]
 
     it 'should filter views', ->
       addThree()
