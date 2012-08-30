@@ -351,6 +351,10 @@ define [
     afterRender: ->
       # Automatically append to DOM if the container element is set
       if @container
+        # Container element may not exist yet at the time render function was called, 
+        # so try once more to get it
+        unless @container.length
+          @container = $(@container.selector)
         # Append the view to the DOM
         $(@container)[@containerMethod] @el
         # Trigger an event
