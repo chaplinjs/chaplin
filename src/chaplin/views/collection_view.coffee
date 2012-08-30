@@ -336,20 +336,25 @@ defined (or the getView() must be overridden)'
       $list = @$list
 
       # Get the children which originate from item views
-      children = $list.children (@itemSelector or undefined)
-      length = children.length
-
-      if length is 0 or position is length
-        # Insert at the end
-        $list.append viewEl
+      children = if @itemSelector
+        $list.children @itemSelector
       else
-        # Insert at the right position
-        if position is 0
-          $next = children.eq position
-          $next.before viewEl
+        $list.children()
+
+      # Check if it needs to be inserted
+      unless children.get(position) is viewEl
+        length = children.length
+        if length is 0 or position is length
+          # Insert at the end
+          $list.append viewEl
         else
-          $previous = children.eq position - 1
-          $previous.after viewEl
+          # Insert at the right position
+          if position is 0
+            $next = children.eq position
+            $next.before viewEl
+          else
+            $previous = children.eq position - 1
+            $previous.after viewEl
 
       # Tell the view that it was added to the DOM
       view.trigger 'addedToDOM'
