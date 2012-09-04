@@ -213,7 +213,15 @@ defined (or the getView() must be overridden)'
     filter: (filterer, callback) ->
       # Save the new filterer function
       @filterer = filterer
-      hasCallback = callback if typeof callback is 'function'
+
+      # default callback hides the model if included
+      # and calls @updateVisibleItems
+      callback ?= (view, model, included) =>
+        display = if included then '' else 'none'
+        view.$el.stop(true, true).css('display', display)
+        # Update visibleItems list, but do not trigger
+        # a `visibilityChange` event immediately
+        @updateVisibleItems model, included, false
 
       # Show/hide existing views
       unless _(@viewsByCid).isEmpty()
@@ -232,17 +240,8 @@ defined (or the getView() must be overridden)'
             throw new Error 'CollectionView#filter: ' +
               "no view found for #{item.cid}"
 
-          # apply a callback, or hide if none
-          if hasCallback
-            callback view, included
-          else
-            view.$el
-              .stop(true, true)
-              .css('display', if included then '' else 'none')
-
-            # Update visibleItems list, but do not trigger
-            # a `visibilityChange` event immediately
-            @updateVisibleItems item, included, false
+          # run the callback on the view
+          callback view, item, included
 
       # Trigger a combined `visibilityChange` event
       @trigger 'visibilityChange', @visibleItems

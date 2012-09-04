@@ -273,7 +273,7 @@ define [
       addThree()
       filterer = (model, position) ->
         model.get('title') is 'new'
-      callback = (view, included) ->
+      callback = (view, model, included) ->
         view.$el.css('background-color', 'rgb(255, 0, 0)') if included
       collectionView.filter filterer, callback
 
