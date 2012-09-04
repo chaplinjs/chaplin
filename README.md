@@ -241,6 +241,8 @@ In the Chaplin concept, a controller is the place where a model and associated v
 
 There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers which govern special views like a header, a navigation sidebar or a footer.
 
+Controllers are Publish/Subscribe event subscribers by using the `Subscriber` mixin. Please do not register their methods directly as Pub/Sub listeners, use `subscribeEvent` instead. This forces the handler context so the handler might be removed again on controller disposal. It’s crucial to remove all references to controller methods to allow them to be garbage collected.
+
 ### Specific Module Controllers
 
 By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on. These actions are called by the `Dispatcher` when a route matches.
