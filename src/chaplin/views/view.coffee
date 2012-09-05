@@ -204,7 +204,7 @@ define [
       modelOrCollection.off type, handler
 
     # Unbind all recorded model event handlers
-    modelUnbindAll: () ->
+    modelUnbindAll: ->
       # Get model/collection reference
       modelOrCollection = @model or @collection
       return unless modelOrCollection
