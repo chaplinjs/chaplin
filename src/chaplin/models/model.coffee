@@ -39,7 +39,7 @@ define [
         modelStack.push model
       # Map model/collection to their attributes
       for key, value of attributes
-        if value instanceof Model
+        if value instanceof Backbone.Model
           # Don’t change the original attribute, create a property
           # on the delegator which shadows the original attribute
           delegator ?= utils.beget attributes
