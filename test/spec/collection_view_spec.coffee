@@ -269,6 +269,27 @@ define [
       collectionView.filter null
       expect(collectionView.visibleItems.length).to.equal collection.length
 
+    it 'should filter views with a callback', ->
+      addThree()
+      filterer = (model, position) ->
+        model.get('title') is 'new'
+      callback = (view, included) ->
+        view.$el.css('background-color', 'rgb(255, 0, 0)') if included
+      collectionView.filter filterer, callback
+
+      expect(collectionView.visibleItems.length).to.equal collection.length
+
+      children = getViewChildren()
+
+      collection.each (model, index) ->
+        $el = children.eq(index)
+        rot = model.get('title') is 'new'
+        displayValue = $el.css('background-color')
+        if rot
+          expect(displayValue).to.equal 'rgb(255, 0, 0)'
+        else
+          expect(displayValue).to.equal ''
+
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
