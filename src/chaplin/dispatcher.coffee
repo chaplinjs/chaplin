@@ -1,10 +1,11 @@
 define [
+  'require'
   'underscore'
   'backbone'
   'chaplin/mediator'
   'chaplin/lib/utils'
   'chaplin/lib/subscriber'
-], (_, Backbone, mediator, utils, Subscriber) ->
+], (require, _, Backbone, mediator, utils, Subscriber) ->
   'use strict'
 
   class Dispatcher
