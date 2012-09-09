@@ -4,18 +4,14 @@ define [
   'backbone',
   'chaplin/lib/utils',
   'chaplin/lib/subscriber',
-  'chaplin/lib/delayer',
   'chaplin/models/model'
-], ($, _, Backbone, utils, Subscriber, Delayer, Model) ->
+], ($, _, Backbone, utils, Subscriber, Model) ->
   'use strict'
 
   class View extends Backbone.View
 
     # Mixin a Subscriber
     _(@prototype).extend Subscriber
-
-    # Mixin a Delayer
-    _(@prototype).extend Delayer
 
     # Automatic rendering
     # -------------------
@@ -373,9 +369,6 @@ define [
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()
-
-      # Clear all intervals and timeouts.
-      @clearDelayed()
 
       # Unbind all model handlers
       @modelUnbindAll()
