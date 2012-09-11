@@ -7,7 +7,9 @@
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
 * [Upcoming Version: Chaplin as a Library](#upcoming-version-10-chaplin-as-a-library)
-* [Stay Tuned for Updates](#stay-tuned-for-updates)
+* [Support and Help](#support-and-help)
+* [Commercial Support and Training](#get-commercial-support-and-training)
+
 * [Key Features](#key-features)
 * [Motivation](#motivation)
 * [Dependencies](#dependencies)
@@ -31,27 +33,23 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 
 ## Upcoming Version 1.0: Chaplin as a Library
 
-While the [initial release of Chaplin](https://github.com/chaplinjs/chaplin/tree/0.3) was merely an example application structure, our goal is to generalize Chaplin into a separate, reusable and unit-tested library.
+While the initial release of Chaplin was merely an example application structure, Chaplin is being rewritten into a reusable and fully unit-tested library. The `master` branch already reflects these changes. We’re almost done, the code is already stable and successfully used in production. We don’t expect breaking API changes until version 1.0. There are only a few things to polish up before the 1.0 release:
 
-There’s a major rewrite going on and the `master` branch already reflects these changes. This includes several topics:
-
-- Improving and generalizing the Chaplin architecture
-- Writing unit-tests for all Chaplin components
-- Creating a [boilerplate app](https://github.com/chaplinjs/chaplin-boilerplate) and [application examples](#boilerplate-and-examples)
-- Writing an up-to-date documentation and writing a class & method reference
-
-Most of this is already done, so the code is already quite stable and successfully used in production. We don’t expect breaking API changes since version 1.0. There are only a few things to polish up before the 1.0 release:
-
-- [A comprehensive documentation](http://chaplinjs.github.com/)
-- Flexibility, like use in non-CoffeeScript and non-AMD environments
+- [A comprehensive documentation and class reference](http://chaplinjs.github.com/)
 - Easier configurability of the default behavior
+- Flexibility, like use in non-CoffeeScript and non-AMD environments
 
-How about joining us? You might have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues). There is also a [forum](http://ost.io/chaplinjs/chaplin) and [mailing list for discussion on Google Groups](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js
-).
+How about joining us? You might have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues).
 
-## Stay tuned for updates
+## Support and Help
 
-[Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
+* For general support and discussion, there’s a [Google Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js) and a [forum on ost.io](http://ost.io/chaplinjs/chaplin).
+* If you’d like to report a bug or propose a feature, please use the [Github issues](https://github.com/chaplinjs/chaplin/issues). The issue tracker can also be used for general questions and task management.
+* [Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
+
+## Commercial Support and Training
+
+[9elements](http://9elements.com/), one of the creators of Chaplin, is offering commercial support and training for Chaplin and Backbone-based JavaScript applications. 9elements is a software and design agency located in Berlin and Bochum, Germany. Send us a mail for more information: [contact@9elements.com](mailto:contact@9elements.com).
 
 ---
 
@@ -75,7 +73,7 @@ While developing several web applications using Backbone.js, we felt the need fo
 
 Chaplin is mostly derived and generalized from the codebase of [moviepilot.com](http://moviepilot.com/), a real-world single-page application. Chaplin tries to draw the attention to top-level application architecture. “Application” means everything above simple routing, individual models, views and their binding.
 
-Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todo list example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code. 
+Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todo list example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code.
 
 To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this deliberate limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture. This is where Chaplin enters the stage.
 
@@ -379,7 +377,7 @@ Models, collections and third-party scripts typically have a loaded state. At th
 
 For these purpose, [jQuery Deferreds](http://api.jquery.com/category/deferred-object/) (or [standalone-deferreds](https://github.com/Mumakil/Standalone-Deferred) if you're using Zepto) can be mixed into appliation objects. They allow to register load handlers using the [done](http://api.jquery.com/deferred.done/) method. The handlers will be called once the Deferred is resolved.
 
-Deferreds are a versatile pattern which can be used on different levels in an application, but they are rather simple because they only have three states (pending, resolved, rejected) and two transitions (resolve, reject). For more complex synchronization tasks, Chaplin offers the `SyncMachine` which is a state machine 
+Deferreds are a versatile pattern which can be used on different levels in an application, but they are rather simple because they only have three states (pending, resolved, rejected) and two transitions (resolve, reject). For more complex synchronization tasks, Chaplin offers the `SyncMachine` which is a state machine
 
 ### Wrapping Methods to Wait for a Deferred
 
