@@ -8,8 +8,7 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 
 * [Upcoming Version: Chaplin as a Library](#upcoming-version-10-chaplin-as-a-library)
 * [Support and Help](#support-and-help)
-* [Commercial Support and Training](#get-commercial-support-and-training)
-
+* [Commercial Support and Training](#commercial-support-and-training)
 * [Key Features](#key-features)
 * [Motivation](#motivation)
 * [Dependencies](#dependencies)
