@@ -1,10 +1,9 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
   'chaplin/lib/utils'
   'chaplin/lib/subscriber'
-], (_, Backbone, mediator, utils, Subscriber) ->
+], (_, Backbone, utils, Subscriber) ->
   'use strict'
 
   class Dispatcher
@@ -108,7 +107,7 @@ define [
       # Dispose the current controller
       if currentController
         # Notify the rest of the world beforehand
-        mediator.publish 'beforeControllerDispose', currentController
+        @publishEvent 'beforeControllerDispose', currentController
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
 
@@ -133,7 +132,7 @@ define [
       @adjustURL controller, params
 
       # We're done! Spread the word!
-      mediator.publish 'startupController',
+      @publishEvent 'startupController',
         previousControllerName: @previousControllerName
         controller: @currentController
         controllerName: @currentControllerName
@@ -159,8 +158,7 @@ define [
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
-      if params.changeURL
-        mediator.publish '!router:changeURL', url
+      @publishEvent '!router:changeURL', url if params.changeURL
 
       # Save the URL
       @url = url

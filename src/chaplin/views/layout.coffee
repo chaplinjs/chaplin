@@ -2,10 +2,9 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'chaplin/mediator',
   'chaplin/lib/utils',
   'chaplin/lib/subscriber'
-], ($, _, Backbone, mediator, utils, Subscriber) ->
+], ($, _, Backbone, utils, Subscriber) ->
   'use strict'
 
   class Layout # This class does not extend View
@@ -149,7 +148,7 @@ define [
       path = "/#{path}" if path.charAt(0) isnt '/'
 
       # Pass to the router, try to route internally
-      mediator.publish '!router:route', path, (routed) ->
+      @publishEvent '!router:route', path, (routed) ->
         # Prevent default handling if the URL could be routed
         event.preventDefault() if routed
         # Otherwise navigate to the URL normally
@@ -168,7 +167,7 @@ define [
       return unless path
 
       # Pass to the router, try to route internally
-      mediator.publish '!router:route', path, (routed) ->
+      @publishEvent '!router:route', path, (routed) ->
         if routed
           # Prevent default handling if the URL could be routed
           event.preventDefault()

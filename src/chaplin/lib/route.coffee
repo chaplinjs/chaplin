@@ -1,15 +1,18 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
+  'chaplin/lib/subscriber'
   'chaplin/controllers/controller'
-], (_, Backbone, mediator, Controller) ->
+], (_, Backbone, Subscriber, Controller) ->
   'use strict'
 
   class Route
 
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
+
+    # Mixin a Subscriber
+    _(@prototype).extend Subscriber
 
     reservedParams = ['path', 'changeURL']
     # Taken from Backbone.Router
@@ -86,7 +89,7 @@ define [
       params = @buildParams path, options
 
       # Publish a global matchRoute event passing the route and the params
-      mediator.publish 'matchRoute', this, params
+      @publishEvent 'matchRoute', this, params
 
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` and `additionalParams` arguments are optional

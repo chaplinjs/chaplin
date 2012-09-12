@@ -1,9 +1,8 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
   'chaplin/lib/subscriber'
-], (_, Backbone, mediator, Subscriber) ->
+], (_, Backbone, Subscriber) ->
   'use strict'
 
   class Controller
@@ -40,12 +39,12 @@ define [
       @redirected = true
       if arguments.length is 1
         # URL was passed, try to route it
-        mediator.publish '!router:route', arg1, (routed) ->
+        @publishEvent '!router:route', arg1, (routed) ->
           unless routed
             throw new Error 'Controller#redirectTo: no route matched'
       else
         # Assume controller and action names were passed
-        mediator.publish '!startupController', arg1, action, params
+        @publishEvent '!startupController', arg1, action, params
 
     # Disposal
     # --------
