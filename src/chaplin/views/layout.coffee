@@ -3,8 +3,8 @@ define [
   'underscore',
   'backbone',
   'chaplin/lib/utils',
-  'chaplin/lib/subscriber'
-], ($, _, Backbone, utils, Subscriber) ->
+  'chaplin/lib/event_broker'
+], ($, _, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Layout # This class does not extend View
@@ -12,8 +12,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # The site title used in the document title
     # This should be set in your app-specific Application class

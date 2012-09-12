@@ -1,9 +1,9 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/controllers/controller'
-], (_, Backbone, Subscriber, Controller) ->
+], (_, Backbone, EventBroker, Controller) ->
   'use strict'
 
   class Route
@@ -11,8 +11,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     reservedParams = ['path', 'changeURL']
     # Taken from Backbone.Router

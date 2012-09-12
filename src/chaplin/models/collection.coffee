@@ -1,18 +1,18 @@
 define [
   'underscore',
   'backbone',
-  'chaplin/lib/subscriber',
+  'chaplin/lib/event_broker',
   'chaplin/lib/sync_machine'
   'chaplin/models/model'
-], (_, Backbone, Subscriber, SyncMachine, Model) ->
+], (_, Backbone, EventBroker, SyncMachine, Model) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
   # in order to add some functionality
   class Collection extends Backbone.Collection
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # Use the Chaplin model per default, not Backbone.Model
     model: Model

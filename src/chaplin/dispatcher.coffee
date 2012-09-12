@@ -2,8 +2,8 @@ define [
   'underscore'
   'backbone'
   'chaplin/lib/utils'
-  'chaplin/lib/subscriber'
-], (_, Backbone, utils, Subscriber) ->
+  'chaplin/lib/event_broker'
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Dispatcher
@@ -11,8 +11,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # The previous controller name
     previousControllerName: null

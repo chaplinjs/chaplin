@@ -3,8 +3,9 @@ define [
 ], (mediator) ->
   'use strict'
 
-  # Add functionality to subscribe to global Publish/Subscribe events
-  # so they can be removed afterwards when disposing the object.
+  # Add functionality to subscribe and publish to global
+  # Publish/Subscribe events so they can be removed afterwards
+  # when disposing the object.
   #
   # Mixin this object to add the subscriber capability to any object:
   # _(object).extend EventBroker
@@ -46,7 +47,13 @@ define [
       # Remove all handlers with a context of this subscriber
       mediator.unsubscribe null, null, this
 
-    publishEvent: mediator.publish
+    publishEvent: (type, args...) ->
+      if typeof type isnt 'string'
+        throw new TypeError 'EventBroker#publishEvent: ' +
+          'type argument must be a string'
+
+      # Publish global handler
+      mediator.publish type, args...
 
   # You’re frozen when your heart’s not open
   Object.freeze? EventBroker

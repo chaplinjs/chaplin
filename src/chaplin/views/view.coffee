@@ -3,15 +3,15 @@ define [
   'underscore',
   'backbone',
   'chaplin/lib/utils',
-  'chaplin/lib/subscriber',
+  'chaplin/lib/event_broker',
   'chaplin/models/model'
-], ($, _, Backbone, utils, Subscriber, Model) ->
+], ($, _, Backbone, utils, EventBroker, Model) ->
   'use strict'
 
   class View extends Backbone.View
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # Automatic rendering
     # -------------------
