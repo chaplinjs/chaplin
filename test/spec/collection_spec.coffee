@@ -2,9 +2,9 @@ define [
   'underscore'
   'chaplin/mediator'
   'chaplin/models/collection'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/lib/sync_machine'
-], (_, mediator, Collection, Subscriber, SyncMachine) ->
+], (_, mediator, Collection, EventBroker, SyncMachine) ->
   'use strict'
 
   describe 'Collection', ->
@@ -22,9 +22,9 @@ define [
       for id, index in order
         expect(collection.at(index).id).to.equal id
 
-    it 'should mixin a Subscriber', ->
-      for own name, value of Subscriber
-        expect(collection[name]).to.equal Subscriber[name]
+    it 'should mixin a EventBroker', ->
+      for own name, value of EventBroker
+        expect(collection[name]).to.equal EventBroker[name]
 
     it 'should initialize a Deferred', ->
       expect(collection.initDeferred).to.be.a 'function'

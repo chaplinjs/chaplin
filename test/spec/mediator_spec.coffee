@@ -21,14 +21,14 @@ define [
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
       methods = ['subscribe', 'unsubscribe', 'publish',
-        'on', 'off', 'trigger']
+        'on']
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be.ok()
         expect(desc.writable).to.not.be.ok()
         expect(desc.configurable).to.not.be.ok()
 
-    it 'should publish messages to subscribers', ->
+    it 'should publish messages to event_brokers', ->
       spy = sinon.spy()
       eventName = 'foo'
       payload = 'payload'
