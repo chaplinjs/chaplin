@@ -30,8 +30,7 @@ define [
       expect(model.state()).to.equal 'pending'
 
     it 'should initialize a SyncMachine', ->
-      expect(model.initSyncMachine).to.be.a 'function'
-      model.initSyncMachine()
+      _.extend model, SyncMachine
       for own name, value of SyncMachine
         if typeof value is 'function'
           expect(model[name]).to.equal value

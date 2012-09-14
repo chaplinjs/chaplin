@@ -6,7 +6,8 @@ define [
   'chaplin/models/model'
   'chaplin/models/collection'
   'chaplin/lib/subscriber'
-], (_, $, mediator, View, Model, Collection, Subscriber) ->
+  'chaplin/lib/sync_machine'
+], (_, $, mediator, View, Model, Collection, Subscriber, SyncMachine) ->
   'use strict'
 
   describe 'View', ->
@@ -321,7 +322,7 @@ define [
 
     it 'should add the SyncMachine state to the template data', ->
       setModel()
-      model.initSyncMachine()
+      _.extend model, SyncMachine
       templateData = view.getTemplateData()
       expect(templateData.synced).to.not.be.ok()
       model.beginSync()
@@ -332,7 +333,7 @@ define [
     it 'should not cover existing synced and resolved properties', ->
       setModel()
       model.initDeferred()
-      model.initSyncMachine()
+      _.extend model, SyncMachine
       model.set resolved: 'foo', synced: 'bar'
       templateData = view.getTemplateData()
       expect(templateData.resolved).to.equal 'foo'
