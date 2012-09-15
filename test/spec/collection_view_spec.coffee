@@ -169,13 +169,15 @@ define [
       expect(children.length).to.equal 0
 
     it 'should reuse views on reset', ->
+      expect(_.isObject(collectionView.viewsByCid)).to.be.ok()
+
       model1 = collection.at 0
       view1 = collectionView.viewsByCid[model1.cid]
-      expect(view1).to.be.a ItemView
+      expect(view1).to.be.an ItemView
 
       model2 = collection.at 1
       view2 = collectionView.viewsByCid[model2.cid]
-      expect(view2).to.be.a ItemView
+      expect(view2).to.be.an ItemView
 
       collection.reset model1
 
@@ -244,7 +246,7 @@ define [
       # Complete replacement
       baseResetAndCheck [m0, m1, m2], [m3, m4, m5]
 
-    it 'should filter views', ->
+    it 'should filter views and hide them per default', ->
       addThree()
       filterer = (model, position) ->
         expect(model).to.be.a Model
@@ -273,22 +275,19 @@ define [
       addThree()
       filterer = (model, position) ->
         model.get('title') is 'new'
-      callback = (view, included) ->
-        view.$el.css('background-color', 'rgb(255, 0, 0)') if included
+      callback = sinon.spy()
       collectionView.filter filterer, callback
 
+      # Default callback did not fire
       expect(collectionView.visibleItems.length).to.equal collection.length
 
-      children = getViewChildren()
-
+      # Callback was called for each model
+      expect(callback.callCount).to.equal collection.length
       collection.each (model, index) ->
-        $el = children.eq(index)
-        rot = model.get('title') is 'new'
-        displayValue = $el.css('background-color')
-        if rot
-          expect(displayValue).to.equal 'rgb(255, 0, 0)'
-        else
-          expect(displayValue).to.equal ''
+        call = callback.getCall index
+        view = collectionView.viewsByCid[model.cid]
+        included = filterer model, index
+        expect(call.calledWith(view, included)).to.be.ok()
 
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
