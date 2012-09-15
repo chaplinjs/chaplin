@@ -5,8 +5,8 @@ define [
   'chaplin/views/view'
   'chaplin/models/model'
   'chaplin/models/collection'
-  'chaplin/lib/subscriber'
-], (_, $, mediator, View, Model, Collection, Subscriber) ->
+  'chaplin/lib/event_broker'
+], (_, $, mediator, View, Model, Collection, EventBroker) ->
   'use strict'
 
   describe 'View', ->
@@ -61,9 +61,9 @@ define [
       container: '#testbed'
       containerMethod: 'before'
 
-    it 'should mixin a Subscriber', ->
-      for own name, value of Subscriber
-        expect(view[name]).to.equal Subscriber[name]
+    it 'should mixin a EventBroker', ->
+      for own name, value of EventBroker
+        expect(view[name]).to.equal EventBroker[name]
 
     it 'should render', ->
       expect(view.render).to.be.a 'function'
