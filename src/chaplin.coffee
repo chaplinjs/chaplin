@@ -10,11 +10,11 @@ define [
   'chaplin/views/collection_view'
   'chaplin/lib/route'
   'chaplin/lib/router'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/lib/support'
   'chaplin/lib/sync_machine'
   'chaplin/lib/utils'
-], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, Subscriber, support, SyncMachine, utils) ->
+], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, EventBroker, support, SyncMachine, utils) ->
   {
     Application,
     mediator,
@@ -27,7 +27,7 @@ define [
     CollectionView,
     Route,
     Router,
-    Subscriber,
+    EventBroker,
     support,
     SyncMachine,
     utils

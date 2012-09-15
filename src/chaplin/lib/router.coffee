@@ -2,9 +2,9 @@ define [
   'underscore'
   'backbone'
   'chaplin/mediator'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/lib/route'
-], (_, Backbone, mediator, Subscriber, Route) ->
+], (_, Backbone, mediator, EventBroker, Route) ->
   'use strict'
 
   # The router which is a replacement for Backbone.Router.
@@ -16,8 +16,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     constructor: (@options = {}) ->
       _(@options).defaults

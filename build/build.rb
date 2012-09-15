@@ -15,7 +15,7 @@ chaplin/views/view
 chaplin/views/collection_view
 chaplin/lib/route
 chaplin/lib/router
-chaplin/lib/subscriber
+chaplin/lib/event_broker
 chaplin/lib/support
 chaplin/lib/sync_machine
 chaplin/lib/utils
