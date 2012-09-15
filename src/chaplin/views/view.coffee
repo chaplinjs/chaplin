@@ -1,9 +1,9 @@
 define [
-  'jquery',
-  'underscore',
-  'backbone',
-  'chaplin/lib/utils',
-  'chaplin/lib/event_broker',
+  'jquery'
+  'underscore'
+  'backbone'
+  'chaplin/lib/utils'
+  'chaplin/lib/event_broker'
   'chaplin/models/model'
 ], ($, _, Backbone, utils, EventBroker, Model) ->
   'use strict'

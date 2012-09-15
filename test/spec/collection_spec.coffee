@@ -34,8 +34,7 @@ define [
       expect(collection.state()).to.equal 'pending'
 
     it 'should initialize a SyncMachine', ->
-      expect(collection.initSyncMachine).to.be.a 'function'
-      collection.initSyncMachine()
+      _.extend collection, SyncMachine
       for own name, value of SyncMachine
         if typeof value is 'function'
           expect(collection[name]).to.equal value
