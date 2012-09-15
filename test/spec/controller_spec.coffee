@@ -1,11 +1,11 @@
 define [
   'underscore'
   'chaplin/mediator'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/controllers/controller'
   'chaplin/models/model'
   'chaplin/views/view'
-], (_, mediator, Subscriber, Controller, Model, View) ->
+], (_, mediator, EventBroker, Controller, Model, View) ->
   'use strict'
 
   describe 'Controller', ->
@@ -19,9 +19,9 @@ define [
     afterEach ->
       controller.dispose()
 
-    it 'should mixin a Subscriber', ->
-      for own name, value of Subscriber
-        expect(controller[name]).to.equal Subscriber[name]
+    it 'should mixin a EventBroker', ->
+      for own name, value of EventBroker
+        expect(controller[name]).to.equal EventBroker[name]
 
     it 'should redirect to a URL', ->
       expect(controller.redirectTo).to.be.a 'function'

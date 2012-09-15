@@ -2,9 +2,9 @@ define [
   'underscore'
   'chaplin/mediator'
   'chaplin/models/model'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/lib/sync_machine'
-], (_, mediator, Model, Subscriber, SyncMachine) ->
+], (_, mediator, Model, EventBroker, SyncMachine) ->
   'use strict'
 
   describe 'Model', ->
@@ -18,9 +18,9 @@ define [
     afterEach ->
       model.dispose()
 
-    it 'should mixin a Subscriber', ->
-      for own name, value of Subscriber
-        expect(model[name]).to.equal Subscriber[name]
+    it 'should mixin a EventBroker', ->
+      for own name, value of EventBroker
+        expect(model[name]).to.equal EventBroker[name]
 
     it 'should initialize a Deferred', ->
       expect(model.initDeferred).to.be.a 'function'

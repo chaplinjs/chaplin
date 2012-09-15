@@ -1,15 +1,15 @@
 define [
-  'underscore',
-  'backbone',
+  'underscore'
+  'backbone'
   'chaplin/lib/utils'
-  'chaplin/lib/subscriber'
-], (_, Backbone, utils, Subscriber) ->
+  'chaplin/lib/event_broker'
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Model extends Backbone.Model
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # Mixin a Deferred
     initDeferred: ->
