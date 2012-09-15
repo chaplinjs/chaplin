@@ -28,7 +28,7 @@ define [
         expect(desc.writable).to.not.be.ok()
         expect(desc.configurable).to.not.be.ok()
 
-    it 'should publish messages to event_brokers', ->
+    it 'should publish messages to subscribers', ->
       spy = sinon.spy()
       eventName = 'foo'
       payload = 'payload'
