@@ -39,15 +39,15 @@ define [
         passedMatch = match
 
       expect(app.initRouter).to.be.a 'function'
-      expect(app.initRouter.length).to.equal 2
+      expect(app.initRouter.length).to.be 2
       app.initRouter routes, root: '/'
 
       expect(app.router).to.be.a Router
-      expect(routesCalled).to.be.ok()
+      expect(routesCalled).to.be true
       expect(passedMatch).to.be.a 'function'
 
     it 'should start Backbone.history', ->
-      expect(Backbone.History.started).to.be.ok()
+      expect(Backbone.History.started).to.be true
 
     it 'should dispose itself correctly', ->
       expect(app.dispose).to.be.a 'function'
@@ -56,9 +56,9 @@ define [
       for prop in ['dispatcher', 'layout', 'router']
         expect(_(app).has prop).to.not.be.ok()
 
-      expect(app.disposed).to.be.ok()
+      expect(app.disposed).to.be true
       if Object.isFrozen
-        expect(Object.isFrozen(app)).to.be.ok()
+        expect(Object.isFrozen(app)).to.be true
 
     it 'should be extendable', ->
       expect(Application.extend).to.be.a 'function'

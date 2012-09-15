@@ -20,25 +20,25 @@ define [
 
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
-        expect(model[name]).to.equal EventBroker[name]
+        expect(model[name]).to.be EventBroker[name]
 
     it 'should initialize a Deferred', ->
       expect(model.initDeferred).to.be.a 'function'
       model.initDeferred()
       for method in ['done', 'fail', 'progress', 'state', 'promise']
-        expect(typeof model[method]).to.equal 'function'
-      expect(model.state()).to.equal 'pending'
+        expect(typeof model[method]).to.be 'function'
+      expect(model.state()).to.be 'pending'
 
     it 'should initialize a SyncMachine', ->
       expect(model.initSyncMachine).to.be.a 'function'
       model.initSyncMachine()
       for own name, value of SyncMachine
         if typeof value is 'function'
-          expect(model[name]).to.equal value
-      expect(model.syncState()).to.equal 'unsynced'
+          expect(model[name]).to.be value
+      expect(model.syncState()).to.be 'unsynced'
 
     it 'should return the attributes per default', ->
-      expect(model.getAttributes()).to.equal model.attributes
+      expect(model.getAttributes()).to.be model.attributes
 
     it 'should serialize the attributes', ->
       model1 = model
@@ -82,27 +82,27 @@ define [
       #console.debug 'passedTemplateData', d
 
       expect(d).to.be.an 'object'
-      expect(d.foo).to.equal e.foo
+      expect(d.foo).to.be e.foo
 
       expect(d.model2).to.be.an 'object'
-      expect(d.model2.bar).to.equal e.model2.bar
-      expect(d.model2.model2).to.equal e.model2.model2
+      expect(d.model2.bar).to.be e.model2.bar
+      expect(d.model2.model2).to.be e.model2.model2
 
       expect(d.model2.collection).to.be.an 'array'
-      expect(d.model2.collection[0].foo).to.equal e.model2.collection[0].foo
-      expect(d.model2.collection[1].baz).to.equal e.model2.collection[1].baz
+      expect(d.model2.collection[0].foo).to.be e.model2.collection[0].foo
+      expect(d.model2.collection[1].baz).to.be e.model2.collection[1].baz
 
       expect(d.model2.model3).to.be.an 'object'
-      expect(d.model2.model3.qux).to.equal e.model2.model3.qux
-      expect(d.model2.model3.model2).to.equal e.model2.model3.model2
+      expect(d.model2.model3.qux).to.be e.model2.model3.qux
+      expect(d.model2.model3.model2).to.be e.model2.model3.model2
 
     it 'should dispose itself correctly', ->
       expect(model.dispose).to.be.a 'function'
       model.dispose()
 
-      expect(model.disposed).to.be.ok()
+      expect(model.disposed).to.be true
       if Object.isFrozen
-        expect(Object.isFrozen(model)).to.be.ok()
+        expect(Object.isFrozen(model)).to.be true
 
     it 'should fire a dispose event', ->
       disposeSpy = sinon.spy()
@@ -137,7 +137,7 @@ define [
 
       model.dispose()
 
-      expect(model.state()).to.equal 'rejected'
+      expect(model.state()).to.be 'rejected'
       expect(failSpy).was.called()
 
     it 'should remove instance properties', ->
