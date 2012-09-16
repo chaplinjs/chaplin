@@ -1,10 +1,9 @@
 define [
-  'underscore',
-  'backbone',
+  'underscore'
+  'backbone'
   'chaplin/lib/utils'
   'chaplin/lib/event_broker'
-  'chaplin/lib/sync_machine'
-], (_, Backbone, utils, EventBroker, SyncMachine) ->
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Model extends Backbone.Model
@@ -15,10 +14,6 @@ define [
     # Mixin a Deferred
     initDeferred: ->
       _(this).extend $.Deferred()
-
-    # Mixin a synchronization state machine
-    initSyncMachine: ->
-      _(this).extend SyncMachine
 
     # This method is used to get the attributes for the view template
     # and might be overwritten by decorators which cannot create a

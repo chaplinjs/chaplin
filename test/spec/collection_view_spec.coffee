@@ -5,7 +5,8 @@ define [
   'chaplin/models/collection'
   'chaplin/views/view'
   'chaplin/views/collection_view'
-], (_, jQuery, Model, Collection, View, CollectionView) ->
+  'chaplin/lib/sync_machine'
+], (_, jQuery, Model, Collection, View, CollectionView, SyncMachine) ->
   'use strict'
 
   describe 'CollectionView', ->
@@ -307,7 +308,7 @@ define [
 
     it 'should initialize with a template', ->
       # Mix in SyncMachine into Collection
-      collection.initSyncMachine()
+      _.extend collection, SyncMachine
 
       # Create a new CollectionView, dispose the old one
       collectionView.dispose()
