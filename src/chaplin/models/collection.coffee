@@ -1,10 +1,9 @@
 define [
-  'underscore',
-  'backbone',
-  'chaplin/lib/event_broker',
-  'chaplin/lib/sync_machine'
+  'underscore'
+  'backbone'
+  'chaplin/lib/event_broker'
   'chaplin/models/model'
-], (_, Backbone, EventBroker, SyncMachine, Model) ->
+], (_, Backbone, EventBroker, Model) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
@@ -20,10 +19,6 @@ define [
     # Mixin a Deferred
     initDeferred: ->
       _(this).extend $.Deferred()
-
-    # Mixin a synchronization state machine
-    initSyncMachine: ->
-      _(this).extend SyncMachine
 
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
