@@ -49,7 +49,7 @@ define [
       , 1
 
     it 'should remove called timeouts', ->
-      expect(delayer.timeouts.foo).to.equal undefined
+      expect(delayer.timeouts.foo).to.be undefined
 
     it 'should allow to clear a timeout', (done) ->
       spy = sinon.spy()
@@ -79,7 +79,7 @@ define [
       setIntervalStub = sinon.stub(window, 'setInterval').callsArg(0).returns(12345)
       expect(delayer.setInterval).to.be.a 'function'
       handle = delayer.setInterval 'foo', 50, spy
-      expect(handle).to.equal 12345
+      expect(handle).to.be 12345
       expect(setIntervalStub).was.called()
       expect(spy).was.called()
       setIntervalStub.restore()
@@ -88,7 +88,7 @@ define [
       setIntervalStub = sinon.stub(window, 'setInterval').returns(12345)
       expect(delayer.intervals).to.be.an 'object'
       delayer.setInterval 'foo', 1, ->
-      expect(delayer.intervals.foo).to.equal 12345
+      expect(delayer.intervals.foo).to.be 12345
       setIntervalStub.restore()
 
     it 'should allow to clear an interval', ->
@@ -108,9 +108,9 @@ define [
       handle2 = delayer.setInterval 'bar', 1, ->
       expect(delayer.clearAllIntervals).to.be.a 'function'
       delayer.clearAllIntervals()
-      expect(clearIntervalStub.callCount).to.equal 2
-      expect(clearIntervalStub.getCall(0).args[0]).to.equal handle1
-      expect(clearIntervalStub.getCall(1).args[0]).to.equal handle2
+      expect(clearIntervalStub.callCount).to.be 2
+      expect(clearIntervalStub.getCall(0).args[0]).to.be handle1
+      expect(clearIntervalStub.getCall(1).args[0]).to.be handle2
       setIntervalStub.restore()
       clearIntervalStub.restore()
 

@@ -62,21 +62,21 @@ define [
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
       mediator.publish 'beforeControllerDispose', testController
-      expect(testController.view.$el.css('display')).to.equal 'none'
+      expect(testController.view.$el.css('display')).to.be 'none'
 
     it 'should show the view of the active controller', ->
       testController.view.$el.css 'display', 'none'
       mediator.publish 'startupController', startupControllerContext
       $el = testController.view.$el
-      expect($el.css('display')).to.equal 'block'
-      expect($el.css('opacity')).to.equal '1'
-      expect($el.css('visibility')).to.equal 'visible'
+      expect($el.css('display')).to.be 'block'
+      expect($el.css('opacity')).to.be '1'
+      expect($el.css('visibility')).to.be 'visible'
 
     it 'should set the document title', (done) ->
       mediator.publish 'startupController', startupControllerContext
       setTimeout ->
         title = "#{testController.title} \u2013 #{layout.title}"
-        expect(document.title).to.equal title
+        expect(document.title).to.be title
         done()
       , 100
 
@@ -89,7 +89,7 @@ define [
       args = spy.lastCall.args
       passedPath = args[0]
       passedCallback = args[1]
-      expect(passedPath).to.equal path
+      expect(passedPath).to.be path
       expect(passedCallback).to.be.a 'function'
 
     it 'should correctly pass the query string', ->
@@ -100,7 +100,7 @@ define [
       args = spy.lastCall.args
       passedPath = args[0]
       passedCallback = args[1]
-      expect(passedPath).to.equal path
+      expect(passedPath).to.be path
       expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', spy
 
@@ -147,14 +147,14 @@ define [
       expect(spy2).was.called()
       layout.dispose()
       el.click()
-      expect(spy1.callCount).to.equal 1
-      expect(spy2.callCount).to.equal 1
+      expect(spy1.callCount).to.be 1
+      expect(spy2.callCount).to.be 1
 
     it 'should register event handlers on the document programatically', ->
       expect(layout.delegateEvents)
-        .to.equal Backbone.View::delegateEvents
+        .to.be Backbone.View::delegateEvents
       expect(layout.undelegateEvents)
-        .to.equal Backbone.View::undelegateEvents
+        .to.be Backbone.View::undelegateEvents
       expect(layout.delegateEvents).to.be.a 'function'
       expect(layout.undelegateEvents).to.be.a 'function'
 
@@ -170,8 +170,8 @@ define [
       expect(spy2).was.called()
       layout.undelegateEvents()
       el.click()
-      expect(spy1.callCount).to.equal 1
-      expect(spy2.callCount).to.equal 1
+      expect(spy1.callCount).to.be 1
+      expect(spy2.callCount).to.be 1
 
     it 'should dispose itself correctly', ->
       spy1 = sinon.spy()
@@ -183,9 +183,9 @@ define [
       expect(layout.dispose).to.be.a 'function'
       layout.dispose()
 
-      expect(layout.disposed).to.be.ok()
+      expect(layout.disposed).to.be true
       if Object.isFrozen
-        expect(Object.isFrozen(layout)).to.be.ok()
+        expect(Object.isFrozen(layout)).to.be true
 
       mediator.publish 'foo'
       $('#testbed').click()
