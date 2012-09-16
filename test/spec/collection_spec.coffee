@@ -20,25 +20,25 @@ define [
 
     expectOrder = (order) ->
       for id, index in order
-        expect(collection.at(index).id).to.equal id
+        expect(collection.at(index).id).to.be id
 
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
-        expect(collection[name]).to.equal EventBroker[name]
+        expect(collection[name]).to.be EventBroker[name]
 
     it 'should initialize a Deferred', ->
       expect(collection.initDeferred).to.be.a 'function'
       collection.initDeferred()
       for method in ['done', 'fail', 'progress', 'state', 'promise']
-        expect(typeof collection[method]).to.equal 'function'
-      expect(collection.state()).to.equal 'pending'
+        expect(typeof collection[method]).to.be 'function'
+      expect(collection.state()).to.be 'pending'
 
     it 'should initialize a SyncMachine', ->
       _.extend collection, SyncMachine
       for own name, value of SyncMachine
         if typeof value is 'function'
-          expect(collection[name]).to.equal value
-      expect(collection.syncState()).to.equal 'unsynced'
+          expect(collection[name]).to.be value
+      expect(collection.syncState()).to.be 'unsynced'
 
     it 'should add models atomically', ->
       expect(collection.addAtomic).to.be.a 'function'
@@ -86,8 +86,8 @@ define [
       collection.update ({id: i} for i in newOrder)
       expectOrder newOrder
 
-      expect(addSpy.callCount).to.equal 3
-      expect(removeSpy.callCount).to.equal 3
+      expect(addSpy.callCount).to.be 3
+      expect(removeSpy.callCount).to.be 3
       expect(resetSpy).was.notCalled()
 
     it 'should update models deeply', ->
@@ -100,24 +100,24 @@ define [
 
       for id in [1, 3, 5]
         model = collection.get id
-        expect(model.get('old1')).to.be.ok()
-        expect(model.get('old2')).to.be.ok()
-        expect(model.get('new')).to.be.ok()
+        expect(model.get('old1')).to.be true
+        expect(model.get('old2')).to.be true
+        expect(model.get('new')).to.be true
       for id in [7, 9, 11]
         model = collection.get id
-        expect(model.get('old1')).to.equal undefined
-        expect(model.get('old2')).to.be.ok()
-        expect(model.get('new')).to.be.ok()
+        expect(model.get('old1')).to.be undefined
+        expect(model.get('old2')).to.be true
+        expect(model.get('new')).to.be true
 
     it 'should dispose itself correctly', ->
       expect(collection.dispose).to.be.a 'function'
       collection.dispose()
 
-      expect(collection.length).to.equal 0
+      expect(collection.length).to.be 0
 
-      expect(collection.disposed).to.be.ok()
+      expect(collection.disposed).to.be true
       if Object.isFrozen
-        expect(Object.isFrozen(collection)).to.be.ok()
+        expect(Object.isFrozen(collection)).to.be true
 
     it 'should fire a dispose event', ->
       disposeSpy = sinon.spy()
@@ -152,7 +152,7 @@ define [
 
       collection.dispose()
 
-      expect(collection.state()).to.equal 'rejected'
+      expect(collection.state()).to.be 'rejected'
       expect(failSpy).was.called()
 
     it 'should remove instance properties', ->
