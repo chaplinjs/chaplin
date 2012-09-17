@@ -156,7 +156,7 @@ define [
     # Not only A elements might act as internal links,
     # every element might have:
     # class="go-to" data-href="/something"
-    goToHandler: (event) ->
+    goToHandler: (event) =>
       el = event.currentTarget
 
       # Do not handle A elements
