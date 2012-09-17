@@ -224,8 +224,7 @@ defined (or the getView() must be overridden)'
 
       # Show/hide existing views
       unless _(@viewsByCid).isEmpty()
-        for item, index in @collection.models
-
+        @collection.each (item, index) =>
           # Apply filter to the item
           included = if typeof filterer is 'function'
             filterer item, index
@@ -250,14 +249,12 @@ defined (or the getView() must be overridden)'
 
     # Render and insert all items
     renderAllItems: =>
-      items = @collection.models
-
       # Reset visible items
       @visibleItems = []
 
       # Collect remaining views
       remainingViewsByCid = {}
-      for item in items
+      @collection.each (item) =>
         view = @viewsByCid[item.cid]
         if view
           # View remains
@@ -271,7 +268,7 @@ defined (or the getView() must be overridden)'
           @removeView cid, view
 
       # Re-insert remaining items; render and insert new items
-      for item, index in items
+      @collection.each (item, index) =>
         # Check if view was already created
         view = @viewsByCid[item.cid]
         if view
@@ -282,7 +279,7 @@ defined (or the getView() must be overridden)'
           @renderAndInsertItem item, index
 
       # If no view was created, trigger `visibilityChange` event manually
-      unless items.length
+      unless @collection.length
         @trigger 'visibilityChange', @visibleItems
 
     # Render the view for an item
