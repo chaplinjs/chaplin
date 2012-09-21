@@ -15,7 +15,7 @@ define [
     # Mixin an EventBroker
     _(@prototype).extend EventBroker
 
-    # The site title used in the document title
+    # The site title used in the document title.
     # This should be set in your app-specific Application class
     # and passed as an option
     title: ''
@@ -36,28 +36,28 @@ define [
     initialize: (options = {}) ->
       @title = options.title
       @settings = _(options).defaults
-        routeLinks: true
+        titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
+        openExternalToBlank: false
+        routeLinks: 'a, .go-to'
+        skipRouting: '.noscript'
         # Per default, jump to the top of the page
         scrollTo: [0, 0]
 
-      # Listen to global events: Starting and disposing of controllers
-      # Showing and hiding the main views
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
-      # Adjust the document title to reflect the current controller
       @subscribeEvent 'startupController', @adjustTitle
+
+      # Set the app link routing
+      if @settings.routeLinks
+        @startLinkRouting()
 
       # Set app wide event handlers
       @delegateEvents()
 
-      if @settings.routeLinks
-        @initLinkRouting()
-
     # Take (un)delegateEvents from Backbone
     # -------------------------------------
-
-    undelegateEvents: Backbone.View::undelegateEvents
     delegateEvents: Backbone.View::delegateEvents
+    undelegateEvents: Backbone.View::undelegateEvents
 
     # Controller startup and disposal
     # -------------------------------
@@ -85,26 +85,23 @@ define [
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
     adjustTitle: (context) ->
-      title = @title
-      subtitle = context.controller.title
-      title = "#{subtitle} \u2013 #{title}" if subtitle
+      title = @title or ''
+      subtitle = context.controller.title or ''
+      title = @settings.titleTemplate {title, subtitle}
+
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
-
 
     # Automatic routing of internal links
     # -----------------------------------
 
-    initLinkRouting: ->
-      # Handle links
-      $(document)
-        .on('click', '.go-to', @goToHandler)
-        .on('click', 'a', @openLink)
+    startLinkRouting: ->
+      if @settings.routeLinks
+        $(document).on 'click', @settings.routeLinks, @openLink
 
     stopLinkRouting: ->
-      $(document)
-        .off('click', '.go-to', @goToHandler)
-        .off('click', 'a', @openLink)
+      if @settings.routeLinks
+        $(document).off 'click', @settings.routeLinks
 
     # Handle all clicks on A elements and try to route them internally
     openLink: (event) =>
@@ -112,68 +109,61 @@ define [
 
       el = event.currentTarget
       $el = $(el)
-      href = $el.attr 'href'
-      protocol = el.protocol
+      isAnchor = el.nodeName is 'A'
 
-      protocolIsExternal = if protocol
-        protocol not in ['http:', 'https:', 'file:']
-      else
-        false
+      # Get the href and perform checks on it
+      href = $el.attr('href') or $el.data('href') or null
 
-      # Ignore external URLs.
-      # Technically an empty string is a valid relative URL
-      # but it doesn’t make sense to route it.')
-      return if href is undefined or
+      # Basic href checks
+      return if href is null or href is undefined or
+        # Technically an empty string is a valid relative URL
+        # but it doesn’t make sense to route it.
         href is '' or
-        href.charAt(0) is '#' or
-        protocolIsExternal or
+        # Exclude fragment links
+        href.charAt(0) is '#'
+
+      # Checks for A elements
+      return if isAnchor and (
+        # Exclude links marked as external
         $el.attr('target') is '_blank' or
         $el.attr('rel') is 'external' or
-        $el.hasClass('noscript')
+        # Exclude links to non-HTTP ressources
+        el.protocol not in ['http:', 'https:', 'file:']
+      )
 
-      # Is it an external link?
-      internal = el.hostname is '' or location.hostname is el.hostname
+      # Apply skipRouting option
+      skipRouting = @settings.skipRouting
+      type = typeof skipRouting
+      return if type is 'function' and not skipRouting(href, el) or
+        type is 'string' and $el.is skipRouting
+
+      # Handle external links
+      internal = not isAnchor or el.hostname in [location.hostname, '']
       unless internal
-        # Open external links normally
-        # You might want to enforce opening in a new tab here:
-        #event.preventDefault()
-        #window.open el.href
+        if @settings.openExternalToBlank
+          # Open external links normally in a new tab
+          event.preventDefault()
+          window.open el.href
         return
 
-      # Try to route the link internally
+      if isAnchor
+        # Get the path with query string
+        path = el.pathname + el.search
+        # Leading slash for IE8
+        path = "/#{path}" if path.charAt(0) isnt '/'
+      else
+        path = href
 
-      # Get the path with query string
-      path = el.pathname + el.search
-      # Append a leading slash if necessary (Internet Explorer 8)
-      path = "/#{path}" if path.charAt(0) isnt '/'
-
-      # Pass to the router, try to route internally
+      # Pass to the router, try to route the path internally
       @publishEvent '!router:route', path, (routed) ->
         # Prevent default handling if the URL could be routed
-        event.preventDefault() if routed
-        # Otherwise navigate to the URL normally
-
-    # Not only A elements might act as internal links,
-    # every element might have:
-    # class="go-to" data-href="/something"
-    goToHandler: (event) =>
-      el = event.currentTarget
-
-      # Do not handle A elements
-      return if event.nodeName is 'A'
-
-      path = $(el).data('href')
-      # Ignore empty path even if it is a valid relative URL
-      return unless path
-
-      # Pass to the router, try to route internally
-      @publishEvent '!router:route', path, (routed) ->
         if routed
-          # Prevent default handling if the URL could be routed
           event.preventDefault()
-        else
-          # Navigate to the URL normally
+        else unless isAnchor
           location.href = path
+        return
+
+      return
 
     # Disposal
     # --------
