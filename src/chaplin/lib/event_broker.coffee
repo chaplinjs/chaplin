@@ -3,25 +3,26 @@ define [
 ], (mediator) ->
   'use strict'
 
-  # Add functionality to subscribe to global Publish/Subscribe events
-  # so they can be removed afterwards when disposing the object.
+  # Add functionality to subscribe and publish to global
+  # Publish/Subscribe events so they can be removed afterwards
+  # when disposing the object.
   #
   # Mixin this object to add the subscriber capability to any object:
-  # _(object).extend Subscriber
+  # _(object).extend EventBroker
   # Or to a prototype of a class:
-  # _(@prototype).extend Subscriber
+  # _(@prototype).extend EventBroker
   #
   # Since Backbone 0.9.2 this abstraction just serves the purpose
   # that a handler cannot be registered twice for the same event.
 
-  Subscriber =
+  EventBroker =
 
     subscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'Subscriber#subscribeEvent: ' +
+        throw new TypeError 'EventBroker#subscribeEvent: ' +
           'type argument must be a string'
       if typeof handler isnt 'function'
-        throw new TypeError 'Subscriber#subscribeEvent: ' +
+        throw new TypeError 'EventBroker#subscribeEvent: ' +
           'handler argument must be a function'
 
       # Ensure that a handler isn’t registered twice
@@ -32,10 +33,10 @@ define [
 
     unsubscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
-        throw new TypeError 'Subscriber#unsubscribeEvent: ' +
+        throw new TypeError 'EventBroker#unsubscribeEvent: ' +
           'type argument must be a string'
       if typeof handler isnt 'function'
-        throw new TypeError 'Subscriber#unsubscribeEvent: ' +
+        throw new TypeError 'EventBroker#unsubscribeEvent: ' +
           'handler argument must be a function'
 
       # Remove global handler
@@ -46,7 +47,15 @@ define [
       # Remove all handlers with a context of this subscriber
       mediator.unsubscribe null, null, this
 
-  # You’re frozen when your heart’s not open
-  Object.freeze? Subscriber
+    publishEvent: (type, args...) ->
+      if typeof type isnt 'string'
+        throw new TypeError 'EventBroker#publishEvent: ' +
+          'type argument must be a string'
 
-  Subscriber
+      # Publish global handler
+      mediator.publish type, args...
+
+  # You’re frozen when your heart’s not open
+  Object.freeze? EventBroker
+
+  EventBroker

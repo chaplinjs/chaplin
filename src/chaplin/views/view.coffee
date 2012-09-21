@@ -1,17 +1,17 @@
 define [
-  'jquery',
-  'underscore',
-  'backbone',
-  'chaplin/lib/utils',
-  'chaplin/lib/subscriber',
+  'jquery'
+  'underscore'
+  'backbone'
+  'chaplin/lib/utils'
+  'chaplin/lib/event_broker'
   'chaplin/models/model'
-], ($, _, Backbone, utils, Subscriber, Model) ->
+], ($, _, Backbone, utils, EventBroker, Model) ->
   'use strict'
 
   class View extends Backbone.View
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # Automatic rendering
     # -------------------
@@ -204,7 +204,7 @@ define [
       modelOrCollection.off type, handler
 
     # Unbind all recorded model event handlers
-    modelUnbindAll: () ->
+    modelUnbindAll: ->
       # Get model/collection reference
       modelOrCollection = @model or @collection
       return unless modelOrCollection
@@ -220,7 +220,7 @@ define [
     pass: (attribute, selector) ->
       @modelBind "change:#{attribute}", (model, value) =>
         $el = @$(selector)
-        if $el.is(':input')
+        if $el.is('input, textarea, select, button')
           $el.val value
         else
           $el.text value

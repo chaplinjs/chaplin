@@ -1,16 +1,51 @@
 define [
   'jquery'
+  'underscore'
   'chaplin/mediator'
-  'chaplin/lib/router'
   'chaplin/controllers/controller'
   'chaplin/views/layout'
   'chaplin/views/view'
-], ($, mediator, Router, Controller, Layout, View) ->
+], ($, _, mediator, Controller, Layout, View) ->
   'use strict'
 
   describe 'Layout', ->
     # Initialize shared variables
     layout = testController = startupControllerContext = router = null
+
+    createLink = (attributes) ->
+      attributes = if _.isObject(attributes) then _.clone(attributes) else {}
+      # Yes, this is ugly. We’re doing it because IE8-10 reports an incorrect
+      # protocol if the href attribute is set programatically.
+      if attributes.href?
+        div = document.createElement 'div'
+        div.innerHTML = "<a href='#{attributes.href}'>Hello World</a>"
+        link = div.firstChild
+        delete attributes.href
+        $link = $(link)
+      else
+        $link = $(document.createElement 'a')
+      $link.attr attributes
+
+    expectWasRouted = (linkAttributes) ->
+      stub = sinon.stub().yields(false)
+      mediator.subscribe '!router:route', stub
+      createLink(linkAttributes).appendTo(document.body).click().remove()
+      expect(stub).was.called()
+      args = stub.lastCall.args
+      passedPath = args[0]
+      passedCallback = args[1]
+      expect(passedPath).to.be linkAttributes.href
+      expect(passedCallback).to.be.a 'function'
+      mediator.unsubscribe '!router:route', stub
+      stub
+
+    expectWasNotRouted = (linkAttributes) ->
+      spy = sinon.spy()
+      mediator.subscribe '!router:route', spy
+      createLink(linkAttributes).appendTo(document.body).click().remove()
+      expect(spy).was.notCalled()
+      mediator.unsubscribe '!router:route', spy
+      spy
 
     beforeEach ->
       # Create the layout
@@ -28,178 +63,132 @@ define [
         controllerName: 'test'
         params: {}
 
-      # Create a fresh router
-      router = new Router root: '/test/'
-
     afterEach ->
       layout.dispose()
       testController.dispose()
-      router.dispose()
 
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
       mediator.publish 'beforeControllerDispose', testController
-      expect(testController.view.$el.css('display')).toBe 'none'
+      expect(testController.view.$el.css('display')).to.be 'none'
 
     it 'should show the view of the active controller', ->
       testController.view.$el.css 'display', 'none'
       mediator.publish 'startupController', startupControllerContext
       $el = testController.view.$el
-      expect($el.css('display')).toBe 'block'
-      expect($el.css('opacity')).toBe '1'
-      expect($el.css('visibility')).toBe 'visible'
+      expect($el.css('display')).to.be 'block'
+      expect($el.css('opacity')).to.be '1'
+      expect($el.css('visibility')).to.be 'visible'
 
-    it 'should set the document title', ->
-      runs ->
-        mediator.publish 'startupController', startupControllerContext
-      waits 100
-      runs ->
+    it 'should set the document title', (done) ->
+      mediator.publish 'startupController', startupControllerContext
+      setTimeout ->
         title = "#{testController.title} \u2013 #{layout.title}"
-        expect(document.title).toBe title
+        expect(document.title).to.be title
+        done()
+      , 100
 
+    # Default routing options
+    # -----------------------
 
-    # Routing
-    # =======
+    it 'should route clicks on internal links', ->
+      expectWasRouted href: '/an/internal/link'
 
-    describe 'with default routing params', ->
-      spy = null
+    it 'should correctly pass the query string', ->
+      expectWasRouted href: '/another/link?foo=bar&baz=qux'
 
-      beforeEach ->
-        spy = jasmine.createSpy()
-        mediator.subscribe '!router:route', spy
+    it 'should not route links without href attributes', ->
+      expectWasNotRouted name: 'foo'
 
-      afterEach ->
-        mediator.unsubscribe '!router:route', spy
+    it 'should not route links with empty href', ->
+      expectWasNotRouted href: ''
 
-      it 'should route clicks on internal links', ->
-        path = '/an/internal/link'
-        $("<a href='#{path}'>Hello World</a>")
-          .appendTo(document.body)
-          .click()
-          .remove()
-        args = spy.mostRecentCall.args
-        passedPath = args[0]
-        passedCallback = args[1]
-        expect(passedPath).toBe path
-        expect(typeof passedCallback).toBe 'function'
+    it 'should not route links to document fragments', ->
+      expectWasNotRouted href: '#foo'
 
-      it 'should correctly pass the query string', ->
-        path = '/another/link?foo=bar&baz=qux'
-        $("<a href='#{path}'>Hello World</a>")
-          .appendTo(document.body)
-          .click()
-          .remove()
-        args = spy.mostRecentCall.args
-        passedPath = args[0]
-        passedCallback = args[1]
-        expect(passedPath).toBe path
-        expect(typeof passedCallback).toBe 'function'
+    it 'should not route links with a noscript class', ->
+      expectWasNotRouted href: '/foo', class: 'noscript'
 
-      it 'should not route links without href attributes', ->
-        $('<a name="foo">Hello World</a>')
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
-        mediator.unsubscribe '!router:route', spy
+    it 'should not route rel=external links', ->
+      expectWasNotRouted href: '/foo', rel: 'external'
 
-        spy = jasmine.createSpy()
-        mediator.subscribe '!router:route', spy
-        $('<a>Hello World</a>')
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+    it 'should not route target=blank links', ->
+      expectWasNotRouted href: '/foo', target: '_blank'
 
-      it 'should not route links with empty href', ->
-        # Technically an empty string is a valid relative URL
-        # but it doesn’t make sense to route it
-        $('<a href="">Hello World</a>')
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+    it 'should not route non-http(s) links', ->
+      expectWasNotRouted href: 'mailto:a@a.com'
+      expectWasNotRouted href: 'javascript:1+1'
+      expectWasNotRouted href: 'tel:1488'
 
-      it 'should not route links to document fragments', ->
-        $('<a href="#foo">Hello World</a>')
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+    it 'should not route clicks on external links', ->
+      windowOpenStub = sinon.stub window, 'open'
+      expectWasNotRouted href: 'http://example.com/'
+      expectWasNotRouted href: 'https://example.com/'
+      expect(windowOpenStub).was.notCalled()
+      windowOpenStub.restore()
 
-      it 'should not route links with a noscript class', ->
-        $('<a href="/leave-the-app" class="noscript">Hello World</a>')
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+    it 'should route clicks on elements with the “go-to” class', ->
+      stub = sinon.stub().yields(true)
+      mediator.subscribe '!router:route', stub
+      path = '/an/internal/link'
+      $span = $(document.createElement 'span')
+        .addClass('go-to').attr('data-href', path)
+        .appendTo(document.body).click().remove()
+      expect(stub).was.called()
+      args = stub.lastCall.args
+      expect(args[0]).to.be path
+      expect(args[1]).to.be.a 'function'
+      mediator.unsubscribe '!router:route', stub
 
-      it 'should not route links with a target="_blank" attribute', ->
-        $('<a href="/leave-the-app" target="_blank">Hello World</a>')
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+    # With custom routing options
+    # ---------------------------
 
-      it 'should open external links in a new window', ->
-        $("<a href='http://www.example.org/'>Hello World</a>")
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+    it 'routeLinks=false should NOT route clicks on internal links', ->
+      layout.dispose()
+      layout = new Layout title: '', routeLinks: false
+      expectWasNotRouted href: '/an/internal/link'
 
-    describe 'with routing param', ->
-      spy = null
+    it 'openExternalToBlank=true should open external links in a new tab', ->
+      windowOpenStub = sinon.stub window, 'open'
+      layout.dispose()
+      layout = new Layout title: '', openExternalToBlank: true
+      expectWasNotRouted href: 'http://www.example.org/'
+      expect(windowOpenStub).was.called()
+      windowOpenStub.restore()
 
-      beforeEach ->
-        spy = jasmine.createSpy()
-        mediator.subscribe '!router:route', spy
-        layout.dispose()
+    it 'skipRouting=false should route links with a noscript class', ->
+      layout.dispose()
+      layout = new Layout title: '', skipRouting: false
+      expectWasRouted href: '/foo', class: 'noscript'
 
-      afterEach ->
-        mediator.unsubscribe '!router:route', spy
+    it 'skipRouting=function should decide whether to route', ->
+      path = '/foo'
 
-      it 'routeLinks=false should NOT route clicks on internal links', ->
-        layout = new Layout
-          title: 'Test Site Title'
-          routeLinks: false
-        $("<a href='/an/internal/link'>Hello World</a>")
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
+      stub = sinon.stub().returns(false)
+      layout.dispose()
+      layout = new Layout title: '', skipRouting: stub
+      expectWasNotRouted href: path
+      expect(stub).was.calledOnce()
+      args = stub.lastCall.args
+      expect(args[0]).to.be path
+      expect(args[1]).to.be.an 'object'
+      expect(args[1].nodeName).to.be 'A'
+      layout.dispose()
 
-      it 'openExternalToBlank=false should NOT route clicks on external links', ->
-        layout = new Layout
-          title: 'Test Site Title'
-          openExternalToBlank: false
-        $("<a href='http://www.example.org/'>Hello World</a>")
-          .appendTo(document.body)
-          .click()
-          .remove()
-        expect(spy).not.toHaveBeenCalled()
-
-      it 'skipRouting=false should route links with a noscript class', ->
-        layout = new Layout
-          title: 'Test Site Title'
-          skipRouting: false
-        path = '/an/internal/link'
-        $("<a href='#{path}'>Hello World</a>")
-          .appendTo(document.body)
-          .click()
-          .remove()
-        args = spy.mostRecentCall.args
-        passedPath = args[0]
-        passedCallback = args[1]
-        expect(passedPath).toBe path
-        expect(typeof passedCallback).toBe 'function'
-
+      stub = sinon.stub().returns(true)
+      layout = new Layout title: '', skipRouting: stub
+      expectWasRouted href: path
+      expect(stub).was.calledOnce()
+      expect(args[0]).to.be path
+      expect(args[1]).to.be.an 'object'
+      expect(args[1].nodeName).to.be 'A'
 
     # Events hash
-    # ===========
+    # -----------
+
     it 'should register event handlers on the document declaratively', ->
-      spy1 = jasmine.createSpy()
-      spy2 = jasmine.createSpy()
+      spy1 = sinon.spy()
+      spy2 = sinon.spy()
       layout.dispose()
       class TestLayout extends Layout
         events:
@@ -209,62 +198,62 @@ define [
       layout = new TestLayout
       el = $('#testbed')
       el.click()
-      expect(spy1).toHaveBeenCalled()
-      expect(spy2).toHaveBeenCalled()
+      expect(spy1).was.called()
+      expect(spy2).was.called()
       layout.dispose()
       el.click()
-      expect(spy1.callCount).toBe 1
-      expect(spy2.callCount).toBe 1
+      expect(spy1.callCount).to.be 1
+      expect(spy2.callCount).to.be 1
 
     it 'should register event handlers on the document programatically', ->
-      expect(layout.delegateEvents is Backbone.View::delegateEvents)
-        .toBe true
-      expect(layout.undelegateEvents is Backbone.View::undelegateEvents)
-        .toBe true
-      expect(typeof layout.delegateEvents).toBe 'function'
-      expect(typeof layout.undelegateEvents).toBe 'function'
+      expect(layout.delegateEvents)
+        .to.be Backbone.View::delegateEvents
+      expect(layout.undelegateEvents)
+        .to.be Backbone.View::undelegateEvents
+      expect(layout.delegateEvents).to.be.a 'function'
+      expect(layout.undelegateEvents).to.be.a 'function'
 
-      spy1 = jasmine.createSpy()
-      spy2 = jasmine.createSpy()
+      spy1 = sinon.spy()
+      spy2 = sinon.spy()
       layout.testClickHandler = spy1
       layout.delegateEvents
         'click #testbed': 'testClickHandler'
         click: spy2
       el = $('#testbed')
       el.click()
-      expect(spy1).toHaveBeenCalled()
-      expect(spy2).toHaveBeenCalled()
+      expect(spy1).was.called()
+      expect(spy2).was.called()
       layout.undelegateEvents()
       el.click()
-      expect(spy1.callCount).toBe 1
-      expect(spy2.callCount).toBe 1
+      expect(spy1.callCount).to.be 1
+      expect(spy2.callCount).to.be 1
 
     it 'should dispose itself correctly', ->
-      spy1 = jasmine.createSpy()
+      spy1 = sinon.spy()
       layout.subscribeEvent 'foo', spy1
 
-      spy2 = jasmine.createSpy()
+      spy2 = sinon.spy()
       layout.delegateEvents 'click #testbed': spy2
 
-      expect(typeof layout.dispose).toBe 'function'
+      expect(layout.dispose).to.be.a 'function'
       layout.dispose()
 
-      expect(layout.disposed).toBe true
+      expect(layout.disposed).to.be true
       if Object.isFrozen
-        expect(Object.isFrozen(layout)).toBe true
+        expect(Object.isFrozen(layout)).to.be true
 
       mediator.publish 'foo'
       $('#testbed').click()
 
       # It should unsubscribe from events
-      expect(spy1).not.toHaveBeenCalled()
-      expect(spy2).not.toHaveBeenCalled()
+      expect(spy1).was.notCalled()
+      expect(spy2).was.notCalled()
 
     it 'should be extendable', ->
-      expect(typeof Layout.extend).toBe 'function'
+      expect(Layout.extend).to.be.a 'function'
 
       DerivedLayout = Layout.extend()
       derivedLayout = new DerivedLayout()
-      expect(derivedLayout instanceof Layout).toBe true
+      expect(derivedLayout).to.be.a Layout
 
       derivedLayout.dispose()

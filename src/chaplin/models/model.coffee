@@ -1,24 +1,19 @@
 define [
-  'underscore',
-  'backbone',
+  'underscore'
+  'backbone'
   'chaplin/lib/utils'
-  'chaplin/lib/subscriber'
-  'chaplin/lib/sync_machine'
-], (_, Backbone, utils, Subscriber, SyncMachine) ->
+  'chaplin/lib/event_broker'
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Model extends Backbone.Model
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # Mixin a Deferred
     initDeferred: ->
       _(this).extend $.Deferred()
-
-    # Mixin a synchronization state machine
-    initSyncMachine: ->
-      _(this).extend SyncMachine
 
     # This method is used to get the attributes for the view template
     # and might be overwritten by decorators which cannot create a
@@ -39,7 +34,7 @@ define [
         modelStack.push model
       # Map model/collection to their attributes
       for key, value of attributes
-        if value instanceof Model
+        if value instanceof Backbone.Model
           # Don’t change the original attribute, create a property
           # on the delegator which shadows the original attribute
           delegator ?= utils.beget attributes
@@ -67,7 +62,7 @@ define [
     # (i.e. an object which has the attributes as prototype)
     # so primitive values might be added and altered safely.
     # Map models to their attributes, recursively.
-    serialize: (model) ->
+    serialize: ->
       serializeAttributes this, @getAttributes()
 
     # Disposal

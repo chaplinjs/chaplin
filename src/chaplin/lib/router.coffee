@@ -2,9 +2,9 @@ define [
   'underscore'
   'backbone'
   'chaplin/mediator'
-  'chaplin/lib/subscriber'
+  'chaplin/lib/event_broker'
   'chaplin/lib/route'
-], (_, Backbone, mediator, Subscriber, Route) ->
+], (_, Backbone, mediator, EventBroker, Route) ->
   'use strict'
 
   # The router which is a replacement for Backbone.Router.
@@ -16,8 +16,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     constructor: (@options = {}) ->
       _(@options).defaults
@@ -44,12 +44,15 @@ define [
     # Connect an address with a controller action
     # Directly create a route on the Backbone.History instance
     match: (pattern, target, options = {}) =>
-
-      # Create a route
+      # Create the route
       route = new Route pattern, target, options
-
-      # Register the route at the Backbone.History instance
-      Backbone.history.route route, route.handler
+      # Register the route at the Backbone.History instance.
+      # Don’t use Backbone.history.route here because it calls
+      # handlers.unshift, inserting the handler at the top of the list.
+      # Since we want routes to match in the order they were specified,
+      # we’re appending the route at the end.
+      Backbone.history.handlers.push {route, callback: route.handler}
+      route
 
     # Route a given URL path manually, returns whether a route matched
     # This looks quite like Backbone.History::loadUrl but it
@@ -58,7 +61,6 @@ define [
     route: (path) =>
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
-
       for handler in Backbone.history.handlers
         if handler.route.test(path)
           handler.callback path, changeURL: true

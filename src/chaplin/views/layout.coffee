@@ -1,11 +1,10 @@
 define [
-  'jquery',
-  'underscore',
-  'backbone',
-  'chaplin/mediator',
-  'chaplin/lib/utils',
-  'chaplin/lib/subscriber'
-], ($, _, Backbone, mediator, utils, Subscriber) ->
+  'jquery'
+  'underscore'
+  'backbone'
+  'chaplin/lib/utils'
+  'chaplin/lib/event_broker'
+], ($, _, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Layout # This class does not extend View
@@ -13,10 +12,10 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
-    # The site title used in the document title
+    # The site title used in the document title.
     # This should be set in your app-specific Application class
     # and passed as an option
     title: ''
@@ -38,9 +37,10 @@ define [
       @title = options.title
       @settings = _(options).defaults
         titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
-        openExternalToBlank: true
-        routeLinks: 'a'
+        openExternalToBlank: false
+        routeLinks: 'a, .go-to'
         skipRouting: '.noscript'
+        # Per default, jump to the top of the page
         scrollTo: [0, 0]
 
       @subscribeEvent 'beforeControllerDispose', @hideOldView
@@ -49,25 +49,25 @@ define [
 
       # Set the app link routing
       if @settings.routeLinks
-        @initLinkRouting()
+        @startLinkRouting()
 
       # Set app wide event handlers
       @delegateEvents()
-
 
     # Take (un)delegateEvents from Backbone
     # -------------------------------------
     delegateEvents: Backbone.View::delegateEvents
     undelegateEvents: Backbone.View::undelegateEvents
 
-
     # Controller startup and disposal
     # -------------------------------
 
     # Handler for the global beforeControllerDispose event
     hideOldView: (controller) ->
-      # Jump to the top of the page
-      scrollTo @settings.scrollTo if @settings.scrollTo
+      # Reset the scroll position
+      scrollTo = @settings.scrollTo
+      if scrollTo
+        window.scrollTo scrollTo[0], scrollTo[1]
 
       # Hide the current view
       view = controller.view
@@ -92,71 +92,78 @@ define [
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
 
-
     # Automatic routing of internal links
     # -----------------------------------
 
-    initLinkRouting: ->
+    startLinkRouting: ->
       if @settings.routeLinks
-        $(document).on 'click', @settings.routeLinks, _.bind(@openLink, this)
+        $(document).on 'click', @settings.routeLinks, @openLink
 
     stopLinkRouting: ->
       if @settings.routeLinks
         $(document).off 'click', @settings.routeLinks
 
     # Handle all clicks on A elements and try to route them internally
-    openLink: (event) ->
+    openLink: (event) =>
       return if utils.modifierKeyPressed(event)
 
       el = event.currentTarget
       $el = $(el)
-      href = el.getAttribute('href') or $(el).data('href') or null
-      target = $(el).attr('target')
+      isAnchor = el.nodeName is 'A'
 
+      # Get the href and perform checks on it
+      href = $el.attr('href') or $el.data('href') or null
 
-      # Link test ---------------
+      # Basic href checks
+      return if href is null or href is undefined or
+        # Technically an empty string is a valid relative URL
+        # but it doesn’t make sense to route it.
+        href is '' or
+        # Exclude fragment links
+        href.charAt(0) is '#'
+
+      # Checks for A elements
+      return if isAnchor and (
+        # Exclude links marked as external
+        $el.attr('target') is '_blank' or
+        $el.attr('rel') is 'external' or
+        # Exclude links to non-HTTP ressources
+        el.protocol not in ['http:', 'https:', 'file:']
+      )
+
+      # Apply skipRouting option
       skipRouting = @settings.skipRouting
-      if typeof skipRouting is 'function'
-        skipRouting = skipRouting(href)
-      else if typeof skipRouting is 'string'
-        skipRouting = $el.is(skipRouting)
-      else
-        skipRouting = skipRouting
+      type = typeof skipRouting
+      return if type is 'function' and not skipRouting(href, el) or
+        type is 'string' and $el.is skipRouting
 
-      return if href is null or
-                href is '' or
-                href.charAt(0) is '#' or
-                target is '_blank' or
-                skipRouting
-
-
-      # External link -----------
-      currentHostname = location.hostname.replace('.', '\\.')
-      external = not ///#{currentHostname}$///i.test(el.hostname)
-
-      if external
+      # Handle external links
+      internal = not isAnchor or el.hostname in [location.hostname, '']
+      unless internal
         if @settings.openExternalToBlank
-          event.preventDefault() and window.open el.href
-
+          # Open external links normally in a new tab
+          event.preventDefault()
+          window.open el.href
         return
 
-
-      # Internal link -----------
-      if el.nodeName is 'A'
-        path = el.pathname + el.search                  # path + query string
-        path = "/#{path}" if path.charAt(0) isnt '/'    # starting '/' for IE8
-        callback = (routed) -> event.preventDefault() if routed
+      if isAnchor
+        # Get the path with query string
+        path = el.pathname + el.search
+        # Leading slash for IE8
+        path = "/#{path}" if path.charAt(0) isnt '/'
       else
         path = href
-        callback = (routed) -> if routed then event.preventDefault() else location.href = path
 
-      # Pass to the router, try to route internally
-      mediator.publish '!router:route', path, callback
+      # Pass to the router, try to route the path internally
+      @publishEvent '!router:route', path, (routed) ->
+        # Prevent default handling if the URL could be routed
+        if routed
+          event.preventDefault()
+        else unless isAnchor
+          location.href = path
+        return
 
-      # mediator.publish '!router:route', path, (routed) ->
-      #   event.preventDefault() if routed
-
-
+      return
 
     # Disposal
     # --------

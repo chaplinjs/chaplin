@@ -108,4 +108,6 @@ testConvertExports = ->
   console.log convertExports test
 
 # testConvertExports()
-console.log convertExports fs.readFileSync('/dev/stdin').toString()
+stdin = process.openStdin()
+stdin.on 'data', (chunk) ->
+  process.stdout.write convertExports chunk.toString()

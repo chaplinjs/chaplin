@@ -7,3 +7,6 @@ coffee --bare --output test/js/ test/spec/
 This compiles both to the directory test/js/.
 
 Now open test/index.html in a browser to run the tests.
+
+For test-driven development, start both commands with the --watch option
+so the code is compiled whenever the library or the test code changes.

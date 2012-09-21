@@ -1,10 +1,9 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
   'chaplin/lib/utils'
-  'chaplin/lib/subscriber'
-], (_, Backbone, mediator, utils, Subscriber) ->
+  'chaplin/lib/event_broker'
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
 
   class Dispatcher
@@ -12,8 +11,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # The previous controller name
     previousControllerName: null
@@ -108,7 +107,7 @@ define [
       # Dispose the current controller
       if currentController
         # Notify the rest of the world beforehand
-        mediator.publish 'beforeControllerDispose', currentController
+        @publishEvent 'beforeControllerDispose', currentController
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
 
@@ -133,7 +132,7 @@ define [
       @adjustURL controller, params
 
       # We're done! Spread the word!
-      mediator.publish 'startupController',
+      @publishEvent 'startupController',
         previousControllerName: @previousControllerName
         controller: @currentController
         controllerName: @currentControllerName
@@ -141,7 +140,7 @@ define [
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params) ->
-      if params.path
+      if params.path or params.path is ''
         # Just use the matched path
         url = params.path
 
@@ -159,8 +158,7 @@ define [
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
-      if params.changeURL
-        mediator.publish '!router:changeURL', url
+      @publishEvent '!router:changeURL', url if params.changeURL
 
       # Save the URL
       @url = url

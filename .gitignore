@@ -1,6 +1,9 @@
-build/chaplin*
+build/amd
+build/commonjs
 test/js/*.js
 test/js/*/*.js
 test/js/*/*/*.js
 
 /build/chaplin-*
+
+.DS_Store

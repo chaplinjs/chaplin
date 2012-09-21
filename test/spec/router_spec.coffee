@@ -19,7 +19,7 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router root: '/test/'
+      router = new Router randomOption: 'foo'
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
@@ -28,88 +28,171 @@ define [
       mediator.unsubscribe 'matchRoute', matchRoute
 
     it 'should create a Backbone.History instance', ->
-      expect(Backbone.history instanceof Backbone.History).toBe true
-
-    it 'should create a Backbone.History instance', ->
-      expect(Backbone.history instanceof Backbone.History).toBe true
+      expect(Backbone.history).to.be.a Backbone.History
 
     it 'should not start the Backbone.History at once', ->
-      expect(Backbone.History.started).toBe false
+      expect(Backbone.History.started).to.not.be.ok()
 
-    it 'should fire a matchRoute event', ->
-      spy = jasmine.createSpy()
+    it 'should allow to start the Backbone.History', ->
+      spy = sinon.spy(Backbone.history, 'start')
+      expect(router.startHistory).to.be.a 'function'
+      router.startHistory()
+      expect(Backbone.History.started).to.be true
+      expect(spy).was.called()
+
+    it 'should default to pushState', ->
+      router.startHistory()
+      expect(router.options).to.be.an 'object'
+      expect(Backbone.history.options.pushState).to.be router.options.pushState
+
+    it 'should pass the options to the Backbone.History instance', ->
+      router.startHistory()
+      expect(Backbone.history.options.randomOption).to.be 'foo'
+
+    it 'should allow to stop the Backbone.History', ->
+      router.startHistory()
+      spy = sinon.spy(Backbone.history, 'stop')
+      expect(router.stopHistory).to.be.a 'function'
+      router.stopHistory()
+      expect(Backbone.History.started).to.not.be.ok()
+      expect(spy).was.called()
+
+    it 'should have a match method which returns a route', ->
+      expect(router.match).to.be.a 'function'
+      route = router.match '', 'null#null'
+      expect(route).to.be.a Route
+
+    it 'should fire a matchRoute event when a route matches', ->
+      spy = sinon.spy()
       mediator.subscribe 'matchRoute', spy
-      router.match '', 'x#y'
+      router.match '', 'null#null'
 
       router.route '/'
-      expect(spy).toHaveBeenCalled()
+      expect(spy).was.called()
 
       mediator.unsubscribe 'matchRoute', spy
 
     it 'should match correctly', ->
-      spy = jasmine.createSpy()
+      spy = sinon.spy()
       mediator.subscribe 'matchRoute', spy
       router.match 'correct-match1', 'null#null'
       router.match 'correct-match2', 'null#null'
 
       routed = router.route '/correct-match1'
-      expect(routed).toBe true
-      expect(spy.calls.length).toBe 1
+      expect(routed).to.be true
+      expect(spy.callCount).to.be 1
+
+      mediator.unsubscribe 'matchRoute', spy
+
+    it 'should match in order specified when calling router.route', ->
+      spy = sinon.spy()
+      mediator.subscribe 'matchRoute', spy
+      router.match 'params/:one', 'null#null'
+      router.match 'params/:two', 'null#null'
+
+      routed = router.route '/params/1'
+
+      expect(routed).to.be true
+      expect(spy.callCount).to.be 1
+      expect(params.one).to.be '1'
+      expect(params.two).to.be undefined
+
+      mediator.unsubscribe 'matchRoute', spy
+
+    it 'should match in order specified when called by Backbone.History', ->
+      spy = sinon.spy()
+      mediator.subscribe 'matchRoute', spy
+      router.match 'params/:one', 'null#null'
+      router.match 'params/:two', 'null#null'
+
+      router.startHistory()
+      routed = Backbone.history.loadUrl '/params/1'
+
+      expect(routed).to.be true
+      expect(spy.callCount).to.be 1
+      expect(params.one).to.be '1'
+      expect(params.two).to.be undefined
 
       mediator.unsubscribe 'matchRoute', spy
 
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
-        expect(-> router.match '', "null##{prop}").toThrow()
+        expect(-> router.match '', "null##{prop}").to.throwError()
 
     it 'should pass the route to the matchRoute handler', ->
       router.match 'passing-the-route', 'null#null'
       router.route '/passing-the-route'
-      expect(route instanceof Route).toBe true
+      expect(route).to.be.a Route
 
     it 'should provide controller name and action', ->
       router.match 'controller/action', 'controller#action'
       router.route '/controller/action'
-      expect(route.controller).toBe 'controller'
-      expect(route.action).toBe 'action'
-
-    it 'should extract URL parameters', ->
-      router.match 'params/:one/:p_two_123/three', 'null#null'
-      router.route '/params/123-foo/456-bar/three'
-      expect(_.isObject params).toBe true
-      expect(params.one).toBe '123-foo'
-      expect(params.p_two_123).toBe '456-bar'
-
-    it 'should extract non-ascii URL parameters', ->
-      router.match 'params/:one/:two/:three/:four', 'null#null'
-      router.route "/params/o_O/*.*/ü~ö~ä/#{encodeURIComponent('éêè')}"
-      expect(_.isObject params).toBe true
-      expect(params.one).toBe 'o_O'
-      expect(params.two).toBe '*.*'
-      expect(params.three).toBe 'ü~ö~ä'
-      expect(params.four).toBe encodeURIComponent('éêè')
+      expect(route.controller).to.be 'controller'
+      expect(route.action).to.be 'action'
 
     it 'should accept a regular expression as pattern', ->
       router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
       router.route '/raw/regular/expression'
-      expect(_.isObject route).toBe true
-      expect(_.isObject params).toBe true
-      expect(params[0]).toBe 'raw'
-      expect(params[1]).toBe 'regular'
-      expect(params[2]).toBe 'expression'
+      expect(params).to.be.an 'object'
+      expect(params[0]).to.be 'raw'
+      expect(params[1]).to.be 'regular'
+      expect(params[2]).to.be 'expression'
+
+    it 'should accept a empty regular expression as catch-all', ->
+      router.match '', 'null#null'
+      router.match /(?:)/, 'null#null'
+      router.route "#{Math.random()}"
+      expect(params).to.be.an 'object'
+
+    it 'should extract named parameters', ->
+      router.match 'params/:one/:p_two_123/three', 'null#null'
+      router.route '/params/123-foo/456-bar/three'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be '123-foo'
+      expect(params.p_two_123).to.be '456-bar'
+
+    it 'should extract non-ascii named parameters', ->
+      router.match 'params/:one/:two/:three/:four', 'null#null'
+      router.route "/params/o_O/*.*/ü~ö~ä/#{encodeURIComponent('éêè')}"
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be 'o_O'
+      expect(params.two).to.be '*.*'
+      expect(params.three).to.be 'ü~ö~ä'
+      expect(params.four).to.be encodeURIComponent('éêè')
+
+    it 'should match splat parameters', ->
+      router.match 'params/:one/*two', 'null#null'
+      router.route '/params/123-foo/456-bar/789-qux'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be '123-foo'
+      expect(params.two).to.be '456-bar/789-qux'
+
+    it 'should match splat parameters at the beginning', ->
+      router.match 'params/*one/:two', 'null#null'
+      router.route '/params/123-foo/456-bar/789-qux'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be '123-foo/456-bar'
+      expect(params.two).to.be '789-qux'
+
+    it 'should match splat parameters before a named parameter', ->
+      router.match 'params/*one:two', 'null#null'
+      router.route '/params/123-foo/456-bar/789-qux'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be '123-foo/456-bar/'
+      expect(params.two).to.be '789-qux'
 
     it 'should impose constraints', ->
-      spy = jasmine.createSpy()
+      spy = sinon.spy()
       mediator.subscribe 'matchRoute', spy
       router.match 'constraints/:id', 'null#null',
         constraints:
           id: /^\d+$/
 
       router.route '/constraints/123-foo'
-      expect(spy).not.toHaveBeenCalled()
+      expect(spy).was.notCalled()
 
       router.route '/constraints/123'
-      expect(spy).toHaveBeenCalled()
+      expect(spy).was.called()
 
       mediator.unsubscribe 'matchRoute', spy
 
@@ -119,8 +202,8 @@ define [
           foo: 'bar'
 
       router.route '/fixed-params/123'
-      expect(params.id).toBe '123'
-      expect(params.foo).toBe 'bar'
+      expect(params.id).to.be '123'
+      expect(params.foo).to.be 'bar'
 
     it 'should not overwrite fixed parameters', ->
       router.match 'conflicting-params/:foo', 'null#null',
@@ -128,7 +211,7 @@ define [
           foo: 'bar'
 
       router.route '/conflicting-params/123'
-      expect(params.foo).toBe 'bar'
+      expect(params.foo).to.be 'bar'
 
     it 'should pass query string parameters', ->
       router.match 'query-string', 'null#null'
@@ -144,86 +227,80 @@ define [
       , '?')
 
       router.route "query-string#{queryString}"
-      expect(params.foo).toBe input.foo
-      expect(params.bar).toBe input.bar
-      expect(params['q&uu=x']).toBe input['q&uu=x']
+      expect(params.foo).to.be input.foo
+      expect(params.bar).to.be input.bar
+      expect(params['q&uu=x']).to.be input['q&uu=x']
+
+    it 'should extract named parameters along with query params', ->
+      router.match 'params/:one', 'null#null'
+      router.route '/params/named?foo=query123&bar=query_456&qux=789%20query'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be 'named'
+      expect(params.foo).to.be 'query123'
+      expect(params.bar).to.be 'query_456'
+      expect(params.qux).to.be '789 query'
+
+    it 'should extract named parameters along with splats', ->
+      router.match 'params/*one', 'null#null'
+      router.route '/params/foo/bar/qux?foo=query123&bar=query_456&qux=789%20query'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be 'foo/bar/qux'
+      expect(params.foo).to.be 'query123'
+      expect(params.bar).to.be 'query_456'
+      expect(params.qux).to.be '789 query'
 
     it 'should listen to the !router:route event', ->
       path = 'router-route-events'
-      spyOn(router, 'route').andCallThrough()
-      spy = jasmine.createSpy()
+      sinon.spy(router, 'route')
+      spy = sinon.spy()
       router.match path, 'router#route'
 
       mediator.publish '!router:route', path, spy
-      expect(router.route).toHaveBeenCalledWith path
-      expect(spy).toHaveBeenCalledWith true
-      expect(route.controller).toBe 'router'
-      expect(route.action).toBe 'route'
+      expect(router.route).was.calledWith path
+      expect(spy).was.calledWith true
+      expect(route.controller).to.be 'router'
+      expect(route.action).to.be 'route'
 
-      spy = jasmine.createSpy()
+      spy = sinon.spy()
       mediator.publish '!router:route', 'different-path', spy
-      expect(spy).toHaveBeenCalledWith false
+      expect(spy).was.calledWith false
 
     it 'should listen to the !router:changeURL event', ->
       path = 'router-changeurl-events'
-      spyOn(router, 'changeURL').andCallThrough()
+      sinon.spy(router, 'changeURL')
 
       mediator.publish '!router:changeURL', path
-      expect(router.changeURL).toHaveBeenCalledWith path
-
-    it 'should allow to start the Backbone.History', ->
-      spy = spyOn(Backbone.history, 'start').andCallThrough()
-      expect(typeof router.startHistory).toBe 'function'
-      router.startHistory()
-      expect(Backbone.History.started).toBe true
-      expect(spy).toHaveBeenCalled()
-
-    it 'should default to pushState', ->
-      router.startHistory()
-      expect(_.isObject router.options).toBe true
-      expect(Backbone.history.options.pushState).toBe router.options.pushState
-
-    it 'should pass the options to the Backbone.History instance', ->
-      router.startHistory()
-      expect(Backbone.history.options.root).toBe '/test/'
-
-    it 'should allow to stop the Backbone.History', ->
-      router.startHistory()
-      spy = spyOn(Backbone.history, 'stop').andCallThrough()
-      expect(typeof router.stopHistory).toBe 'function'
-      router.stopHistory()
-      expect(Backbone.History.started).toBe false
-      expect(spy).toHaveBeenCalled()
+      expect(router.changeURL).was.calledWith path
 
     it 'should dispose itself correctly', ->
-      expect(typeof router.dispose).toBe 'function'
+      expect(router.dispose).to.be.a 'function'
       router.dispose()
 
-      expect(Backbone.history).toBe undefined
+      expect(Backbone.history).to.be undefined
 
       expect(->
-        router.match '', 'x#y'
-      ).toThrow()
+        router.match '', 'null#null'
+      ).to.throwError()
 
       expect(->
         router.route '/'
-      ).toThrow()
+      ).to.throwError()
 
-      expect(router.disposed).toBe true
+      expect(router.disposed).to.be true
       if Object.isFrozen
-        expect(Object.isFrozen(router)).toBe true
+        expect(Object.isFrozen(router)).to.be true
 
     it 'should be extendable', ->
-      expect(typeof Router.extend).toBe 'function'
+      expect(Router.extend).to.be.a 'function'
       # Also test Route
-      expect(typeof Route.extend).toBe 'function'
+      expect(Route.extend).to.be.a 'function'
 
       DerivedRouter = Router.extend()
       derivedRouter = new DerivedRouter()
-      expect(derivedRouter instanceof Router).toBe true
+      expect(derivedRouter).to.be.a Router
 
       DerivedRoute = Route.extend()
       derivedRoute = new DerivedRoute 'foo', 'foo#bar'
-      expect(derivedRoute instanceof Route).toBe true
+      expect(derivedRoute).to.be.a Route
 
       derivedRouter.dispose()

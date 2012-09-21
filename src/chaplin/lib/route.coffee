@@ -1,15 +1,18 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
+  'chaplin/lib/event_broker'
   'chaplin/controllers/controller'
-], (_, Backbone, mediator, Controller) ->
+], (_, Backbone, EventBroker, Controller) ->
   'use strict'
 
   class Route
 
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
+
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     reservedParams = ['path', 'changeURL']
     # Taken from Backbone.Router
@@ -42,7 +45,7 @@ define [
         # Escape magic characters
         .replace(escapeRegExp, '\\$&')
         # Replace named parameters, collecting their names
-        .replace(/:(\w+)/g, @addParamName)
+        .replace(/(?::|\*)(\w+)/g, @addParamName)
 
       # Create the actual regular expression
       # Match until the end of the URL or the begin of query string
@@ -56,7 +59,12 @@ define [
       # Save parameter name
       @paramNames.push paramName
       # Replace with a character class
-      '([^\/]+)'
+      if match.charAt(0) is ':'
+        # Regexp for :foo
+        '([^\/\?]+)'
+      else
+        # Regexp for *foo
+        '(.*?)'
 
     # Test if the route matches to a path (called by Backbone.History#loadUrl)
     test: (path) ->
@@ -81,7 +89,7 @@ define [
       params = @buildParams path, options
 
       # Publish a global matchRoute event passing the route and the params
-      mediator.publish 'matchRoute', this, params
+      @publishEvent 'matchRoute', this, params
 
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` and `additionalParams` arguments are optional

@@ -1,9 +1,8 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
-  'chaplin/lib/subscriber'
-], (_, Backbone, mediator, Subscriber) ->
+  'chaplin/lib/event_broker'
+], (_, Backbone, EventBroker) ->
   'use strict'
 
   class Controller
@@ -11,8 +10,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin a Subscriber
-    _(@prototype).extend Subscriber
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     view: null
     currentId: null
@@ -40,12 +39,12 @@ define [
       @redirected = true
       if arguments.length is 1
         # URL was passed, try to route it
-        mediator.publish '!router:route', arg1, (routed) ->
+        @publishEvent '!router:route', arg1, (routed) ->
           unless routed
             throw new Error 'Controller#redirectTo: no route matched'
       else
         # Assume controller and action names were passed
-        mediator.publish '!startupController', arg1, action, params
+        @publishEvent '!startupController', arg1, action, params
 
     # Disposal
     # --------
