@@ -2,11 +2,10 @@ define [
   'jquery'
   'underscore'
   'chaplin/mediator'
-  'chaplin/lib/router'
   'chaplin/controllers/controller'
   'chaplin/views/layout'
   'chaplin/views/view'
-], ($, _, mediator, Router, Controller, Layout, View) ->
+], ($, _, mediator, Controller, Layout, View) ->
   'use strict'
 
   describe 'Layout', ->
@@ -27,13 +26,26 @@ define [
         $link = $(document.createElement 'a')
       $link.attr attributes
 
+    expectWasRouted = (linkAttributes) ->
+      stub = sinon.stub().yields(false)
+      mediator.subscribe '!router:route', stub
+      createLink(linkAttributes).appendTo(document.body).click().remove()
+      expect(stub).was.called()
+      args = stub.lastCall.args
+      passedPath = args[0]
+      passedCallback = args[1]
+      expect(passedPath).to.be linkAttributes.href
+      expect(passedCallback).to.be.a 'function'
+      mediator.unsubscribe '!router:route', stub
+      stub
+
     expectWasNotRouted = (linkAttributes) ->
       spy = sinon.spy()
       mediator.subscribe '!router:route', spy
-      $link = createLink linkAttributes
-      $link.appendTo(document.body).click().remove()
+      createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
+      spy
 
     beforeEach ->
       # Create the layout
@@ -51,13 +63,9 @@ define [
         controllerName: 'test'
         params: {}
 
-      # Create a fresh router
-      router = new Router()
-
     afterEach ->
       layout.dispose()
       testController.dispose()
-      router.dispose()
 
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
@@ -80,29 +88,14 @@ define [
         done()
       , 100
 
+    # Default routing options
+    # -----------------------
+
     it 'should route clicks on internal links', ->
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      path = '/an/internal/link'
-      createLink(href: path).appendTo(document.body).click().remove()
-      expect(spy).was.called()
-      args = spy.lastCall.args
-      passedPath = args[0]
-      passedCallback = args[1]
-      expect(passedPath).to.be path
-      expect(passedCallback).to.be.a 'function'
+      expectWasRouted href: '/an/internal/link'
 
     it 'should correctly pass the query string', ->
-      spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
-      path = '/another/link?foo=bar&baz=qux'
-      createLink(href: path).appendTo(document.body).click().remove()
-      args = spy.lastCall.args
-      passedPath = args[0]
-      passedCallback = args[1]
-      expect(passedPath).to.be path
-      expect(passedCallback).to.be.a 'function'
-      mediator.unsubscribe '!router:route', spy
+      expectWasRouted href: '/another/link?foo=bar&baz=qux'
 
     it 'should not route links without href attributes', ->
       expectWasNotRouted name: 'foo'
@@ -128,8 +121,70 @@ define [
       expectWasNotRouted href: 'tel:1488'
 
     it 'should not route clicks on external links', ->
+      windowOpenStub = sinon.stub window, 'open'
       expectWasNotRouted href: 'http://example.com/'
       expectWasNotRouted href: 'https://example.com/'
+      expect(windowOpenStub).was.notCalled()
+      windowOpenStub.restore()
+
+    it 'should route clicks on elements with the “go-to” class', ->
+      stub = sinon.stub().yields(true)
+      mediator.subscribe '!router:route', stub
+      path = '/an/internal/link'
+      $span = $(document.createElement 'span')
+        .addClass('go-to').attr('data-href', path)
+        .appendTo(document.body).click().remove()
+      expect(stub).was.called()
+      args = stub.lastCall.args
+      expect(args[0]).to.be path
+      expect(args[1]).to.be.a 'function'
+      mediator.unsubscribe '!router:route', stub
+
+    # With custom routing options
+    # ---------------------------
+
+    it 'routeLinks=false should NOT route clicks on internal links', ->
+      layout.dispose()
+      layout = new Layout title: '', routeLinks: false
+      expectWasNotRouted href: '/an/internal/link'
+
+    it 'openExternalToBlank=true should open external links in a new tab', ->
+      windowOpenStub = sinon.stub window, 'open'
+      layout.dispose()
+      layout = new Layout title: '', openExternalToBlank: true
+      expectWasNotRouted href: 'http://www.example.org/'
+      expect(windowOpenStub).was.called()
+      windowOpenStub.restore()
+
+    it 'skipRouting=false should route links with a noscript class', ->
+      layout.dispose()
+      layout = new Layout title: '', skipRouting: false
+      expectWasRouted href: '/foo', class: 'noscript'
+
+    it 'skipRouting=function should decide whether to route', ->
+      path = '/foo'
+
+      stub = sinon.stub().returns(false)
+      layout.dispose()
+      layout = new Layout title: '', skipRouting: stub
+      expectWasNotRouted href: path
+      expect(stub).was.calledOnce()
+      args = stub.lastCall.args
+      expect(args[0]).to.be path
+      expect(args[1]).to.be.an 'object'
+      expect(args[1].nodeName).to.be 'A'
+      layout.dispose()
+
+      stub = sinon.stub().returns(true)
+      layout = new Layout title: '', skipRouting: stub
+      expectWasRouted href: path
+      expect(stub).was.calledOnce()
+      expect(args[0]).to.be path
+      expect(args[1]).to.be.an 'object'
+      expect(args[1].nodeName).to.be 'A'
+
+    # Events hash
+    # -----------
 
     it 'should register event handlers on the document declaratively', ->
       spy1 = sinon.spy()
