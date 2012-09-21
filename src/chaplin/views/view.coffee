@@ -163,8 +163,8 @@ define [
       @$el.unbind ".delegate#{@cid}"
 
     # Model binding
-    # The following implementation resembles subscriber.coffee
-    # --------------------------------------------------------
+    # The following implementation resembles EventBroker
+    # --------------------------------------------------
 
     # Bind to a model event
     modelBind: (type, handler) ->
