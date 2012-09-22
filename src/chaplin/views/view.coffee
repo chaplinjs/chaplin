@@ -365,7 +365,7 @@ define [
       return if @disposed
 
       # Dispose subviews
-      subview.dispose() for subview in @subviews if @subviews?
+      subview.dispose() for subview in @subviews
 
       # Unbind handlers of global events
       @unsubscribeAllEvents()
