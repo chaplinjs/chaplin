@@ -63,9 +63,6 @@ define [
     # View lists
     # ----------
 
-    # Hash which saves all item views by model CID
-    viewsByCid: null
-
     # Track a list of the visible views
     visibleItems: null
 
@@ -97,8 +94,7 @@ defined (or the getView() must be overridden)'
 
       @itemView = options.itemView if options.itemView?
 
-      # Initialize lists for views and visible items
-      @viewsByCid = {}
+      # Initialize list for visible items
       @visibleItems = []
 
       # Debugging
@@ -207,6 +203,13 @@ defined (or the getView() must be overridden)'
     # Filtering
     # ---------
 
+    # Filters only child item views from all current subviews.
+    getItemViews: ->
+      itemViews = {}
+      for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
+        itemViews[name.slice(9)] = view
+      itemViews
+
     # Applies a filter to the collection view.
     # Expects an iterator function as parameter.
     # If no callback, hides all items for which the iterator returns false.
@@ -223,7 +226,7 @@ defined (or the getView() must be overridden)'
         @updateVisibleItems view.model, included, false
 
       # Show/hide existing views
-      unless _(@viewsByCid).isEmpty()
+      unless _(@getItemViews()).isEmpty()
         for item, index in @collection.models
 
           # Apply filter to the item
@@ -233,7 +236,7 @@ defined (or the getView() must be overridden)'
             true
 
           # Show/hide the view accordingly
-          view = @viewsByCid[item.cid]
+          view = @subview "itemView:#{item.cid}"
           # A view has not been created for this item yet
           unless view
             throw new Error 'CollectionView#filter: ' +
@@ -258,22 +261,20 @@ defined (or the getView() must be overridden)'
       # Collect remaining views
       remainingViewsByCid = {}
       for item in items
-        view = @viewsByCid[item.cid]
+        view = @subview "itemView:#{item.cid}"
         if view
           # View remains
           remainingViewsByCid[item.cid] = view
 
       # Remove old views of items not longer in the list
-      for own cid, view of @viewsByCid
-        # Check if the view remains
-        unless cid of remainingViewsByCid
-          # Remove the view
-          @removeView cid, view
+      for own cid, view of @getItemViews() when cid not of remainingViewsByCid
+        # Remove the view
+        @removeSubview "itemView:#{cid}"
 
       # Re-insert remaining items; render and insert new items
       for item, index in items
         # Check if view was already created
-        view = @viewsByCid[item.cid]
+        view = @subview "itemView:#{item.cid}"
         if view
           # Re-insert the view
           @insertView item, view, index, false
@@ -293,13 +294,13 @@ defined (or the getView() must be overridden)'
     # Instantiate and render an item using the `viewsByCid` hash as a cache
     renderItem: (item) ->
       # Get the existing view
-      view = @viewsByCid[item.cid]
+      view = @subview "itemView:#{item.cid}"
 
       # Instantiate a new view by calling getView if necessary
       unless view
         view = @getView(item)
-        # Save the view in the viewsByCid hash
-        @viewsByCid[item.cid] = view
+        # Save the view in the subviews
+        @subview "itemView:#{item.cid}", view
 
       # Render in any case
       view.render()
@@ -381,19 +382,7 @@ defined (or the getView() must be overridden)'
     removeViewForItem: (item) ->
       # Remove item from visibleItems list, trigger a `visibilityChange` event
       @updateVisibleItems item, false
-
-      # Get the view
-      view = @viewsByCid[item.cid]
-
-      @removeView item.cid, view
-
-    # Remove a view
-    removeView: (cid, view) ->
-      # Dispose the view
-      view.dispose()
-
-      # Remove the view from the hash
-      delete @viewsByCid[cid]
+      @removeSubview "itemView:#{item.cid}"
 
     # List of visible items
     # ---------------------
@@ -428,13 +417,10 @@ defined (or the getView() must be overridden)'
     dispose: ->
       return if @disposed
 
-      # Dispose all item views
-      view.dispose() for own cid, view of @viewsByCid
-
       # Remove jQuery objects, item view cache and visible items list
       properties = [
         '$list', '$fallback', '$loading',
-        'viewsByCid', 'visibleItems'
+        'visibleItems'
       ]
       delete this[prop] for prop in properties
 
