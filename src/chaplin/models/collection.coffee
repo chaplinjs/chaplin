@@ -20,6 +20,16 @@ define [
     initDeferred: ->
       _(this).extend $.Deferred()
 
+    # Serializes collection
+    serialize: ->
+      items = []
+      for model in @models
+        item = if model instanceof Chaplin.Model
+          model.serialize()
+        else
+          model.toJSON() ? model
+      items
+
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
     addAtomic: (models, options = {}) ->
