@@ -10,6 +10,13 @@ define [
   # and should instantiate a corresponding item view.
   class CollectionView extends View
 
+    # Automatic rendering
+    # -------------------
+
+    # Render all items immediately per default
+    autoRender: true
+    renderItems: true
+
     # Configuration options
     # ---------------------
 
@@ -91,11 +98,7 @@ defined (or the getView() must be overridden)'
       # These are stored as normal properties, not in Backbone’s options hash
       # so derived classes may override them when calling super.
       _(options).defaults
-        render: true      # Render the view immediately per default
-        renderItems: true # Render all items immediately per default
         filterer: null    # No filter function
-
-      @itemView = options.itemView if options.itemView?
 
       # Initialize lists for views and visible items
       @viewsByCid = {}
@@ -110,14 +113,11 @@ defined (or the getView() must be overridden)'
       # Start observing the collection
       @addCollectionListeners()
 
+      @renderItems = options.renderItems if options.renderItems?
+      @itemView = options.itemView if options.itemView?
+
       # Apply the filter function
-      @filter options.filterer if options.filterer
-
-      # Render template once
-      @render() if options.render
-
-      # Render all items initially
-      @renderAllItems() if options.renderItems
+      @filter options.filterer if options.filterer?
 
     # Binding of collection listeners
     addCollectionListeners: ->
@@ -149,6 +149,9 @@ defined (or the getView() must be overridden)'
 
       @initFallback()
       @initLoadingIndicator()
+
+      # Render all items
+      @renderAllItems() if @renderItems
 
     # Fallback message when the collection is empty
     # ---------------------------------------------

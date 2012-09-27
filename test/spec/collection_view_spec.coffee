@@ -422,10 +422,10 @@ define [
       for prop in ['$list', '$fallback', '$loading']
         expect(_(collectionView).has prop).to.not.be.ok()
 
-    it 'should respect the render and renderItems options', ->
+    it 'should respect the autoRender and renderItems options', ->
       collectionView = new TemplatedCollectionView
         collection: collection
-        render: false
+        autoRender: false
         renderItems: false
 
       children = getAllChildren()
