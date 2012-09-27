@@ -94,7 +94,7 @@ defined (or the getView() must be overridden)'
 
       @itemView = options.itemView if options.itemView?
 
-      # Initialize lists for views and visible items
+      # Initialize list for visible items
       @visibleItems = []
 
       # Debugging
@@ -299,7 +299,7 @@ defined (or the getView() must be overridden)'
       # Instantiate a new view by calling getView if necessary
       unless view
         view = @getView(item)
-        # Save the view in the viewsByCid hash
+        # Save the view in the subviews
         @subview "itemView:#{item.cid}", view
 
       # Render in any case
