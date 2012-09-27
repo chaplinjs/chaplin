@@ -25,9 +25,12 @@ define [
       items = []
       for model in @models
         item = if model instanceof Chaplin.Model
+          # Use optimised Chaplin serialization
           model.serialize()
         else
-          model.toJSON() ? model
+          # Fall back to unoptimized Backbone stuff
+          model.toJSON()
+        items.push item
       items
 
     # Adds a collection atomically, i.e. throws no event until
