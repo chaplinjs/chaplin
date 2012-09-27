@@ -267,11 +267,9 @@ defined (or the getView() must be overridden)'
           remainingViewsByCid[item.cid] = view
 
       # Remove old views of items not longer in the list
-      for own cid, view of @getItemViews()
-        # Check if the view remains
-        unless cid of remainingViewsByCid
-          # Remove the view
-          @removeView cid, view
+      for own cid, view of @getItemViews() when cid not of remainingViewsByCid
+        # Remove the view
+        @removeSubview "itemView:#{cid}"
 
       # Re-insert remaining items; render and insert new items
       for item, index in items
@@ -384,19 +382,7 @@ defined (or the getView() must be overridden)'
     removeViewForItem: (item) ->
       # Remove item from visibleItems list, trigger a `visibilityChange` event
       @updateVisibleItems item, false
-
-      # Get the view
-      view = @subview "itemView:#{item.cid}"
-
-      @removeView item.cid, view
-
-    # Remove a view
-    removeView: (cid, view) ->
-      # Dispose the view
-      view.dispose()
-
-      # Remove the view from the hash
-      @removeSubview "itemView:#{cid}"
+      @removeSubview "itemView:#{item.cid}"
 
     # List of visible items
     # ---------------------
