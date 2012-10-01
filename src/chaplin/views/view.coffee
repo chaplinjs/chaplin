@@ -142,17 +142,18 @@ define [
           'handler argument must be function'
 
       # Add an event namespace
-      eventType += ".delegate#{@cid}"
+      list = ("#{event}.delegate#{@cid}" for event in eventType.split(' '))
+      events = list.join(' ')
 
       # Bind the handler to the view
       handler = _(handler).bind(this)
 
       if selector
         # Register handler
-        @$el.on eventType, selector, handler
+        @$el.on events, selector, handler
       else
         # Register handler
-        @$el.on eventType, handler
+        @$el.on events, handler
 
       # Return the bound handler
       handler
