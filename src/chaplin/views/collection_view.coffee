@@ -10,6 +10,13 @@ define [
   # and should instantiate a corresponding item view.
   class CollectionView extends View
 
+    # Automatic rendering
+    # -------------------
+
+    # Render all items immediately per default
+    autoRender: true
+    renderItems: true
+
     # Configuration options
     # ---------------------
 
@@ -84,36 +91,17 @@ defined (or the getView() must be overridden)'
 
     initialize: (options = {}) ->
       super
-      # Default options
-      # These are stored as normal properties, not in Backbone’s options hash
-      # so derived classes may override them when calling super.
-      _(options).defaults
-        render: true      # Render the view immediately per default
-        renderItems: true # Render all items immediately per default
-        filterer: null    # No filter function
-
-      @itemView = options.itemView if options.itemView?
 
       # Initialize list for visible items
       @visibleItems = []
 
-      # Debugging
-      # @bind 'visibilityChange', (visibleItems) ->
-      #   console.debug 'visibilityChange', visibleItems.length
-      # @modelBind 'syncStateChange', (collection, syncState) ->
-      #   console.debug 'syncStateChange', syncState
-
       # Start observing the collection
       @addCollectionListeners()
 
-      # Apply the filter function
-      @filter options.filterer if options.filterer
-
-      # Render template once
-      @render() if options.render
-
-      # Render all items initially
-      @renderAllItems() if options.renderItems
+      # Apply options
+      @renderItems = options.renderItems if options.renderItems?
+      @itemView = options.itemView       if options.itemView?
+      @filter options.filterer           if options.filterer?
 
     # Binding of collection listeners
     addCollectionListeners: ->
@@ -145,6 +133,9 @@ defined (or the getView() must be overridden)'
 
       @initFallback()
       @initLoadingIndicator()
+
+      # Render all items
+      @renderAllItems() if @renderItems
 
     # Fallback message when the collection is empty
     # ---------------------------------------------
