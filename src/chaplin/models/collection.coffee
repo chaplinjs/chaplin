@@ -20,6 +20,16 @@ define [
     initDeferred: ->
       _(this).extend $.Deferred()
 
+    # Serializes collection
+    serialize: ->
+      for model in @models
+        if model instanceof Model
+          # Use optimized Chaplin serialization
+          model.serialize()
+        else
+          # Fall back to unoptimized Backbone stuff
+          model.toJSON()
+
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
     addAtomic: (models, options = {}) ->
