@@ -170,14 +170,14 @@ define [
       expect(children.length).to.be 0
 
     it 'should reuse views on reset', ->
-      expect(_.isObject(collectionView.viewsByCid)).to.be true
+      expect(_.isObject(collectionView.getItemViews())).to.be true
 
       model1 = collection.at 0
-      view1 = collectionView.viewsByCid[model1.cid]
+      view1 = collectionView.subview "itemView:#{model1.cid}"
       expect(view1).to.be.an ItemView
 
       model2 = collection.at 1
-      view2 = collectionView.viewsByCid[model2.cid]
+      view2 = collectionView.subview "itemView:#{model2.cid}"
       expect(view2).to.be.an ItemView
 
       collection.reset model1
@@ -185,7 +185,7 @@ define [
       expect(view1.disposed).to.not.be.ok()
       expect(view2.disposed).to.be true
 
-      newView1 = collectionView.viewsByCid[model1.cid]
+      newView1 = collectionView.subview "itemView:#{model1.cid}"
       expect(newView1).to.be view1
 
     it 'should insert views in the right order', ->
@@ -286,14 +286,14 @@ define [
       expect(callback.callCount).to.be collection.length
       collection.each (model, index) ->
         call = callback.getCall index
-        view = collectionView.viewsByCid[model.cid]
+        view = collectionView.subview "itemView:#{model.cid}"
         included = filterer model, index
         expect(call.calledWith(view, included)).to.be true
 
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
-      viewsByCid = collectionView.viewsByCid
+      viewsByCid = collectionView.getItemViews()
 
       expect(collectionView.disposed).to.not.be.ok()
       expect(view.disposed).to.not.be.ok() for cid, view of viewsByCid
@@ -303,7 +303,7 @@ define [
       # All item views have been disposed, too
       expect(view.disposed).to.be true for cid, view of viewsByCid
 
-      for prop in ['viewsByCid', 'visibleItems']
+      for prop in ['visibleItems']
         expect(_(collectionView).has prop).to.not.be.ok()
 
     it 'should initialize with a template', ->

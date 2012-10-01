@@ -3,8 +3,7 @@ define [
   'chaplin/mediator'
   'chaplin/models/model'
   'chaplin/lib/event_broker'
-  'chaplin/lib/sync_machine'
-], (_, mediator, Model, EventBroker, SyncMachine) ->
+], (_, mediator, Model, EventBroker) ->
   'use strict'
 
   describe 'Model', ->
@@ -29,13 +28,6 @@ define [
         expect(typeof model[method]).to.be 'function'
       expect(model.state()).to.be 'pending'
 
-    it 'should initialize a SyncMachine', ->
-      _.extend model, SyncMachine
-      for own name, value of SyncMachine
-        if typeof value is 'function'
-          expect(model[name]).to.be value
-      expect(model.syncState()).to.be 'unsynced'
-
     it 'should return the attributes per default', ->
       expect(model.getAttributes()).to.be model.attributes
 
@@ -56,14 +48,13 @@ define [
       collection = new Backbone.Collection [model4, model5]
       model1.set model2: model2
       model2.set model3: model3
-      model2.set collection: collection
+      model2.set {collection}
       model2.set model2: model2 # Circular fun!
       model3.set model2: model2 # Even more fun!
 
-      d = model.serialize()
+      actual = model.serialize()
 
-      # Expected
-      e =
+      expected =
         foo: 'foo'
         model2:
           bar: 'bar'
@@ -80,20 +71,24 @@ define [
 
       #console.debug 'passedTemplateData', d
 
-      expect(d).to.be.an 'object'
-      expect(d.foo).to.be e.foo
+      expect(actual).to.be.an 'object'
+      expect(actual.foo).to.be expected.foo
 
-      expect(d.model2).to.be.an 'object'
-      expect(d.model2.bar).to.be e.model2.bar
-      expect(d.model2.model2).to.be e.model2.model2
+      expect(actual.model2).to.be.an 'object'
+      expect(actual.model2.bar).to.be expected.model2.bar
+      expect(actual.model2.model2).to.be expected.model2.model2
 
-      expect(d.model2.collection).to.be.an 'array'
-      expect(d.model2.collection[0].foo).to.be e.model2.collection[0].foo
-      expect(d.model2.collection[1].baz).to.be e.model2.collection[1].baz
+      expect(actual.model2.collection).to.be.an 'array'
+      expect(actual.model2.collection[0].foo).to.be(
+        expected.model2.collection[0].foo
+      )
+      expect(actual.model2.collection[1].baz).to.be(
+        expected.model2.collection[1].baz
+      )
 
-      expect(d.model2.model3).to.be.an 'object'
-      expect(d.model2.model3.qux).to.be e.model2.model3.qux
-      expect(d.model2.model3.model2).to.be e.model2.model3.model2
+      expect(actual.model2.model3).to.be.an 'object'
+      expect(actual.model2.model3.qux).to.be expected.model2.model3.qux
+      expect(actual.model2.model3.model2).to.be expected.model2.model3.model2
 
     it 'should dispose itself correctly', ->
       expect(model.dispose).to.be.a 'function'
