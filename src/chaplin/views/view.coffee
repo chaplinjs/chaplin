@@ -273,18 +273,15 @@ define [
 
     # Get the model/collection data for the templating function
     getTemplateData: ->
-      if @model
+      templateData = if @model
         # Serialize the model
-        templateData = @model.serialize()
+        @model.serialize()
       else if @collection
         # Collection: Serialize all models
-        items = []
-        for model in @collection.models
-          items.push model.serialize()
-        templateData = {items}
+        {items: @collection.serialize()}
       else
         # Empty object
-        templateData = {}
+        {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
