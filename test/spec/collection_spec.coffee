@@ -1,10 +1,11 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
   'chaplin/models/collection'
+  'chaplin/models/model'
   'chaplin/lib/event_broker'
-  'chaplin/lib/sync_machine'
-], (_, mediator, Collection, EventBroker, SyncMachine) ->
+], (_, Backbone, mediator, Collection, Model, EventBroker) ->
   'use strict'
 
   describe 'Collection', ->
@@ -32,13 +33,6 @@ define [
       for method in ['done', 'fail', 'progress', 'state', 'promise']
         expect(typeof collection[method]).to.be 'function'
       expect(collection.state()).to.be 'pending'
-
-    it 'should initialize a SyncMachine', ->
-      _.extend collection, SyncMachine
-      for own name, value of SyncMachine
-        if typeof value is 'function'
-          expect(collection[name]).to.be value
-      expect(collection.syncState()).to.be 'unsynced'
 
     it 'should add models atomically', ->
       expect(collection.addAtomic).to.be.a 'function'
@@ -108,6 +102,28 @@ define [
         expect(model.get('old1')).to.be undefined
         expect(model.get('old2')).to.be true
         expect(model.get('new')).to.be true
+
+    it 'should serialize the models', ->
+      model1 = new Model id: 1, foo: 'foo'
+      model2 = new Backbone.Model id: 2, bar: 'bar'
+      collection = new Collection [model1, model2]
+      expect(collection.serialize).to.be.a 'function'
+
+      actual = collection.serialize()
+      expected = [
+        {id: 1, foo: 'foo'}
+        {id: 2, bar: 'bar'}
+      ]
+
+      expect(actual.length).to.be expected.length
+
+      expect(actual[0]).to.be.an 'object'
+      expect(actual[0].id).to.be expected[0].id
+      expect(actual[0].foo).to.be expected[0].foo
+
+      expect(actual[1]).to.be.an 'object'
+      expect(actual[1].id).to.be expected[1].id
+      expect(actual[1].foo).to.be expected[1].foo
 
     it 'should dispose itself correctly', ->
       expect(collection.dispose).to.be.a 'function'

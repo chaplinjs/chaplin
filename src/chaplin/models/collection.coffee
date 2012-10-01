@@ -22,16 +22,13 @@ define [
 
     # Serializes collection
     serialize: ->
-      items = []
       for model in @models
-        item = if model instanceof Chaplin.Model
-          # Use optimised Chaplin serialization
+        if model instanceof Model
+          # Use optimized Chaplin serialization
           model.serialize()
         else
           # Fall back to unoptimized Backbone stuff
           model.toJSON()
-        items.push item
-      items
 
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
