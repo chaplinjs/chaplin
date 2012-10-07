@@ -1,14 +1,21 @@
 fs = require 'fs'
 sysPath = require 'path'
 convertExports = require './build/convert_exports'
-require 'shelljs/global'
+
+try
+  require 'shelljs/global'
+catch error
+  console.log 'You will need to install "shelljs":'
+  console.log 'npm install shelljs'
+  process.exit(1)
 
 convertAmdToCommonJs = (amdString) ->
   GLOBALS = '''
-  require.define
-    'jquery': (require, exports, module) -> module.exports = $
-    'underscore': (require, exports, module) -> module.exports = _
-    'backbone': (require, exports, module) -> module.exports = Backbone
+require.define
+  'jquery': (require, exports, module) -> module.exports = $
+  'underscore': (require, exports, module) -> module.exports = _
+  'backbone': (require, exports, module) -> module.exports = Backbone
+
   '''
 
   makeModuleDefinition = (name, source) ->
@@ -19,8 +26,7 @@ convertAmdToCommonJs = (amdString) ->
 
     # "'lib/utils' 'models/model', 'models/collection'"
     # => ['lib/utils', 'models/model', 'models/collection']
-    modules = rawModules.trim().split(' ').map (module) ->
-      module.replace(',', '')
+    modules = rawModules.trim().split(/\s+/)
 
     # utils, Model, Collection
     # => ['utils', 'Model', 'Collection']
@@ -35,24 +41,34 @@ convertAmdToCommonJs = (amdString) ->
     "\n#{definitions}\n"
 
   convertModules = (string) ->
-    re = /(define ('.*'),(?: \[([,\s\w\/_']*)\],)? (?:\(([\s\w,\$_]*)\) )?->)/g
-    match = re.exec string
+    re = /define\s('.*'),(?:\s\[([,\s\w\/_']*)\],)?\s(?:\(([\s\w,\$_]*)\)\s)?->/g
+    # match = re.exec string
     replacements = []
-    while match
-      [original, name, rawModules, rawModuleNames] = match
-      definition = convertModule rawModules, rawModuleNames
-      current = makeModuleDefinition name, definition
-      replacements.push [original, current]
-      match = re.exec string
+    while (match = re.exec string)
+      do (match) ->
+        [original, name, rawModules, rawModuleNames] = match
+        definition = convertModule rawModules, rawModuleNames
+        current = makeModuleDefinition name, definition
+        replacements.push [original, current]
     for [original, current] in replacements
       string = string.replace original, current
     string
 
   # Replace all 'use strict's with one strict at the top of file.
   consolidateStricts = (string) ->
-    "'use strict'\n\n#{GLOBALS}\n#{string.replace(/\s*'use strict'/, '')}"
+    replaced = string.replace(/\s*'use strict'/g, '')
+    "'use strict'\n\n#{GLOBALS}\n#{replaced}"
 
   consolidateStricts convertExports convertModules amdString
+
+addModuleNameToSource = (moduleName) ->
+  re = /^\s*define(?=(?:\s+\[[\s\S]*?\],)?\s*(?:\([\s\S]*?\))?\s*->)/
+  fs.readFileSync("src/#{moduleName}.coffee")
+    .toString()
+    .replace(re, "define '#{moduleName}',")
+    .trim()
+
+module.exports = {convertAmdToCommonJs, addModuleNameToSource}
 
 build = ->
   MODULES = [
@@ -75,11 +91,9 @@ build = ->
   ]
 
   LOADERS = ['amd', 'commonjs']
-  COMMIT_HASH = exec(
-    'git rev-parse --verify HEAD', silent: yes
-  ).output.slice(0, 7)
+  COMMIT_HASH = exec('git rev-parse --verify HEAD', silent: yes).output.slice(0, 7)
   VERSION = (JSON.parse fs.readFileSync 'package.json').version
-  SUFFIX = if VERSION.lastIndexOf('-pre', 0) >= 0
+  SUFFIX = if VERSION.indexOf('-pre') >= 0
     "#{VERSION}-#{COMMIT_HASH}"
   else
     VERSION
@@ -106,16 +120,8 @@ http://github.com/chaplinjs/chaplin
 
   concat = ->
     echo 'Concatenate...'
-    replacer = /^\s*define(?=(?:\s+\[[\s\S]*?\],)?\s*(?:\([\s\S]*?\))?\s*->)/
-
     concatenated = {}
-    concatenated.amd = MODULES
-      .map (moduleName) ->
-        string = fs.readFileSync("src/#{moduleName}.coffee").toString()
-        if not replacer.test(string) and moduleName is 'chaplin/application'
-          console.log string
-        string.replace(replacer, "define '#{moduleName}',").trim() + "\n\n"
-      .join('')
+    concatenated.amd = MODULES.map(addModuleNameToSource).join('\n\n')
     concatenated.commonjs = convertAmdToCommonJs concatenated.amd
 
     LOADERS.forEach (loader) ->
@@ -151,7 +157,7 @@ http://github.com/chaplinjs/chaplin
 
 task 'build', 'Build Chaplin from source', build
 
-# task 'test', 'Test', ->
-#   exec 'coffee --bare --output test/js/ src/'
-#   exec 'coffee --bare --output test/js/ test/spec/'
-#   echo 'Compiled tests, you can now open test/index.html and run them'
+task 'test', 'Test', ->
+  exec 'coffee --bare --output test/js/ src/'
+  exec 'coffee --bare --output test/js/ test/spec/'
+  echo 'Compiled tests, you can now open test/index.html and run them'
