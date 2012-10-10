@@ -7,3 +7,4 @@ test/js/*/*/*.js
 /build/chaplin-*
 
 .DS_Store
+node_modules/
