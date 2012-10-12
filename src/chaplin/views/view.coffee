@@ -101,7 +101,7 @@ define [
 
       #!!
       # Attempt to apply a named region
-      if options.region?
+      if options?.region?
         @publishEvent '!region:apply', options.region, @
       #!!
 

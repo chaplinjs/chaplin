@@ -19,7 +19,7 @@ define [
       super
 
       # register all regions with the composer
-      regions registerRegion if regions?
+      @regions @registerRegion if @regions?
 
-    registerRegion: (selector, options) ->
+    registerRegion: (selector, options) =>
       @publishEvent '!region:register', selector, options, @

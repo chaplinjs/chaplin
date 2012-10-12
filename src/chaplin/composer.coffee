@@ -25,7 +25,7 @@ define [
       @initialize arguments...
 
     initialize: (options = {}) ->
-      _regions = {}
+      @_regions = {}
       @subscribeEvent '!region:register', @registerRegion
       @subscribeEvent '!region:apply', @applyRegion
       # @subscribeEvent '!composition:activate'
