@@ -158,7 +158,8 @@ define [
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
-      @publishEvent '!router:changeURL', url if params.changeURL
+      # Take parameter hash from and forward it on as well
+      @publishEvent '!router:changeURL', url, params if params.changeURL
 
       # Save the URL
       @url = url

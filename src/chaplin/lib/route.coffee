@@ -115,7 +115,8 @@ define [
       # Add a `path  param with the whole path match
       params.path = path
 
-      params
+      # Merge it with options and return it
+      _.merge params, options
 
     # Extract named parameters from the URL path
     extractParams: (path) ->

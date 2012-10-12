@@ -58,29 +58,44 @@ define [
     # This looks quite like Backbone.History::loadUrl but it
     # accepts an absolute URL with a leading slash (e.g. /foo)
     # and passes a changeURL param to the callback function.
-    route: (path) =>
+    route: (path, options = {}) =>
+      # Default options to changeURL: true to mimic existing behavior while
+      # allowing additional options to be forwarded on
+      _(options).defaults
+        changeURL: true
+
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
       for handler in Backbone.history.handlers
         if handler.route.test(path)
-          handler.callback path, changeURL: true
+          handler.callback path, options
           return true
       false
 
     # Handler for the global !router:route event
-    routeHandler: (path, callback) ->
-      routed = @route path
+    routeHandler: (path, options, callback) ->
+      # Assume only path and callback were passed if we only got 2 arguments;
+      # so as to mimic existing chaplin behavior
+      [callback, options] = [options, {}] if arguments.length is 2
+
+      # Continue on to handle the route; pass in options hash
+      routed = @route path, options
       callback? routed
 
     # Change the current URL, add a history entry.
-    # Do not trigger any routes (which is Backbone’s
-    # default behavior, but added for clarity)
-    changeURL: (url) ->
-      Backbone.history.navigate url, trigger: false
+    changeURL: (url, options = {}) ->
+      # Default options to trigger: false (which is Backbone’s
+      # default behavior, but added for clarity)
+      _(options).defaults
+        trigger: false
+
+      # Navigate to the passed URL and forward options to backbone
+      Backbone.history.navigate url, options
 
     # Handler for the global !router:changeURL event
-    changeURLHandler: (url) ->
-      @changeURL url
+    # Accepts both the url and an options hash that is forwarded to backbone
+    changeURLHandler: (url, options = {}) ->
+      @changeURL url, options
 
     # Disposal
     # --------
