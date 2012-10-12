@@ -13,13 +13,17 @@ define [
   'chaplin/lib/event_broker'
   'chaplin/lib/support'
   'chaplin/lib/sync_machine'
-  'chaplin/lib/utils'
-], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, EventBroker, support, SyncMachine, utils) ->
+  'chaplin/lib/utils',
+  'chaplin/composer',
+  'chaplin/composition'
+], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, EventBroker, support, SyncMachine, utils, Composer, Composition) ->
   {
     Application,
     mediator,
     Dispatcher,
     Controller,
+    Composer,
+    Composition,
     Collection,
     Model,
     Layout,
