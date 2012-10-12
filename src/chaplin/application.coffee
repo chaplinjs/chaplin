@@ -4,7 +4,8 @@ define [
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
-], (Backbone, mediator, Dispatcher, Layout, Router) ->
+  'chaplin/composer'
+], (Backbone, mediator, Dispatcher, Layout, Router, Composer) ->
   'use strict'
 
   # The application bootstrapper
@@ -24,6 +25,9 @@ define [
     router: null
 
     initialize: ->
+
+    initComposer: (options = {}) ->
+      @composer = new Composer options
 
     initDispatcher: (options) ->
       @dispatcher = new Dispatcher options

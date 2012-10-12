@@ -99,6 +99,12 @@ define [
       if @model or @collection
         @modelBind 'dispose', @dispose
 
+      #!!
+      # Attempt to apply a named region
+      if options.region?
+        @publishEvent '!region:apply', options.region, @
+      #!!
+
       # Call `afterInitialize` if `initialize` was not wrapped
       unless @initializeIsWrapped
         @afterInitialize()
