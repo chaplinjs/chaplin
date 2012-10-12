@@ -44,8 +44,8 @@ define [
     # ----------------------------------
 
     # Handler for the global matchRoute event
-    matchRoute: (route, params) ->
-      @startupController route.controller, route.action, params
+    matchRoute: (route, params, options) ->
+      @startupController route.controller, route.action, params, options
 
     # Handler for the global !startupController event
     #
@@ -57,7 +57,8 @@ define [
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
-    startupController: (controllerName, action = 'index', params = {}) ->
+    startupController: (controllerName, action = 'index', params = {},
+                        options = {}) ->
       # Set default flags
 
       # Whether to update the URL after controller startup
@@ -83,7 +84,9 @@ define [
       return if isSameController
 
       # Fetch the new controller, then go on
-      handler = _(@controllerLoaded).bind(this, controllerName, action, params)
+      handler = _(@controllerLoaded).bind(
+        this, controllerName, action, params, options)
+
       @loadController controllerName, handler
 
     # Load the constructor for a given controller name.
@@ -98,7 +101,8 @@ define [
         handler require path
 
     # Handler for the controller lazy-loading
-    controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
+    controllerLoaded: (controllerName, action, params, options,
+                       ControllerConstructor) ->
 
       # Shortcuts for the old controller
       currentControllerName = @currentControllerName or null
@@ -129,7 +133,8 @@ define [
       @currentAction = action
       @currentParams = params
 
-      @adjustURL controller, params
+      # Adjust the URL; pass in both params and options
+      @adjustURL controller, _(params).extend options
 
       # We're done! Spread the word!
       @publishEvent 'startupController',
