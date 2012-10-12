@@ -13,9 +13,9 @@ define [
   'chaplin/lib/event_broker'
   'chaplin/lib/support'
   'chaplin/lib/sync_machine'
-  'chaplin/lib/utils',
-  'chaplin/composer',
-  'chaplin/composition'
+  'chaplin/lib/utils'
+  'chaplin/composer'
+  'chaplin/views/composition'
 ], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, EventBroker, support, SyncMachine, utils, Composer, Composition) ->
   {
     Application,
