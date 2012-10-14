@@ -6,11 +6,6 @@ define [
 ], (_, Backbone, utils, EventBroker) ->
   'use strict'
 
-  # class Region
-  #   constructor: (@selector, @cid, @options) ->
-  #     # ..
-
-
   class Composer
 
     # Borrow the static extend method from Backbone
@@ -19,26 +14,26 @@ define [
     # Mixin an EventBroker
     _(@prototype).extend EventBroker
 
+    # The collection of registered regions
     _regions: null
 
     constructor: ->
       @initialize arguments...
 
     initialize: (options = {}) ->
-      @_regions = {}
+      @_regions = []
       @subscribeEvent '!region:register', @registerRegion
       @subscribeEvent '!region:apply', @applyRegion
-      # @subscribeEvent '!composition:activate'
 
     registerRegion: (selector, options, context) ->
       @_regions.push {selector, cid: context.cid, name: options.name}
 
     applyRegion: (name, view) ->
-      # TODO: Use underscore
-      for region in @_regions
-        if region.name is name
-          view.container = region.selector
-          break
+      # Find an appropriate region
+      region = _.find @_regions, (region) -> region.name is name
+
+      # Apply the region selector
+      view.container = region.selector
 
       # Don't return the for loop
       undefined
