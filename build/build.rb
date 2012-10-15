@@ -7,6 +7,7 @@ MODULES = %w(
 chaplin/application
 chaplin/mediator
 chaplin/dispatcher
+chaplin/composer
 chaplin/controllers/controller
 chaplin/models/collection
 chaplin/models/model

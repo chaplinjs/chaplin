@@ -30,6 +30,9 @@ define [
     $el: $(document)
     cid: 'chaplin-layout'
 
+    # Region collection; used to assign canonocial names to selectors
+    regions: null
+
     constructor: ->
       @initialize arguments...
 
@@ -43,9 +46,15 @@ define [
         # Per default, jump to the top of the page
         scrollTo: [0, 0]
 
+      @regions = []
+
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
       @subscribeEvent 'startupController', @adjustTitle
+
+      @subscribeEvent '!region:apply', @applyRegion
+      @subscribeEvent '!region:register', @registerRegions
+      @subscribeEvent 'view:dispose:before', @unregisterRegions
 
       # Set the app link routing
       if @settings.routeLinks
@@ -165,6 +174,42 @@ define [
 
       return
 
+    # Region management
+    # -----------------
+
+    # Registering one region; namespaced by cid
+    registerRegion: (instance, name, selector) =>
+      @regions.push
+        name: name
+        instance: instance
+        selector: selector
+
+    # Triggered by view; passed in the region registration method
+    # Simply register all regions exposed by it
+    registerRegions: (instance) ->
+      if instance.regions?
+        instance.regions _.partial @registerRegion, instance
+
+    # When views are disposed; remove all their registered regions
+    unregisterRegions: (instance) ->
+      @regions = _(@regions).reject (region) ->
+        region.instance.cid is instance.cid
+
+    # When views are instantiated and request for a region assignment;
+    # attempt to fulfil it.
+    applyRegion: (name, instance) ->
+      # Find an appropriate region
+      region = _.find @regions, (region) ->
+        region.name is name and
+        not instance.stale
+
+      # Assert that we got a valid region
+      if _.isUndefined region
+        throw new Error "No region registed under #{name}"
+
+      # Apply the region selector
+      instance.container = region.selector
+
     # Disposal
     # --------
 
@@ -172,6 +217,9 @@ define [
 
     dispose: ->
       return if @disposed
+
+      @regions = @regions[..]
+      delete @regions
 
       @stopLinkRouting()
       @unsubscribeAllEvents()

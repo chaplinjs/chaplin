@@ -4,7 +4,8 @@ define [
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
-], (Backbone, mediator, Dispatcher, Layout, Router) ->
+  'chaplin/composer'
+], (Backbone, mediator, Dispatcher, Layout, Router, Composer) ->
   'use strict'
 
   # The application bootstrapper
@@ -18,10 +19,11 @@ define [
     # The site title used in the document title
     title: ''
 
-    # The application instantiates these three core modules
+    # The application instantiates these four core modules
     dispatcher: null
     layout: null
     router: null
+    composer: null
 
     initialize: ->
 
@@ -31,6 +33,9 @@ define [
     initLayout: (options = {}) ->
       options.title ?= @title
       @layout = new Layout options
+
+    initComposer: (options = {}) ->
+      @composer = new Composer options
 
     # Instantiate the dispatcher
     # --------------------------
@@ -55,7 +60,7 @@ define [
     dispose: ->
       return if @disposed
 
-      properties = ['dispatcher', 'layout', 'router']
+      properties = ['dispatcher', 'layout', 'router', 'composer']
       for prop in properties when this[prop]?
         this[prop].dispose()
         delete this[prop]
