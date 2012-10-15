@@ -128,7 +128,7 @@ define [
         @modelBind 'dispose', @dispose
 
       # Attempt to apply a named region
-      @publishEvent '!region:apply', region, this if @region?
+      @publishEvent '!region:apply', this.region, this if @region?
 
       # Register all exposed regions
       @publishEvent '!region:register', this
