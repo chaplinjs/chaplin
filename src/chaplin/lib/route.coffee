@@ -89,7 +89,8 @@ define [
       params = @buildParams path, options
 
       # Publish a global matchRoute event passing the route and the params
-      @publishEvent 'matchRoute', this, params
+      # Original options hash forwarded to allow further forwarding to backbone
+      @publishEvent 'matchRoute', this, params, options
 
     # Create a proper Rails-like params hash, not an array like Backbone
     # `matches` and `additionalParams` arguments are optional

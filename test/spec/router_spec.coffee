@@ -272,6 +272,49 @@ define [
       mediator.publish '!router:changeURL', path
       expect(router.changeURL).was.calledWith path
 
+    it 'should allow options to the passed through the !router:route event', ->
+      path = 'router-route-events'
+      sinon.spy(router, 'route')
+      spy = sinon.spy()
+      router.match path, 'router#route'
+
+      mediator.publish '!router:route', path, replace: true, spy
+      expect(router.route).was.calledWith path, replace: true, changeURL: true
+      expect(spy).was.calledWith true
+      expect(route.controller).to.be 'router'
+      expect(route.action).to.be 'route'
+
+      spy = sinon.spy()
+      mediator.publish '!router:route', 'different-path', spy
+      expect(spy).was.calledWith false
+
+    it 'should forward options passed through the !router:changeURL event', ->
+      path = 'router-changeurl-options-events'
+      sinon.spy(router, 'changeURL')
+
+      mediator.publish '!router:changeURL', path, replace: true
+      expect(router.changeURL).was.calledWith path,
+        replace: true
+        trigger: false
+
+      Backbone.history.start()
+      mediator.publish '!router:changeURL', path
+      expect(Backbone.history.fragment).to.be path
+
+      oldPath = 'router-changeurl-replace-events'
+      mediator.publish '!router:changeURL', oldPath
+      expect(Backbone.history.fragment).to.be oldPath
+
+      newPath = 'router-changeurl-replace-with-events'
+      mediator.publish '!router:changeURL', newPath, replace: true
+      expect(Backbone.history.fragment).to.be newPath
+
+      window.history.back()
+      expect(window.location.hash).to.be "##{path}"
+      window.history.back()
+
+      Backbone.history.stop()
+
     it 'should dispose itself correctly', ->
       expect(router.dispose).to.be.a 'function'
       router.dispose()
