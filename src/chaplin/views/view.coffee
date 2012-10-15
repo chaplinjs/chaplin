@@ -42,6 +42,13 @@ define [
     subviews: null
     subviewsByName: null
 
+    # State
+    # -----
+
+    # A view is `stale` when it has been previously composed by the last
+    # route but has not yet been composed by the current route.
+    stale: false
+
     # Method wrapping to enable `afterRender` and `afterInitialize`
     # -------------------------------------------------------------
 
@@ -99,11 +106,12 @@ define [
       if @model or @collection
         @modelBind 'dispose', @dispose
 
-      #!!
       # Attempt to apply a named region
       if options?.region?
-        @publishEvent '!region:apply', options.region, @
-      #!!
+        @publishEvent '!region:apply', options.region, this
+
+      # Register all exposed regions
+      @publishEvent '!region:register', this
 
       # Call `afterInitialize` if `initialize` was not wrapped
       unless @initializeIsWrapped
@@ -367,6 +375,9 @@ define [
 
     dispose: ->
       return if @disposed
+
+      # Let everyone know we're being disposed
+      @publishEvent 'view:dispose:before', this
 
       # Dispose subviews
       subview.dispose() for subview in @subviews

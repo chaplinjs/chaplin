@@ -37,9 +37,6 @@ define [
     # Mixin an EventBroker
     _(@prototype).extend EventBroker
 
-    # The collection of registered regions
-    regions: null
-
     # The collection of composed compositions
     compositions: null
 
@@ -48,11 +45,9 @@ define [
 
     initialize: (options = {}) ->
       # initialize collections
-      @regions = []
       @compositions = []
 
       # subscribe to events
-      @subscribeEvent '!region:apply', @applyRegion
       @subscribeEvent '!composer:compose', @compose
       @subscribeEvent 'startupController', @onStartupController
 
@@ -68,62 +63,33 @@ define [
         composition =
           type: type
           options: _.clone options
-          active: true
-
-        # Ensure composition is not set to autoRender as we need
-        # to register the regions before it is rendered
-        options.autoRender = false
 
         # Instantiate the composition
         composition.instance = new type options
 
-        # Register the exposed regions
-        @registerRegions composition.instance
-
         # Render the composition
-        composition.instance.render()
+        composition.instance.render() unless composition.instance.autoRender
 
         # Append to the list so we can dispose and track the
         # composition
         @compositions.push composition
 
       else
-        # Declare composition as actively in use so that it does not
-        # get diposed
-        check.active = true
-
-        # Re-register the exposed regions
-        @registerRegions check.instance
+        # Declare composition as not stale so that its regions will now be
+        # counted
+        check.instance.stale = false
 
     onStartupController: (options) ->
       # Action method is done; perform post-action clean up
       # Dispose and delete all unactive compositions
       # Declare all active compositions as de-activated
       @compositions = for composition, index in @compositions
-        if composition.active
-          composition.active = false
+        unless composition.instance.stale
+          composition.instance.stale = true
           composition
         else
           composition.instance.dispose()
           continue
-
-      # Unregister all regions
-      @regions = @regions[..]
-
-    registerRegions: (instance) ->
-      # Registers all regions of the passed view instance
-      instance.regions _.partial @registerRegion, instance if instance.regions?
-
-    registerRegion: (context, name, options) =>
-      # Register a single region; called from the view instance
-      @regions.push {name, cid: context.cid, selector: options.selector}
-
-    applyRegion: (name, view) ->
-      # Find an appropriate region
-      region = _.find @regions, (region) -> region.name is name
-
-      # Apply the region selector
-      view.container = region.selector
 
     dispose: ->
       return if @disposed
@@ -132,12 +98,10 @@ define [
       composition.instance.dispose() for composition in @compositions
 
       # Destroy collections
-      @regions = @regions[..]
       @compositions = @compositions[..]
 
       # Remove properties
       delete @compositions
-      delete @regions
 
       # Finished
       @disposed = true
