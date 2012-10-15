@@ -48,7 +48,12 @@ define [
         _.isEqual c.options, options
 
       # Initialize and render if it isn't
-      if _.isUndefined check
+      if check?
+        # Declare composition as not stale so that its regions will now be
+        # counted
+        check.instance.stale = false
+
+      else
         # Build composition
         composition =
           type: type
@@ -64,22 +69,17 @@ define [
         # composition
         @compositions.push composition
 
-      else
-        # Declare composition as not stale so that its regions will now be
-        # counted
-        check.instance.stale = false
-
     onStartupController: (options) ->
       # Action method is done; perform post-action clean up
       # Dispose and delete all unactive compositions
       # Declare all active compositions as de-activated
       @compositions = for composition, index in @compositions
-        unless composition.instance.stale
-          composition.instance.stale = true
-          composition
-        else
+        if composition.instance.stale
           composition.instance.dispose()
           continue
+        else
+          composition.instance.stale = true
+          composition
 
     dispose: ->
       return if @disposed

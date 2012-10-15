@@ -128,8 +128,7 @@ define [
         @modelBind 'dispose', @dispose
 
       # Attempt to apply a named region
-      if @region?
-        @publishEvent '!region:apply', region, this
+      @publishEvent '!region:apply', region, this if @region?
 
       # Register all exposed regions
       @publishEvent '!region:register', this
@@ -398,7 +397,7 @@ define [
       return if @disposed
 
       # Let everyone know we're being disposed
-      @publishEvent 'view:dispose:before', this
+      @publishEvent 'view:dispose', this
 
       # Dispose subviews
       subview.dispose() for subview in @subviews

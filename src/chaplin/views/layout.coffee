@@ -54,7 +54,7 @@ define [
 
       @subscribeEvent '!region:apply', @applyRegion
       @subscribeEvent '!region:register', @registerRegions
-      @subscribeEvent 'view:dispose:before', @unregisterRegions
+      @subscribeEvent 'view:dispose', @unregisterRegions
 
       # Set the app link routing
       if @settings.routeLinks
@@ -179,10 +179,7 @@ define [
 
     # Registering one region; namespaced by cid
     registerRegion: (instance, name, selector) =>
-      @regions.push
-        name: name
-        instance: instance
-        selector: selector
+      @regions.push {instance, name, selector}
 
     # Triggered by view; passed in the region registration method
     # Simply register all regions exposed by it
