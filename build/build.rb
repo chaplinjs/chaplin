@@ -8,7 +8,6 @@ chaplin/application
 chaplin/mediator
 chaplin/dispatcher
 chaplin/composer
-chaplin/views/composition
 chaplin/controllers/controller
 chaplin/models/collection
 chaplin/models/model
