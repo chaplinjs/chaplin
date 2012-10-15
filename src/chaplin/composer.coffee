@@ -88,9 +88,11 @@ define [
       @regions = @regions[..]
 
     registerRegions: (instance) ->
+      # Registers all regions of the passed view instance
       instance.regions _.partial @registerRegion, instance if instance.regions?
 
     registerRegion: (context, selector, options) =>
+      # Register a single region; called from the view instance
       @regions.push {selector, cid: context.cid, name: options.name}
 
     applyRegion: (name, view) ->
