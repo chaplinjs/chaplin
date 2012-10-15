@@ -193,7 +193,7 @@ define [
         region.instance.cid is instance.cid
 
     # When views are instantiated and request for a region assignment;
-    # attempt to fulfil it.
+    # attempt to fulfill it.
     applyRegion: (name, instance) ->
       # Find an appropriate region
       region = _.find @regions, (region) ->
