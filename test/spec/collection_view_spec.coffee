@@ -134,8 +134,7 @@ define [
       fillCollection()
 
     it 'should initialize', ->
-      collectionView = new TestCollectionView
-        collection: collection
+      collectionView = new TestCollectionView {collection}
 
     it 'should render item views', ->
       viewsMatchCollection()
@@ -312,8 +311,7 @@ define [
 
       # Create a new CollectionView, dispose the old one
       collectionView.dispose()
-      collectionView = new TemplatedCollectionView
-        collection: collection
+      collectionView = new TemplatedCollectionView {collection}
 
     it 'should render the template', ->
       children = getAllChildren()
@@ -423,10 +421,11 @@ define [
         expect(_(collectionView).has prop).to.not.be.ok()
 
     it 'should respect the autoRender and renderItems options', ->
-      collectionView = new TemplatedCollectionView
-        collection: collection
+      collectionView = new TemplatedCollectionView {
+        collection,
         autoRender: false
         renderItems: false
+      }
 
       children = getAllChildren()
       expect(children.length).to.be 0
@@ -444,20 +443,25 @@ define [
     it 'should respect the filterer option', ->
       filterer = (model) -> model.id is 'A'
       collectionView.dispose()
-      collectionView = new TemplatedCollectionView
-        collection: collection
-        filterer: filterer
-
+      collectionView = new TemplatedCollectionView {collection, filterer}
       expect(collectionView.filterer).to.be filterer
       expect(collectionView.visibleItems.length).to.be 1
 
       children = getViewChildren()
       expect(children.length).to.be collection.length
 
+    it 'should show fallback after filtering all items', ->
+      filterer = (model) -> false
+      collectionView.dispose()
+      collectionView = new TemplatedCollectionView {collection, filterer}
+
+      expect(collectionView.filterer).to.be filterer
+      expect(collectionView.visibleItems.length).to.be 0
+      expect(collectionView.$fallback.css('display')).to.be 'block'
+
     it 'should respect the itemSelector property', ->
       collectionView.dispose()
-      collectionView = new MixedCollectionView
-        collection: collection
+      collectionView = new MixedCollectionView {collection}
 
       additionalLength = 4
       allChildren = getAllChildren()

@@ -151,6 +151,7 @@ defined (or the getView() must be overridden)'
 
       # Listen for sync events on the collection
       @modelBind 'syncStateChange', @showHideFallback
+      @showHideFallback()
 
     # Show fallback if no item is visible and the collection is synced
     showHideFallback: =>
