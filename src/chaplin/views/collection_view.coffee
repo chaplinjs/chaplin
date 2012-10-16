@@ -67,6 +67,15 @@ define [
     # The filter function, if any
     filterer: null
 
+    # A function that will be executed after each filter.
+    # Hides excluded items by default.
+    filterCallback: (view, included) ->
+      display = if included then '' else 'none'
+      view.$el.stop(true, true).css('display', display)
+      # Update visibleItems list, but do not trigger
+      # a `visibilityChange` event immediately
+      @updateVisibleItems view.model, included, false
+
     # View lists
     # ----------
 
@@ -204,17 +213,9 @@ defined (or the getView() must be overridden)'
     # Applies a filter to the collection view.
     # Expects an iterator function as parameter.
     # If no callback, hides all items for which the iterator returns false.
-    filter: (filterer, callback) ->
+    filter: (filterer, callback = @filterCallback) ->
       # Save the new filterer function
       @filterer = filterer
-
-      # Default callback (hides excluded items)
-      callback ?= (view, included) =>
-        display = if included then '' else 'none'
-        view.$el.stop(true, true).css('display', display)
-        # Update visibleItems list, but do not trigger
-        # a `visibilityChange` event immediately
-        @updateVisibleItems view.model, included, false
 
       # Show/hide existing views
       unless _(@getItemViews()).isEmpty()
