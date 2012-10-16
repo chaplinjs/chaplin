@@ -205,7 +205,7 @@ define [
         throw new Error "No region registed under #{name}"
 
       # Apply the region selector
-      instance.container = region.selector
+      instance.container = region.instance.$el.find(region.selector)
 
     # Disposal
     # --------

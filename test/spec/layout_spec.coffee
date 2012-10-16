@@ -305,7 +305,7 @@ define [
 
       instance1 = new Test1View()
       instance2 = new Test2View {region: 'test2'}
-      expect(instance2.container).to.be '#test2'
+      expect(instance2.container.selector).to.be '#test2'
 
       instance1.dispose()
       instance2.dispose()
@@ -326,7 +326,7 @@ define [
       instance1 = new Test1View()
       instance2 = new Test2View()
       instance3 = new Test3View {region: 'test2'}
-      expect(instance3.container).to.be '#test5'
+      expect(instance3.container.selector).to.be '#test5'
 
       instance1.dispose()
       instance2.dispose()
