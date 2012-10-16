@@ -147,7 +147,7 @@ defined (or the getView() must be overridden)'
       @$fallback = @$(@fallbackSelector)
 
       # Listen for visible items changes
-      @bind 'visibilityChange', @showHideFallback
+      @on 'visibilityChange', @showHideFallback
 
       # Listen for sync events on the collection
       @modelBind 'syncStateChange', @showHideFallback
