@@ -221,6 +221,19 @@ define [
       initialize.restore()
       action.restore()
 
+    it 'should pass options through from !startupController events', ->
+      spy = sinon.spy()
+      mediator.subscribe '!router:changeURL', spy
+
+      change = _.clone params
+      change.forceStartup = false
+      change.changeURL = true
+      options = replace: true
+      mediator.publish '!startupController', 'test1', 'show', change, options
+      expect(spy).was.calledWith "test1/#{change.id}", _(options).extend change
+
+      mediator.unsubscribe '!router:changeURL', spy
+
     it 'should support redirection to a URL', ->
       proto = Test1Controller.prototype
       action = sinon.spy(proto, 'redirectToURL')

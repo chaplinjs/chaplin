@@ -10,12 +10,13 @@ define [
     #console.debug 'Router spec'
 
     # Initialize shared variables
-    router = route = params = null
+    router = route = params = options = null
 
     # matchRoute handler to catch the params
-    matchRoute = (_route, _params) ->
+    matchRoute = (_route, _params, _options) ->
       route = _route
       params = _params
+      options = _options
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
@@ -273,7 +274,7 @@ define [
       expect(router.changeURL).was.calledWith path
 
     it 'should allow options to the passed through the !router:route event', ->
-      path = 'router-route-events'
+      path = 'router-route-events-options'
       sinon.spy(router, 'route')
       spy = sinon.spy()
       router.match path, 'router#route'
@@ -283,10 +284,7 @@ define [
       expect(spy).was.calledWith true
       expect(route.controller).to.be 'router'
       expect(route.action).to.be 'route'
-
-      spy = sinon.spy()
-      mediator.publish '!router:route', 'different-path', spy
-      expect(spy).was.calledWith false
+      expect(options).to.eql replace: true, changeURL: true
 
     it 'should forward options passed through the !router:changeURL event', ->
       path = 'router-changeurl-options-events'
@@ -297,17 +295,27 @@ define [
         replace: true
         trigger: false
 
+      navigate = sinon.spy(Backbone.history, 'navigate')
+
       Backbone.history.start()
       mediator.publish '!router:changeURL', path
       expect(Backbone.history.fragment).to.be path
+      expect(Backbone.history.navigate).was.calledWith path,
+        trigger: false
 
-      oldPath = 'router-changeurl-replace-events'
-      mediator.publish '!router:changeURL', oldPath
-      expect(Backbone.history.fragment).to.be oldPath
+      path = 'router-changeurl-replace-events'
+      mediator.publish '!router:changeURL', path
+      expect(Backbone.history.fragment).to.be path
+      expect(Backbone.history.navigate).was.calledWith path,
+        trigger: false
 
-      replacePath = 'router-changeurl-replace-with-events'
-      mediator.publish '!router:changeURL', replacePath, replace: true
-      expect(Backbone.history.fragment).to.be replacePath
+      path = 'router-changeurl-replace-with-events'
+      mediator.publish '!router:changeURL', path, replace: true
+      expect(Backbone.history.fragment).to.be path
+      expect(Backbone.history.navigate).was.calledWith path,
+        trigger: false, replace: true
+
+      Backbone.history.stop()
 
     it 'should dispose itself correctly', ->
       expect(router.dispose).to.be.a 'function'
