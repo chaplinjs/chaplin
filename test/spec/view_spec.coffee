@@ -121,7 +121,7 @@ define [
       view.render()
       expect(spy).was.called()
 
-    it 'should register user input events', ->
+    it 'should register and remove user input event handlers', ->
       expect(view.delegate).to.be.a 'function'
       expect(view.undelegate).to.be.a 'function'
 
@@ -147,6 +147,18 @@ define [
       view.undelegate()
       p.trigger 'click'
       expect(spy.callCount).to.be 1
+
+    it 'should register and remove multiple user input event handlers', ->
+      spy = sinon.spy()
+      handler = view.delegate 'click keypress', spy
+      $(view.el).trigger 'click'
+      $(view.el).trigger 'keypress'
+      expect(spy).was.calledTwice()
+
+      view.undelegate()
+      $(view.el).trigger 'click'
+      $(view.el).trigger 'keypress'
+      expect(spy).was.calledTwice()
 
     it 'should check delegate parameters', ->
       expect(-> view.delegate()).to.throwError()
