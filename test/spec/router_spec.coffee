@@ -115,6 +115,27 @@ define [
 
       mediator.unsubscribe 'matchRoute', spy
 
+    it 'should allow for registering routes with a name', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'params/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
+      expect(names).to.eql ['home', 'phonebook', 'about']
+
+    it 'should allow for rerversing a route by its name', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'params/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      console.log 'home'
+      url = router.reverse 'home'
+
+      console.log 'phonebook'
+      url = router.reverse 'phonebook'
+
+      console.log url
+
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").to.throwError()

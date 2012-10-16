@@ -27,6 +27,9 @@ define [
       # Save the raw pattern
       @pattern = pattern
 
+      # Store the name on the route if given
+      @name = @options.name if @options.name?
+
       # Separate target into controller and controller action
       [@controller, @action] = target.split('#')
 

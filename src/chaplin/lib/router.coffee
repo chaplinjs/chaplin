@@ -67,6 +67,22 @@ define [
           return true
       false
 
+    # Find the URL for a given name using the registered routes and
+    # provided parameters.
+    reverse: (name, params) ->
+      # First filter the route handlers to those that are of the same
+      # name
+      handlers = _.filter Backbone.history.handlers, (handler) ->
+        handler.route.name is name
+
+      # Now we need to iterate over each handler and attempt to fulfill its
+      # parameters
+      # for handler in handlers
+        # Grab the parameters for this handler
+        # .. Hmmm
+
+      null
+
     # Handler for the global !router:route event
     routeHandler: (path, callback) ->
       routed = @route path
