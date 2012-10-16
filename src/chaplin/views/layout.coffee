@@ -179,13 +179,13 @@ define [
 
     # Registering one region; namespaced by cid
     registerRegion: (instance, name, selector) =>
-      @regions.push {instance, name, selector}
+      @regions.unshift {instance, name, selector}
 
     # Triggered by view; passed in the region registration method
     # Simply register all regions exposed by it
     registerRegions: (instance) ->
       if instance.regions?
-        instance.regions _.partial @registerRegion, instance
+        instance.regions (params...) => @registerRegion instance, params...
 
     # When views are disposed; remove all their registered regions
     unregisterRegions: (instance) ->
