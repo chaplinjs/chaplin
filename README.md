@@ -87,36 +87,43 @@ Chaplin depends on the following libraries:
 
 ## Building Chaplin
 
-The individual source files of Chaplin are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. However, the Chaplin library file is a compiled JavaScript file which defines the `chaplin` AMD module.
+The individual source files of Chaplin are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. However, the Chaplin library file is a compiled JavaScript file which defines a single `chaplin` module.
 
-There’s a Ruby build script in `build/build.rb` which compiles the CoffeeScripts and bundles them into one file. Before running the script, please make sure you have installed a [Ruby interpreter](http://www.ruby-lang.org/en/downloads/) and [Node.js with NPM](http://nodejs.org/#download).
+There’s a build script which compiles the CoffeeScripts and bundles them into one file. To run the script, follow these steps:
 
-Also, you need to install the Node packages for CoffeeScript and UglifierJS globally:
+1. Download and install [Node.js](http://nodejs.org/).
+2. Install the Node packages for CoffeeScript and UglifierJS globally. Open a shell (aka terminal aka command prompt) and run these commands:
 
 ```
 sudo npm install -g coffee-script
 sudo npm install -g uglify-js
 ```
 
-If you’re using Ruby 1.8, you need to install the JSON gem:
+This assumes you’re working on a Unix machine (Linux, Mac OS, BSD…). On Windows, you can omit the `sudo` command at the beginning.
+
+3. Install the Node package shelljs normally. On the shell, run this command:
 
 ```
-gem install json
+npm install shelljs
 ```
 
-After that, run the Ruby script `build.rb` in the `build` directory:
+4. On the shell, start the build by typing:
 
 ```
-cd build
-./build.rb
+cake build
 ```
 
-This creates several files in ./build/:
+This creates two directories:
 
-* `chaplin.coffee` – The Chaplin library in one CoffeeScript file.
-* `chaplin.js` – The same as a compiled JavaScript file. Normally you want to pick this.
-* `chaplin-min.js` – Minified
-* `chaplin-min.js.gz` – Minified and GZip-compressed
+* `./build/amd/` with a build using the AMD module style
+* `./build/commonjs/` with a build using the CommonJS module style
+
+These directories contain four files each:
+
+* `chaplin-VERSION.coffee` – The Chaplin library as a CoffeeScript file.
+* `chaplin-VERSION.js` – The library as a compiled JavaScript file.
+* `chaplin-VERSION-min.js` – Minified. For production use you should pick this.
+* `chaplin-VERSION-min.js.gz` – Minified and GZip-compressed.
 
 ## Running the Tests
 
