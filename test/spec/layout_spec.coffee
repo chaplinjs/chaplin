@@ -13,7 +13,7 @@ define [
     layout = testController = startupControllerContext = router = null
 
     createLink = (attributes) ->
-      attributes = if _.isObject(attributes) then _.clone(attributes) else {}
+      attributes = if attributes then _.clone(attributes) else {}
       # Yes, this is ugly. We’re doing it because IE8-10 reports an incorrect
       # protocol if the href attribute is set programatically.
       if attributes.href?

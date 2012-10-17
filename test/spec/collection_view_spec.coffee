@@ -170,7 +170,7 @@ define [
       expect(children.length).to.be 0
 
     it 'should reuse views on reset', ->
-      expect(_.isObject(collectionView.getItemViews())).to.be true
+      expect(collectionView.getItemViews()).to.be.an 'object'
 
       model1 = collection.at 0
       view1 = collectionView.subview "itemView:#{model1.cid}"
