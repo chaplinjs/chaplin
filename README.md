@@ -94,24 +94,24 @@ There’s a build script which compiles the CoffeeScripts and bundles them into 
 1. Download and install [Node.js](http://nodejs.org/).
 2. Install the Node packages for CoffeeScript and UglifierJS globally. Open a shell (aka terminal aka command prompt) and run these commands:
 
-```
-sudo npm install -g coffee-script
-sudo npm install -g uglify-js
-```
+   ```
+   sudo npm install -g coffee-script
+   sudo npm install -g uglify-js
+   ```
 
-This assumes you’re working on a Unix machine (Linux, Mac OS, BSD…). On Windows, you can omit the `sudo` command at the beginning.
+   This assumes you’re working on a Unix machine (Linux, Mac OS, BSD…). On Windows, you can omit the `sudo` command at the beginning.
 
-3. Install the Node package shelljs normally. On the shell, run this command:
+3. Install the Node package ShellJS normally. On the shell, run this command:
 
-```
-npm install shelljs
-```
+   ```
+   npm install shelljs
+   ```
 
 4. On the shell, start the build by typing:
 
-```
-cake build
-```
+   ```
+   cake build
+   ```
 
 This creates two directories:
 
