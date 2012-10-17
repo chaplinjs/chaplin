@@ -276,21 +276,23 @@ define [
     # Get the model/collection data for the templating function
     # Uses optimized Chaplin serialization if available.
     getTemplateData: ->
-      templateData = if @model
-        if @model instanceof Model
+      if @model
+        templateData = if @model instanceof Model
           @model.serialize()
         else
-          @model.toJSON()
+          utils.beget @model.attributes
       else if @collection
         # Collection: Serialize all models
-        items = if @collection instanceof Collection
-          @collection.serialize()
+        if @collection instanceof Collection
+          items = @collection.serialize()
         else
-          @collection.toJSON()
-        {items}
+          items = []
+          for model in @collection.models
+            items.push utils.beget(model.attributes)
+        templateData = {items}
       else
         # Empty object
-        {}
+        templateData = {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
