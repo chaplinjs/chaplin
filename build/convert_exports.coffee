@@ -107,7 +107,4 @@ testConvertExports = ->
 
   console.log convertExports test
 
-# testConvertExports()
-stdin = process.openStdin()
-stdin.on 'data', (chunk) ->
-  process.stdout.write convertExports chunk.toString()
+module.exports = convertExports

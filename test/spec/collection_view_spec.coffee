@@ -189,7 +189,7 @@ define [
       expect(children.length).to.be 0
 
     it 'should reuse views on reset', ->
-      expect(_.isObject(collectionView.getItemViews())).to.be true
+      expect(collectionView.getItemViews()).to.be.an 'object'
 
       model1 = collection.at 0
       view1 = collectionView.subview "itemView:#{model1.cid}"
@@ -201,7 +201,7 @@ define [
 
       collection.reset model1
 
-      expect(view1.disposed).to.not.be.ok()
+      expect(view1.disposed).to.be false
       expect(view2.disposed).to.be true
 
       newView1 = collectionView.subview "itemView:#{model1.cid}"
@@ -311,7 +311,7 @@ define [
         expect(view.disposed).to.be true
 
       for prop in ['visibleItems']
-        expect(_(collectionView).has prop).to.not.be.ok()
+        expect(_.has collectionView, prop).to.be false
 
     describe 'CollectionView filtering', ->
 
@@ -397,7 +397,7 @@ define [
       it 'should respect the filterer option', ->
         filterer = (model) -> model.id is 'A'
         collectionView.dispose()
-        collectionView = new TemplatedCollectionView {
+        collectionView = new TestCollectionView {
           collection,
           filterer
         }
@@ -476,6 +476,17 @@ define [
         addOne()
         expect($fallback.css('display')).to.be 'none'
 
+      it 'should show fallback after filtering all items', ->
+        collection.beginSync()
+        collection.finishSync()
+        filterer = (model) -> false
+        collectionView.dispose()
+        collectionView = new TemplatedCollectionView {collection, filterer}
+
+        expect(collectionView.filterer).to.be filterer
+        expect(collectionView.visibleItems.length).to.be 0
+        expect(collectionView.$fallback.css('display')).to.be 'block'
+
       it 'should set the loading indicator properly', ->
         $loading = collectionView.$loading
         expect($loading).to.be.a jQuery
@@ -523,7 +534,7 @@ define [
         collectionView.dispose()
 
         for prop in ['$list', '$fallback', '$loading']
-          expect(_(collectionView).has prop).to.not.be.ok()
+          expect(_.has collectionView, prop).to.be false
 
       it 'should respect the itemSelector property', ->
         collectionView.dispose()
