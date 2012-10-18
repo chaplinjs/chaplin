@@ -42,9 +42,18 @@ define [
 
       animationDuration: 0
 
+      itemView: ItemView
+
+    # Testing class for a custom getView method
+    class CustomViewCollectionView extends CollectionView
+
+      tagName: 'ul'
+
+      animationDuration: 0
+
       getView: (model) ->
         #console.debug 'TestCollectionView#getView', model
-        new ItemView model: model
+        new ItemView {model}
 
     # Testing class for CollectionViews with template,
     # custom list, loading indicator and fallback elements
@@ -56,6 +65,7 @@ define [
 
       templateFunction: (templateData) ->
         """
+        <h2>TemplatedCollectionView</h2>
         <ol></ol>
         <p class="loading">Loading…</p>
         <p class="fallback">This list is empty.</p>
@@ -66,6 +76,7 @@ define [
 
     # Testing class for a CollectionView with non-view children
     class MixedCollectionView extends TestCollectionView
+
       itemSelector: 'li'
 
       templateFunction: (templateData) ->
@@ -83,6 +94,8 @@ define [
 
     # Helper functions
 
+    # Resets the collection with 26 models
+    # with IDs A-Z and a random title
     fillCollection = ->
       models = for code in [65..90] # A-Z
         {
@@ -126,23 +139,29 @@ define [
           actualTitle = $el.text()
           expect(actualTitle).to.be expectedTitle
 
-    # Create the collection
-    collection = new Collection()
-
-    # Fill the collection with models before each test
+    # Create a fresh collection with models and
+    # a collection view before each test
     beforeEach ->
+      collection = new Collection()
+      collectionView = new TestCollectionView {collection}
       fillCollection()
 
-    it 'should initialize', ->
-      collectionView = new TestCollectionView
-        collection: collection
+    afterEach ->
+      collectionView.dispose()
+      collection.dispose()
+      collectionView = collection = null
 
     it 'should render item views', ->
       viewsMatchCollection()
 
+    it 'should call a custom getView method', ->
+      collectionView.dispose()
+      collectionView = new CustomViewCollectionView {collection}
+      viewsMatchCollection()
+
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
-      expect(_(visibleItems).isArray()).to.be true
+      expect(visibleItems).to.be.an 'array'
       expect(visibleItems.length).to.be collection.length
       collection.each (model, index) ->
         expect(visibleItems[index]).to.be model
@@ -247,226 +266,279 @@ define [
       # Complete replacement
       baseResetAndCheck [m0, m1, m2], [m3, m4, m5]
 
-    it 'should filter views and hide them per default', ->
-      addThree()
-      filterer = (model, position) ->
-        expect(model).to.be.a Model
-        expect(position).to.be.a 'number'
-        model.get('title') is 'new'
-      collectionView.filter filterer
-
-      expect(collectionView.visibleItems.length).to.be 3
-
-      children = getViewChildren()
-      expect(children.length).to.be collection.length
-
-      collection.each (model, index) ->
-        $el = children.eq(index)
-        visible = model.get('title') is 'new'
-        displayValue = $el.css('display')
-        if visible
-          expect(displayValue).not.to.be 'none'
-        else
-          expect(displayValue).to.be 'none'
-
-      collectionView.filter null
-      expect(collectionView.visibleItems.length).to.be collection.length
-
-    it 'should filter views with a callback', ->
-      addThree()
-      filterer = (model, position) ->
-        model.get('title') is 'new'
-      callback = sinon.spy()
-      collectionView.filter filterer, callback
-
-      # Default callback did not fire
-      expect(collectionView.visibleItems.length).to.be collection.length
-
-      # Callback was called for each model
-      expect(callback.callCount).to.be collection.length
-      collection.each (model, index) ->
-        call = callback.getCall index
-        view = collectionView.subview "itemView:#{model.cid}"
-        included = filterer model, index
-        expect(call.calledWith(view, included)).to.be true
-
-    it 'should dispose itself correctly', ->
-      expect(collectionView.dispose).to.be.a 'function'
-      model = collection.at 0
-      viewsByCid = collectionView.getItemViews()
-
-      expect(collectionView.disposed).to.not.be.ok()
-      expect(view.disposed).to.not.be.ok() for cid, view of viewsByCid
-
-      collectionView.dispose()
-      expect(collectionView.disposed).to.be true
-      # All item views have been disposed, too
-      expect(view.disposed).to.be true for cid, view of viewsByCid
-
-      for prop in ['visibleItems']
-        expect(_(collectionView).has prop).to.not.be.ok()
-
-    it 'should initialize with a template', ->
-      # Mix in SyncMachine into Collection
-      _.extend collection, SyncMachine
-
-      # Create a new CollectionView, dispose the old one
-      collectionView.dispose()
-      collectionView = new TemplatedCollectionView
-        collection: collection
-
-    it 'should render the template', ->
-      children = getAllChildren()
-      expect(children.length).to.be 3
-
-    it 'should append views to the listSelector', ->
-      $list = collectionView.$list
-      expect($list).to.be.a jQuery
-      expect($list.length).to.be 1
-
-      $list2 = collectionView.$(collectionView.listSelector)
-      expect($list.get(0)).to.be $list2.get(0)
-
-      children = getViewChildren()
-      expect(children.length).to.be collection.length
-
-    it 'should set the fallback element properly', ->
-      $fallback = collectionView.$fallback
-      expect($fallback).to.be.a jQuery
-      expect($fallback.length).to.be 1
-
-      $fallback2 = collectionView.$(collectionView.fallbackSelector)
-      expect($fallback.get(0)).to.be $fallback2.get(0)
-
-    it 'should show the fallback element properly', ->
-      $fallback = collectionView.$fallback
-
-      # Filled + unsynced = not visible
-      collection.unsync()
-      expect($fallback.css('display')).to.be 'none'
-
-      # Filled + syncing = not visible
-      collection.beginSync()
-      expect($fallback.css('display')).to.be 'none'
-
-      # Filled + synced = not visible
-      collection.finishSync()
-      expect($fallback.css('display')).to.be 'none'
-
-      # Empty the list
-      collection.reset()
-
-      # Empty + unsynced = not visible
-      collection.unsync()
-      expect($fallback.css('display')).to.be 'none'
-
-      # Empty + syncing = not visible
-      collection.beginSync()
-      expect($fallback.css('display')).to.be 'none'
-
-      # Empty + synced = visible
-      collection.finishSync()
-      expect($fallback.css('display')).to.be 'block'
-
-      # Cross-check
-      # Filled + synced = not visible
-      addOne()
-      expect($fallback.css('display')).to.be 'none'
-
-    it 'should set the loading indicator properly', ->
-      $loading = collectionView.$loading
-      expect($loading).to.be.a jQuery
-      expect($loading.length).to.be 1
-
-      $loading2 = collectionView.$(collectionView.loadingSelector)
-      expect($loading.get(0)).to.be $loading.get(0)
-
-    it 'should show the loading indicator properly', ->
-      $loading = collectionView.$loading
-
-      # Filled + unsynced = not visible
-      collection.unsync()
-      expect($loading.css('display')).to.be 'none'
-
-      # Filled + syncing = not visible
-      collection.beginSync()
-      expect($loading.css('display')).to.be 'none'
-
-      # Filled + synced = not visible
-      collection.finishSync()
-      expect($loading.css('display')).to.be 'none'
-
-      # Empty the list
-      collection.reset()
-
-      # Empty + unsynced = not visible
-      collection.unsync()
-      expect($loading.css('display')).to.be 'none'
-
-      # Empty + syncing = visible
-      collection.beginSync()
-      expect($loading.css('display')).to.be 'block'
-
-      # Empty + synced = not visible
-      collection.finishSync()
-      expect($loading.css('display')).to.be 'none'
-
-      # Cross-check
-      # Filled + synced = not visible
-      addOne()
-      expect($loading.css('display')).to.be 'none'
-
-    it 'should also dispose when templated', ->
-      collectionView.dispose()
-
-      for prop in ['$list', '$fallback', '$loading']
-        expect(_(collectionView).has prop).to.not.be.ok()
-
     it 'should respect the autoRender and renderItems options', ->
-      collectionView = new TemplatedCollectionView
-        collection: collection
+      collectionView.dispose()
+
+      renderSpy = sinon.spy CollectionView.prototype, 'render'
+      renderAllItemsSpy = sinon.spy CollectionView.prototype, 'renderAllItems'
+
+      collectionView = new TestCollectionView {
+        collection,
         autoRender: false
         renderItems: false
+      }
+
+      expect(renderSpy).was.notCalled()
+      expect(renderAllItemsSpy).was.notCalled()
 
       children = getAllChildren()
       expect(children.length).to.be 0
-      expect(_(collectionView).has '$list').to.not.be.ok()
+      expect(_.has collectionView, '$list').to.be false
 
       collectionView.render()
-      children = getAllChildren()
-      expect(children.length).to.be 3
       expect(collectionView.$list).to.be.a jQuery
       expect(collectionView.$list.length).to.be 1
 
       collectionView.renderAllItems()
       viewsMatchCollection()
 
-    it 'should respect the filterer option', ->
-      filterer = (model) -> model.id is 'A'
-      collectionView.dispose()
-      collectionView = new TemplatedCollectionView
-        collection: collection
-        filterer: filterer
+      renderSpy.restore()
+      renderAllItemsSpy.restore()
 
-      expect(collectionView.filterer).to.be filterer
-      expect(collectionView.visibleItems.length).to.be 1
+    it 'should dispose itself correctly', ->
+      expect(collectionView.dispose).to.be.a 'function'
+      model = collection.at 0
+      viewsByCid = collectionView.getItemViews()
 
-      children = getViewChildren()
-      expect(children.length).to.be collection.length
-
-    it 'should respect the itemSelector property', ->
-      collectionView.dispose()
-      collectionView = new MixedCollectionView
-        collection: collection
-
-      additionalLength = 4
-      allChildren = getAllChildren()
-      expect(allChildren.length).to.be collection.length + additionalLength
-      viewChildren = getViewChildren()
-      expect(viewChildren.length).to.be collection.length
-
-      expect(allChildren.eq(0).get(0)).to.not.be viewChildren.get(0)
-
-      expect(allChildren.eq(additionalLength).get(0)).to.be viewChildren.get(0)
+      expect(collectionView.disposed).to.be false
+      for cid, view of viewsByCid
+        expect(view.disposed).to.be false
 
       collectionView.dispose()
+      expect(collectionView.disposed).to.be true
+      # All item views have been disposed, too
+      for cid, view of viewsByCid
+        expect(view.disposed).to.be true
+
+      for prop in ['visibleItems']
+        expect(_(collectionView).has prop).to.not.be.ok()
+
+    describe 'CollectionView filtering', ->
+
+      it 'should filter views using the filterer', ->
+        addThree()
+        filterer = sinon.spy (model, position) ->
+          expect(model).to.be.a Model
+          expect(position).to.be.a 'number'
+          true
+        collectionView.filter filterer
+        expect(filterer.callCount).to.be collection.length
+
+      it 'should hide filtered views per default', ->
+        addThree()
+        collectionView.filter (model) ->
+          model.get('title') is 'new'
+
+        children = getViewChildren()
+        collection.each (model, index) ->
+          $el = children.eq(index)
+          visible = model.get('title') is 'new'
+          displayValue = $el.css('display')
+          if visible
+            expect(displayValue).not.to.be 'none'
+          else
+            expect(displayValue).to.be 'none'
+
+      it 'should remove the filter', ->
+        addThree()
+        collectionView.filter (model) ->
+          model.get('title') is 'new'
+        collectionView.filter null
+        children = getViewChildren()
+        children.each (index, element) ->
+          displayValue = jQuery(element).css('display')
+          expect(displayValue).not.to.be 'none'
+        expect(collectionView.visibleItems.length).to.be collection.length
+
+      it 'should save the filterer', ->
+        addThree()
+        filterer = -> false
+        collectionView.filter filterer
+        expect(collectionView.filterer).to.be filterer
+        collectionView.filter null
+        expect(collectionView.filterer).to.be null
+
+      it 'should trigger visibilityChange and update visibleItems when filtering', ->
+        addThree()
+        expect(collectionView.visibleItems.length).to.be collection.length
+
+        visibilityChange = sinon.spy()
+        collectionView.on 'visibilityChange', visibilityChange
+        collectionView.filter (model) ->
+          model.get('title') is 'new'
+
+        expect(visibilityChange).was.calledOnce()
+        expect(visibilityChange.args[0].length).to.be 1
+        expect(visibilityChange.args[0][0]).to.be collectionView.visibleItems
+        expect(collectionView.visibleItems.length).to.be 3
+
+        # Remove filter again
+        collectionView.filter null
+        expect(collectionView.visibleItems.length).to.be collection.length
+
+      it 'should filter views with a callback', ->
+        addThree()
+        filterer = (model) ->
+          model.get('title') is 'new'
+        filterCallback = sinon.spy (view, included) ->
+          view.$el.toggleClass('included', included)
+        collectionView.filter filterer, filterCallback
+
+        # Callback was called for each model
+        expect(filterCallback.callCount).to.be collection.length
+        children = getViewChildren()
+        collection.each (model, index) ->
+          call = filterCallback.getCall index
+          view = collectionView.subview "itemView:#{model.cid}"
+          included = filterer model, index
+          expect(call.calledWith(view, included)).to.be true
+          expect(children.eq(index).hasClass('included')).to.be included
+
+      it 'should respect the filterer option', ->
+        filterer = (model) -> model.id is 'A'
+        collectionView.dispose()
+        collectionView = new TemplatedCollectionView {
+          collection,
+          filterer
+        }
+
+        expect(collectionView.filterer).to.be filterer
+        expect(collectionView.visibleItems.length).to.be 1
+
+        children = getViewChildren()
+        expect(children.length).to.be collection.length
+
+    describe 'TemplatedCollectionView', ->
+
+      beforeEach ->
+        # Mix in SyncMachine into Collection
+        _.extend collection, SyncMachine
+
+        # Create a TemplatedCollectionView, dispose the standard one
+        collectionView.dispose()
+        collectionView = new TemplatedCollectionView {collection}
+
+      it 'should render the template', ->
+        children = getAllChildren()
+        expect(children.length).to.be 4
+
+      it 'should append views to the listSelector', ->
+        $list = collectionView.$list
+        expect($list).to.be.a jQuery
+        expect($list.length).to.be 1
+
+        $list2 = collectionView.$(collectionView.listSelector)
+        expect($list.get(0)).to.be $list2.get(0)
+
+        children = getViewChildren()
+        expect(children.length).to.be collection.length
+
+      it 'should set the fallback element properly', ->
+        $fallback = collectionView.$fallback
+        expect($fallback).to.be.a jQuery
+        expect($fallback.length).to.be 1
+
+        $fallback2 = collectionView.$(collectionView.fallbackSelector)
+        expect($fallback.get(0)).to.be $fallback2.get(0)
+
+      it 'should show the fallback element properly', ->
+        $fallback = collectionView.$fallback
+
+        # Filled + unsynced = not visible
+        collection.unsync()
+        expect($fallback.css('display')).to.be 'none'
+
+        # Filled + syncing = not visible
+        collection.beginSync()
+        expect($fallback.css('display')).to.be 'none'
+
+        # Filled + synced = not visible
+        collection.finishSync()
+        expect($fallback.css('display')).to.be 'none'
+
+        # Empty the list
+        collection.reset()
+
+        # Empty + unsynced = not visible
+        collection.unsync()
+        expect($fallback.css('display')).to.be 'none'
+
+        # Empty + syncing = not visible
+        collection.beginSync()
+        expect($fallback.css('display')).to.be 'none'
+
+        # Empty + synced = visible
+        collection.finishSync()
+        expect($fallback.css('display')).to.be 'block'
+
+        # Cross-check
+        # Filled + synced = not visible
+        addOne()
+        expect($fallback.css('display')).to.be 'none'
+
+      it 'should set the loading indicator properly', ->
+        $loading = collectionView.$loading
+        expect($loading).to.be.a jQuery
+        expect($loading.length).to.be 1
+
+        $loading2 = collectionView.$(collectionView.loadingSelector)
+        expect($loading.get(0)).to.be $loading.get(0)
+
+      it 'should show the loading indicator properly', ->
+        $loading = collectionView.$loading
+
+        # Filled + unsynced = not visible
+        collection.unsync()
+        expect($loading.css('display')).to.be 'none'
+
+        # Filled + syncing = not visible
+        collection.beginSync()
+        expect($loading.css('display')).to.be 'none'
+
+        # Filled + synced = not visible
+        collection.finishSync()
+        expect($loading.css('display')).to.be 'none'
+
+        # Empty the list
+        collection.reset()
+
+        # Empty + unsynced = not visible
+        collection.unsync()
+        expect($loading.css('display')).to.be 'none'
+
+        # Empty + syncing = visible
+        collection.beginSync()
+        expect($loading.css('display')).to.be 'block'
+
+        # Empty + synced = not visible
+        collection.finishSync()
+        expect($loading.css('display')).to.be 'none'
+
+        # Cross-check
+        # Filled + synced = not visible
+        addOne()
+        expect($loading.css('display')).to.be 'none'
+
+      it 'should also dispose when templated', ->
+        collectionView.dispose()
+
+        for prop in ['$list', '$fallback', '$loading']
+          expect(_(collectionView).has prop).to.not.be.ok()
+
+      it 'should respect the itemSelector property', ->
+        collectionView.dispose()
+        collectionView = new MixedCollectionView {collection}
+
+        additionalLength = 4
+        allChildren = getAllChildren()
+        expect(allChildren.length).to.be collection.length + additionalLength
+        viewChildren = getViewChildren()
+        expect(viewChildren.length).to.be collection.length
+
+        # The first element is not an item view
+        expect(allChildren.eq(0).get(0)).to.not.be viewChildren.get(0)
+        # The item views are append after the existing elements
+        expect(allChildren.eq(additionalLength).get(0)).to.be viewChildren.get(0)
+
+    # End TemplatedCollectionView spec
+
