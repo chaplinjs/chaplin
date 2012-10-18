@@ -133,7 +133,7 @@ Chaplin aims to be fully unit-tested. At the moment most of the modules are cove
 To run the tests, the source files and the specs need to be compiled using the CoffeeScript compiler first. Run `cake test` in the repository’s root directory, then open the test runner (`test/index.html`) in a browser.
 
 ## Boilerplate
-[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application for Chaplin. You can use it
+[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application project for Chaplin. You can use it freely as a skeleton for your chaplin project.
 
 If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerplate: [Chaplin Boilerplate-Plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
 
