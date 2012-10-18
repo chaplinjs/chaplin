@@ -5,22 +5,28 @@ define [
 ], ($, _, View) ->
   'use strict'
 
-  # General class for rendering Collections. Derive this class and
-  # overwrite at least getView. getView gets an item model
-  # and should instantiate a corresponding item view.
+  # General class for rendering Collections.
+  # Derive this class and declare at least `itemView` or override
+  # `getView`. `getView` gets an item model and should instantiate
+  # and return a corresponding item view.
   class CollectionView extends View
-
-    # Automatic rendering
-    # -------------------
-
-    # Render all items immediately per default
-    autoRender: true
-    renderItems: true
 
     # Configuration options
     # ---------------------
 
     # These options may be overwritten in derived classes.
+
+    # A class of item in collection.
+    # This property has to be overridden by a derived class.
+    itemView: null
+
+    # Automatic rendering
+
+    # Per default, render the view itself and all items on creation
+    autoRender: true
+    renderItems: true
+
+    # Animation
 
     # When new items are added, their views are faded in.
     # Animation duration in milliseconds (set to 0 to disable fade in)
@@ -31,6 +37,8 @@ define [
     # but require user’s manual definitions.
     # CSS classes used are: animated-item-view, animated-item-view-end.
     useCssAnimation: false
+
+    # Selectors and Elements
 
     # A collection view may have a template and use one of its child elements
     # as the container of the item views. If you specify `listSelector`, the
@@ -57,37 +65,24 @@ define [
     # If empty, all children of $list are considered
     itemSelector: null
 
-    # A class of item in collection.
-    # This property has to be overridden by a derived class.
-    itemView: null
-
     # Filtering
-    # ---------
 
     # The filter function, if any
     filterer: null
 
+    # A function that will be executed after each filter.
+    # Hides excluded items by default.
+    filterCallback: (view, included) ->
+      display = if included then '' else 'none'
+      view.$el.stop(true, true).css('display', display)
+
     # View lists
-    # ----------
 
     # Track a list of the visible views
     visibleItems: null
 
-    # Returns an instance of the view class
-    # This is not simply a property with a constructor so that
-    # several item view constructors are possible depending
-    # on the item model type.
-    getView: (model) ->
-      if @itemView?
-        new @itemView({model})
-      else
-        throw new Error 'The CollectionView#itemView property must be
-defined (or the getView() must be overridden)'
-
-    # In contrast to normal views, a template is not mandatory
-    # for CollectionViews. Provide an empty `getTemplateFunction`
-    # which does not throw an exception if it is not overwritten.
-    getTemplateFunction: ->
+    # Initialization
+    # --------------
 
     initialize: (options = {}) ->
       super
@@ -109,6 +104,26 @@ defined (or the getView() must be overridden)'
       @modelBind 'remove', @itemRemoved
       @modelBind 'reset',  @itemsResetted
 
+    # Rendering
+    # ---------
+
+    # In contrast to normal views, a template is not mandatory
+    # for CollectionViews. Provide an empty `getTemplateFunction`.
+    getTemplateFunction: ->
+
+    # Main render method (should be called only once)
+    render: ->
+      super
+
+      # Set the $list property with the actual list container
+      @$list = if @listSelector then @$(@listSelector) else @$el
+
+      @initFallback()
+      @initLoadingIndicator()
+
+      # Render all items
+      @renderAllItems() if @renderItems
+
     # Adding / Removing
     # -----------------
 
@@ -123,19 +138,6 @@ defined (or the getView() must be overridden)'
     # When all items are resetted, render all anew
     itemsResetted: =>
       @renderAllItems()
-
-    # Main render method (should be called only once)
-    render: ->
-      super
-
-      # Set the $list property with the actual list container
-      @$list = if @listSelector then @$(@listSelector) else @$el
-
-      @initFallback()
-      @initLoadingIndicator()
-
-      # Render all items
-      @renderAllItems() if @renderItems
 
     # Fallback message when the collection is empty
     # ---------------------------------------------
@@ -205,19 +207,15 @@ defined (or the getView() must be overridden)'
       itemViews
 
     # Applies a filter to the collection view.
-    # Expects an iterator function as parameter.
-    # If no callback, hides all items for which the iterator returns false.
-    filter: (filterer, callback) ->
-      # Save the new filterer function
+    # Expects an iterator function as first parameter
+    # which need to return true or false.
+    # Optional filter callback which is called to
+    # show/hide the view or mark it otherwise as filtered.
+    filter: (filterer, filterCallback) ->
+      # Save the filterer and filterCallback functions
       @filterer = filterer
-
-      # Default callback (hides excluded items)
-      callback ?= (view, included) =>
-        display = if included then '' else 'none'
-        view.$el.stop(true, true).css('display', display)
-        # Update visibleItems list, but do not trigger
-        # a `visibilityChange` event immediately
-        @updateVisibleItems view.model, included, false
+      @filterCallback = filterCallback if filterCallback
+      filterCallback ?= @filterCallback
 
       # Show/hide existing views
       unless _(@getItemViews()).isEmpty()
@@ -236,8 +234,11 @@ defined (or the getView() must be overridden)'
             throw new Error 'CollectionView#filter: ' +
               "no view found for #{item.cid}"
 
-          # Apply callback
-          callback view, included
+          # Show/hide or mark the view accordingly
+          @filterCallback view, included
+
+          # Update visibleItems list, but do not trigger an event immediately
+          @updateVisibleItems view.model, included, false
 
       # Trigger a combined `visibilityChange` event
       @trigger 'visibilityChange', @visibleItems
@@ -290,9 +291,9 @@ defined (or the getView() must be overridden)'
       # Get the existing view
       view = @subview "itemView:#{item.cid}"
 
-      # Instantiate a new view by calling getView if necessary
+      # Instantiate a new view if necessary
       unless view
-        view = @getView(item)
+        view = @getView item
         # Save the view in the subviews
         @subview "itemView:#{item.cid}", view
 
@@ -300,6 +301,16 @@ defined (or the getView() must be overridden)'
       view.render()
 
       view
+
+    # Returns an instance of the view class. Override this
+    # method to use several item view constructors depending
+    # on the model type or data.
+    getView: (model) ->
+      if @itemView
+        new @itemView {model}
+      else
+        throw new Error 'The CollectionView#itemView property ' +
+          'must be defined or the getView() must be overridden.'
 
     # Inserts a view into the list at the proper position
     insertView: (item, view, index = null, enableAnimation = true) ->
@@ -328,7 +339,7 @@ defined (or the getView() must be overridden)'
             $viewEl.css 'opacity', 0
       else
         # Hide the view if it’s filtered
-        $viewEl.css 'display', 'none'
+        @filterCallback view, included
 
       # Insert the view into the list
       $list = @$list
