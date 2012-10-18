@@ -142,7 +142,7 @@ If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerpla
 
 Brunch with Chaplin is a skeleton application, where [brunch](http://brunch.io) is used for assembling files & assets. It has ready-to-use classes for session management, html5boilerplate and stylus / handlebars.js as app languages.
 
-### Examples
+## Examples
 
 Several example applications are available today:
 
@@ -154,7 +154,7 @@ This example uses Facebook client-side authentication to display the user’s Li
 ### Ost.io
 [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
 
-Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend ([source](https://github.com/paulmillr/ostio-api/)) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
+Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
 
 ### Tweet your Brunch
 [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
