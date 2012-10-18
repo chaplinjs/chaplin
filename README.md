@@ -34,9 +34,9 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 
 While the initial release of Chaplin was merely an example application structure, Chaplin is being rewritten into a reusable and fully unit-tested library. The `master` branch already reflects these changes. We’re almost done, the code is already stable and successfully used in production. We don’t expect breaking API changes until version 1.0. There are only a few things to polish up before the 1.0 release:
 
-- [A comprehensive documentation and class reference](http://chaplinjs.github.com/)
-- Easier configurability of the default behavior
-- Flexibility, like use in non-CoffeeScript and non-AMD environments
+* [A comprehensive documentation and class reference](http://chaplinjs.github.com/)
+* Easier configurability of the default behavior
+* Flexibility, like use in non-CoffeeScript and non-AMD environments
 
 How about joining us? You might have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues).
 
@@ -80,10 +80,11 @@ To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn�
 
 Chaplin depends on the following libraries:
 
-* [Underscore](http://documentcloud.github.com/underscore/)
-* [Backbone](http://documentcloud.github.com/backbone/)
-* [jQuery](http://jquery.com/) or [Zepto](http://zeptojs.com)
-* An AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
+* [Backbone](http://documentcloud.github.com/backbone/) (> 0.9.2)
+* [Underscore](http://documentcloud.github.com/underscore/) (> 1.4.2) or [lodash](http://lodash.com/) (> 0.8.2)
+* [jQuery](http://jquery.com/) (> 1.8.2) or [Zepto](http://zeptojs.com) (> 1.0rc1)
+
+If you’ll be using AMD version, you will also need an AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
 ## Building Chaplin
 
@@ -127,35 +128,36 @@ These directories contain four files each:
 
 ## Running the Tests
 
-Chaplin aims to be fully unit-tested. At the moment most of the modules are covered by Jasmine tests.
+Chaplin aims to be fully unit-tested. At the moment most of the modules are covered by Mocha tests.
 
-To run the tests, the source files and the specs need to be compiled using the CoffeeScript compiler first. Run these commands in the repository’s root directory:
+To run the tests, the source files and the specs need to be compiled using the CoffeeScript compiler first. Run `cake test` in the repository’s root directory, then open the test runner (`test/index.html`) in a browser.
 
-```
-coffee --bare --output test/js/ src/
-coffee --bare --output test/js/ test/spec/
-```
+## Boilerplate
+[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application for Chaplin. You can use it
 
-Then open the test runner (`test/index.html`) in a browser.
-
-## Boilerplate and Examples
-
-In separate repositories, you will find a example applications which can also be used as a boilerplate:
-
-### Facebook Like Browser
-
-[github.com/chaplinjs/facebook-example](https://github.com/chaplinjs/facebook-example)
-
-This example uses Facebook client-side authentication to display the user’s Likes.
+If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerplate: [Chaplin Boilerplate-Plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
 
 ### Brunch with Chaplin
 [github.com/paulmillr/brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin)
 
 Brunch with Chaplin is a skeleton application, where [brunch](http://brunch.io) is used for assembling files & assets. It has ready-to-use classes for session management, html5boilerplate and stylus / handlebars.js as app languages.
 
-Example of apps built on it:
-* [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
-* [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
+### Examples
+
+Several example applications are available today:
+
+### Facebook Like Browser
+[github.com/chaplinjs/facebook-example](https://github.com/chaplinjs/facebook-example)
+
+This example uses Facebook client-side authentication to display the user’s Likes.
+
+### Ost.io
+[github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
+
+Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend ([source](https://github.com/paulmillr/ostio-api/)) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
+
+### Tweet your Brunch
+[github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
 
 ## The Architecture in Detail
 
