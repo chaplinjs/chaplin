@@ -76,15 +76,15 @@ define [
     reverse: (name, params) ->
       # First filter the route handlers to those that are of the same
       # name
-      url = false
-      for handler in Backbone.history.handlers
-        if handler.route.name is name
-          url = handler.route.reverse params
-          if url isnt false
-            break
+      for handler in Backbone.history.handlers when handler.route.name is name
+        # Attempt to reverse using the provided parameter hash
+        url = handler.route.reverse params
 
-      # Return what we got
-      url
+        # Return the url if we got a valid one; else we continue on
+        return url if url isnt false
+
+      # We didn't get anything
+      false
 
     # Handler for the global !router:route event
     routeHandler: (path, callback) ->
