@@ -10,8 +10,27 @@ define [
   # --------
 
   # The sole job of the composer is to allow views to be 'composed'.
-  # To compose a view:
-  #   @publishEvent '!composer:compose', View, options
+  # To compose a view (short form):
+  #
+  # @publishEvent '!composer:compose', ViewClass, options
+  #
+  # Or (long form):
+  #
+  # @publishEvent '!composer:compose',
+  #   compose: ->
+  #     composition = {}
+  #     composition.model = new Model()
+  #     composition.model.id = 42
+  #
+  #     composition.view = new View
+  #       model: composition.model
+  #
+  #     composition.model.fetch()
+  #     composition
+  #
+  #   check: (composition) ->
+  #     composition.model.id is 42 and
+  #     typeof composition.view is typeof View
   #
   # If the view has already been composed by a previous action then nothing
   # apart from registering the view as in use happens. Else, the view
@@ -41,51 +60,79 @@ define [
       @subscribeEvent '!composer:compose', @compose
       @subscribeEvent 'startupController', @onStartupController
 
-    compose: (type, options = {}) ->
-      # Check to see if composition is active
-      check = _.find @compositions, (c) ->
-        c.type is type and
-        _.isEqual c.options, options
+    perform: (type, options) ->
+      # Perform the composition; this is the function
+      # that is overidden when the `compose` option is passed to the
+      # compose function
+      type: type
+      options: _(options).clone()
+      view: new type options
 
-      # Initialize and render if it isn't
-      if check?
-        # Declare composition as not stale so that its regions will now be
-        # counted
-        check.instance.stale = false
+    stale: (composition, value) ->
+      # Set the stale property on the composition
+      composition.stale = value
+
+      # Sets the stale property for every item in the composition that has it
+      for name, item of composition when _(item).has 'stale'
+        item.stale = value
+
+      # Don't bother to return the for loop
+      undefined
+
+    compose: (type, options = {}) ->
+      # Short form (view-class, ctor-options) or long form ?
+      if arguments.length is 2 or _(type).isFunction()
+        # Assume short form; apply functions
+        options.compose = _(@perform).partial type, options
+        options.check = (composition) ->
+          composition.type is type and _(composition.options).isEqual options
+
+      # Assert for programmer errors
+      unless _(options.compose).isFunction()
+        throw new Error "options#compose must be defined"
+
+      unless _(options.check).isFunction()
+        throw new Error "options#check must be defined"
+
+      # Attempt to find an active composition that matches
+      composition = _(@compositions).find options.check
+
+      if composition?
+        # We have an active composition; declare composition as not stale so
+        # that its regions will now be counted
+        @stale composition, false
 
       else
-        # Build composition
-        composition =
-          type: type
-          options: _.clone options
+        # Perform the composition and append to the list so we can
+        # track its lifetime
+        @compositions.push options.compose()
 
-        # Instantiate the composition
-        composition.instance = new type options
+    destroy: (composition) ->
+      # Dispose of everything that can be disposed
+      for name, item of composition when _(item?.dispose).isFunction()
+        item.dispose()
+        delete composition[name]
 
-        # Render the composition
-        composition.instance.render() unless composition.instance.autoRender
-
-        # Append to the list so we can dispose and track the
-        # composition
-        @compositions.push composition
+      # Don't bother to return the for loop
+      undefined
 
     onStartupController: (options) ->
       # Action method is done; perform post-action clean up
       # Dispose and delete all unactive compositions
       # Declare all active compositions as de-activated
       @compositions = for composition, index in @compositions
-        if composition.instance.stale
-          composition.instance.dispose()
+        if composition.stale
+          @destroy composition
           continue
         else
-          composition.instance.stale = true
+          @stale composition, true
           composition
 
     dispose: ->
       return if @disposed
 
-      # Dispose of all compositions
-      composition.instance.dispose() for composition in @compositions
+      # Dispose of all compositions and their items (that can be)
+      @destroy composition for composition in @compositions
 
       # Destroy collections
       @compositions = @compositions[..]
