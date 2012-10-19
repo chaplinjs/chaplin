@@ -69,7 +69,7 @@ define [
       false
 
     reverseHandler: (name, params, callback) ->
-      callback @reverse(name, params)
+      callback @reverse name, params
 
     # Find the URL for a given name using the registered routes and
     # provided parameters.
