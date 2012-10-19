@@ -198,7 +198,7 @@ define [
       # Find an appropriate region
       region = _.find @regions, (region) ->
         region.name is name and
-        not instance.stale
+        not region.instance.stale
 
       # Assert that we got a valid region
       if _.isUndefined region

@@ -332,6 +332,29 @@ define [
       instance2.dispose()
       instance3.dispose()
 
+    it 'should only apply regions from non-stale views', ->
+      view1 = class Test1View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      view2 = class Test2View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test5'
+
+      view3 = class Test3View extends View
+
+      instance1 = new Test1View()
+      instance2 = new Test2View()
+      instance2.stale = true
+      instance3 = new Test3View {region: 'test2'}
+      expect(instance3.container.selector).to.be '#test2'
+
+      instance1.dispose()
+      instance2.dispose()
+      instance3.dispose()
+
     it 'should dispose itself correctly', ->
       spy1 = sinon.spy()
       layout.subscribeEvent 'foo', spy1

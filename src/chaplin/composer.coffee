@@ -65,7 +65,7 @@ define [
       # that is overidden when the `compose` option is passed to the
       # compose function
       type: type
-      options: _(options).clone()
+      params: options.params
       view: new type options
 
     stale: (composition, value) ->
@@ -83,9 +83,14 @@ define [
       # Short form (view-class, ctor-options) or long form ?
       if arguments.length is 2 or _(type).isFunction()
         # Assume short form; apply functions
-        options.compose = _(@perform).partial type, options
+        options.params = _(options).clone()
+        options.compose = => @perform type, options
         options.check = (composition) ->
-          composition.type is type and _(composition.options).isEqual options
+          composition.type is type and
+          _(composition.params).isEqual options.params
+      else
+        # Long form; first argument are the options
+        options = type
 
       # Assert for programmer errors
       unless _(options.compose).isFunction()
@@ -130,6 +135,9 @@ define [
 
     dispose: ->
       return if @disposed
+
+      # Unbind handlers of global events
+      @unsubscribeAllEvents()
 
       # Dispose of all compositions and their items (that can be)
       @destroy composition for composition in @compositions

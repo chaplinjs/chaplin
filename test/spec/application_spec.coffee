@@ -2,10 +2,11 @@ define [
   'underscore'
   'chaplin/mediator'
   'chaplin/application'
+  'chaplin/composer'
   'chaplin/lib/router'
   'chaplin/dispatcher'
   'chaplin/views/layout'
-], (_, mediator, Application, Router, Dispatcher, Layout) ->
+], (_, mediator, Application, Composer, Router, Dispatcher, Layout) ->
   'use strict'
 
   describe 'Application', ->
@@ -25,6 +26,11 @@ define [
       expect(app.initDispatcher).to.be.a 'function'
       app.initDispatcher()
       expect(app.dispatcher).to.be.a Dispatcher
+
+    it 'should create a composer', ->
+      expect(app.initComposer).to.be.a 'function'
+      app.initComposer()
+      expect(app.composer).to.be.a Composer
 
     it 'should create a layout', ->
       expect(app.initLayout).to.be.a 'function'
