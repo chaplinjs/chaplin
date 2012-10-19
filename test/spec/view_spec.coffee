@@ -1,13 +1,14 @@
 define [
   'underscore'
   'jquery'
+  'backbone'
   'chaplin/mediator'
   'chaplin/views/view'
   'chaplin/models/model'
   'chaplin/models/collection'
   'chaplin/lib/event_broker'
   'chaplin/lib/sync_machine'
-], (_, $, mediator, View, Model, Collection, EventBroker, SyncMachine) ->
+], (_, $, Backbone, mediator, View, Model, Collection, EventBroker, SyncMachine) ->
   'use strict'
 
   describe 'View', ->
@@ -26,10 +27,10 @@ define [
       view.dispose()
       view = null
       if model
-        model.dispose()
+        model.dispose?()
         model = null
       if collection
-        collection.dispose()
+        collection.dispose?()
         collection = null
 
     setModel = ->
@@ -302,14 +303,28 @@ define [
       expect(templateData).to.be.an 'object'
       expect(_.isEmpty templateData).to.be true
 
-    it 'should return proper template data for a model', ->
+    it 'should return proper template data for a Chaplin model', ->
       setModel()
       templateData = view.getTemplateData()
       expect(templateData).to.be.an 'object'
       expect(templateData.foo).to.be 'foo'
       expect(templateData.bar).to.be 'bar'
 
-    it 'should return proper template data for collections', ->
+    it 'should return template data that protects the model', ->
+      setModel()
+      templateData = view.getTemplateData()
+      templateData.qux = 'qux'
+      expect(model.get('qux')).to.be undefined
+
+    it 'should return proper template data for a Backbone model', ->
+      model = new Backbone.Model foo: 'foo', bar: 'bar'
+      view.model = model
+      templateData = view.getTemplateData()
+      expect(templateData).to.be.an 'object'
+      expect(templateData.foo).to.be 'foo'
+      expect(templateData.bar).to.be 'bar'
+
+    it 'should return proper template data for Chaplin collections', ->
       model1 = new Model foo: 'foo'
       model2 = new Model bar: 'bar'
       collection = new Collection [model1, model2]
@@ -317,11 +332,31 @@ define [
 
       d = view.getTemplateData()
       expect(d).to.be.an 'object'
-      expect(d.items).to.be.an 'array'
-      expect(_.isObject d.items[0]).to.be true
-      expect(d.items[0].foo).to.be 'foo'
-      expect(_.isObject d.items[1]).to.be true
-      expect(d.items[1].bar).to.be 'bar'
+      expect(d).to.only.have.keys('items');
+      items = d.items
+      expect(items).to.be.an 'array'
+      expect(items.length).to.be 2
+      expect(items[0]).to.be.an 'object'
+      expect(items[0].foo).to.be 'foo'
+      expect(items[1]).to.be.an 'object'
+      expect(items[1].bar).to.be 'bar'
+
+    it 'should return proper template data for Backbone collections', ->
+      model1 = new Backbone.Model foo: 'foo'
+      model2 = new Backbone.Model bar: 'bar'
+      collection = new Backbone.Collection [model1, model2]
+      view.collection = collection
+
+      d = view.getTemplateData()
+      expect(d).to.be.an 'object'
+      expect(d).to.only.have.keys('items');
+      items = d.items
+      expect(items).to.be.an 'array'
+      expect(items.length).to.be 2
+      expect(items[0]).to.be.an 'object'
+      expect(items[0].foo).to.be 'foo'
+      expect(items[1]).to.be.an 'object'
+      expect(items[1].bar).to.be 'bar'
 
     it 'should add the Deferred state to the template data', ->
       setModel()

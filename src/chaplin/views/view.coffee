@@ -5,7 +5,8 @@ define [
   'chaplin/lib/utils'
   'chaplin/lib/event_broker'
   'chaplin/models/model'
-], ($, _, Backbone, utils, EventBroker, Model) ->
+  'chaplin/models/collection'
+], ($, _, Backbone, utils, EventBroker, Model, Collection) ->
   'use strict'
 
   class View extends Backbone.View
@@ -273,16 +274,25 @@ define [
     # ---------
 
     # Get the model/collection data for the templating function
+    # Uses optimized Chaplin serialization if available.
     getTemplateData: ->
-      templateData = if @model
-        # Serialize the model
-        @model.serialize()
+      if @model
+        templateData = if @model instanceof Model
+          @model.serialize()
+        else
+          utils.beget @model.attributes
       else if @collection
         # Collection: Serialize all models
-        {items: @collection.serialize()}
+        if @collection instanceof Collection
+          items = @collection.serialize()
+        else
+          items = []
+          for model in @collection.models
+            items.push utils.beget(model.attributes)
+        templateData = {items}
       else
         # Empty object
-        {}
+        templateData = {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
