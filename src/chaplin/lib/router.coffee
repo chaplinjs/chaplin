@@ -24,6 +24,7 @@ define [
         pushState: true
 
       @subscribeEvent '!router:route', @routeHandler
+      @subscribeEvent '!router:reverse', @reverseHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
       @createHistory()
@@ -67,21 +68,23 @@ define [
           return true
       false
 
+    reverseHandler: (name, params, callback) ->
+      callback @reverse(name, params)
+
     # Find the URL for a given name using the registered routes and
     # provided parameters.
     reverse: (name, params) ->
       # First filter the route handlers to those that are of the same
       # name
-      handlers = _.filter Backbone.history.handlers, (handler) ->
-        handler.route.name is name
+      url = false
+      for handler in Backbone.history.handlers
+        if handler.route.name is name
+          url = handler.route.reverse params
+          if url isnt false
+            break
 
-      # Now we need to iterate over each handler and attempt to fulfill its
-      # parameters
-      # for handler in handlers
-        # Grab the parameters for this handler
-        # .. Hmmm
-
-      null
+      # Return what we got
+      url
 
     # Handler for the global !router:route event
     routeHandler: (path, callback) ->

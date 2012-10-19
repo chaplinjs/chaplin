@@ -123,18 +123,37 @@ define [
       names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
       expect(names).to.eql ['home', 'phonebook', 'about']
 
+    it 'should allow for rerversing a route instance to get its url', ->
+      named = new Route 'params/:two', 'null#null', name: 'about'
+      url = named.reverse two: 1151
+      expect(url).to.eql 'params/1151'
+
+      named = new Route 'params/:two/:one/*other', 'null#null', name: 'about'
+      url = named.reverse
+        two: 32
+        one: 156
+        other: 'someone/out/there'
+
+      expect(url).to.eql 'params/32/156/someone/out/there'
+
     it 'should allow for rerversing a route by its name', ->
       router.match 'index', 'null#null', name: 'home'
-      router.match 'params/:one', 'null#null', name: 'phonebook'
+      router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
       router.match 'params/:two', 'null#null', name: 'about'
 
-      console.log 'home'
-      url = router.reverse 'home'
+      url = router.reverse 'phonebook', one: 145
+      expect(url).to.eql 'phoneparams/145'
 
-      console.log 'phonebook'
-      url = router.reverse 'phonebook'
+    it 'should allow for rerversing a route by its name via event', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
 
-      console.log url
+      url = false
+      params = one: 145
+      spy = sinon.spy()
+      mediator.publish '!router:reverse', 'phonebook', params, spy
+      expect(spy).was.calledWith 'phoneparams/145'
 
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
