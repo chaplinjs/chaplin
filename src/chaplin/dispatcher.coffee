@@ -63,18 +63,23 @@ define [
 
       # Whether to update the URL after controller startup
       # Default to true unless explicitly set to false
-      if params.changeURL isnt false
-        params.changeURL = true
+      if options.changeURL isnt false
+        options.changeURL = true
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
       # Default to false unless explicitly set to true
-      if params.forceStartup isnt true
-        params.forceStartup = false
+      forceStartup = false
+      if options.forceStartup?
+        forceStartup = true if options.forceStartup is true
+
+        # Remove it from the options hash so as the options hash is
+        # passed off to backbone later
+        delete options.forceStartup
 
       # Check if the desired controller is already active
       isSameController =
-        not params.forceStartup and
+        not forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
@@ -134,7 +139,7 @@ define [
       @currentParams = params
 
       # Adjust the URL; pass in both params and options
-      @adjustURL controller, _(params).extend options
+      @adjustURL controller, params, options
 
       # We're done! Spread the word!
       @publishEvent 'startupController',
@@ -144,7 +149,7 @@ define [
         params: @currentParams
 
     # Change the URL to the new controller using the router
-    adjustURL: (controller, params) ->
+    adjustURL: (controller, params, options) ->
       if params.path or params.path is ''
         # Just use the matched path
         url = params.path
@@ -164,7 +169,10 @@ define [
 
       # Tell the router to actually change the current URL
       # Take parameter hash from and forward it on as well
-      @publishEvent '!router:changeURL', url, params if params.changeURL
+      if options.changeURL
+        # Remove it so backbone won't see it
+        delete options.changeURL
+        @publishEvent '!router:changeURL', url, options
 
       # Save the URL
       @url = url
