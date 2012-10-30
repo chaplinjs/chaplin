@@ -338,8 +338,8 @@ define [
       templateFunc = @getTemplateFunction()
       if typeof templateFunc is 'function'
 
-        # Call the template function passing the template data
-        html = templateFunc @getTemplateData()
+        # Call the template function passing the template data and this view.
+        html = templateFunc @getTemplateData(), { data: { view:@ } }
 
         # Replace HTML
         # ------------
