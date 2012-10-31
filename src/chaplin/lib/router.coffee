@@ -74,9 +74,11 @@ define [
 
     # Handler for the global !router:route event
     routeHandler: (path, options, callback) ->
-      # Assume only path and callback were passed if we only got 2 arguments;
-      # so as to mimic existing chaplin behavior
-      [callback, options] = [options, {}] if arguments.length is 2
+      # Assume only path and callback were passed if we only got 2 arguments
+      # and the second argument is a function; so as to mimic existing chaplin
+      # behavior
+      if arguments.length is 2 and _(options).isFunction()
+        [callback, options] = [options, {}]
 
       # Continue on to handle the route; pass in options hash
       routed = @route path, options
