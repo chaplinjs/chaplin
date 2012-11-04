@@ -9,7 +9,7 @@ define [
     #console.debug 'Dispatcher spec'
 
     # Initialize shared variables
-    dispatcher = params = null
+    dispatcher = params = routeOptions = null
 
     # Unique ID counter for creating params objects
     paramsId = 0
@@ -26,7 +26,8 @@ define [
 
     refreshParams = ->
       # Create a fresh params object which does not equal the previous one
-      params = changeURL: false, id: paramsId++
+      params = id: paramsId++
+      routeOptions = changeURL: false
 
     # Define test controllers
     class Test1Controller extends Controller
@@ -37,6 +38,7 @@ define [
 
       initialize: (params, oldControllerName) ->
         #console.debug 'Test1Controller#initialize', params, oldControllerName
+        console.log @, arguments
         super
 
       show: (params, oldControllerName) ->
@@ -84,7 +86,7 @@ define [
       initialize = sinon.spy(proto, 'initialize')
       action     = sinon.spy(proto, 'show')
 
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       expect(initialize).was.calledWith params, null
       expect(action).was.calledWith params, null
@@ -94,14 +96,14 @@ define [
       action.restore()
 
     it 'should not start the same controller if params match', ->
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       proto = Test1Controller.prototype
       historyURL = sinon.spy(proto, 'historyURL')
       initialize = sinon.spy(proto, 'initialize')
       action     = sinon.spy(proto, 'show')
 
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       expect(initialize).was.notCalled()
       expect(action).was.notCalled()
@@ -111,7 +113,7 @@ define [
       action.restore()
 
     it 'should start the same controller if params differ', ->
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       proto = Test1Controller.prototype
       historyURL = sinon.spy(proto, 'historyURL')
@@ -119,7 +121,7 @@ define [
       action     = sinon.spy(proto, 'show')
 
       refreshParams()
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       expect(initialize).was.calledWith params, 'test1'
       expect(action).was.calledWith params, 'test1'
@@ -129,15 +131,16 @@ define [
       action.restore()
 
     it 'should start the same controller if forced', ->
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       proto = Test1Controller.prototype
       historyURL = sinon.spy(proto, 'historyURL')
       initialize = sinon.spy(proto, 'initialize')
       action     = sinon.spy(proto, 'show')
 
-      params.forceStartup = true
-      mediator.publish 'matchRoute', route1, params
+      routeOptions.forceStartup = true
+      console.log 'matching...', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       expect(initialize).was.calledWith params, 'test1'
       expect(action).was.calledWith params, 'test1'
@@ -148,7 +151,7 @@ define [
 
     it 'should save the controller, action, params and url', ->
       # Now route to Test2Controller
-      mediator.publish 'matchRoute', route2, params
+      mediator.publish 'matchRoute', route2, params, routeOptions
 
       d = dispatcher
       expect(d.previousControllerName).to.be 'test1'
@@ -163,7 +166,7 @@ define [
       dispose = sinon.spy(proto, 'dispose')
 
       # Route back to Test1Controller
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       expect(dispose).was.calledWith params, 'test1'
       dispose.restore()
@@ -173,7 +176,7 @@ define [
       mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
 
       # Now route to Test2Controller
-      mediator.publish 'matchRoute', route2, params
+      mediator.publish 'matchRoute', route2, params, routeOptions
 
       expect(beforeControllerDispose).was.called()
       passedController = beforeControllerDispose.lastCall.args[0]
@@ -187,7 +190,7 @@ define [
       mediator.subscribe 'startupController', startupController
 
       # Route back to Test1Controller
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
 
       passedEvent = startupController.lastCall.args[0]
       expect(passedEvent).to.be.an 'object'
@@ -204,7 +207,8 @@ define [
       initialize = sinon.spy(proto, 'initialize')
       action     = sinon.spy(proto, 'show')
 
-      mediator.publish '!startupController', 'test1', 'show', params
+      mediator.publish '!startupController', 'test1', 'show', params,
+        routeOptions
 
       expect(initialize).was.calledWith params, 'test1'
       expect(action).was.calledWith params, 'test1'
@@ -221,6 +225,20 @@ define [
       initialize.restore()
       action.restore()
 
+    it 'should pass options through from !startupController events', ->
+      spy = sinon.spy()
+      mediator.subscribe '!router:changeURL', spy
+
+      change = _.clone params
+      change.forceStartup = false
+      change.changeURL = true
+      options = replace: true
+      mediator.publish '!startupController', 'test1', 'show', change, options,
+        routeOptions
+      expect(spy).was.calledWith "test1/#{change.id}", _(options).extend change
+
+      mediator.unsubscribe '!router:changeURL', spy
+
     it 'should support redirection to a URL', ->
       proto = Test1Controller.prototype
       action = sinon.spy(proto, 'redirectToURL')
@@ -228,7 +246,7 @@ define [
       startupController = sinon.spy()
       mediator.subscribe 'startupController', startupController
 
-      mediator.publish 'matchRoute', redirectToURLRoute, params
+      mediator.publish 'matchRoute', redirectToURLRoute, params, routeOptions
 
       expect(action).was.calledWith(params, 'test1')
 
@@ -259,7 +277,8 @@ define [
       mediator.subscribe 'startupController', startupController
 
       # Redirects from Test1Controller to Test2Controller
-      mediator.publish 'matchRoute', redirectToControllerRoute, params
+      mediator.publish 'matchRoute', redirectToControllerRoute, params,
+        routeOptions
 
       expect(redirectAction).was.calledWith params, 'test1'
       expect(targetAction).was.calledWith params, 'test1'
@@ -287,7 +306,7 @@ define [
 
       proto = Test1Controller.prototype
       initialize = sinon.spy(proto, 'initialize')
-      mediator.publish 'matchRoute', route1, params
+      mediator.publish 'matchRoute', route1, params, routeOptions
       expect(initialize).was.notCalled()
 
       expect(dispatcher.disposed).to.be true

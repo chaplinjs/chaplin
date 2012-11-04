@@ -44,8 +44,8 @@ define [
     # ----------------------------------
 
     # Handler for the global matchRoute event
-    matchRoute: (route, params) ->
-      @startupController route.controller, route.action, params
+    matchRoute: (route, params, options) ->
+      @startupController route.controller, route.action, params, options
 
     # Handler for the global !startupController event
     #
@@ -57,23 +57,29 @@ define [
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
-    startupController: (controllerName, action = 'index', params = {}) ->
+    startupController: (controllerName, action = 'index', params = {},
+                        options = {}) ->
       # Set default flags
 
       # Whether to update the URL after controller startup
       # Default to true unless explicitly set to false
-      if params.changeURL isnt false
-        params.changeURL = true
+      if options.changeURL isnt false
+        options.changeURL = true
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
       # Default to false unless explicitly set to true
-      if params.forceStartup isnt true
-        params.forceStartup = false
+      forceStartup = false
+      if options.forceStartup?
+        forceStartup = true if options.forceStartup is true
+
+        # Remove it from the options hash so as the options hash is
+        # passed off to backbone later
+        delete options.forceStartup
 
       # Check if the desired controller is already active
       isSameController =
-        not params.forceStartup and
+        not forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
@@ -83,7 +89,9 @@ define [
       return if isSameController
 
       # Fetch the new controller, then go on
-      handler = _(@controllerLoaded).bind(this, controllerName, action, params)
+      handler = _(@controllerLoaded).bind(
+        this, controllerName, action, params, options)
+
       @loadController controllerName, handler
 
     # Load the constructor for a given controller name.
@@ -98,7 +106,8 @@ define [
         handler require path
 
     # Handler for the controller lazy-loading
-    controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
+    controllerLoaded: (controllerName, action, params, options,
+                       ControllerConstructor) ->
 
       # Shortcuts for the old controller
       currentControllerName = @currentControllerName or null
@@ -129,7 +138,8 @@ define [
       @currentAction = action
       @currentParams = params
 
-      @adjustURL controller, params
+      # Adjust the URL; pass in both params and options
+      @adjustURL controller, params, options
 
       # We're done! Spread the word!
       @publishEvent 'startupController',
@@ -139,7 +149,7 @@ define [
         params: @currentParams
 
     # Change the URL to the new controller using the router
-    adjustURL: (controller, params) ->
+    adjustURL: (controller, params, options) ->
       if params.path or params.path is ''
         # Just use the matched path
         url = params.path
@@ -158,7 +168,11 @@ define [
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
-      @publishEvent '!router:changeURL', url if params.changeURL
+      # Take parameter hash from and forward it on as well
+      if options.changeURL
+        # Remove it so backbone won't see it
+        delete options.changeURL
+        @publishEvent '!router:changeURL', url, options
 
       # Save the URL
       @url = url
