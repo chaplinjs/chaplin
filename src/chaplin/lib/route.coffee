@@ -83,36 +83,28 @@ define [
       return true
 
     # The handler which is called by Backbone.History when the route matched.
-    # It is also called by Router#follow which might pass options
-    handler: (path, options) =>
+    # It is also called by Router#route which might pass options
+    handler: (path, options = {}) =>
       # Build params hash
       params = @buildParams path
+
+      # Add a `path` routing option with the whole path match
+      options.path = path
 
       # Publish a global matchRoute event passing the route and the params
       # Original options hash forwarded to allow further forwarding to backbone
       @publishEvent 'matchRoute', this, params, options
 
     # Create a proper Rails-like params hash, not an array like Backbone
-    # `matches` and `additionalParams` arguments are optional
     buildParams: (path) ->
-      params = {}
-
-      # Add params from query string
-      queryParams = @extractQueryParams path
-      _(params).extend queryParams
-
-      # Add named params from pattern matches
-      patternParams = @extractParams path
-      _(params).extend patternParams
-
-      # Add additional params from options
-      # (they might overwrite params extracted from URL)
-      _(params).extend @options.params
-
-      # Add a `path  param with the whole path match
-      params.path = path
-
-      params
+      _.extend {},
+        # Add params from query string
+        @extractQueryParams(path),
+        # Add named params from pattern matches
+        @extractParams(path),
+        # Add additional params from options
+        # (they might overwrite params extracted from URL)
+        @options.params
 
     # Extract named parameters from the URL path
     extractParams: (path) ->

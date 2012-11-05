@@ -145,9 +145,9 @@ define [
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params, options) ->
-      if params.path or params.path is ''
+      if typeof options.path is 'string'
         # Just use the matched path
-        url = params.path
+        url = options.path
 
       else if typeof controller.historyURL is 'function'
         # Use controller.historyURL to get the URL
