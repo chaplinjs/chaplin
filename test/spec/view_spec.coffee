@@ -414,6 +414,13 @@ define [
       if Object.isFrozen
         expect(Object.isFrozen(view)).to.be true
 
+    it 'should fire a dispose event when disposed', ->
+      spy = sinon.spy()
+      mediator.subscribe 'view:dispose', spy
+      view.dispose()
+      expect(spy).was.calledWith view
+      mediator.unsubscribe 'view:dispose', spy
+
     it 'should remove itself from the DOM', ->
       view.$el
         .attr('id', 'disposed-view')

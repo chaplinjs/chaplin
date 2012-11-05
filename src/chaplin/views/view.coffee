@@ -36,12 +36,40 @@ define [
     # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
     containerMethod: 'append'
 
+    # Regions
+    # -------
+
+    # Region registration; regions are in essence named selectors that aim
+    # to decouple the view from its parent.
+
+    # To register regions implement this method in your class as follows:
+    # regions: (region) ->
+    #   region 'name', '.class'
+    #   region 'name', '#id'
+
+    regions: null
+
+    # Region application is the reverse; you're specifying that this view
+    # will be inserted into the DOM at the named region. Error thrown if
+    # the region is unregistered at the time of initialization.
+    # Set the region name on your derived class or pass it into the
+    # constructor in controller action.
+
+    region: null
+
     # Subviews
     # --------
 
     # List of subviews
     subviews: null
     subviewsByName: null
+
+    # State
+    # -----
+
+    # A view is `stale` when it has been previously composed by the last
+    # route but has not yet been composed by the current route.
+    stale: false
 
     # Method wrapping to enable `afterRender` and `afterInitialize`
     # -------------------------------------------------------------
@@ -87,7 +115,7 @@ define [
 
       # Copy some options to instance properties
       if options
-        for prop in ['autoRender', 'container', 'containerMethod']
+        for prop in ['autoRender', 'container', 'containerMethod', 'region']
           if options[prop]?
             @[prop] = options[prop]
 
@@ -99,6 +127,12 @@ define [
       # If the model is disposed, automatically dispose the associated view
       if @model or @collection
         @modelBind 'dispose', @dispose
+
+      # Attempt to apply a named region
+      @publishEvent '!region:apply', this.region, this if @region?
+
+      # Register all exposed regions
+      @publishEvent '!region:register', this
 
       # Call `afterInitialize` if `initialize` was not wrapped
       unless @initializeIsWrapped
@@ -371,6 +405,9 @@ define [
 
     dispose: ->
       return if @disposed
+
+      # Let everyone know we're being disposed
+      @publishEvent 'view:dispose', this
 
       # Dispose subviews
       subview.dispose() for subview in @subviews

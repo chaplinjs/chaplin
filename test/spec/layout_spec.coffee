@@ -228,6 +228,133 @@ define [
       expect(spy1.callCount).to.be 1
       expect(spy2.callCount).to.be 1
 
+    # Regions
+    # -------
+
+    it 'should allow for views to register regions', ->
+      view1 = class Test1View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      view2 = class Test2View extends View
+        regions: (region) ->
+          region 'test3', '#test1'
+          region 'test4', '#test2'
+
+      spy = sinon.spy(layout, 'registerRegion')
+      instance1 = new Test1View()
+      expect(spy).was.calledWith instance1, 'test1', '#test1'
+      expect(spy).was.calledWith instance1, 'test2', '#test2'
+      expect(layout.regions).to.eql [
+        {instance: instance1, name: 'test2', selector: '#test2'}
+        {instance: instance1, name: 'test1', selector: '#test1'}
+      ]
+
+      instance2 = new Test2View()
+      expect(spy).was.calledWith instance2, 'test3', '#test1'
+      expect(spy).was.calledWith instance2, 'test4', '#test2'
+      expect(layout.regions).to.eql [
+        {instance: instance2, name: 'test4', selector: '#test2'}
+        {instance: instance2, name: 'test3', selector: '#test1'}
+        {instance: instance1, name: 'test2', selector: '#test2'}
+        {instance: instance1, name: 'test1', selector: '#test1'}
+      ]
+
+      instance1.dispose()
+      instance2.dispose()
+
+    it 'should dispose of regions when a view is disposed', ->
+      view = class TestView extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      instance = new TestView()
+      instance.dispose()
+      expect(layout.regions).to.eql []
+
+    it 'should only dispose of regions a view registered when
+        it is disposed', ->
+      view1 = class Test1View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      view2 = class Test2View extends View
+        regions: (region) ->
+          region 'test3', '#test1'
+          region 'test4', '#test2'
+
+      instance1 = new Test1View()
+      instance2 = new Test2View()
+      instance2.dispose()
+      expect(layout.regions).to.eql [
+        {instance: instance1, name: 'test2', selector: '#test2'}
+        {instance: instance1, name: 'test1', selector: '#test1'}
+      ]
+      instance1.dispose()
+
+    it 'should allow for views to be applied to regions', ->
+      view1 = class Test1View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      view2 = class Test2View extends View
+
+      instance1 = new Test1View()
+      instance2 = new Test2View {region: 'test2'}
+      expect(instance2.container.selector).to.be '#test2'
+
+      instance1.dispose()
+      instance2.dispose()
+
+    it 'should apply regions in the order they were registered', ->
+      view1 = class Test1View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      view2 = class Test2View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test5'
+
+      view3 = class Test3View extends View
+
+      instance1 = new Test1View()
+      instance2 = new Test2View()
+      instance3 = new Test3View {region: 'test2'}
+      expect(instance3.container.selector).to.be '#test5'
+
+      instance1.dispose()
+      instance2.dispose()
+      instance3.dispose()
+
+    it 'should only apply regions from non-stale views', ->
+      view1 = class Test1View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test2'
+
+      view2 = class Test2View extends View
+        regions: (region) ->
+          region 'test1', '#test1'
+          region 'test2', '#test5'
+
+      view3 = class Test3View extends View
+
+      instance1 = new Test1View()
+      instance2 = new Test2View()
+      instance2.stale = true
+      instance3 = new Test3View {region: 'test2'}
+      expect(instance3.container.selector).to.be '#test2'
+
+      instance1.dispose()
+      instance2.dispose()
+      instance3.dispose()
+
     it 'should dispose itself correctly', ->
       spy1 = sinon.spy()
       layout.subscribeEvent 'foo', spy1
