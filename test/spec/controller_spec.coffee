@@ -64,8 +64,8 @@ define [
 
       controller.dispose()
 
-      expect(_(controller).has 'model').to.not.be.ok()
-      expect(_(controller).has 'view').to.not.be.ok()
+      expect(controller).not.to.have.own.property 'model'
+      expect(controller).not.to.have.own.property 'view'
 
       expect(model.disposed).to.be true
       expect(view.disposed).to.be true

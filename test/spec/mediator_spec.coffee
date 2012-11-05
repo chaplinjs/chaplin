@@ -25,8 +25,8 @@ define [
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
-        expect(desc.writable).to.not.be.ok()
-        expect(desc.configurable).to.not.be.ok()
+        expect(desc.writable).to.be false
+        expect(desc.configurable).to.be false
 
     it 'should publish messages to subscribers', ->
       spy = sinon.spy()
