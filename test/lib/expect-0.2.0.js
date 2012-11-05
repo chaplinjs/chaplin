@@ -1,4 +1,3 @@
-
 (function (global, module) {
 
   if ('undefined' == typeof module) {
@@ -65,7 +64,7 @@
 
         var name = $flags[i]
           , assertion = new Assertion(this.obj, name, this)
-  
+
         if ('function' == typeof Assertion.prototype[name]) {
           // clone the function, make sure we dont touch the prot reference
           var old = this[name];
@@ -96,7 +95,7 @@
       , ok = this.flags.not ? !truth : truth;
 
     if (!ok) {
-      throw new Error(msg);
+      throw new Error(msg.call(this));
     }
 
     this.and = new Assertion(this.obj);
@@ -111,8 +110,8 @@
   Assertion.prototype.ok = function () {
     this.assert(
         !!this.obj
-      , 'expected ' + i(this.obj) + ' to be truthy'
-      , 'expected ' + i(this.obj) + ' to be falsy');
+      , function(){ return 'expected ' + i(this.obj) + ' to be truthy' }
+      , function(){ return 'expected ' + i(this.obj) + ' to be falsy' });
   };
 
   /**
@@ -148,14 +147,14 @@
     if ('object' == typeof fn && not) {
       // in the presence of a matcher, ensure the `not` only applies to
       // the matching.
-      this.flags.not = false; 
+      this.flags.not = false;
     }
 
     var name = this.obj.name || 'fn';
     this.assert(
         thrown
-      , 'expected ' + name + ' to throw an exception'
-      , 'expected ' + name + ' not to throw an exception');
+      , function(){ return 'expected ' + name + ' to throw an exception' }
+      , function(){ return 'expected ' + name + ' not to throw an exception' });
   };
 
   /**
@@ -184,8 +183,8 @@
 
     this.assert(
         expectation
-      , 'expected ' + i(this.obj) + ' to be empty'
-      , 'expected ' + i(this.obj) + ' to not be empty');
+      , function(){ return 'expected ' + i(this.obj) + ' to be empty' }
+      , function(){ return 'expected ' + i(this.obj) + ' to not be empty' });
     return this;
   };
 
@@ -199,8 +198,8 @@
   Assertion.prototype.equal = function (obj) {
     this.assert(
         obj === this.obj
-      , 'expected ' + i(this.obj) + ' to equal ' + i(obj)
-      , 'expected ' + i(this.obj) + ' to not equal ' + i(obj));
+      , function(){ return 'expected ' + i(this.obj) + ' to equal ' + i(obj) }
+      , function(){ return 'expected ' + i(this.obj) + ' to not equal ' + i(obj) });
     return this;
   };
 
@@ -213,13 +212,13 @@
   Assertion.prototype.eql = function (obj) {
     this.assert(
         expect.eql(obj, this.obj)
-      , 'expected ' + i(this.obj) + ' to sort of equal ' + i(obj)
-      , 'expected ' + i(this.obj) + ' to sort of not equal ' + i(obj));
+      , function(){ return 'expected ' + i(this.obj) + ' to sort of equal ' + i(obj) }
+      , function(){ return 'expected ' + i(this.obj) + ' to sort of not equal ' + i(obj) });
     return this;
   };
 
   /**
-   * Assert within start to finish (inclusive). 
+   * Assert within start to finish (inclusive).
    *
    * @param {Number} start
    * @param {Number} finish
@@ -230,8 +229,8 @@
     var range = start + '..' + finish;
     this.assert(
         this.obj >= start && this.obj <= finish
-      , 'expected ' + i(this.obj) + ' to be within ' + range
-      , 'expected ' + i(this.obj) + ' to not be within ' + range);
+      , function(){ return 'expected ' + i(this.obj) + ' to be within ' + range }
+      , function(){ return 'expected ' + i(this.obj) + ' to not be within ' + range });
     return this;
   };
 
@@ -253,15 +252,15 @@
             'object' == type
               ? 'object' == typeof this.obj && null !== this.obj
               : type == typeof this.obj
-        , 'expected ' + i(this.obj) + ' to be a' + n + ' ' + type
-        , 'expected ' + i(this.obj) + ' not to be a' + n + ' ' + type);
+        , function(){ return 'expected ' + i(this.obj) + ' to be a' + n + ' ' + type }
+        , function(){ return 'expected ' + i(this.obj) + ' not to be a' + n + ' ' + type });
     } else {
       // instanceof
       var name = type.name || 'supplied constructor';
       this.assert(
           this.obj instanceof type
-        , 'expected ' + i(this.obj) + ' to be an instance of ' + name
-        , 'expected ' + i(this.obj) + ' not to be an instance of ' + name);
+        , function(){ return 'expected ' + i(this.obj) + ' to be an instance of ' + name }
+        , function(){ return 'expected ' + i(this.obj) + ' not to be an instance of ' + name });
     }
 
     return this;
@@ -278,8 +277,8 @@
   Assertion.prototype.above = function (n) {
     this.assert(
         this.obj > n
-      , 'expected ' + i(this.obj) + ' to be above ' + n
-      , 'expected ' + i(this.obj) + ' to be below ' + n);
+      , function(){ return 'expected ' + i(this.obj) + ' to be above ' + n }
+      , function(){ return 'expected ' + i(this.obj) + ' to be below ' + n });
     return this;
   };
 
@@ -294,11 +293,11 @@
   Assertion.prototype.below = function (n) {
     this.assert(
         this.obj < n
-      , 'expected ' + i(this.obj) + ' to be below ' + n
-      , 'expected ' + i(this.obj) + ' to be above ' + n);
+      , function(){ return 'expected ' + i(this.obj) + ' to be below ' + n }
+      , function(){ return 'expected ' + i(this.obj) + ' to be above ' + n });
     return this;
   };
-  
+
   /**
    * Assert string value matches _regexp_.
    *
@@ -309,8 +308,8 @@
   Assertion.prototype.match = function (regexp) {
     this.assert(
         regexp.exec(this.obj)
-      , 'expected ' + i(this.obj) + ' to match ' + regexp
-      , 'expected ' + i(this.obj) + ' not to match ' + regexp);
+      , function(){ return 'expected ' + i(this.obj) + ' to match ' + regexp }
+      , function(){ return 'expected ' + i(this.obj) + ' not to match ' + regexp });
     return this;
   };
 
@@ -326,8 +325,8 @@
     var len = this.obj.length;
     this.assert(
         n == len
-      , 'expected ' + i(this.obj) + ' to have a length of ' + n + ' but got ' + len
-      , 'expected ' + i(this.obj) + ' to not have a length of ' + len);
+      , function(){ return 'expected ' + i(this.obj) + ' to have a length of ' + n + ' but got ' + len }
+      , function(){ return 'expected ' + i(this.obj) + ' to not have a length of ' + len });
     return this;
   };
 
@@ -343,8 +342,8 @@
     if (this.flags.own) {
       this.assert(
           Object.prototype.hasOwnProperty.call(this.obj, name)
-        , 'expected ' + i(this.obj) + ' to have own property ' + i(name)
-        , 'expected ' + i(this.obj) + ' to not have own property ' + i(name));
+        , function(){ return 'expected ' + i(this.obj) + ' to have own property ' + i(name) }
+        , function(){ return 'expected ' + i(this.obj) + ' to not have own property ' + i(name) });
       return this;
     }
 
@@ -359,20 +358,20 @@
       } catch (e) {
         hasProp = undefined !== this.obj[name]
       }
-      
+
       this.assert(
           hasProp
-        , 'expected ' + i(this.obj) + ' to have a property ' + i(name)
-        , 'expected ' + i(this.obj) + ' to not have a property ' + i(name));
+        , function(){ return 'expected ' + i(this.obj) + ' to have a property ' + i(name) }
+        , function(){ return 'expected ' + i(this.obj) + ' to not have a property ' + i(name) });
     }
-    
+
     if (undefined !== val) {
       this.assert(
           val === this.obj[name]
-        , 'expected ' + i(this.obj) + ' to have a property ' + i(name)
-          + ' of ' + i(val) + ', but got ' + i(this.obj[name])
-        , 'expected ' + i(this.obj) + ' to not have a property ' + i(name)
-          + ' of ' + i(val));
+        , function(){ return 'expected ' + i(this.obj) + ' to have a property ' + i(name)
+          + ' of ' + i(val) + ', but got ' + i(this.obj[name]) }
+        , function(){ return 'expected ' + i(this.obj) + ' to not have a property ' + i(name)
+          + ' of ' + i(val) });
     }
 
     this.obj = this.obj[name];
@@ -391,13 +390,13 @@
     if ('string' == typeof this.obj) {
       this.assert(
           ~this.obj.indexOf(obj)
-        , 'expected ' + i(this.obj) + ' to contain ' + i(obj)
-        , 'expected ' + i(this.obj) + ' to not contain ' + i(obj));
+        , function(){ return 'expected ' + i(this.obj) + ' to contain ' + i(obj) }
+        , function(){ return 'expected ' + i(this.obj) + ' to not contain ' + i(obj) });
     } else {
       this.assert(
           ~indexOf(this.obj, obj)
-        , 'expected ' + i(this.obj) + ' to contain ' + i(obj)
-        , 'expected ' + i(this.obj) + ' to not contain ' + i(obj));
+        , function(){ return 'expected ' + i(this.obj) + ' to contain ' + i(obj) }
+        , function(){ return 'expected ' + i(this.obj) + ' to not contain ' + i(obj) });
     }
     return this;
   };
@@ -454,9 +453,20 @@
     // Assertion
     this.assert(
         ok
-      , 'expected ' + i(this.obj) + ' to ' + str
-      , 'expected ' + i(this.obj) + ' to not ' + str);
+      , function(){ return 'expected ' + i(this.obj) + ' to ' + str }
+      , function(){ return 'expected ' + i(this.obj) + ' to not ' + str });
 
+    return this;
+  };
+  /**
+   * Assert a failure.
+   *
+   * @param {String ...} custom message
+   * @api public
+   */
+  Assertion.prototype.fail = function (msg) {
+    msg = msg || "explicit failure";
+    this.assert(false, msg, msg);
     return this;
   };
 
@@ -526,7 +536,7 @@
       return html;
     }
   };
-  
+
   // Returns true if object is a DOM element.
   var isDOMElement = function (object) {
     if (typeof HTMLElement === 'object') {
@@ -736,7 +746,13 @@
   };
 
   function isRegExp(re) {
-    var s = '' + re;
+    var s;
+    try {
+      s = '' + re;
+    } catch (e) {
+      return false;
+    }
+
     return re instanceof RegExp || // easy case
            // duck-type for context-switching evalcx case
            typeof(re) === 'function' &&
@@ -832,9 +848,9 @@
 
   expect.eql = function eql (actual, expected) {
     // 7.1. All identical values are equivalent, as determined by ===.
-    if (actual === expected) { 
+    if (actual === expected) {
       return true;
-    } else if ('undefined' != typeof Buffer 
+    } else if ('undefined' != typeof Buffer
         && Buffer.isBuffer(actual) && Buffer.isBuffer(expected)) {
       if (actual.length != expected.length) return false;
 
