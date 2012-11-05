@@ -69,17 +69,12 @@ define [
       # Whether to force the controller startup even
       # when current and new controllers and params match
       # Default to false unless explicitly set to true
-      forceStartup = false
-      if options.forceStartup?
-        forceStartup = true if options.forceStartup is true
-
-        # Remove it from the options hash so as the options hash is
-        # passed off to backbone later
-        delete options.forceStartup
+      if options.forceStartup isnt true
+        options.forceStartup = false
 
       # Check if the desired controller is already active
       isSameController =
-        not forceStartup and
+        not options.forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
@@ -168,11 +163,7 @@ define [
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
-      # Take parameter hash from and forward it on as well
-      if options.changeURL
-        # Remove it so backbone won't see it
-        delete options.changeURL
-        @publishEvent '!router:changeURL', url, options
+      @publishEvent '!router:changeURL', url, options if options.changeURL
 
       # Save the URL
       @url = url
