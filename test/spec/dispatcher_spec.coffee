@@ -18,6 +18,7 @@ define [
 
     route1 = controller: 'test1', action: 'show'
     route2 = controller: 'test2', action: 'show'
+    route3 = controller: 'modules/mymodule::test3', action: 'show'
 
     redirectToURLRoute = controller: 'test1', action: 'redirectToURL'
     redirectToControllerRoute = controller: 'test1', action: 'redirectToController'
@@ -69,9 +70,27 @@ define [
         #console.debug 'Test2Controller#dispose'
         super
 
+    class Test3Controller extends Controller
+
+      historyURL: (params) ->
+        #console.debug 'Test1Controller#historyURL'
+        'test3/' + (params.id or '')
+
+      initialize: (params, oldControllerName) ->
+        #console.debug 'Test3Controller#initialize', params, oldControllerName
+        super
+
+      show: (params, oldControllerName) ->
+        #console.debug 'Test3Controller#show', params, oldControllerName
+
+      dispose: (params, newControllerName) ->
+        #console.debug 'Test3Controller#dispose'
+        super
+
     # Define a test controller AMD modules
     define 'controllers/test1_controller', -> Test1Controller
     define 'controllers/test2_controller', -> Test2Controller
+    define 'modules/mymodule/controllers/test3_controller', -> Test3Controller
 
     beforeEach refreshParams
 
@@ -280,6 +299,18 @@ define [
 
       mediator.unsubscribe 'startupController', startupController
       redirectAction.restore()
+
+    it 'should be able to look in module subdirs for module controllers', ->
+      proto = Test3Controller.prototype
+      historyURL = spyOn(proto, 'historyURL').andCallThrough()
+      initialize = spyOn(proto, 'initialize').andCallThrough()
+      action     = spyOn(proto, 'show').andCallThrough()
+
+      mediator.publish 'matchRoute', route3, params
+
+      expect(initialize).toHaveBeenCalledWith params, 'test2'
+      expect(action).toHaveBeenCalledWith params, 'test2'
+      expect(historyURL).toHaveBeenCalledWith params
 
     it 'should dispose itself correctly', ->
       expect(dispatcher.dispose).to.be.a 'function'
