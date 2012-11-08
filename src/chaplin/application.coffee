@@ -4,7 +4,8 @@ define [
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
-], (Backbone, mediator, Dispatcher, Layout, Router) ->
+  'chaplin/lib/event_broker'
+], (Backbone, mediator, Dispatcher, Layout, Router, EventBroker) ->
   'use strict'
 
   # The application bootstrapper
@@ -14,6 +15,9 @@ define [
 
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
+
+    # Mixin an EventBroker
+    _(@prototype).extend EventBroker
 
     # The site title used in the document title
     title: ''
