@@ -22,6 +22,7 @@ define [
     constructor: (@options = {}) ->
       _(@options).defaults
         pushState: true
+        applyConstraints: false
 
       @subscribeEvent '!router:route', @routeHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
@@ -45,7 +46,7 @@ define [
     # Directly create a route on the Backbone.History instance
     match: (pattern, target, options = {}) =>
       # Create the route
-      route = new Route pattern, target, options
+      route = new Route pattern, target, _(applyConstraints: @options.applyConstraints).extend(options)
       # Register the route at the Backbone.History instance.
       # Don’t use Backbone.history.route here because it calls
       # handlers.unshift, inserting the handler at the top of the list.
