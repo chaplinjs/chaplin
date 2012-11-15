@@ -195,7 +195,23 @@ define [
       expect(spy).was.called()
 
       mediator.unsubscribe 'matchRoute', spy
+    
+    it 'should use constraints to extract named parameters', ->
+      router.options.applyConstraints = true
+      router.match 'constraints/:id', 'null#null',
+        constraints:
+          id: /(\d+)/
 
+      router.route '/constraints/123'
+      expect(params.id).to.be '123'
+      
+      router.match 'constraints/:id', 'null#null',
+        constraints:
+          id: /([\d]+)[\w\-$]*/
+
+      router.route '/constraints/123-foo'
+      expect(params.id).to.be '123'
+    
     it 'should pass fixed parameters', ->
       router.match 'fixed-params/:id', 'null#null',
         params:

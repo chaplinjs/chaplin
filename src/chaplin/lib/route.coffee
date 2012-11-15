@@ -60,6 +60,12 @@ define [
       @paramNames.push paramName
       # Replace with a character class
       if match.charAt(0) is ':'
+        # Must have constraints and be allowed to apply them as RegExp
+        constraints = @options.applyConstraints and @options.constraints
+        # Apply the param name as it matches a named constraint
+        if constraints
+          # Regexp for constrained :foo
+          return constraints[paramName].source
         # Regexp for :foo
         '([^\/\?]+)'
       else
