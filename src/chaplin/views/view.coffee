@@ -87,9 +87,7 @@ define [
 
       # Copy some options to instance properties
       if options
-        for prop in ['autoRender', 'container', 'containerMethod']
-          if options[prop]?
-            @[prop] = options[prop]
+        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
 
       # Initialize subviews
       @subviews = []
