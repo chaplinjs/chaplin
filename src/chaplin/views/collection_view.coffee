@@ -93,10 +93,11 @@ define [
       # Start observing the collection
       @addCollectionListeners()
 
-      # Apply options
-      @renderItems = options.renderItems if options.renderItems?
-      @itemView = options.itemView       if options.itemView?
-      @filter options.filterer           if options.filterer?
+      # Apply options to view instance
+      _(this).extend _.pick options, ['renderItems', 'itemView']
+
+      # Apply a filter if one provided
+      @filter options.filterer if options.filterer?
 
     # Binding of collection listeners
     addCollectionListeners: ->
