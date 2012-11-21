@@ -10,14 +10,14 @@ The `Chaplin.Application` is a bootstrapper which provides methods to start othe
 <a name="initDispatcher"></a>
 
 ### initDispatcher( [options={}] )
-Initialize `Chaplin.Dispatcher`. Look at `Chaplin.Dispatcher` [documentation](/docs/dispatcher.html) for more details about the options.
+Initialize `Chaplin.Dispatcher`. Look at `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.md) for more details about the options.
 
 * **options**: the option for the Dispatcher
 
 <a name="initLayout"></a>
 
 ### initLayout( [options={}] )
-Initialize `Chaplin.Layout`. [Chaplin.Layout documentation](/docs/layout.html)
+Initialize `Chaplin.Layout`. [Chaplin.Layout documentation](./chaplin.layout.md)
 
 * **options**: none for now.
 
@@ -25,7 +25,7 @@ Initialize `Chaplin.Layout`. [Chaplin.Layout documentation](/docs/layout.html)
 <a name="initRouter"></a>
 
 ### initRouter( routes, [options={}] )
-Initialize `Chaplin.Router`. [Chaplin.Router documentation](/docs/router.html)
+Initialize `Chaplin.Router`. [Chaplin.Router documentation](./chaplin.router.md)
 
 * **routes**: the routes defined in the routes file
 * **options**: none
@@ -69,7 +69,7 @@ define [
     initialize: ->
       # ...
 
-      @layout = new Layout {@title} # option 1: instanciate directly the Layout
+      @layout = new Layout {@title} # option 1:  directly instantiate the Layout
       # OR
       @initLayout()                 # option 2: we still call initLayout...
 

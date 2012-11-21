@@ -1,6 +1,6 @@
 # Chaplin.EventBroker
 
-The EventBroker offer an interface to interact with [Chaplin.mediator](/docs/mediator.html). As of Backbone 0.9.2, the broker just serves the purpose that a handler cannot be registered twice for the same event.
+The EventBroker offer an interface to interact with [Chaplin.mediator](./chaplin.mediator.md). As of Backbone 0.9.2, the broker just serves the purpose that a handler cannot be registered twice for the same event.
 
 ## Methods of `Chaplin.EventBroker`
 
