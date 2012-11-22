@@ -169,6 +169,24 @@ define [
       expect(-> view.delegate('click', 123)).to.throwError()
       expect(-> view.delegate('click', (->), 123)).to.throwError()
 
+    it 'should do the stuff', ->
+      class A extends View
+        events: {'click .a': 'aHandler'}
+        aHandler: sinon.spy()
+
+      class B extends A
+        events: {'click .b': 'bHandler'}
+        bHandler: sinon.spy()
+
+      class C extends B
+        events: {'click .c': 'cHandler'}
+        cHandler: sinon.spy()
+
+      class D extends C
+        events: {'click .d': 'dHandler', 'click .a': 'a2Handler'}
+        aHandler: sinon.spy()
+        a2Handler: sinon.spy()
+
     it 'should bind handlers to model events', ->
       expect(view.modelBind).to.be.a 'function'
       expect(-> view.modelBind()).to.throwError()
