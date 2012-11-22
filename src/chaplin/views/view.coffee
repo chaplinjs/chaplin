@@ -43,7 +43,7 @@ define [
     subviews: null
     subviewsByName: null
 
-    constructor: ->
+    constructor: (options) ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
       # Only wrap if there is an overriding method, otherwise we
       # can call the `after-` method directly
@@ -57,15 +57,15 @@ define [
         # Otherwise just bind the `render` method
         @render = _(@render).bind this
 
+      # Copy some options to instance properties
+      if options
+        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
+
       # Call Backbone’s constructor
       super
 
     initialize: (options) ->
       # No super call here, Backbone’s `initialize` is a no-op
-
-      # Copy some options to instance properties
-      if options
-        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
 
       # Initialize subviews
       @subviews = []
