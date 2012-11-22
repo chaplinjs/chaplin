@@ -33,8 +33,22 @@ define [
       controller.redirectTo url
 
       expect(controller.redirected).to.be true
-      expect(routerRoute).was.called()
-      expect(routerRoute.lastCall.args[0]).to.be url
+      expect(routerRoute).was.calledWith url
+
+      mediator.unsubscribe '!router:route', routerRoute
+
+    it 'should throw an error when redirected to a non-route', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:route', routerRoute
+
+      controller.redirectTo 'redirect-target/123'
+
+      callback = routerRoute.firstCall.args[2]
+      expect(callback).to.be.a 'function'
+      expect(-> callback(true)).not.to.throwError()
+      expect(-> callback(false)).to.throwError()
+
+      mediator.unsubscribe '!router:route', routerRoute
 
     it 'should redirect to a controller action', ->
       startupController = sinon.spy()
@@ -43,12 +57,15 @@ define [
       controllerName = 'redirect-controller'
       action = 'redirect-action'
       params = redirectParams: true
-      controller.redirectTo controllerName, action, params
+      options = redirectOptions: true
+      controller.redirectTo controllerName, action, params, options
 
       expect(controller.redirected).to.be true
       expect(startupController).was.calledWith(
-        controllerName, action, params
+        controllerName, action, params, options
       )
+
+      mediator.unsubscribe '!startupController', startupController
 
     it 'should dispose itself correctly', ->
       expect(controller.dispose).to.be.a 'function'
