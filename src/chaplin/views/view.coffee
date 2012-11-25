@@ -45,7 +45,7 @@ define [
 
     constructor: ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
-      # Only wrap if there is an overring method, otherwise we
+      # Only wrap if there is an overriding method, otherwise we
       # can call the `after-` method directly
       unless @initialize is View::initialize
         utils.wrapMethod this, 'initialize'
