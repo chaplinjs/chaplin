@@ -72,6 +72,12 @@ define [
 
     # Handler for the global !router:route event
     routeHandler: (path, options, callback) ->
+      # Support old signature: Assume only path and callback were passed
+      # if we only got two arguments
+      if arguments.length is 2 and typeof options is 'function'
+        callback = options
+        options = {}
+
       routed = @route path, options
       callback? routed
 

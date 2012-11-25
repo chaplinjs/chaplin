@@ -298,6 +298,19 @@ define [
 
       routeSpy.restore()
 
+    it 'should support the old !router:route signature without options', ->
+      path = 'router-route-event-old'
+      callback = sinon.spy()
+      router.match path, 'router#route'
+
+      mediator.publish '!router:route', path, callback
+      expect(callback).was.calledWith true
+      expect(passedRoute).to.be.an 'object'
+      expect(passedRoute.controller).to.be 'router'
+      expect(passedRoute.action).to.be 'route'
+      expect(passedParams).to.be.an 'object'
+      expect(passedOptions).to.eql {path, changeURL: true}
+
     # Listening to the !router:changeURL event
     # ----------------------------------------
 
