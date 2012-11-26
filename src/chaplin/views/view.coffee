@@ -348,6 +348,9 @@ define [
     dispose: ->
       return if @disposed
 
+      throw new Error('Your `initialize` method must include a super call to
+        Chaplin `initialize`') unless @subviews?
+
       # Dispose subviews
       subview.dispose() for subview in @subviews
 

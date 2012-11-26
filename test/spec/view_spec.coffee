@@ -63,6 +63,15 @@ define [
       container: '#testbed'
       containerMethod: 'before'
 
+    it 'should thrown an error if initialize super not called', ->
+      prevInitialize = TestView::initialize
+      prevView = view
+      TestView::initialize = ->
+      view = new TestView
+      expect(view.dispose).to.throwError()
+      TestView::initialize = prevInitialize
+      view = prevView
+
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
         expect(view[name]).to.be EventBroker[name]
