@@ -115,7 +115,7 @@ define [
           'only two or three arguments are allowed'
 
       if typeof handler isnt 'function'
-        throw new TypeError 'View#delegate: ' +
+        throw new TypeError 'View#delegate  : ' +
           'handler argument must be function'
 
       # Add an event namespace
@@ -135,8 +135,19 @@ define [
       # Return the bound handler
       handler
 
-    # Remove all handlers registered with @delegate
+    # Override Backbones method to combine the events
+    # of the parent view if it exists.
+    delegateEvents: ->
+      getPrototypeChain = (object) ->
+        chain = [object]
+        chain.push object while object = object.constructor?.__super__
+        chain
 
+      # Call Backbone.delegateEvents on all superclasses events.
+      for proto in getPrototypeChain this when proto.events?
+        super proto.events
+
+    # Remove all handlers registered with @delegate.
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
 
