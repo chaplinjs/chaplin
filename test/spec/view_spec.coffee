@@ -64,13 +64,11 @@ define [
       containerMethod: 'before'
 
     it 'should thrown an error if initialize super not called', ->
-      prevInitialize = TestView::initialize
-      prevView = view
-      TestView::initialize = ->
-      view = new TestView
+      class NoInitView extends TestView
+        initialize: ->
+      view = new NoInitView
       expect(view.dispose).to.throwError()
-      TestView::initialize = prevInitialize
-      view = prevView
+      view.disposed = true
 
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
