@@ -136,7 +136,12 @@ define [
 
       expect(url).to.eql 'params/32/156/someone/out/there'
 
-    it 'should allow for rerversing a route by its name', ->
+    it 'should reject reversals for regular expressions', ->
+      named = new Route /params/, 'null#null', name: 'about'
+      url = named.reverse two: 1151
+      expect(url).to.equal false
+
+    it 'should allow for reversing a route by its name', ->
       router.match 'index', 'null#null', name: 'home'
       router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
       router.match 'params/:two', 'null#null', name: 'about'
@@ -144,7 +149,7 @@ define [
       url = router.reverse 'phonebook', one: 145
       expect(url).to.eql 'phoneparams/145'
 
-    it 'should allow for rerversing a route by its name via event', ->
+    it 'should allow for reversing a route by its name via event', ->
       router.match 'index', 'null#null', name: 'home'
       router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
       router.match 'params/:two', 'null#null', name: 'about'

@@ -40,10 +40,13 @@ define [
       @createRegExp()
 
     reverse: (params) ->
+      url = @pattern
+      # TODO: add support for regular expressions in reverser.
+      return false if _.isRegExp url
+
       # From a params hash; we need to be able to return
       # the actual URL this route represents
       # Iterate and attempt to replace params in pattern
-      url = @pattern
       for name, value of params
         url = url.replace ///:#{name}///g, value
         url = url.replace ///\*#{name}///g, value
