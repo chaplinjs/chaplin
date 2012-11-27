@@ -12,7 +12,8 @@
   "main": "./build/chaplin.js",
   "devDependencies": {
     "coffee-script": "1.4.x",
-    "mocha-phantomjs": "1.0.x"
+    "mocha-phantomjs": "1.0.x",
+    "shelljs": "0.0.x"
   },
   "scripts": {
     "test": "cake test && mocha-phantomjs test/index.html"
