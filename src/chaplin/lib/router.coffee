@@ -24,6 +24,7 @@ define [
         pushState: true
 
       @subscribeEvent '!router:route', @routeHandler
+      @subscribeEvent '!router:reverse', @reverseHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
       @createHistory()
@@ -65,6 +66,24 @@ define [
         if handler.route.test(path)
           handler.callback path, changeURL: true
           return true
+      false
+
+    reverseHandler: (name, params, callback) ->
+      callback @reverse name, params
+
+    # Find the URL for a given name using the registered routes and
+    # provided parameters.
+    reverse: (name, params) ->
+      # First filter the route handlers to those that are of the same
+      # name
+      for handler in Backbone.history.handlers when handler.route.name is name
+        # Attempt to reverse using the provided parameter hash
+        url = handler.route.reverse params
+
+        # Return the url if we got a valid one; else we continue on
+        return url if url isnt false
+
+      # We didn't get anything
       false
 
     # Handler for the global !router:route event

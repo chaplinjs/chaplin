@@ -1,4 +1,5 @@
 # Chaplin 0.6.0 (unreleased)
+* Added support for reversing & naming of routes.
 * Added `names` option to `Router#match`, which allows to name
   route’s regular expression matches.
 * Moved `View#wrapMethod` to `utils.wrapMethod`.

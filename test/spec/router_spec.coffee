@@ -115,6 +115,51 @@ define [
 
       mediator.unsubscribe 'matchRoute', spy
 
+    it 'should allow for registering routes with a name', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'params/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
+      expect(names).to.eql ['home', 'phonebook', 'about']
+
+    it 'should allow for rerversing a route instance to get its url', ->
+      named = new Route 'params/:two', 'null#null', name: 'about'
+      url = named.reverse two: 1151
+      expect(url).to.eql 'params/1151'
+
+      named = new Route 'params/:two/:one/*other', 'null#null', name: 'about'
+      url = named.reverse
+        two: 32
+        one: 156
+        other: 'someone/out/there'
+
+      expect(url).to.eql 'params/32/156/someone/out/there'
+
+    it 'should reject reversals for regular expressions', ->
+      named = new Route /params/, 'null#null', name: 'about'
+      url = named.reverse two: 1151
+      expect(url).to.equal false
+
+    it 'should allow for reversing a route by its name', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      url = router.reverse 'phonebook', one: 145
+      expect(url).to.eql 'phoneparams/145'
+
+    it 'should allow for reversing a route by its name via event', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      url = false
+      params = one: 145
+      spy = sinon.spy()
+      mediator.publish '!router:reverse', 'phonebook', params, spy
+      expect(spy).was.calledWith 'phoneparams/145'
+
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").to.throwError()

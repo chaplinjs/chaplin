@@ -27,6 +27,9 @@ define [
       # Save the raw pattern
       @pattern = pattern
 
+      # Store the name on the route if given
+      @name = @options.name if @options.name?
+
       # Separate target into controller and controller action
       [@controller, @action] = target.split('#')
 
@@ -35,6 +38,21 @@ define [
         throw new Error 'Route: You should not use existing controller properties as action names'
 
       @createRegExp()
+
+    reverse: (params) ->
+      url = @pattern
+      # TODO: add support for regular expressions in reverser.
+      return false if _.isRegExp url
+
+      # From a params hash; we need to be able to return
+      # the actual URL this route represents
+      # Iterate and attempt to replace params in pattern
+      for name, value of params
+        url = url.replace ///:#{name}///g, value
+        url = url.replace ///\*#{name}///g, value
+
+      # If the url tests out good; return the url; else, false
+      if @test url then url else false
 
     createRegExp: ->
       if _.isRegExp(@pattern)
