@@ -211,9 +211,9 @@ define [
       router.match /^params\/(\d+)\/(\w+)$/, 'null#null',
         names: ['one', 'two']
       router.route '/params/123/foo'
-      expect(params).to.be.an 'object'
-      expect(params.one).to.be '123'
-      expect(params.two).to.be 'foo'
+      expect(passedParams).to.be.an 'object'
+      expect(passedParams.one).to.be '123'
+      expect(passedParams.two).to.be 'foo'
 
     it 'should extract non-ascii named parameters', ->
       router.match 'params/:one/:two/:three/:four', 'null#null'
