@@ -43,38 +43,16 @@ define [
     subviews: null
     subviewsByName: null
 
-    # Method wrapping to enable `afterRender` and `afterInitialize`
-    # -------------------------------------------------------------
-
-    # Wrap a method in order to call the corresponding
-    # `after-` method automatically
-    wrapMethod: (name) ->
-      instance = this
-      # Enclose the original function
-      func = instance[name]
-      # Set a flag
-      instance["#{name}IsWrapped"] = true
-      # Create the wrapper method
-      instance[name] = ->
-        # Stop if the view was already disposed
-        return false if @disposed
-        # Call the original method
-        func.apply instance, arguments
-        # Call the corresponding `after-` method
-        instance["after#{utils.upcase(name)}"] arguments...
-        # Return the view
-        instance
-
     constructor: ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
-      # Only wrap if there is an overring method, otherwise we
+      # Only wrap if there is an overriding method, otherwise we
       # can call the `after-` method directly
       unless @initialize is View::initialize
-        @wrapMethod 'initialize'
+        utils.wrapMethod this, 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
       unless @render is View::render
-        @wrapMethod 'render'
+        utils.wrapMethod this, 'render'
       else
         # Otherwise just bind the `render` method
         @render = _(@render).bind this
@@ -87,9 +65,7 @@ define [
 
       # Copy some options to instance properties
       if options
-        for prop in ['autoRender', 'container', 'containerMethod']
-          if options[prop]?
-            @[prop] = options[prop]
+        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
 
       # Initialize subviews
       @subviews = []

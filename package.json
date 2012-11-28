@@ -1,13 +1,21 @@
 {
   "name": "chaplin",
-  "version": "1.0.0-pre",
+  "version": "0.6.0-pre",
   "description": "An Application Architecture Using Backbone.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/chaplinjs/chaplin.git"
   },
   "engines": {
-    "node": ">= 0.4.6 < 0.7"
+    "node": ">= 0.4.6 < 0.9"
   },
-  "main": "./build/chaplin.js"
+  "main": "./build/chaplin.js",
+  "devDependencies": {
+    "coffee-script": "1.4.x",
+    "mocha-phantomjs": "1.0.x",
+    "shelljs": "0.0.x"
+  },
+  "scripts": {
+    "test": "cake test && mocha-phantomjs test/index.html"
+  }
 }

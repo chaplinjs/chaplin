@@ -51,8 +51,12 @@
           loaded.push(specs[i] + '_spec');
         }
         require(loaded, function () {
-          var runner = mocha.run();
-          runner.globals(['jQuery*']);
+          if (window.mochaPhantomJS) {
+            mochaPhantomJS.run();
+          } else {
+            var runner = mocha.run();
+            runner.globals(['jQuery*']);
+          }
         });
       };
     </script>

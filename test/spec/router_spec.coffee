@@ -119,6 +119,51 @@ define [
 
       mediator.unsubscribe 'matchRoute', spy
 
+    it 'should allow for registering routes with a name', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'params/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
+      expect(names).to.eql ['home', 'phonebook', 'about']
+
+    it 'should allow for rerversing a route instance to get its url', ->
+      named = new Route 'params/:two', 'null#null', name: 'about'
+      url = named.reverse two: 1151
+      expect(url).to.eql 'params/1151'
+
+      named = new Route 'params/:two/:one/*other', 'null#null', name: 'about'
+      url = named.reverse
+        two: 32
+        one: 156
+        other: 'someone/out/there'
+
+      expect(url).to.eql 'params/32/156/someone/out/there'
+
+    it 'should reject reversals for regular expressions', ->
+      named = new Route /params/, 'null#null', name: 'about'
+      url = named.reverse two: 1151
+      expect(url).to.equal false
+
+    it 'should allow for reversing a route by its name', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      url = router.reverse 'phonebook', one: 145
+      expect(url).to.eql 'phoneparams/145'
+
+    it 'should allow for reversing a route by its name via event', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'null#null', name: 'phonebook'
+      router.match 'params/:two', 'null#null', name: 'about'
+
+      url = false
+      params = one: 145
+      spy = sinon.spy()
+      mediator.publish '!router:reverse', 'phonebook', params, spy
+      expect(spy).was.calledWith 'phoneparams/145'
+
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").to.throwError()
@@ -161,6 +206,14 @@ define [
       expect(passedParams).to.be.an 'object'
       expect(passedParams.one).to.be '123-foo'
       expect(passedParams.p_two_123).to.be '456-bar'
+
+    it 'should name parameters of a regular expression with `names` option array', ->
+      router.match /^params\/(\d+)\/(\w+)$/, 'null#null',
+        names: ['one', 'two']
+      router.route '/params/123/foo'
+      expect(params).to.be.an 'object'
+      expect(params.one).to.be '123'
+      expect(params.two).to.be 'foo'
 
     it 'should extract non-ascii named parameters', ->
       router.match 'params/:one/:two/:three/:four', 'null#null'
