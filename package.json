@@ -16,6 +16,6 @@
     "shelljs": "0.0.x"
   },
   "scripts": {
-    "test": "cake test && mocha-phantomjs test/index.html"
+    "test": "cake test && mocha-phantomjs -R dot test/index.html"
   }
 }
