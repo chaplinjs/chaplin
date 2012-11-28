@@ -5,6 +5,15 @@
 * Moved `Chaplin.View#wrapMethod` to `Chaplin.utils.wrapMethod`.
 * `Chaplin.View#dispose` will now throw an error if `Chaplin.View#initialize`
   was called without `super`.
+* Router options are now allowed to be passed in many places.
+  New signatures are:
+    * `!router:route` global event: path, *options*, callback
+      (old sig is supported too)
+    * `!startupController` global event:
+      controllerName, action, params, *options*
+    * `Dispatcher#matchRoute`: route, params, *options*
+    * `Controller#redirectTo`: path or
+      (controllerName, action, params, *options*)
 
 # Chaplin 0.5.0 (November 15, 2012)
 * Improved and stabilized codebase.
