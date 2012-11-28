@@ -175,4 +175,4 @@ define [
       collection.dispose()
 
       for prop in ['model', 'models', '_byId', '_byCid']
-        expect(_(collection).has prop).to.not.be.ok()
+        expect(collection).not.to.have.own.property prop

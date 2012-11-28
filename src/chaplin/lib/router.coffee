@@ -43,7 +43,7 @@ define [
       Backbone.history.stop() if Backbone.History.started
 
     # Connect an address with a controller action
-    # Directly create a route on the Backbone.History instance
+    # Creates a route on the Backbone.History instance
     match: (pattern, target, options = {}) =>
       # Create the route
       route = new Route pattern, target, options
@@ -59,12 +59,15 @@ define [
     # This looks quite like Backbone.History::loadUrl but it
     # accepts an absolute URL with a leading slash (e.g. /foo)
     # and passes a changeURL param to the callback function.
-    route: (path) =>
+    route: (path, options = {}) =>
+      _(options).defaults
+        changeURL: true
+
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
       for handler in Backbone.history.handlers
         if handler.route.test(path)
-          handler.callback path, changeURL: true
+          handler.callback path, options
           return true
       false
 
@@ -87,19 +90,30 @@ define [
       false
 
     # Handler for the global !router:route event
-    routeHandler: (path, callback) ->
-      routed = @route path
+    routeHandler: (path, options, callback) ->
+      # Support old signature: Assume only path and callback were passed
+      # if we only got two arguments
+      if arguments.length is 2 and typeof options is 'function'
+        callback = options
+        options = {}
+
+      routed = @route path, options
       callback? routed
 
     # Change the current URL, add a history entry.
-    # Do not trigger any routes (which is Backbone’s
-    # default behavior, but added for clarity)
-    changeURL: (url) ->
-      Backbone.history.navigate url, trigger: false
+    changeURL: (url, options = {}) ->
+      navigateOptions =
+        # Do not trigger or replace per default
+        trigger: options.trigger is true
+        replace: options.replace is true
+
+      # Navigate to the passed URL and forward options to Backbone
+      Backbone.history.navigate url, navigateOptions
 
     # Handler for the global !router:changeURL event
-    changeURLHandler: (url) ->
-      @changeURL url
+    # Accepts both the url and an options hash that is forwarded to Backbone
+    changeURLHandler: (url, options) ->
+      @changeURL url, options
 
     # Disposal
     # --------

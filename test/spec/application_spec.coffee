@@ -59,7 +59,7 @@ define [
       app.dispose()
 
       for prop in ['dispatcher', 'layout', 'router']
-        expect(_(app).has prop).to.not.be.ok()
+        expect(app).not.to.have.own.property prop
 
       expect(app.disposed).to.be true
       if Object.isFrozen
