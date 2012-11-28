@@ -81,6 +81,16 @@ define [
     # Track a list of the visible views
     visibleItems: null
 
+    # Constructor
+    # -----------
+
+    constructor: (options) ->
+      # Apply options to view instance
+      if (options)
+        _(this).extend _.pick options, ['renderItems', 'itemView']
+
+      super
+
     # Initialization
     # --------------
 
@@ -92,9 +102,6 @@ define [
 
       # Start observing the collection
       @addCollectionListeners()
-
-      # Apply options to view instance
-      _(this).extend _.pick options, ['renderItems', 'itemView']
 
       # Apply a filter if one provided
       @filter options.filterer if options.filterer?
