@@ -44,8 +44,8 @@ define [
     # ----------------------------------
 
     # Handler for the global matchRoute event
-    matchRoute: (route, params) ->
-      @startupController route.controller, route.action, params
+    matchRoute: (route, params, options) ->
+      @startupController route.controller, route.action, params, options
 
     # Handler for the global !startupController event
     #
@@ -57,23 +57,24 @@ define [
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
-    startupController: (controllerName, action = 'index', params = {}) ->
+    startupController: (controllerName, action = 'index', params = {},
+                        options = {}) ->
       # Set default flags
 
       # Whether to update the URL after controller startup
       # Default to true unless explicitly set to false
-      if params.changeURL isnt false
-        params.changeURL = true
+      if options.changeURL isnt false
+        options.changeURL = true
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
       # Default to false unless explicitly set to true
-      if params.forceStartup isnt true
-        params.forceStartup = false
+      if options.forceStartup isnt true
+        options.forceStartup = false
 
       # Check if the desired controller is already active
       isSameController =
-        not params.forceStartup and
+        not options.forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
@@ -83,7 +84,9 @@ define [
       return if isSameController
 
       # Fetch the new controller, then go on
-      handler = _(@controllerLoaded).bind(this, controllerName, action, params)
+      handler = _(@controllerLoaded).bind(
+        this, controllerName, action, params, options)
+
       @loadController controllerName, handler
 
     # Load the constructor for a given controller name.
@@ -98,7 +101,8 @@ define [
         handler require path
 
     # Handler for the controller lazy-loading
-    controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
+    controllerLoaded: (controllerName, action, params, options,
+                       ControllerConstructor) ->
 
       # Shortcuts for the old controller
       currentControllerName = @currentControllerName or null
@@ -129,7 +133,8 @@ define [
       @currentAction = action
       @currentParams = params
 
-      @adjustURL controller, params
+      # Adjust the URL; pass in both params and options
+      @adjustURL controller, params, options
 
       # We're done! Spread the word!
       @publishEvent 'startupController',
@@ -139,10 +144,10 @@ define [
         params: @currentParams
 
     # Change the URL to the new controller using the router
-    adjustURL: (controller, params) ->
-      if params.path or params.path is ''
+    adjustURL: (controller, params, options) ->
+      if typeof options.path is 'string'
         # Just use the matched path
-        url = params.path
+        url = options.path
 
       else if typeof controller.historyURL is 'function'
         # Use controller.historyURL to get the URL
@@ -158,7 +163,7 @@ define [
           "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
-      @publishEvent '!router:changeURL', url if params.changeURL
+      @publishEvent '!router:changeURL', url, options if options.changeURL
 
       # Save the URL
       @url = url

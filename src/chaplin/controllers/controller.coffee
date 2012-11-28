@@ -35,16 +35,16 @@ define [
     # Redirection
     # -----------
 
-    redirectTo: (arg1, action, params) ->
+    redirectTo: (arg1, action, params, options) ->
       @redirected = true
       if arguments.length is 1
         # URL was passed, try to route it
-        @publishEvent '!router:route', arg1, (routed) ->
+        @publishEvent '!router:route', arg1, {}, (routed) ->
           unless routed
             throw new Error 'Controller#redirectTo: no route matched'
       else
         # Assume controller and action names were passed
-        @publishEvent '!startupController', arg1, action, params
+        @publishEvent '!startupController', arg1, action, params, options
 
     # Disposal
     # --------
