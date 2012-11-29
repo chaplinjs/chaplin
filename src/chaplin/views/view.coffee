@@ -64,6 +64,8 @@ define [
       # Call Backbone’s constructor
       super
 
+    # Inheriting classes must call `super` in their `initialize` method to
+    # properly inflate subviews and set up options
     initialize: (options) ->
       # No super call here, Backbone’s `initialize` is a no-op
 

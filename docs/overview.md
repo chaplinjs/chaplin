@@ -52,7 +52,7 @@ match 'likes/:id', 'likes#show'
 
 This works much like the [Ruby on Rails counterpart](http://guides.rubyonrails.org/routing.html). If a route matches, a `matchRoute` event is published passing a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.
 
-[Learn more about the Router](router.html)
+[Learn more about the Router](./chaplin.router.md)
 
 ### Dispatcher
 
@@ -66,7 +66,7 @@ mediator.publish '!startupController', 'controller', 'action', params
 
 The `Dispatcher` handles the `!startupController` event.
 
-[Learn more about the Dispatcher](dispatcher.html)
+[Learn more about the Dispatcher](./chaplin.dispatcher.md)
 
 ### Layout
 
@@ -74,7 +74,7 @@ The `Layout` is the top-level application view. When a new controller was activa
 
 In addition, the `Layout` handles the activation of internal links. That is, you can use a normal `<a href="/foo">` element to link to another application module.
 
-[Learn more about the Layout](layout.html)
+[Learn more about the Layout](./chaplin.layout.md)
 
 ### Controllers
 
@@ -82,13 +82,13 @@ A controller is the place where a model and associated views are instantiated. T
 
 By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on. These actions are called by the `Dispatcher` when a route matches.
 
-[Learn more about controllers](controller.html)
+[Learn more about controllers](./chaplin.controller.md)
 
 ### Mediator
 
 The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `mediator.publish` in order to notify other modules, and listen for such events using `mediator.subscribe`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
 
-[Learn more about the mediator](mediator.html)
+[Learn more about the mediator](./chaplin.mediator.md)
 
 ## Memory Management and Object Disposal
 
@@ -96,6 +96,6 @@ One of the core concerns of the Chaplin architecture is a proper memory manageme
 
 Backbone provides little out of the box so Chaplin ensures that every controller, model, collection and view cleans up after itself. Chaplin extends the Model, Collection and View classes of Chaplin to implement a powerful disposal process.
 
-[Learn more about disposal](disposal.html)
+[Learn more about disposal](./disposal.md)
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
