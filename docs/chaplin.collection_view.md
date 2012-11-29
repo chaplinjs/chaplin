@@ -193,7 +193,7 @@ class LikesView extends CollectionView
 
 ### Examples
 
-  * [osti.io PostsView](https://github.com/paulmillr/ostio/blob/master/app/views/post/posts-view.coffee)
+  * [Ost.io PostsView](https://github.com/paulmillr/ostio/blob/master/app/views/post/posts-view.coffee)
   * [Facebook LikesView](https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/likes_view.coffee)
   * [FarmTab CustomersView](https://github.com/akre54/FT/blob/master/app/views/customers_collection_view.coffee)
 
