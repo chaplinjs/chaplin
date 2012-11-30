@@ -145,4 +145,4 @@ define [
         '_callbacks'
       ]
       for prop in properties
-        expect(_(model).has prop).to.not.be.ok()
+        expect(model).not.to.have.own.property prop

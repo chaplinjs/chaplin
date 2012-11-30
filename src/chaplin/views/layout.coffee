@@ -155,7 +155,7 @@ define [
         path = href
 
       # Pass to the router, try to route the path internally
-      @publishEvent '!router:route', path, (routed) ->
+      @publishEvent '!router:route', path, {}, (routed) ->
         # Prevent default handling if the URL could be routed
         if routed
           event.preventDefault()

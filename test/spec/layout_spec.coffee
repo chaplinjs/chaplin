@@ -20,20 +20,18 @@ define [
         div = document.createElement 'div'
         div.innerHTML = "<a href='#{attributes.href}'>Hello World</a>"
         link = div.firstChild
-        delete attributes.href
+        attributes = _.omit attributes, 'href'
         $link = $(link)
       else
         $link = $(document.createElement 'a')
       $link.attr attributes
 
     expectWasRouted = (linkAttributes) ->
-      stub = sinon.stub().yields(false)
+      stub = sinon.stub().yields false
       mediator.subscribe '!router:route', stub
       createLink(linkAttributes).appendTo(document.body).click().remove()
-      expect(stub).was.called()
-      args = stub.lastCall.args
-      passedPath = args[0]
-      passedCallback = args[1]
+      expect(stub).was.calledOnce()
+      [passedPath, passedOptions, passedCallback] = stub.firstCall.args
       expect(passedPath).to.be linkAttributes.href
       expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
@@ -86,7 +84,7 @@ define [
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).to.be title
         done()
-      , 100
+      , 60
 
     # Default routing options
     # -----------------------
@@ -123,21 +121,23 @@ define [
     it 'should not route clicks on external links', ->
       windowOpenStub = sinon.stub window, 'open'
       expectWasNotRouted href: 'http://example.com/'
+      expectWasNotRouted href: '//example.com/'
       expectWasNotRouted href: 'https://example.com/'
       expect(windowOpenStub).was.notCalled()
       windowOpenStub.restore()
 
     it 'should route clicks on elements with the “go-to” class', ->
-      stub = sinon.stub().yields(true)
+      stub = sinon.stub().yields true
       mediator.subscribe '!router:route', stub
       path = '/an/internal/link'
       $span = $(document.createElement 'span')
         .addClass('go-to').attr('data-href', path)
         .appendTo(document.body).click().remove()
-      expect(stub).was.called()
-      args = stub.lastCall.args
-      expect(args[0]).to.be path
-      expect(args[1]).to.be.a 'function'
+      expect(stub).was.calledOnce()
+      [passedPath, passedOptions, passedCallback] = stub.firstCall.args
+      expect(passedPath).to.be path
+      expect(passedOptions).to.be.an 'object'
+      expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 
     # With custom routing options
@@ -163,8 +163,7 @@ define [
 
     it 'skipRouting=function should decide whether to route', ->
       path = '/foo'
-
-      stub = sinon.stub().returns(false)
+      stub = sinon.stub().returns false
       layout.dispose()
       layout = new Layout title: '', skipRouting: stub
       expectWasNotRouted href: path
@@ -173,9 +172,9 @@ define [
       expect(args[0]).to.be path
       expect(args[1]).to.be.an 'object'
       expect(args[1].nodeName).to.be 'A'
-      layout.dispose()
 
-      stub = sinon.stub().returns(true)
+      stub = sinon.stub().returns true
+      layout.dispose()
       layout = new Layout title: '', skipRouting: stub
       expectWasRouted href: path
       expect(stub).was.calledOnce()

@@ -16,7 +16,7 @@ The boilerplate comes in two flavours:
 - [CoffeeScript code](https://github.com/chaplinjs/chaplin-boilerplate), if you develop your application in CoffeeScript
 - [Plain JavaScript code](https://github.com/chaplinjs/chaplin-boilerplate-plain), if you develop your application in normal JavaScript
 
-Download the using git:
+Download the boilerplate using git:
 
 ```
 git archive --remote=https://github.com/chaplinjs/chaplin-boilerplate.git  HEAD

@@ -63,6 +63,13 @@ define [
       container: '#testbed'
       containerMethod: 'before'
 
+    it 'should thrown an error if initialize super not called', ->
+      class NoInitView extends TestView
+        initialize: ->
+      view = new NoInitView
+      expect(view.dispose).to.throwError()
+      view.disposed = true
+
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
         expect(view[name]).to.be EventBroker[name]
@@ -86,7 +93,7 @@ define [
 
     it 'should attach itself to an element automatically', ->
       view = new TestView container: testbed
-      expect(renderCalled).to.not.be.ok()
+      expect(renderCalled).to.be false
       # Expect that the view is attached to the DOM *on first render*,
       # not immediately after initialize
       expect(view.el.parentNode).to.be null
@@ -362,7 +369,7 @@ define [
       setModel()
       model.initDeferred()
       templateData = view.getTemplateData()
-      expect(templateData.resolved).to.not.be.ok()
+      expect(templateData.resolved).to.be false
       model.resolve()
       templateData = view.getTemplateData()
       expect(templateData.resolved).to.be true
@@ -371,7 +378,7 @@ define [
       setModel()
       _.extend model, SyncMachine
       templateData = view.getTemplateData()
-      expect(templateData.synced).to.not.be.ok()
+      expect(templateData.synced).to.be false
       model.beginSync()
       model.finishSync()
       templateData = view.getTemplateData()
@@ -472,7 +479,7 @@ define [
         '_callbacks'
       ]
       for prop in properties
-        expect(_(view).has prop).to.not.be.ok()
+        expect(view).not.to.have.own.property prop
 
     it 'should dispose itself when the model or collection is disposed', ->
       model = new Model()
@@ -492,7 +499,7 @@ define [
       view.dispose()
 
       renderResult = view.render()
-      expect(renderResult).to.not.be.ok()
+      expect(renderResult).to.be false
       expect(view.afterRender.callCount).to.be 1
 
     it 'should not render when disposed given render was overridden', ->
@@ -507,7 +514,7 @@ define [
       view.dispose()
 
       renderResult = view.render()
-      expect(renderResult).to.not.be.ok()
+      expect(renderResult).to.be false
       # Render was called but super call should not do anything
       expect(renderCalled).to.be true
       expect($(testbed).children().length).to.be 0

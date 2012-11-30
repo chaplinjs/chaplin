@@ -27,6 +27,9 @@ define [
       # Save the raw pattern
       @pattern = pattern
 
+      # Store the name on the route if given
+      @name = @options.name if @options.name?
+
       # Separate target into controller and controller action
       [@controller, @action] = target.split('#')
 
@@ -35,6 +38,21 @@ define [
         throw new Error 'Route: You should not use existing controller properties as action names'
 
       @createRegExp()
+
+    reverse: (params) ->
+      url = @pattern
+      # TODO: add support for regular expressions in reverser.
+      return false if _.isRegExp url
+
+      # From a params hash; we need to be able to return
+      # the actual URL this route represents
+      # Iterate and attempt to replace params in pattern
+      for name, value of params
+        url = url.replace ///:#{name}///g, value
+        url = url.replace ///\*#{name}///g, value
+
+      # If the url tests out good; return the url; else, false
+      if @test url then url else false
 
     createRegExp: ->
       if _.isRegExp(@pattern)
@@ -84,39 +102,28 @@ define [
       return true
 
     # The handler which is called by Backbone.History when the route matched.
-    # It is also called by Router#follow which might pass options
-    handler: (path, options) =>
+    # It is also called by Router#route which might pass options
+    handler: (path, options = {}) =>
       # Build params hash
-      params = @buildParams path, options
+      params = @buildParams path
+
+      # Add a `path` routing option with the whole path match
+      options.path = path
 
       # Publish a global matchRoute event passing the route and the params
-      @publishEvent 'matchRoute', this, params
+      # Original options hash forwarded to allow further forwarding to backbone
+      @publishEvent 'matchRoute', this, params, options
 
     # Create a proper Rails-like params hash, not an array like Backbone
-    # `matches` and `additionalParams` arguments are optional
-    buildParams: (path, options) ->
-      params = {}
-
-      # Add params from query string
-      queryParams = @extractQueryParams path
-      _(params).extend queryParams
-
-      # Add named params from pattern matches
-      patternParams = @extractParams path
-      _(params).extend patternParams
-
-      # Add additional params from options
-      # (they might overwrite params extracted from URL)
-      _(params).extend @options.params
-
-      # Add a `changeURL` param whether to change the URL after routing
-      # Defaults to false unless explicitly set in options
-      params.changeURL = Boolean(options and options.changeURL)
-
-      # Add a `path  param with the whole path match
-      params.path = path
-
-      params
+    buildParams: (path) ->
+      _.extend {},
+        # Add params from query string
+        @extractQueryParams(path),
+        # Add named params from pattern matches
+        @extractParams(path),
+        # Add additional params from options
+        # (they might overwrite params extracted from URL)
+        @options.params
 
     # Extract named parameters from the URL path
     extractParams: (path) ->

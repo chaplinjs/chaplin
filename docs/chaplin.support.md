@@ -13,6 +13,7 @@ Determines if `Object.defineProperty` is supported. It's important to note that 
 
 ## Usage
 
-Support is used for feature detection and will return a boolean weather or not eh feature is detected.
+`Support` is used for feature detection and each method returns a boolean
+indicating feature support.
 
 ## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/lib/support.coffee)
