@@ -34,7 +34,7 @@ Any module that need to publish or subscrib to messages to/from other modules mu
 define ['chaplin', 'otherdependency'], (Chaplin, OtherDependency) ->
 ```
 
-For example, if you have a session_controller that login the user, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
+For example, if you have a session_controller that logs the user in, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
 
 ```coffeescript
 Chaplin.mediator.publish 'login', user
