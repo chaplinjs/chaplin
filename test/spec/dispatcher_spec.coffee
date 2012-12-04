@@ -386,3 +386,53 @@ define [
       expect(derivedDispatcher).to.be.a Dispatcher
 
       derivedDispatcher.dispose()
+
+    describe 'Before filters', ->
+      route = controller: 'test_filters', action: 'show'
+
+      values =
+        sync: 'foo'
+        async: done: -> 'bar'
+
+      class TestFiltersController extends Controller
+
+        before:
+          show: -> values.sync
+
+        show: (params, oldControllerName) ->
+          #console.debug 'Test2Controller#show', params, oldControllerName
+
+      # Define a test controller AMD modules
+      testFiltersModule = 'controllers/test_filters_controller'
+      define testFiltersModule, -> TestFiltersController
+
+      # Helpers for asynchronous tests
+      testFiltersLoaded = (callback) -> require [testFiltersModule], callback
+
+      before ->
+        dispatcher = new Dispatcher()
+
+      it 'should not run executeAction directly if filters are present', (done) ->
+        proto = TestFiltersController.prototype
+        #action = sinon.spy proto, 'show'
+        executeAction = sinon.spy dispatcher, 'executeAction'
+        executeFilters = sinon.mock(dispatcher).expects 'executeFilters'
+
+        mediator.publish 'matchRoute', route, params, routeOptions
+
+        testFiltersLoaded ->
+          expect(executeAction.called).to.not.be.ok()
+          expect(executeFilters.getCall(0).args[0]).to.be.a TestFiltersController
+
+          executeAction.restore()
+          executeFilters.verify()
+
+          done()
+
+      describe '#executeFilters', ->
+        it 'should list and run all filters found', ->
+        it 'should call executeAction with exactly the same arguments', ->
+        it 'should handle sync. filters then pass the returned value', ->
+        it 'should handle async. filters, then pass the returned value', ->
+
+

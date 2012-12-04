@@ -111,6 +111,7 @@ define [
         # Call the matching before filters
         @executeFilters [controller, arguments...]...
       else
+        # Restore execution onto the action
         @executeAction [controller, arguments...]...
 
     # Handler for the controller lazy-loading
