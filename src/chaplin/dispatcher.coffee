@@ -47,58 +47,6 @@ define [
     matchRoute: (route, params, options) ->
       @startupController route.controller, route.action, params, options
 
-    # Before action filters with chained execution
-    actionFilters: (controller, args) ->
-      action = args[1]
-      params = args[2]
-      # Add instance of controller as the last argument to avoid creating a new
-      # instance after filters have run through
-      args.splice(-1, 1, controller)
-
-      filters = []
-      # Iterate through the before filters object in search for a matching
-      # name with the arguments' action name
-      for filterName, filterFn in controller.before
-        filterName = filterName.replace('*', '(.*)') if filterName.indexOf '*' isnt -1
-        filterName = new RegExp("^#{filterName}$")
-
-        if filterName.test action
-          method = controller.before[filterName]
-          method = controller[filterName] if (!_.isFunction(method))
-          throw new Error('Method "' + controller[filterName] + '" does not exist') unless method
-          filters.push method
-
-      # Save returned value and also immediately return in case the value is false
-      next = (method) =>
-        # Stop if the action triggered a redirect
-        return if controller.redirected
-        # End of chain, restore execution onto the action
-        unless typeof method is 'function'
-          @currentController = null
-          @controllerLoaded args...
-          return
-
-        # Detecting a CommonJS promise object in order to use pipelining below,
-        # otherwise execute next method directly
-        unless _.isObject(previous) and _.has(previous, 'pipe')
-          previous = method params, previous
-          next filters.shift()
-        # Chaining defer objects...
-        else
-          callback = _.bind(method, controller, params)
-          previous.pipe (data) ->
-            previous = callback data
-            next filters.shift()
-
-      previous = null
-      # Start filter execution chain
-      method = filters.shift()
-      if method
-        next method
-        return true
-
-      false
-
     # Handler for the global !startupController event
     #
     # The standard flow is:
@@ -152,10 +100,21 @@ define [
       else
         handler require path
 
-    # Handler for the controller lazy-loading
-    controllerLoaded: (controllerName, action, params, options,
-                       ControllerConstructor) ->
+    controllerLoaded: (controllerName, action, params, options, ControllerConstructor) ->
+      # Shortcuts for the old controller
+      currentControllerName = @currentControllerName or null
+      # Initialize the new controller
+      # Passing the params and the old controller name
+      controller = new ControllerConstructor params, currentControllerName
 
+      if _.isObject(ControllerConstructor::before)
+        # Call the matching before filters
+        @executeFilters [controller, arguments...]...
+      else
+        @executeAction [controller, arguments...]...
+
+    # Handler for the controller lazy-loading
+    executeAction: (controller, controllerName, action, params, options) ->
       # Shortcuts for the old controller
       currentControllerName = @currentControllerName or null
       currentController     = @currentController     or null
@@ -166,15 +125,6 @@ define [
         @publishEvent 'beforeControllerDispose', currentController
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
-
-      # Initialize the new controller
-      # Passing the params and the old controller name
-      if typeof ControllerConstructor is 'object'
-        controller = ControllerConstructor
-      else
-        controller = new ControllerConstructor params, currentControllerName
-        # Call the matching before filters
-        return if @actionFilters controller, [arguments...]
 
       # Call the specific controller action
       # Passing the params and the old controller name
@@ -199,6 +149,48 @@ define [
         controller: @currentController
         controllerName: @currentControllerName
         params: @currentParams
+
+    # Before action filters with chained execution
+    executeFilters: (controller, controllerName, action, params) ->
+      filters  = []
+      previous = null
+      args = arguments
+
+      # Iterate through the before filters object in search for a matching
+      # name with the arguments' action name
+      for filterName, filterFn in controller.before
+        filterName = filterName.replace('*', '(.*)') if filterName.indexOf '*' isnt -1
+        filterName = new RegExp("^#{filterName}$")
+
+        if filterName.test action
+          method = controller.before[filterName]
+          method = controller[filterName] unless _.isFunction method
+          unless method
+            throw new Error('Method "' + controller[filterName] + '" does not exist')
+          filters.push method
+
+      # Save returned value and also immediately return in case the value is false
+      next = (method) =>
+        # Stop if the action triggered a redirect
+        return if controller.redirected
+        # End of chain, restore execution onto the action
+        unless method?
+          return @executeAction args...
+
+        # Detecting a CommonJS promise object in order to use pipelining below,
+        # otherwise execute next method directly
+        unless _.isObject(previous) and _.has(previous, 'then')
+          previous = method params, previous
+          next filters.shift()
+        # Chaining defer objects...
+        else
+          callback = _.bind(method, controller, params)
+          previous.done (data) ->
+            previous = callback data
+            next filters.shift()
+
+      # Start filter execution chain
+      next filters.shift()
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params, options) ->
