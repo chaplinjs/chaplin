@@ -37,7 +37,7 @@ define ['chaplin', 'otherdependency'], (Chaplin, OtherDependency) ->
 For example, if you have a session_controller that login the user, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
 
 ```coffeescript
-mediator.publish 'login', user
+Chaplin.mediator.publish 'login', user
 ```
 
 Any module that is interested to know about the user login will subscribe to it by doing:
