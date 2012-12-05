@@ -431,6 +431,7 @@ define [
 
       describe '#executeFilters', ->
         it 'should list and run all filters found', ->
+        it 'should throw an error if a filter method isn\'t a function', ->
         it 'should call executeAction with exactly the same arguments', ->
         it 'should handle sync. filters then pass the returned value', ->
         it 'should handle async. filters, then pass the returned value', ->

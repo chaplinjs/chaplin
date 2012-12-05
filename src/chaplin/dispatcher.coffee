@@ -107,7 +107,7 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      if _.isObject(ControllerConstructor::before)
+      if _.isObject(controller.before)
         # Call the matching before filters
         @executeFilters [controller, arguments...]...
       else
