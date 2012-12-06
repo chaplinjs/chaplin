@@ -546,10 +546,10 @@ define [
             historyURL: -> 'foo'
 
             before:
-              show: (params) ->
+              '*': (params) ->
                 params.bar = "qux"
                 'foo' # This return value should be passed to next filter in the chain
-              'show*': (params, previousFilterReturnValue) ->
+              'show': (params, previousFilterReturnValue) ->
                 previousFilterReturnValueToCheck = previousFilterReturnValue
 
             show: ->
@@ -557,6 +557,9 @@ define [
            controller = new FilterChainController()
            dispatcher.executeFilters controller, 'filter_chain', 'show', params, routeOptions
            expect(params.bar).to.be 'qux'
+
+           # This is done here to ensure the method filters are actually run synchronous
+           # and not asynchronous.
            expect(previousFilterReturnValueToCheck).to.equal 'foo'
 
 
