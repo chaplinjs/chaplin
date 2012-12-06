@@ -561,5 +561,40 @@ define [
 
 
         it 'should handle async. filters, then pass the returned value', ->
+          promise =
+            done: (callback) ->
+              @callback = -> callback 'response'
+            then: ->
+            resolve: -> @callback()
+
+          class AsyncFilterChainController extends Controller
+            historyURL: -> 'foo'
+            before:
+              '*': (params) ->
+                # Returning a promise here triggers asynchronous behavior.
+                promise
+              'show': (params, previousFilterReturnValue) ->
+                previousFilterReturnValueToCheck = previousFilterReturnValue
+
+            show: ->
+
+          controller = new AsyncFilterChainController()
+
+          action = sinon.spy controller, 'show'
+          filter = sinon.spy controller.before, 'show'
+
+          dispatcher.executeFilters controller, 'async_filter_chain', 'show', params, routeOptions
+
+          expect(filter.callCount).to.be 0
+          expect(action.callCount).to.be 0
+
+          # Force promise to be resolved...
+
+          promise.resolve()
+
+          expect(filter.calledWith(sinon.match.object, "response")).to.be.ok()
+
+          expect(filter.calledOnce).to.be.ok()
+          expect(action.calledOnce).to.be.ok()
 
 
