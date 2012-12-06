@@ -393,26 +393,19 @@ define [
   
         route = controller: 'test_filters', action: 'show'
 
-        values =
-          sync1: 'foo'
-          sync2: 'bar'
-          async: done: -> 'qux'
-
         class TestFiltersController extends Controller
 
+          historyURL: (params) ->
+            'test_filters/' + (params.id or '')
+
           before:
-            show: -> values.sync1
-            index: -> values.sync2
+            show: ->
+            index: ->
 
           show: (params, oldControllerName) ->
-            #console.debug 'Test2Controller#show', params, oldControllerName
+         
           index: (params, oldControllerName) ->
-          
-          historyURL: (params) ->
-            'test1/' + (params.id or '')
-          
-      
-        console.log TestFiltersController.prototype
+                    
       
         # Define a test controller AMD modules
         testFiltersModule = 'controllers/test_filters_controller'
@@ -421,12 +414,9 @@ define [
         # Helpers for asynchronous tests
         testFiltersLoaded = (callback) -> require [testFiltersModule], callback
       
-        proto = undefined
-      
         beforeEach ->
           dispatcher = new Dispatcher()
-          proto = TestFiltersController.prototype
-
+         
         afterEach ->
           dispatcher.dispose()
 
@@ -446,11 +436,13 @@ define [
             done()
 
         it 'should trigger before filter', (done) ->
+          proto = TestFiltersController.prototype
           beforeFiltersSpy = sinon.spy proto, 'configureBeforeFilters'
           mediator.publish 'matchRoute', route, params, routeOptions
         
           testFiltersLoaded ->
             expect(beforeFiltersSpy).was.called()
+            beforeFiltersSpy.restore()
             done()
 
 
@@ -466,10 +458,13 @@ define [
 
             before:
               show: ->
+                console.log 'showFilter'
                 called.unshift 'showFilter'
               'show*': ->
+                console.log 'showWildcardFilter'
                 called.unshift 'showWildcardFilter'
               create: ->
+                console.log 'createFilter'
                 called.unshift 'createFilter'
           
             show: ->
@@ -484,29 +479,11 @@ define [
           dispatcher = new Dispatcher()
           controller = new TestController()
 
-          dispatcher.executeFilters controller, 'test', 'show'
+          dispatcher.executeFilters controller, 'test', 'show', params, routeOptions
           
           called = []
 
-          dispatcher.executeFilters controller, 'test', 'create'
-
-          
-        it "should allow to override a filter in inherited controller classes"
-          # class LevelAController extends Controller
-          #   before:
-          #     actionWithFilterToOverride: a
-          #     someAction: -> calledFilters += "a"
-          # 
-          #   someAction: ->
-          #     "controller action would be here"
-          # 
-          # class LevelBController extends LevelAController
-          #   before:
-          #     actionWithFilterToOverride: -> calledFilters += "b"
-          #   
-          # class LevelCController extends LevelBController
-          #   before:
-          #     someAction: -> calledFilters += "c"
+          dispatcher.executeFilters controller, 'test', 'create', params, routeOptions
 
         
         it 'should throw an error if a filter method isn\'t a function', ->

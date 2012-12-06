@@ -160,15 +160,16 @@ define [
       # Iterate through the before filters object in search for a matching
       # name with the arguments' action name
       for filterName, filterFn of controller.before
+        regexp = null
         if filterName.indexOf('*') isnt -1
           regexp = new RegExp("^#{filterName.replace('*','(.*)')}$")
 
         if filterName is action or regexp?.test action
-          method = controller.before[action]
-          method = controller[action] unless _.isFunction method
+          method = controller.before[filterName]
+          method = controller[method] unless _.isFunction method
           unless method
-            throw new Error('Method "' + controller[action] + '" does not exist')
-          filters.push method
+            throw new Error('Filter method for "' + filterName + '" does not exist.')
+          filters.unshift method
 
       # Save returned value and also immediately return in case the value is false
       next = (method) =>
