@@ -388,9 +388,9 @@ define [
       derivedDispatcher.dispose()
 
     describe 'Before filters', ->
-  
+
       describe "General behavior", ->
-  
+
         route = controller: 'test_filters', action: 'show'
 
         class TestFiltersController extends Controller
@@ -403,20 +403,20 @@ define [
             index: ->
 
           show: (params, oldControllerName) ->
-         
+
           index: (params, oldControllerName) ->
-                    
-      
+
+
         # Define a test controller AMD modules
         testFiltersModule = 'controllers/test_filters_controller'
         define testFiltersModule, -> TestFiltersController
 
         # Helpers for asynchronous tests
         testFiltersLoaded = (callback) -> require [testFiltersModule], callback
-      
+
         beforeEach ->
           dispatcher = new Dispatcher()
-         
+
         afterEach ->
           dispatcher.dispose()
 
@@ -439,7 +439,7 @@ define [
           proto = TestFiltersController.prototype
           beforeFiltersSpy = sinon.spy proto, 'configureBeforeFilters'
           mediator.publish 'matchRoute', route, params, routeOptions
-        
+
           testFiltersLoaded ->
             expect(beforeFiltersSpy).was.called()
             beforeFiltersSpy.restore()
@@ -450,7 +450,7 @@ define [
 
         it "should list and run all filters", ->
           called = []
-          
+
           class TestController extends Controller
 
             historyURL: (params) ->
@@ -466,7 +466,7 @@ define [
               create: ->
                 console.log 'createFilter'
                 called.unshift 'createFilter'
-          
+
             show: ->
               expect(called).to.have.length 2
               expect(called).to.contain 'showFilter'
@@ -475,18 +475,31 @@ define [
             create: ->
               expect(called).to.have.length 1
               expect(called).to.contain 'createFilter'
-          
+
           dispatcher = new Dispatcher()
           controller = new TestController()
 
           dispatcher.executeFilters controller, 'test', 'show', params, routeOptions
-          
+
           called = []
 
           dispatcher.executeFilters controller, 'test', 'create', params, routeOptions
 
-        
-        it 'should throw an error if a filter method isn\'t a function', ->
+
+        it 'should throw an error if a filter method isn\'t a function or a string', ->
+
+          class BrokenFilterController extends Controller
+            historyURL: (params) -> 'foo'
+            before:
+              index: new Date()
+            index: ->
+
+          controller = new BrokenFilterController()
+
+          failFn = -> dispatcher.executeFilters controller, 'broken_filter', 'index', params, routeOptions
+          expect(failFn).to.throwError()
+
+
         it 'should call executeAction with exactly the same arguments', ->
         it 'should handle sync. filters then pass the returned value', ->
         it 'should handle async. filters, then pass the returned value', ->

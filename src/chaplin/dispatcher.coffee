@@ -166,9 +166,9 @@ define [
 
         if filterName is action or regexp?.test action
           method = controller.before[filterName]
-          method = controller[method] unless _.isFunction method
-          unless method
-            throw new Error('Filter method for "' + filterName + '" does not exist.')
+          method = controller[method] if _.isString method
+          unless _.isFunction method
+            throw new Error("#{method} is not a valid filter method for #{filterName}.")
           filters.unshift method
 
       # Save returned value and also immediately return in case the value is false
