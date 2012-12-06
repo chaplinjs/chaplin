@@ -480,7 +480,7 @@ define [
               show: -> called.unshift 'showFilter'
               'show*': 'beforeShow'
               create: -> called.unshift 'createFilter'
-          
+
             show: ->
               expect(called).to.have.length 2
               expect(called).to.contain 'showFilter'
@@ -492,7 +492,7 @@ define [
 
             beforeShow: ->
               called.unshift 'showWildcardFilter'
-          
+
           dispatcher = new Dispatcher()
           controller = new TestController()
 
@@ -503,10 +503,10 @@ define [
           dispatcher.executeFilters controller, 'test', 'create', params, routeOptions
 
 
-        it 'should throw an error if a filter method isn\'t a function or a string', ->
+        it "should throw an error if a filter method isn't a function or a string", ->
 
           class BrokenFilterController extends Controller
-            historyURL: (params) -> 'foo'
+            historyURL: -> 'foo'
             before:
               index: new Date()
             index: ->
@@ -514,9 +514,35 @@ define [
           controller = new BrokenFilterController()
 
           failFn = -> dispatcher.executeFilters controller, 'broken_filter', 'index', params, routeOptions
+
           expect(failFn).to.throwError()
 
+
         it 'should handle sync. filters then pass the returned value', ->
+
+
+        it 'should handle sync. filters then pass the params and the returned value', ->
+          previousFilterReturnValueToCheck = null
+
+          class FilterChainController extends Controller
+
+            historyURL: -> 'foo'
+
+            before:
+              show: (params) ->
+                params.bar = "qux"
+                'foo' # This return value should be passed to next filter in the chain
+              'show*': (params, previousFilterReturnValue) ->
+                previousFilterReturnValueToCheck = previousFilterReturnValue
+
+            show: ->
+
+           controller = new FilterChainController()
+           dispatcher.executeFilters controller, 'filter_chain', 'show', params, routeOptions
+           expect(params.bar).to.be 'qux'
+           expect(previousFilterReturnValueToCheck).to.equal 'foo'
+
+
         it 'should handle async. filters, then pass the returned value', ->
 
 

@@ -168,7 +168,7 @@ define [
           method = controller[method] if _.isString method
           unless _.isFunction method
             throw new Error("#{method} is not a valid filter method for #{filterName}.")
-          filters.unshift method
+          filters.push method
 
       # Save returned value and also immediately return in case the value is false
       next = (method) =>
