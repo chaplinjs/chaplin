@@ -107,10 +107,10 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      method = 'executeAction' 
+      method = 'executeAction'
       # It will call the matching before filters
       method = 'executeFilters' if _.isObject controller.before
-             
+
       this[method](controller, controllerName, action, params, options)
 
     # Handler for the controller lazy-loading
