@@ -116,8 +116,10 @@ define [
     # Handler for the controller lazy-loading
     executeAction: (controller, controllerName, action, params, options) ->
       # Shortcuts for the old controller
-      currentControllerName = @currentControllerName or null
-      currentController     = @currentController     or null
+      currentControllerName   = @currentControllerName or null
+      currentController       = @currentController     or null
+
+      @previousControllerName = currentControllerName
 
       # Dispose the current controller
       if currentController
@@ -134,7 +136,6 @@ define [
       return if controller.redirected
 
       # Save the new controller
-      @previousControllerName = currentControllerName
       @currentControllerName = controllerName
       @currentController = controller
       @currentAction = action
