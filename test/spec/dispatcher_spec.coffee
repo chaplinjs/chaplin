@@ -518,9 +518,6 @@ define [
           expect(failFn).to.throwError()
 
 
-        it 'should handle sync. filters then pass the returned value', ->
-
-
         it 'should handle sync. filters then pass the params and the returned value', ->
           previousFilterReturnValueToCheck = null
 
