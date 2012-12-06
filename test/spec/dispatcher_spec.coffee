@@ -388,49 +388,127 @@ define [
       derivedDispatcher.dispose()
 
     describe 'Before filters', ->
-      route = controller: 'test_filters', action: 'show'
+  
+      describe "General behavior", ->
+  
+        route = controller: 'test_filters', action: 'show'
 
-      values =
-        sync: 'foo'
-        async: done: -> 'bar'
+        values =
+          sync1: 'foo'
+          sync2: 'bar'
+          async: done: -> 'qux'
 
-      class TestFiltersController extends Controller
+        class TestFiltersController extends Controller
 
-        before:
-          show: -> values.sync
+          before:
+            show: -> values.sync1
+            index: -> values.sync2
 
-        show: (params, oldControllerName) ->
-          #console.debug 'Test2Controller#show', params, oldControllerName
+          show: (params, oldControllerName) ->
+            #console.debug 'Test2Controller#show', params, oldControllerName
+          index: (params, oldControllerName) ->
+          
+          historyURL: (params) ->
+            'test1/' + (params.id or '')
+          
+      
+        console.log TestFiltersController.prototype
+      
+        # Define a test controller AMD modules
+        testFiltersModule = 'controllers/test_filters_controller'
+        define testFiltersModule, -> TestFiltersController
 
-      # Define a test controller AMD modules
-      testFiltersModule = 'controllers/test_filters_controller'
-      define testFiltersModule, -> TestFiltersController
+        # Helpers for asynchronous tests
+        testFiltersLoaded = (callback) -> require [testFiltersModule], callback
+      
+        proto = undefined
+      
+        beforeEach ->
+          dispatcher = new Dispatcher()
+          proto = TestFiltersController.prototype
 
-      # Helpers for asynchronous tests
-      testFiltersLoaded = (callback) -> require [testFiltersModule], callback
+        afterEach ->
+          dispatcher.dispose()
 
-      before ->
-        dispatcher = new Dispatcher()
+        it 'should not run executeAction directly if filters are present', (done) ->
+          executeAction = sinon.spy dispatcher, 'executeAction'
+          executeFilters = sinon.mock(dispatcher).expects 'executeFilters'
 
-      it 'should not run executeAction directly if filters are present', (done) ->
-        proto = TestFiltersController.prototype
-        #action = sinon.spy proto, 'show'
-        executeAction = sinon.spy dispatcher, 'executeAction'
-        executeFilters = sinon.mock(dispatcher).expects 'executeFilters'
+          mediator.publish 'matchRoute', route, params, routeOptions
 
-        mediator.publish 'matchRoute', route, params, routeOptions
+          testFiltersLoaded ->
+            expect(executeAction.called).to.not.be.ok()
+            expect(executeFilters.getCall(0).args[0]).to.be.a TestFiltersController
 
-        testFiltersLoaded ->
-          expect(executeAction.called).to.not.be.ok()
-          expect(executeFilters.getCall(0).args[0]).to.be.a TestFiltersController
+            executeAction.restore()
+            executeFilters.verify()
 
-          executeAction.restore()
-          executeFilters.verify()
+            done()
 
-          done()
+        it 'should trigger before filter', (done) ->
+          beforeFiltersSpy = sinon.spy proto, 'configureBeforeFilters'
+          mediator.publish 'matchRoute', route, params, routeOptions
+        
+          testFiltersLoaded ->
+            expect(beforeFiltersSpy).was.called()
+            done()
+
 
       describe '#executeFilters', ->
-        it 'should list and run all filters found', ->
+
+        it "should list and run all filters", ->
+          called = []
+          
+          class TestController extends Controller
+
+            historyURL: (params) ->
+              'test1/' + (params.id or '')
+
+            before:
+              show: ->
+                called.unshift 'showFilter'
+              'show*': ->
+                called.unshift 'showWildcardFilter'
+              create: ->
+                called.unshift 'createFilter'
+          
+            show: ->
+              expect(called).to.have.length 2
+              expect(called).to.contain 'showFilter'
+              expect(called).to.contain 'showWildcardFilter'
+
+            create: ->
+              expect(called).to.have.length 1
+              expect(called).to.contain 'createFilter'
+          
+          dispatcher = new Dispatcher()
+          controller = new TestController()
+
+          dispatcher.executeFilters controller, 'test', 'show'
+          
+          called = []
+
+          dispatcher.executeFilters controller, 'test', 'create'
+
+          
+        it "should allow to override a filter in inherited controller classes"
+          # class LevelAController extends Controller
+          #   before:
+          #     actionWithFilterToOverride: a
+          #     someAction: -> calledFilters += "a"
+          # 
+          #   someAction: ->
+          #     "controller action would be here"
+          # 
+          # class LevelBController extends LevelAController
+          #   before:
+          #     actionWithFilterToOverride: -> calledFilters += "b"
+          #   
+          # class LevelCController extends LevelBController
+          #   before:
+          #     someAction: -> calledFilters += "c"
+
+        
         it 'should throw an error if a filter method isn\'t a function', ->
         it 'should call executeAction with exactly the same arguments', ->
         it 'should handle sync. filters then pass the returned value', ->

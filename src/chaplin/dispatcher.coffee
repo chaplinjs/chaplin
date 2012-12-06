@@ -152,22 +152,22 @@ define [
         params: @currentParams
 
     # Before action filters with chained execution
-    executeFilters: (controller, controllerName, action, params) ->
+    executeFilters: (controller, controllerName, action, params, options) ->
       filters  = []
       previous = null
       args = arguments
 
       # Iterate through the before filters object in search for a matching
       # name with the arguments' action name
-      for filterName, filterFn in controller.before
-        filterName = filterName.replace('*', '(.*)') if filterName.indexOf '*' isnt -1
-        filterName = new RegExp("^#{filterName}$")
+      for filterName, filterFn of controller.before
+        if filterName.indexOf('*') isnt -1
+          regexp = new RegExp("^#{filterName.replace('*','(.*)')}$")
 
-        if filterName.test action
-          method = controller.before[filterName]
-          method = controller[filterName] unless _.isFunction method
+        if filterName is action or regexp?.test action
+          method = controller.before[action]
+          method = controller[action] unless _.isFunction method
           unless method
-            throw new Error('Method "' + controller[filterName] + '" does not exist')
+            throw new Error('Method "' + controller[action] + '" does not exist')
           filters.push method
 
       # Save returned value and also immediately return in case the value is false
