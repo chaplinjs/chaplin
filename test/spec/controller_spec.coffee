@@ -104,3 +104,30 @@ define [
       expect(derivedController).to.be.a Controller
 
       derivedController.dispose()
+
+    describe 'Configure', ->
+      describe 'Before filters', ->
+        
+        BaseController = Controller.extend
+          before:
+            'user*': 'checkSession'
+           
+          checkSession: ->
+            userModel = isAdmin: -> true
+
+        SecureController = BaseController.extend
+          before:
+            '*Admin*': (params, userModel) ->
+              unless userModel.isAdmin()
+                @redirectTo '500'
+
+        it 'should configure the instance to extend before filters correctly', ->
+          AdminController = SecureController.extend
+            before:
+              'userAdminShow': null
+
+            userAdminShow: ->
+          
+          controller = new AdminController()
+          expect(controller.before).to.only.have.keys 'user*', '*Admin*', 'userAdminShow'
+
