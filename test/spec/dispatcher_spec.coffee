@@ -435,6 +435,25 @@ define [
 
             done()
 
+        it 'should call executeAction after with exactly the same arguments', (done) ->
+          executeAction = sinon.mock(dispatcher).expects 'executeAction'
+
+          mediator.publish 'matchRoute', route, params, routeOptions
+
+          testFiltersLoaded ->
+            args = executeAction.getCall(0).args
+
+            expect(args).to.have.length 5
+            expect(args[0]).to.be.a TestFiltersController
+            expect(args[1]).to.be 'test_filters'
+            expect(args[2]).to.be 'show'
+            expect(args[3]).to.be.an 'object'
+            expect(args[4]).to.be.an 'object'
+
+            executeAction.verify()
+
+            done()
+
         it 'should trigger before filter', (done) ->
           proto = TestFiltersController.prototype
           beforeFiltersSpy = sinon.spy proto, 'configureBeforeFilters'
@@ -443,6 +462,7 @@ define [
           testFiltersLoaded ->
             expect(beforeFiltersSpy).was.called()
             beforeFiltersSpy.restore()
+
             done()
 
 
@@ -454,19 +474,13 @@ define [
           class TestController extends Controller
 
             historyURL: (params) ->
-              'test1/' + (params.id or '')
+              'test_filters/' + (params.id or '')
 
             before:
-              show: ->
-                console.log 'showFilter'
-                called.unshift 'showFilter'
-              'show*': ->
-                console.log 'showWildcardFilter'
-                called.unshift 'showWildcardFilter'
-              create: ->
-                console.log 'createFilter'
-                called.unshift 'createFilter'
-
+              show: -> called.unshift 'showFilter'
+              'show*': 'beforeShow'
+              create: -> called.unshift 'createFilter'
+          
             show: ->
               expect(called).to.have.length 2
               expect(called).to.contain 'showFilter'
@@ -476,6 +490,9 @@ define [
               expect(called).to.have.length 1
               expect(called).to.contain 'createFilter'
 
+            beforeShow: ->
+              called.unshift 'showWildcardFilter'
+          
           dispatcher = new Dispatcher()
           controller = new TestController()
 
@@ -499,8 +516,6 @@ define [
           failFn = -> dispatcher.executeFilters controller, 'broken_filter', 'index', params, routeOptions
           expect(failFn).to.throwError()
 
-
-        it 'should call executeAction with exactly the same arguments', ->
         it 'should handle sync. filters then pass the returned value', ->
         it 'should handle async. filters, then pass the returned value', ->
 

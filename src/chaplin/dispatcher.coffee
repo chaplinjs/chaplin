@@ -107,12 +107,11 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      if _.isObject(controller.before)
-        # Call the matching before filters
-        @executeFilters [controller, arguments...]...
-      else
-        # Restore execution onto the action
-        @executeAction [controller, arguments...]...
+      method = 'executeAction' 
+      # It will call the matching before filters
+      method = 'executeFilters' if _.isObject controller.before
+             
+      this[method](controller, controllerName, action, params, options)
 
     # Handler for the controller lazy-loading
     executeAction: (controller, controllerName, action, params, options) ->
@@ -152,7 +151,7 @@ define [
         params: @currentParams
 
     # Before action filters with chained execution
-    executeFilters: (controller, controllerName, action, params, options) ->
+    executeFilters: (controller, controllerName, action, params) ->
       filters  = []
       previous = null
       args = arguments
