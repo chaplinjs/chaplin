@@ -128,11 +128,13 @@ define [
       expect(names).to.eql ['home', 'phonebook', 'about']
 
     it 'should allow for rerversing a route instance to get its url', ->
-      named = new Route 'params/:two', 'null#null', name: 'about'
+      named = new Route 'params/:two',
+        controller: 'null', action: 'null', name: 'about'
       url = named.reverse two: 1151
       expect(url).to.eql 'params/1151'
 
-      named = new Route 'params/:two/:one/*other', 'null#null', name: 'about'
+      named = new Route 'params/:two/:one/*other',
+        controller: 'null', action: 'null', name: 'about'
       url = named.reverse
         two: 32
         one: 156
@@ -167,6 +169,31 @@ define [
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").to.throwError()
+
+    it 'should allow specifying controller and action in options', ->
+      delay = (callback) ->
+        window.setTimeout callback, 20
+      expect(->
+        router.match /url/, 'null#null', controller: 'c', action: 'a'
+      ).to.throwError()
+      expect(->
+        router.match /url/, {}
+      ).to.throwError()
+
+      spy = sinon.spy(Route, 'constructor')
+
+      url = /url/
+      options = {controller: 'c', action: 'a'}
+      url2 = /url2/
+      options2 = {}
+
+      valid1 = router.match url, options
+      expect(spy).was.called()
+      expect(Route.constructor).was.calledWith url, 'c', 'a'
+
+      valid2 = router.match url2, 'c#a', options2
+      expect(Route).was.calledWith url2, 'c', 'a', options2
+      spy.restore()
 
     # Tests for passed route
     # -----------------------
