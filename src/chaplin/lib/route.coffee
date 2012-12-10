@@ -23,15 +23,12 @@ define [
 
     # Create a route for a URL pattern and a controller action
     # e.g. new Route '/users/:id', 'users#show'
-    constructor: (pattern, target, @options = {}) ->
+    constructor: (pattern, @controller, @action, @options = {}) ->
       # Save the raw pattern
       @pattern = pattern
 
       # Store the name on the route if given
       @name = @options.name if @options.name?
-
-      # Separate target into controller and controller action
-      [@controller, @action] = target.split('#')
 
       # Check if the action is a reserved name
       if _(Controller.prototype).has @action
