@@ -364,6 +364,19 @@ define [
       expect(passedParams).to.be.an 'object'
       expect(passedOptions).to.eql {path, changeURL: true}
 
+    # Listening to the !router:routeByName event
+    # ------------------------------------------
+    it 'should listen to the !router:routeByName event', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'phonebook#dial', name: 'phonebook'
+
+      routeSpy = sinon.spy router, 'route'
+
+      mediator.publish '!router:routeByName', 'phonebook', one: 145
+      expect(passedRoute.controller).to.be 'phonebook'
+      expect(passedRoute.action).to.be 'dial'
+      expect(passedOptions.path).to.be 'phoneparams/145'
+
     # Listening to the !router:changeURL event
     # ----------------------------------------
 
