@@ -107,9 +107,10 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      method = 'executeAction'
-      # It will call the matching before filters
-      method = 'executeFilters' if _.isObject controller.before
+      method = if _.isObject controller.before
+        'executeFilters'
+      else
+        'executeAction'
 
       this[method](controller, controllerName, action, params, options)
 
@@ -187,7 +188,7 @@ define [
 
         # Detecting a CommonJS promise object in order to use pipelining below,
         # otherwise execute next method directly
-        unless _.isObject(previous) and _.has(previous, 'then')
+        if not (_.isObject(previous) and _.has(previous, 'then'))
           previous = method params, previous
           next filters.shift()
         # Chaining defer objects...
