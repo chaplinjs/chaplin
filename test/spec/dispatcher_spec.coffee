@@ -475,21 +475,9 @@ define [
 
             done()
 
-        it 'should trigger before filter', (done) ->
-          proto = TestFiltersController.prototype
-          beforeFiltersSpy = sinon.spy proto, 'configureBeforeFilters'
-          mediator.publish 'matchRoute', route, params, routeOptions
-
-          testFiltersLoaded ->
-            expect(beforeFiltersSpy).was.called()
-            beforeFiltersSpy.restore()
-
-            done()
-
-
       describe '#executeFilters', ->
 
-        it "should list and run all filters", ->
+        it "should run all defined before filters when running an action", ->
           called = []
 
           class TestController extends Controller
@@ -498,30 +486,73 @@ define [
               'test_filters/' + (params.id or '')
 
             before:
-              show: -> called.unshift 'showFilter'
+              show: -> called.push 'showFilter'
               'show*': 'beforeShow'
-              create: -> called.unshift 'createFilter'
+              create: -> called.push 'createFilter'
 
             show: ->
-              expect(called).to.have.length 2
-              expect(called).to.contain 'showFilter'
-              expect(called).to.contain 'showWildcardFilter'
 
             create: ->
-              expect(called).to.have.length 1
-              expect(called).to.contain 'createFilter'
 
             beforeShow: ->
-              called.unshift 'showWildcardFilter'
+              called.push 'showWildcardFilter'
 
           controller = new TestController()
 
           dispatcher.executeFilters controller, 'test', 'show', params, routeOptions
 
+          expect(called).to.have.length 2
+          expect(called).to.contain 'showFilter'
+          expect(called).to.contain 'showWildcardFilter'
+
           called = []
 
           dispatcher.executeFilters controller, 'test', 'create', params, routeOptions
 
+          expect(called).to.have.length 1
+          expect(called).to.contain 'createFilter'
+
+
+        it "should run all filters of the whole prototype chain in correct order", ->
+          called = []
+
+          BaseController = Controller.extend
+            historyURL: -> 'foo'
+
+            before:
+              '.*': 'loadSession'
+
+            loadSession: ->
+              userModel = isAdmin: -> true
+
+          AdminController = BaseController.extend
+            before:
+              '.*': 'checkAdminPrivileges'
+
+            checkAdminPrivileges: (params, userModel) ->
+              unless userModel.isAdmin()
+                @redirectTo '500'
+
+          UserBanningController = AdminController.extend
+            before:
+              'index': 'loadUsers'
+
+            index: ->
+            loadUsers: ->
+
+          loadSession = sinon.spy BaseController.prototype, "loadSession"
+          checkAdminPrivileges = sinon.spy AdminController.prototype, "checkAdminPrivileges"
+          loadUsers = sinon.spy UserBanningController.prototype, "loadUsers"
+
+          controller = new UserBanningController()
+          dispatcher.executeFilters controller, 'user_banning', 'index', params, routeOptions
+
+          expect(loadSession).was.called()
+          expect(checkAdminPrivileges).was.called()
+          expect(loadUsers).was.called()
+
+          expect(loadSession.calledBefore(checkAdminPrivileges)).to.be.ok
+          expect(checkAdminPrivileges.calledBefore(loadUsers)).to.be.ok
 
         it "should throw an error if a filter method isn't a function or a string", ->
 
@@ -546,7 +577,7 @@ define [
             historyURL: -> 'foo'
 
             before:
-              '*': (params) ->
+              '.*': (params) ->
                 params.bar = "qux"
                 'foo' # This return value should be passed to next filter in the chain
               'show': (params, previousFilterReturnValue) ->
@@ -573,7 +604,7 @@ define [
           class AsyncFilterChainController extends Controller
             historyURL: -> 'foo'
             before:
-              '*': (params) ->
+              '.*': (params) ->
                 # Returning a promise here triggers asynchronous behavior.
                 promise
               'show': (params, previousFilterReturnValue) ->
@@ -599,5 +630,4 @@ define [
 
           expect(filter.calledOnce).to.be.ok()
           expect(action.calledOnce).to.be.ok()
-
 

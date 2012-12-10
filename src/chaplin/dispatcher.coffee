@@ -157,19 +157,25 @@ define [
       previous = null
       args = arguments
 
-      # Iterate through the before filters object in search for a matching
-      # name with the arguments' action name
-      for filterName, filterFn of controller.before
-        regexp = null
-        if filterName.indexOf('*') isnt -1
-          regexp = new RegExp("^#{filterName.replace('*','(.*)')}$")
+      # Filters can be extended by subclasses, so we need to check the whole
+      # prototype chain for matching filters. Filters in parent classes are
+      # executed before filters in child classes.
 
-        if filterName is action or regexp?.test action
-          method = controller.before[filterName]
-          method = controller[method] if _.isString method
-          unless _.isFunction method
-            throw new Error("#{method} is not a valid filter method for #{filterName}.")
-          filters.push method
+      prototypeChain = utils.getPrototypeChain controller
+
+      for prototype in prototypeChain.reverse()
+
+        # Iterate through the before filters object in search for a matching
+        # name with the arguments' action name
+
+        for filterName, filterFn of prototype.before
+          regexp = new RegExp("^#{filterName}$")
+
+          if filterName is action or regexp?.test action
+            filterFn = controller[filterFn] if _.isString filterFn
+            unless _.isFunction filterFn
+              throw new Error("#{filterFn} is not a valid filter method for #{filterName}.")
+            filters.push filterFn
 
       # Save returned value and also immediately return in case the value is false
       next = (method) =>

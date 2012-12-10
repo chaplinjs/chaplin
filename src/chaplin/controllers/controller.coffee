@@ -27,17 +27,10 @@ define [
     # historyURL: ->
 
     constructor: ->
-      @configureBeforeFilters()
       @initialize arguments...
 
     initialize: ->
       # Empty per default
-
-    # Extended before filters throughout the entire prototype chain, keeping the
-    # order of the resulting object starting from the oldest ancestor
-    configureBeforeFilters: ->
-      parentBeforeFilters = @constructor.__super__?.configureBeforeFilters?() or {}
-      @before = _.extend _.clone(parentBeforeFilters), @before
 
     # Redirection
     # -----------

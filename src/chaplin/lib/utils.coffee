@@ -39,6 +39,12 @@ define [
         ->
           false
 
+    # Get the whole chain of object prototypes.
+    getPrototypeChain: (object) ->
+      chain = [object]
+      chain.push object while object = object.constructor?.__super__
+      chain
+
     # Function Helpers
     # ----------------
 
