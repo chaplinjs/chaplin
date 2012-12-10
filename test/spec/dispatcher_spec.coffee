@@ -514,8 +514,6 @@ define [
 
 
         it "should run all filters of the whole prototype chain in correct order", ->
-          called = []
-
           BaseController = Controller.extend
             historyURL: -> 'foo'
 
