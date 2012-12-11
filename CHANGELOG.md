@@ -1,7 +1,10 @@
 # Chaplin 0.6.0 (unreleased)
 * Added support for reversing & naming of routes.
+* Added new global `!router:routeByName` event, which allows to
+navigate to some route by its reverse name.
 * Added `names` option to `Chaplin.Router#match`, which allows to name
   route’s regular expression matches.
+* Added Rails-like before action filters to `Controller`s.
 * Moved `Chaplin.View#wrapMethod` to `Chaplin.utils.wrapMethod`.
 * `Chaplin.View#dispose` will now throw an error if `Chaplin.View#initialize`
   was called without `super`.
