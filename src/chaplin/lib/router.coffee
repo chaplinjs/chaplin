@@ -24,6 +24,7 @@ define [
         pushState: true
 
       @subscribeEvent '!router:route', @routeHandler
+      @subscribeEvent '!router:routeByName', @routeByNameHandler
       @subscribeEvent '!router:reverse', @reverseHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
@@ -99,6 +100,17 @@ define [
 
       routed = @route path, options
       callback? routed
+
+    routeByNameHandler: (name, params, callback) ->
+      # Support old signature: Assume only path and callback were passed
+      # if we only got two arguments
+      if arguments.length is 2 and typeof params is 'function'
+        callback = params
+        params = {}
+
+      path = @reverse name, params
+      return unless path
+      @routeHandler path, callback
 
     # Change the current URL, add a history entry.
     changeURL: (url, options = {}) ->
