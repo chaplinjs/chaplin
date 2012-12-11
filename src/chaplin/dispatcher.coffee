@@ -107,8 +107,8 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      method = if _.isObject controller.before
-        'executeFilters'
+      method = if _.isObject controller.beforeAction
+        'executeBeforeActionChain'
       else
         'executeAction'
 
@@ -152,31 +152,31 @@ define [
         controllerName: @currentControllerName
         params: @currentParams
 
-    # Before action filters with chained execution
-    executeFilters: (controller, controllerName, action, params) ->
-      filters  = []
+    # Before actions with chained execution
+    executeBeforeActionChain: (controller, controllerName, action, params) ->
+      beforeActions  = []
       previous = null
       args = arguments
 
-      # Filters can be extended by subclasses, so we need to check the whole
-      # prototype chain for matching filters. Filters in parent classes are
-      # executed before filters in child classes.
+      # Before actions can be extended by subclasses, so we need to check the
+      # whole prototype chain for matching before actions. Before actions in
+      # parent classes are executed before actions in child classes.
 
       prototypeChain = utils.getPrototypeChain controller
 
       for prototype in prototypeChain.reverse()
 
-        # Iterate through the before action filters object in search for a matching
+        # Iterate through the before actions object in search for a matching
         # name with the arguments' action name
 
-        for filterName, filterFn of prototype.beforeAction
-          regexp = new RegExp("^#{filterName}$")
+        for beforeActionName, beforeActionFn of prototype.beforeAction
+          regexp = new RegExp("^#{beforeActionName}$")
 
-          if filterName is action or regexp?.test action
-            filterFn = controller[filterFn] if _.isString filterFn
-            unless _.isFunction filterFn
-              throw new Error("#{filterFn} is not a valid filter method for #{filterName}.")
-            filters.push filterFn
+          if beforeActionName is action or regexp?.test action
+            beforeActionFn = controller[beforeActionFn] if _.isString beforeActionFn
+            unless _.isFunction beforeActionFn
+              throw new Error("#{beforeActionFn} is not a valid beforeAction method for #{beforeActionName}.")
+            beforeActions.push beforeActionFn
 
       # Save returned value and also immediately return in case the value is false
       next = (method) =>
@@ -190,16 +190,16 @@ define [
         # otherwise execute next method directly
         if not (_.isObject(previous) and _.has(previous, 'then'))
           previous = method params, previous
-          next filters.shift()
+          next beforeActions.shift()
         # Chaining defer objects...
         else
           callback = _.bind(method, controller, params)
           previous.done (data) ->
             previous = callback data
-            next filters.shift()
+            next beforeActions.shift()
 
-      # Start filter execution chain
-      next filters.shift()
+      # Start beforeAction execution chain
+      next beforeActions.shift()
 
     # Change the URL to the new controller using the router
     adjustURL: (controller, params, options) ->
