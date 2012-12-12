@@ -1,18 +1,16 @@
 define [
   'underscore'
+  'jquery'
   'chaplin/mediator'
   'chaplin/controllers/controller'
   'chaplin/dispatcher'
-], (_, mediator, Controller, Dispatcher) ->
+], (_, $, mediator, Controller, Dispatcher) ->
   'use strict'
   describe 'Dispatcher', ->
     #console.debug 'Dispatcher spec'
 
     # Initialize shared variables
     dispatcher = params = routeOptions = null
-
-    # Unique ID counter for creating params objects
-    paramsId = 0
 
     # Fake route objects, walk like a route and swim like a route
 
@@ -22,74 +20,71 @@ define [
     redirectToURLRoute = controller: 'test1', action: 'redirectToURL'
     redirectToControllerRoute = controller: 'test1', action: 'redirectToController'
 
-    Test1Controller = null
-    Test2Controller = null
+    # Define test controllers
 
-    loadTest1ControllerAndExecute = null
-    loadTest2ControllerAndExecute = null
+    Test1Controller = class Test1Controller extends Controller
+
+      historyURL: (params) ->
+        #console.debug 'Test1Controller#historyURL'
+        'test1/' + if params.id? then params.id else ''
+
+      initialize: (params, oldControllerName) ->
+        #console.debug 'Test1Controller#initialize', params.id, oldControllerName
+        super
+
+      show: (params, oldControllerName) ->
+        #console.debug 'Test1Controller#show', params, oldControllerName
+
+      redirectToURL: (params, oldControllerName) ->
+        @redirectTo '/test2/123'
+
+      redirectToController: (params, oldControllerName) ->
+        @redirectTo 'test2', 'show', params
+
+      dispose: (params, newControllerName) ->
+        #console.debug 'Test1Controller#dispose'
+        super
+
+    Test2Controller = class Test2Controller extends Controller
+
+      historyURL: (params) ->
+        #console.debug 'Test2Controller#historyURL'
+        'test2/' + if params.id? then params.id else ''
+
+      initialize: (params, oldControllerName) ->
+        #console.debug 'Test2Controller#initialize', params, oldControllerName
+        super
+
+      show: (params, oldControllerName) ->
+        #console.debug 'Test2Controller#show', params, oldControllerName
+
+      dispose: (params, newControllerName) ->
+        #console.debug 'Test2Controller#dispose'
+        super
+
+    # Define a test controller AMD modules
+    test1Module = 'controllers/test1_controller'
+    test2Module = 'controllers/test2_controller'
+    define test1Module, -> Test1Controller
+    define test2Module, -> Test2Controller
+
+    # Helpers for asynchronous tests
+    loadTest1ControllerAndExecute = (callback) -> require [test1Module], callback
+    loadTest2ControllerAndExecute = (callback) -> require [test2Module], callback
+
+    # Create a fresh Dispatcher instance for each test
 
     beforeEach ->
       dispatcher = new Dispatcher()
-
-      # Define test controllers. The classes are redefined before each spec to
-      # ensure a spec fiddling around with their prototype can't break other specs.
-
-      Test1Controller = class Test1Controller extends Controller
-
-        historyURL: (params) ->
-          #console.debug 'Test1Controller#historyURL'
-          'test1/' + if params.id? then params.id else ''
-
-        initialize: (params, oldControllerName) ->
-          #console.debug 'Test1Controller#initialize', params.id, oldControllerName
-          super
-
-        show: (params, oldControllerName) ->
-          #console.debug 'Test1Controller#show', params, oldControllerName
-
-        redirectToURL: (params, oldControllerName) ->
-          @redirectTo '/test2/123'
-
-        redirectToController: (params, oldControllerName) ->
-          @redirectTo 'test2', 'show', params
-
-        dispose: (params, newControllerName) ->
-          #console.debug 'Test1Controller#dispose'
-          super
-
-      Test2Controller = class Test2Controller extends Controller
-
-        historyURL: (params) ->
-          #console.debug 'Test2Controller#historyURL'
-          'test2/' + if params.id? then params.id else ''
-
-        initialize: (params, oldControllerName) ->
-          #console.debug 'Test2Controller#initialize', params, oldControllerName
-          super
-
-        show: (params, oldControllerName) ->
-          #console.debug 'Test2Controller#show', params, oldControllerName
-
-        dispose: (params, newControllerName) ->
-          #console.debug 'Test2Controller#dispose'
-          super
-
-      # Define a test controller AMD modules
-      test1Module = 'controllers/test1_controller'
-      test2Module = 'controllers/test2_controller'
-      define test1Module, -> Test1Controller
-      define test2Module, -> Test2Controller
-
-      # Helpers for asynchronous tests
-      loadTest1ControllerAndExecute = (callback) -> require [test1Module], callback
-      loadTest2ControllerAndExecute = (callback) -> require [test2Module], callback
 
     afterEach ->
       dispatcher.dispose()
       dispatcher = null
 
-
     # Reset helpers
+
+    # Unique ID counter for creating params objects
+    paramsId = 0
 
     refreshParams = ->
       # Create a fresh params object which does not equal the previous one
@@ -97,6 +92,7 @@ define [
       routeOptions = changeURL: false
 
     beforeEach refreshParams
+
 
     it 'should dispatch routes to controller actions', (done) ->
       proto = Test1Controller.prototype
@@ -416,216 +412,231 @@ define [
 
     describe 'Before actions', ->
 
-      describe "General behavior", ->
+      route = controller: 'test_before_actions', action: 'show'
 
-        route = controller: 'test_before_actions', action: 'show'
+      class TestBeforeActionsController extends Controller
 
-        class TestBeforeActionsController extends Controller
+        historyURL: (params) ->
+          'test_before_actions/' + (params.id or '')
+
+        beforeAction:
+          show: ->
+          index: ->
+
+        show: (params, oldControllerName) ->
+
+        index: (params, oldControllerName) ->
+
+      # Define a test controller AMD module
+      testBeforeActionsModule = 'controllers/test_before_actions_controller'
+      define testBeforeActionsModule, -> TestBeforeActionsController
+
+      # Helpers for asynchronous tests
+      loadBeforeActionsAndExecute = (callback) ->
+        require [testBeforeActionsModule], callback
+
+      it 'should not run executeAction directly if before actions are present', (done) ->
+        executeAction = sinon.spy dispatcher, 'executeAction'
+        # Replace executeBeforeActionChain with a no-op stub
+        executeBeforeActionChain = sinon.stub dispatcher, 'executeBeforeActionChain'
+
+        mediator.publish 'matchRoute', route, params, routeOptions
+
+        loadBeforeActionsAndExecute ->
+          expect(executeAction).was.notCalled()
+          expect(executeBeforeActionChain).was.called()
+          expect(executeBeforeActionChain.firstCall.args[0]).to.be.a(
+            TestBeforeActionsController
+          )
+
+          executeAction.restore()
+          executeBeforeActionChain.restore()
+
+          done()
+
+      it 'should call executeAction after with exactly the same arguments', (done) ->
+        executeAction = sinon.spy dispatcher, 'executeAction'
+
+        mediator.publish 'matchRoute', route, params, routeOptions
+
+        loadBeforeActionsAndExecute ->
+          args = executeAction.firstCall.args
+
+          expect(args).to.have.length 5
+          expect(args[0]).to.be.a TestBeforeActionsController
+          expect(args[1]).to.be 'test_before_actions'
+          expect(args[2]).to.be 'show'
+          expect(args[3]).to.be.an 'object'
+          expect(args[4]).to.be.an 'object'
+
+          executeAction.restore()
+
+          done()
+
+      it 'should run all defined before actions when running an action', ->
+        called = []
+
+        class TestController extends Controller
 
           historyURL: (params) ->
             'test_before_actions/' + (params.id or '')
 
           beforeAction:
-            show: ->
-            index: ->
+            show: -> called.push 'showBeforeAction'
+            'show*': 'beforeShow'
+            create: -> called.push 'createBeforeAction'
 
-          show: (params, oldControllerName) ->
+          show: ->
 
-          index: (params, oldControllerName) ->
+          create: ->
 
+          beforeShow: ->
+            called.push 'showWildcardBeforeAction'
 
-        # Define a test controller AMD modules
-        testBeforeActionsModule = 'controllers/test_before_actions_controller'
-        define testBeforeActionsModule, -> TestBeforeActionsController
+        controller = new TestController()
 
-        # Helpers for asynchronous tests
-        loadBeforeActionsAndExecute = (callback) -> require [testBeforeActionsModule], callback
+        dispatcher.executeBeforeActionChain controller, 'test', 'show',
+          params, routeOptions
 
-        it 'should not run executeAction directly if before actions are present', (done) ->
-          executeAction = sinon.spy dispatcher, 'executeAction'
-          executeBeforeActionChain = sinon.mock(dispatcher).expects 'executeBeforeActionChain'
+        expect(called).to.have.length 2
+        expect(called).to.contain 'showBeforeAction'
+        expect(called).to.contain 'showWildcardBeforeAction'
 
-          mediator.publish 'matchRoute', route, params, routeOptions
+        called = []
 
-          loadBeforeActionsAndExecute ->
-            expect(executeAction.called).to.not.be.ok()
-            expect(executeBeforeActionChain.getCall(0).args[0]).to.be.a TestBeforeActionsController
+        dispatcher.executeBeforeActionChain controller, 'test', 'create',
+          params, routeOptions
 
-            executeAction.restore()
-            executeBeforeActionChain.verify()
+        expect(called).to.have.length 1
+        expect(called).to.contain 'createBeforeAction'
 
-            done()
+      it 'should run all before actions of the whole prototype chain in correct order', ->
 
-        it 'should call executeAction after with exactly the same arguments', (done) ->
-          executeAction = sinon.mock(dispatcher).expects 'executeAction'
+        class BaseController extends Controller
 
-          mediator.publish 'matchRoute', route, params, routeOptions
+          historyURL: -> 'foo'
 
-          loadBeforeActionsAndExecute ->
-            args = executeAction.getCall(0).args
+          beforeAction:
+            '.*': 'loadSession'
 
-            expect(args).to.have.length 5
-            expect(args[0]).to.be.a TestBeforeActionsController
-            expect(args[1]).to.be 'test_before_actions'
-            expect(args[2]).to.be 'show'
-            expect(args[3]).to.be.an 'object'
-            expect(args[4]).to.be.an 'object'
+          loadSession: ->
+            userModel = isAdmin: -> true
 
-            executeAction.verify()
+        class AdminController extends BaseController
 
-            done()
+          beforeAction:
+            '.*': 'checkAdminPrivileges'
 
-      describe '#executeBeforeActionChain', ->
+          checkAdminPrivileges: (params, userModel) ->
+            unless userModel.isAdmin()
+              @redirectTo '500'
 
-        it "should run all defined before actions when running an action", ->
-          called = []
+        class UserBanningController extends AdminController
 
-          class TestController extends Controller
+          beforeAction:
+            index: 'loadUsers'
 
-            historyURL: (params) ->
-              'test_before_actions/' + (params.id or '')
+          index: ->
 
-            beforeAction:
-              show: -> called.push 'showBeforeAction'
-              'show*': 'beforeShow'
-              create: -> called.push 'createBeforeAction'
+          loadUsers: ->
 
-            show: ->
+        loadSession = sinon.spy BaseController.prototype, 'loadSession'
+        checkAdminPrivileges = sinon.spy AdminController.prototype,
+          'checkAdminPrivileges'
+        loadUsers = sinon.spy UserBanningController.prototype, 'loadUsers'
 
-            create: ->
+        controller = new UserBanningController()
+        dispatcher.executeBeforeActionChain controller, 'user_banning',
+          'index', params, routeOptions
 
-            beforeShow: ->
-              called.push 'showWildcardBeforeAction'
+        expect(loadSession).was.called()
+        expect(checkAdminPrivileges).was.called()
+        expect(loadUsers).was.called()
 
-          controller = new TestController()
+        expect(loadSession).was.calledOn controller
+        expect(checkAdminPrivileges).was.calledOn controller
+        expect(loadUsers).was.calledOn controller
 
-          dispatcher.executeBeforeActionChain controller, 'test', 'show', params, routeOptions
+        expect(loadSession.calledBefore(checkAdminPrivileges)).to.be true
+        expect(checkAdminPrivileges.calledBefore(loadUsers)).to.be true
 
-          expect(called).to.have.length 2
-          expect(called).to.contain 'showBeforeAction'
-          expect(called).to.contain 'showWildcardBeforeAction'
+      it 'should throw an error if a before action method isn’t a function or a string', ->
 
-          called = []
+        class BrokenBeforeActionController extends Controller
 
-          dispatcher.executeBeforeActionChain controller, 'test', 'create', params, routeOptions
+          historyURL: -> 'foo'
 
-          expect(called).to.have.length 1
-          expect(called).to.contain 'createBeforeAction'
+          beforeAction:
+            index: new Date()
 
+          index: ->
 
-        it "should run all before actions of the whole prototype chain in correct order", ->
-          BaseController = Controller.extend
-            historyURL: -> 'foo'
+        controller = new BrokenBeforeActionController()
 
-            beforeAction:
-              '.*': 'loadSession'
+        failFn = ->
+          dispatcher.executeBeforeActionChain controller, 'broken_before_action',
+            'index', params, routeOptions
 
-            loadSession: ->
-              userModel = isAdmin: -> true
+        expect(failFn).to.throwError()
 
-          AdminController = BaseController.extend
-            beforeAction:
-              '.*': 'checkAdminPrivileges'
+      it 'should handle sync. before actions then pass the params and the returned value', ->
+        previousReturnValueToCheck = null
 
-            checkAdminPrivileges: (params, userModel) ->
-              unless userModel.isAdmin()
-                @redirectTo '500'
+        class BeforeActionChainController extends Controller
 
-          UserBanningController = AdminController.extend
-            beforeAction:
-              'index': 'loadUsers'
+          historyURL: -> 'foo'
 
-            index: ->
-            loadUsers: ->
+          beforeAction:
+            '.*': (params) ->
+              params.bar = 'qux'
+              # This return value should be passed to next before action in the chain
+              'foo'
+            show: (params, previousReturnValue) ->
+              previousReturnValueToCheck = previousReturnValue
 
-          loadSession = sinon.spy BaseController.prototype, "loadSession"
-          checkAdminPrivileges = sinon.spy AdminController.prototype, "checkAdminPrivileges"
-          loadUsers = sinon.spy UserBanningController.prototype, "loadUsers"
+          show: ->
 
-          controller = new UserBanningController()
-          dispatcher.executeBeforeActionChain controller, 'user_banning', 'index', params, routeOptions
+        controller = new BeforeActionChainController()
+        dispatcher.executeBeforeActionChain controller,
+          'before_action_chain', 'show', params, routeOptions
+        expect(params.bar).to.be 'qux'
 
-          expect(loadSession).was.called()
-          expect(checkAdminPrivileges).was.called()
-          expect(loadUsers).was.called()
+        # This is done here to ensure the method before actions are actually
+        # run synchronous and not asynchronous.
+        expect(previousReturnValueToCheck).to.be 'foo'
 
-          expect(loadSession.calledBefore(checkAdminPrivileges)).to.be.ok
-          expect(checkAdminPrivileges.calledBefore(loadUsers)).to.be.ok
+      it 'should handle async. before actions, then pass the returned value', ->
+        deferred = $.Deferred()
+        promise = deferred.promise()
+        resolveArgument = foo: 'bar'
 
-        it "should throw an error if a before action method isn't a function or a string", ->
+        class AsyncBeforeActionChainController extends Controller
 
-          class BrokenBeforeActionController extends Controller
-            historyURL: -> 'foo'
-            beforeAction:
-              index: new Date()
-            index: ->
+          historyURL: -> 'foo'
 
-          controller = new BrokenBeforeActionController()
-
-          failFn = -> dispatcher.executeBeforeActionChain controller, 'broken_before_action', 'index', params, routeOptions
-
-          expect(failFn).to.throwError()
-
-
-        it 'should handle sync. before actions then pass the params and the returned value', ->
-          previousBeforeActionReturnValueToCheck = null
-
-          class BeforeActionChainController extends Controller
-
-            historyURL: -> 'foo'
-
-            beforeAction:
-              '.*': (params) ->
-                params.bar = "qux"
-                'foo' # This return value should be passed to next before action in the chain
-              'show': (params, previousBeforeActionReturnValue) ->
-                previousBeforeActionReturnValueToCheck = previousBeforeActionReturnValue
-
+          beforeAction:
+            '.*': ->
+              # Returning a promise here triggers asynchronous behavior.
+              promise
             show: ->
 
-           controller = new BeforeActionChainController()
-           dispatcher.executeBeforeActionChain controller, 'before_action_chain', 'show', params, routeOptions
-           expect(params.bar).to.be 'qux'
+          show: ->
 
-           # This is done here to ensure the method before actions are actually run synchronous
-           # and not asynchronous.
-           expect(previousBeforeActionReturnValueToCheck).to.equal 'foo'
+        controller = new AsyncBeforeActionChainController()
 
+        action = sinon.spy controller, 'show'
+        beforeAction = sinon.spy controller.beforeAction, 'show'
 
-        it 'should handle async. before actions, then pass the returned value', ->
-          promise =
-            done: (callback) ->
-              @callback = -> callback 'response'
-            then: ->
-            resolve: -> @callback()
+        dispatcher.executeBeforeActionChain controller,
+          'async_before_action_chain', 'show', params, routeOptions
 
-          class AsyncBeforeActionChainController extends Controller
-            historyURL: -> 'foo'
-            beforeAction:
-              '.*': (params) ->
-                # Returning a promise here triggers asynchronous behavior.
-                promise
-              'show': (params, previousBeforeActionReturnValue) ->
-                previousBeforeActionReturnValueToCheck = previousBeforeActionReturnValue
+        expect(beforeAction).was.notCalled()
+        expect(action).was.notCalled()
 
-            show: ->
+        # Resolve the Deferred
+        deferred.resolve resolveArgument
 
-          controller = new AsyncBeforeActionChainController()
+        expect(beforeAction).was.calledOnce()
+        expect(beforeAction).was.calledWith params, resolveArgument
 
-          action = sinon.spy controller, 'show'
-          beforeAction = sinon.spy controller.beforeAction, 'show'
-
-          dispatcher.executeBeforeActionChain controller, 'async_before_action_chain', 'show', params, routeOptions
-
-          expect(beforeAction.callCount).to.be 0
-          expect(action.callCount).to.be 0
-
-          # Force promise to be resolved...
-
-          promise.resolve()
-
-          expect(beforeAction.calledWith(sinon.match.object, "response")).to.be.ok()
-
-          expect(beforeAction.calledOnce).to.be.ok()
-          expect(action.calledOnce).to.be.ok()
-
+        expect(action).was.calledOnce()
