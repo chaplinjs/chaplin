@@ -143,7 +143,7 @@ define [
     it 'should reject reversals for regular expressions', ->
       named = new Route /params/, 'null#null', name: 'about'
       url = named.reverse two: 1151
-      expect(url).to.equal false
+      expect(url).to.be false
 
     it 'should allow for reversing a route by its name', ->
       router.match 'index', 'null#null', name: 'home'
