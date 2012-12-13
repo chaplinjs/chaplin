@@ -14,7 +14,6 @@ define [
     _(@prototype).extend EventBroker
 
     view: null
-    currentId: null
 
     # Internal flag which stores whether `redirectTo`
     # was called in the current action
@@ -63,7 +62,7 @@ define [
       @unsubscribeAllEvents()
 
       # Remove properties which are not disposable
-      properties = ['currentId', 'redirected']
+      properties = ['redirected']
       delete this[prop] for prop in properties
 
       # Finished
