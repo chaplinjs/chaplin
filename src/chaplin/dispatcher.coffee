@@ -180,8 +180,10 @@ define [
       # Save returned value and also immediately return in case the value is false
       next = (method) =>
         # Stop if the action triggered a redirect
-        return if controller.redirected
-
+        if controller.redirected
+          # Adjust the URL; pass in params
+          return @adjustURL controller, params, {}
+          
         # End of chain, finally start the action
         unless method
           return @executeAction args...
