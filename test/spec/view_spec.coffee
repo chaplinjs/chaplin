@@ -176,6 +176,59 @@ define [
       expect(-> view.delegate('click', 123)).to.throwError()
       expect(-> view.delegate('click', (->), 123)).to.throwError()
 
+    it 'should correct inheritance of events object', (done) ->
+      delay = (callback) ->
+        window.setTimeout callback, 40
+      class A extends TestView
+        autoRender: yes
+        getTemplateFunction: -> -> '
+        <div id="a"></div>
+        <div id="b"></div>
+        <div id="c"></div>
+        <div id="d"></div>'
+        events:
+          'click #a': 'a1Handler'
+        a1Handler: sinon.spy()
+
+        click: (index) ->
+          @$("##{index}").click()
+
+      class B extends A
+        events:
+          'click #a': 'a2Handler'
+          'click #b': 'bHandler'
+        a2Handler: sinon.spy()
+        bHandler: sinon.spy()
+
+      class C extends B
+        events:
+          'click #a': 'a3Handler'
+          'click #c': 'cHandler'
+        a3Handler: sinon.spy()
+        cHandler: sinon.spy()
+
+      class D extends C
+        events:
+          'click #a': 'a4Handler'
+          'click #d': 'dHandler'
+        a4Handler: sinon.spy()
+        dHandler: sinon.spy()
+
+      bcd = ['b', 'c', 'd']
+      d = new D
+      d.click('a')
+
+      delay ->
+        for index in _.range(1, 5)
+          expect(d["a#{index}Handler"]).was.called()
+        for index in bcd
+          expect(d["#{index}Handler"]).was.notCalled()
+          d.click(index)
+        delay ->
+          for index in bcd
+            expect(d["#{index}Handler"]).was.called()
+          done()
+
     it 'should bind handlers to model events', ->
       expect(view.modelBind).to.be.a 'function'
       expect(-> view.modelBind()).to.throwError()
