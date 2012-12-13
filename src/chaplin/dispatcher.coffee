@@ -192,7 +192,7 @@ define [
         # Detect a CommonJS promise  in order to use pipelining below,
         # otherwise execute next method directly
         if previous and typeof previous.then is 'function'
-          previous.done (data) ->
+          previous.then (data) ->
             next beforeActions.shift(), data
         else
           next beforeActions.shift(), previous
