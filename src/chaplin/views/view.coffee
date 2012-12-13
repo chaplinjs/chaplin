@@ -137,8 +137,34 @@ define [
       # Return the bound handler
       handler
 
-    # Remove all handlers registered with @delegate
+    # Copy of original backbone method without `undelegateEvents` call.
+    _delegateEvents: (events) ->
+      # Call Backbone.delegateEvents on all superclasses events.
+      return unless events or (events = getValue(this, 'events'))
+      for key of events
+        method = events[key]
+        method = this[method] unless _.isFunction(method)
+        unless method
+          throw new Error("Method '#{events[key]}' does not exist")
+        match = key.match(/^(\S+)\s*(.*)$/)
+        eventName = match[1]
+        selector = match[2]
+        method = _.bind(method, this)
+        eventName += ".delegateEvents#{@cid}"
+        if selector is ''
+          @$el.bind eventName, method
+        else
+          @$el.delegate selector, eventName, method
 
+    # Override Backbones method to combine the events
+    # of the parent view if it exists.
+    delegateEvents: ->
+      @undelegateEvents()
+      for proto in utils.getPrototypeChain this when proto.events?
+        @_delegateEvents proto.events
+      return
+
+    # Remove all handlers registered with @delegate.
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
 

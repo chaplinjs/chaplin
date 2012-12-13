@@ -107,7 +107,7 @@ define [
       # Passing the params and the old controller name
       controller = new ControllerConstructor params, currentControllerName
 
-      method = if _.isObject controller.beforeAction
+      method = if controller.beforeAction
         'executeBeforeActionChain'
       else
         'executeAction'
@@ -163,40 +163,38 @@ define [
       # parent classes are executed before actions in child classes.
 
       prototypeChain = utils.getPrototypeChain controller
-
       for prototype in prototypeChain.reverse()
 
-        # Iterate through the before actions object in search for a matching
-        # name with the arguments' action name
-
-        for beforeActionName, beforeActionFn of prototype.beforeAction
-          regexp = new RegExp("^#{beforeActionName}$")
-
-          if beforeActionName is action or regexp?.test action
-            beforeActionFn = controller[beforeActionFn] if _.isString beforeActionFn
-            unless _.isFunction beforeActionFn
-              throw new Error("#{beforeActionFn} is not a valid beforeAction method for #{beforeActionName}.")
-            beforeActions.push beforeActionFn
+        # Iterate over the before actions in search for a matching
+        # name with the arguments’ action name
+        for name, beforeAction of prototype.beforeAction
+          if name is action or RegExp("^#{name}$").test(action)
+            if typeof beforeAction is 'string'
+              beforeAction = controller[beforeAction]
+            if typeof beforeAction isnt 'function'
+              throw new Error 'Controller#executeBeforeActionChain: ' +
+                "#{beforeAction} is not a valid beforeAction method for #{name}."
+            # Save the before action
+            beforeActions.push beforeAction
 
       # Save returned value and also immediately return in case the value is false
       next = (method) =>
         # Stop if the action triggered a redirect
         return if controller.redirected
-        # End of chain, restore execution onto the action
-        unless method?
+
+        # End of chain, finally start the action
+        unless method
           return @executeAction args...
 
-        # Detecting a CommonJS promise object in order to use pipelining below,
+        # Detect a CommonJS promise  in order to use pipelining below,
         # otherwise execute next method directly
-        if not (_.isObject(previous) and _.has(previous, 'then'))
-          previous = method params, previous
-          next beforeActions.shift()
-        # Chaining defer objects...
-        else
-          callback = _.bind(method, controller, params)
+        if previous and typeof previous.then is 'function'
           previous.done (data) ->
-            previous = callback data
+            previous = method.call controller, params, data
             next beforeActions.shift()
+        else
+          previous = method.call controller, params, previous
+          next beforeActions.shift()
 
       # Start beforeAction execution chain
       next beforeActions.shift()
