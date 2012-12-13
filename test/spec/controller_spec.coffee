@@ -50,23 +50,6 @@ define [
 
       mediator.unsubscribe '!router:route', routerRoute
 
-    it 'should redirect to a controller action', ->
-      startupController = sinon.spy()
-      mediator.subscribe '!startupController', startupController
-
-      controllerName = 'redirect-controller'
-      action = 'redirect-action'
-      params = redirectParams: true
-      options = redirectOptions: true
-      controller.redirectTo controllerName, action, params, options
-
-      expect(controller.redirected).to.be true
-      expect(startupController).was.calledWith(
-        controllerName, action, params, options
-      )
-
-      mediator.unsubscribe '!startupController', startupController
-
     it 'should dispose itself correctly', ->
       expect(controller.dispose).to.be.a 'function'
       controller.dispose()

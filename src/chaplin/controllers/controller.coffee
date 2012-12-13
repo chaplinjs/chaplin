@@ -20,11 +20,8 @@ define [
     # was called in the current action
     redirected: false
 
-    # You should set a `title` property and a `historyURL` property or method
-    # on the derived controller. Like this:
+    # You should set a `title` property on the derived controller. Like this:
     # title: 'foo'
-    # historyURL: 'foo'
-    # historyURL: ->
 
     constructor: ->
       @initialize arguments...
@@ -35,16 +32,17 @@ define [
     # Redirection
     # -----------
 
-    redirectTo: (arg1, action, params, options) ->
+    # Redirect to URL.
+    redirectTo: (url, params, options) ->
       @redirected = true
-      if arguments.length is 1
-        # URL was passed, try to route it
-        @publishEvent '!router:route', arg1, {}, (routed) ->
-          unless routed
-            throw new Error 'Controller#redirectTo: no route matched'
-      else
-        # Assume controller and action names were passed
-        @publishEvent '!startupController', arg1, action, params, options
+      @publishEvent '!router:route', url, {}, (routed) ->
+        unless routed
+          throw new Error 'Controller#redirectTo: no route matched'
+
+    # Redirect to named route.
+    redirectToRoute: (name, params, options) ->
+      @redirected = true
+      @publishEvent '!router:routeByName', name, params, options
 
     # Disposal
     # --------
