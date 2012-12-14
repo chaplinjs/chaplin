@@ -79,7 +79,7 @@ define [
       expect($el.css('visibility')).to.be 'visible'
 
     it 'should set the document title', (done) ->
-      mediator.publish 'startupController', startupControllerContext
+      mediator.publish '!adjustTitle', testController.title
       setTimeout ->
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).to.be title
