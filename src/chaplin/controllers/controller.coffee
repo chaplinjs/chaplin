@@ -32,6 +32,9 @@ define [
     initialize: ->
       # Empty per default
 
+    adjustTitle: (subtitle) ->
+      @publishEvent '!adjustTitle', subtitle
+
     # Redirection
     # -----------
 
