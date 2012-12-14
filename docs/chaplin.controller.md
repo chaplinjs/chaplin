@@ -19,8 +19,7 @@ If you want to overwrite this behaviour, you can edit the `controller_path` and 
 
 By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on. These actions are called by the [Chaplin.Dispatcher](./chaplin.dispatcher.md) when a route matches.
 
-Most of the time, a controller is started following a route match. In this case, the URL representing the application state is already given. But a controller can also be started programatically by publishing a `!startupController` event. In this case, the URL has to be determined. This is the purpose of the `historyURL` method.
-
+A controller is usually started following a route match.
 
 ### Example
 
@@ -36,12 +35,7 @@ define [
   'use strict'
 
   class LikesController extends Controller
-
-    historyURL: (params) ->
-      if params.id then "likes/#{params.id}" else ''
-
-    # initialize method is empty here
-
+    # Initialize method is empty here.
     index: (params) ->
       @collection = new Likes()
       @view = new LikesView collection: @collection

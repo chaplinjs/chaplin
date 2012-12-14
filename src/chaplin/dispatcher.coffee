@@ -37,7 +37,6 @@ define [
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
-      @subscribeEvent '!startupController', @startupController
 
     # Controller management
     # Starting and disposing controllers
@@ -47,8 +46,6 @@ define [
     matchRoute: (route, params, options) ->
       @startupController route.controller, route.action, params, options
 
-    # Handler for the global !startupController event
-    #
     # The standard flow is:
     #
     #   1. Test if it’s a new controller/action with new params
@@ -205,19 +202,6 @@ define [
       if typeof options.path is 'string'
         # Just use the matched path
         url = options.path
-
-      else if typeof controller.historyURL is 'function'
-        # Use controller.historyURL to get the URL
-        # If the property is a function, call it
-        url = controller.historyURL params
-
-      else if typeof controller.historyURL is 'string'
-        # If the property is a string, read it
-        url = controller.historyURL
-
-      else
-        throw new Error 'Dispatcher#adjustURL: controller for ' +
-          "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
       @publishEvent '!router:changeURL', url, options if options.changeURL
