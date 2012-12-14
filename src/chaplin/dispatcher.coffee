@@ -164,6 +164,8 @@ define [
         # Iterate over the before actions in search for a matching
         # name with the arguments’ action name
         for name, beforeAction of prototype.beforeAction
+          # Do not add this object more than once
+          continue if _.indexOf(beforeActions, beforeAction) >= 0
           if name is action or RegExp("^#{name}$").test(action)
             if typeof beforeAction is 'string'
               beforeAction = controller[beforeAction]
