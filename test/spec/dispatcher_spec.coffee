@@ -605,6 +605,34 @@ define [
         # run synchronous and not asynchronous.
         expect(previousReturnValueToCheck).to.be 'foo'
 
+      it 'should handle single async. before action', ->
+        deferred = $.Deferred()
+
+        class AsyncBeforeActionChainController extends Controller
+
+          historyURL: -> 'foo'
+
+          beforeAction:
+            '.*': ->
+              # Returning a promise here triggers asynchronous behavior.
+              deferred.promise()
+
+          show: ->
+
+        controller = new AsyncBeforeActionChainController()
+
+        action = sinon.spy controller, 'show'
+
+        dispatcher.executeBeforeActionChain controller,
+          'async_before_action_chain', 'show', params, routeOptions
+
+        expect(action).was.notCalled()
+
+        # Resolve the Deferred
+        deferred.resolve()
+
+        expect(action).was.calledOnce()
+
       it 'should handle async. before actions, then pass the returned value', ->
         deferred = $.Deferred()
         promise = deferred.promise()
