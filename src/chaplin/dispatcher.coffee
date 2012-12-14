@@ -155,7 +155,6 @@ define [
     # Before actions with chained execution
     executeBeforeActionChain: (controller, controllerName, action, params) ->
       beforeActions  = []
-      previous = null
       args = arguments
 
       # Before actions can be extended by subclasses, so we need to check the
@@ -178,25 +177,25 @@ define [
             beforeActions.push beforeAction
 
       # Save returned value and also immediately return in case the value is false
-      next = (method) =>
+      next = (method, previous = null) =>
         # Stop if the action triggered a redirect
         if controller.redirected
           # Adjust the URL; pass in params
           return @adjustURL controller, params, {}
-          
+
         # End of chain, finally start the action
         unless method
           return @executeAction args...
 
+        previous = method.call controller, params, previous
+
         # Detect a CommonJS promise  in order to use pipelining below,
         # otherwise execute next method directly
         if previous and typeof previous.then is 'function'
-          previous.done (data) ->
-            previous = method.call controller, params, data
-            next beforeActions.shift()
+          previous.then (data) ->
+            next beforeActions.shift(), data
         else
-          previous = method.call controller, params, previous
-          next beforeActions.shift()
+          next beforeActions.shift(), previous
 
       # Start beforeAction execution chain
       next beforeActions.shift()
