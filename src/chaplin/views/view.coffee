@@ -159,8 +159,11 @@ define [
     # of the parent view if it exists.
     delegateEvents: ->
       @undelegateEvents()
-      for proto in utils.getPrototypeChain this when proto.events?
-        @_delegateEvents proto.events
+      events = []
+      for proto in utils.getPrototypeChain this
+        events.push proto.events if proto.events and _.indexOf(events, proto.events) < 0
+      for eventsHash in events
+        @_delegateEvents eventsHash
       return
 
     # Remove all handlers registered with @delegate.
