@@ -51,11 +51,10 @@ define [
         utils.wrapMethod this, 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
-      unless @render is View::render
-        utils.wrapMethod this, 'render'
-      else
-        # Otherwise just bind the `render` method
+      if @render is View::render
         @render = _(@render).bind this
+      else
+        utils.wrapMethod this, 'render'
 
       # Copy some options to instance properties
       if options
