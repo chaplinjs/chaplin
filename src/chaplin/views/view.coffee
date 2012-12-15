@@ -51,11 +51,10 @@ define [
         utils.wrapMethod this, 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
-      unless @render is View::render
-        utils.wrapMethod this, 'render'
-      else
-        # Otherwise just bind the `render` method
+      if @render is View::render
         @render = _(@render).bind this
+      else
+        utils.wrapMethod this, 'render'
 
       # Copy some options to instance properties
       if options
@@ -160,8 +159,16 @@ define [
     # of the parent view if it exists.
     delegateEvents: ->
       @undelegateEvents()
-      for proto in utils.getPrototypeChain this when proto.events?
-        @_delegateEvents proto.events
+
+      # Get 'events' props from every prototype,
+      # filter-out falsy values and duplicates.
+      _(utils.getPrototypeChain this)
+        .chain()
+        .pluck('events')
+        .compact()
+        .uniq()
+        .each (events) =>
+          @_delegateEvents events
       return
 
     # Remove all handlers registered with @delegate.

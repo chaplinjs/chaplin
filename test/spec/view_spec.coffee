@@ -220,13 +220,13 @@ define [
 
       delay ->
         for index in _.range(1, 5)
-          expect(d["a#{index}Handler"]).was.called()
+          expect(d["a#{index}Handler"]).was.calledOnce()
         for index in bcd
           expect(d["#{index}Handler"]).was.notCalled()
           d.click(index)
         delay ->
           for index in bcd
-            expect(d["#{index}Handler"]).was.called()
+            expect(d["#{index}Handler"]).was.calledOnce()
           done()
 
     it 'should bind handlers to model events', ->

@@ -37,7 +37,6 @@ define [
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
-      @subscribeEvent '!startupController', @startupController
 
     # Controller management
     # Starting and disposing controllers
@@ -47,8 +46,6 @@ define [
     matchRoute: (route, params, options) ->
       @startupController route.controller, route.action, params, options
 
-    # Handler for the global !startupController event
-    #
     # The standard flow is:
     #
     #   1. Test if it’s a new controller/action with new params
@@ -155,7 +152,6 @@ define [
     # Before actions with chained execution
     executeBeforeActionChain: (controller, controllerName, action, params) ->
       beforeActions  = []
-      previous = null
       args = arguments
 
       # Before actions can be extended by subclasses, so we need to check the
@@ -164,10 +160,11 @@ define [
 
       prototypeChain = utils.getPrototypeChain controller
       for prototype in prototypeChain.reverse()
-
+        acts = prototype.beforeAction
         # Iterate over the before actions in search for a matching
         # name with the arguments’ action name
-        for name, beforeAction of prototype.beforeAction
+        for name, beforeAction of acts when beforeAction not in beforeActions
+          # Do not add this object more than once
           if name is action or RegExp("^#{name}$").test(action)
             if typeof beforeAction is 'string'
               beforeAction = controller[beforeAction]
@@ -178,25 +175,25 @@ define [
             beforeActions.push beforeAction
 
       # Save returned value and also immediately return in case the value is false
-      next = (method) =>
+      next = (method, previous = null) =>
         # Stop if the action triggered a redirect
         if controller.redirected
           # Adjust the URL; pass in params
           return @adjustURL controller, params, {}
-          
+
         # End of chain, finally start the action
         unless method
           return @executeAction args...
 
+        previous = method.call controller, params, previous
+
         # Detect a CommonJS promise  in order to use pipelining below,
         # otherwise execute next method directly
         if previous and typeof previous.then is 'function'
-          previous.done (data) ->
-            previous = method.call controller, params, data
-            next beforeActions.shift()
+          previous.then (data) ->
+            next beforeActions.shift(), data
         else
-          previous = method.call controller, params, previous
-          next beforeActions.shift()
+          next beforeActions.shift(), previous
 
       # Start beforeAction execution chain
       next beforeActions.shift()
@@ -206,19 +203,6 @@ define [
       if typeof options.path is 'string'
         # Just use the matched path
         url = options.path
-
-      else if typeof controller.historyURL is 'function'
-        # Use controller.historyURL to get the URL
-        # If the property is a function, call it
-        url = controller.historyURL params
-
-      else if typeof controller.historyURL is 'string'
-        # If the property is a string, read it
-        url = controller.historyURL
-
-      else
-        throw new Error 'Dispatcher#adjustURL: controller for ' +
-          "#{@currentControllerName} does not provide a historyURL"
 
       # Tell the router to actually change the current URL
       @publishEvent '!router:changeURL', url, options if options.changeURL
