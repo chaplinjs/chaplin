@@ -166,4 +166,4 @@ task 'cover', 'Coverage', ->
   exec 'mv test/js{.cover,}'
   exec 'rm test/coverage.html'
   exec 'node_modules/phantomjs/bin/phantomjs node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee test/index.html json-cov | node test/lib/build-coverage-html.js > test/coverage.html'
-  echo 'Compiled tests, you can now open test/index.html and run them'
+  echo 'Compiled coverage, you can now open test/coverage.html and see it'
