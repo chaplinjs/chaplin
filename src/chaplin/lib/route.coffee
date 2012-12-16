@@ -57,7 +57,7 @@ define [
     createRegExp: ->
       if _.isRegExp(@pattern)
         @regExp = @pattern
-        @paramNames = @options.names if _.isArray @options.names
+        @paramNames = @options.matches if _.isArray @options.matches
         return
 
       pattern = @pattern
