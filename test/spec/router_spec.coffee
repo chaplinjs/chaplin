@@ -209,7 +209,7 @@ define [
 
     it 'should name parameters of a regular expression with `params` option array', ->
       router.match /^params\/(\d+)\/(\w+)$/, 'null#null',
-        params: ['one', 'two']
+        matches: ['one', 'two']
       router.route '/params/123/foo'
       expect(passedParams).to.be.an 'object'
       expect(passedParams.one).to.be '123'
@@ -272,7 +272,7 @@ define [
 
     it 'should not overwrite fixed parameters', ->
       router.match 'conflicting-params/:foo', 'null#null',
-        matches:
+        params:
           foo: 'bar'
 
       router.route '/conflicting-params/123'
