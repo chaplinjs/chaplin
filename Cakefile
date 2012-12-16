@@ -1,13 +1,7 @@
 fs = require 'fs'
 sysPath = require 'path'
 convertExports = require './build/convert_exports'
-
-try
-  require 'shelljs/global'
-catch error
-  console.log 'You will need to install "shelljs":'
-  console.log 'npm install shelljs'
-  process.exit(1)
+require 'shelljs/global'
 
 convertAmdToCommonJs = (amdString) ->
   GLOBALS = '''
@@ -161,4 +155,15 @@ task 'build', 'Build Chaplin from source', build
 task 'test', 'Test', ->
   exec 'coffee --bare --output test/js/ src/'
   exec 'coffee --bare --output test/js/ test/spec/'
+  echo 'Compiled tests, you can now open test/index.html and run them'
+
+task 'cover', 'Coverage', ->
+  exec 'rm -r test/js/'
+  exec 'coffee --bare --output test/js/ src/'
+  exec 'coffee --bare --output test/js/ test/spec/'
+  exec 'node_modules/visionmedia-jscoverage/jscoverage test/js{,.cover}'
+  exec 'rm -r test/js'
+  exec 'mv test/js{.cover,}'
+  exec 'rm test/coverage.html'
+  exec 'node_modules/phantomjs/bin/phantomjs node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee test/index.html json-cov | node test/lib/build-coverage-html.js > test/coverage.html'
   echo 'Compiled tests, you can now open test/index.html and run them'
