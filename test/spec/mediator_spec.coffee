@@ -20,8 +20,7 @@ define [
     it 'should have readonly Pub/Sub methods', ->
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
-      methods = ['subscribe', 'unsubscribe', 'publish',
-        'on']
+      methods = ['subscribe', 'unsubscribe', 'publish']
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
