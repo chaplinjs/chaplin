@@ -94,3 +94,6 @@ Use `expect(…).to.be …` instead of `.to.equal` or `.to.eql`.
 
 Use the bridge between Expect.js and Sinon.js for nice spy/stub/mock expectations, see [sinon-expect.js](https://github.com/lightsofapollo/sinon-expect/blob/master/lib/sinon-expect.js).
 
+# Git style
+
+Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob/master/README.md#git).
