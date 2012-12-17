@@ -229,84 +229,6 @@ define [
             expect(d["#{index}Handler"]).was.calledOnce()
           done()
 
-    it 'should bind handlers to model events', ->
-      expect(view.modelBind).to.be.a 'function'
-      expect(-> view.modelBind()).to.throwError()
-      expect(-> view.modelBind(1, 2)).to.throwError()
-      expect(-> view.modelBind(1, ->)).to.throwError()
-      expect(-> view.modelBind('change:foo', ->)).to.throwError()
-
-      setModel()
-      spy = sinon.spy()
-      view.modelBind 'change:foo', spy
-      model.set foo: 'bar'
-      expect(spy).was.called()
-
-      view.modelBind 'change:foo', spy
-      model.set foo: 'qux'
-      expect(spy.callCount).to.be 2
-
-    it 'should bind handlers to collection events', ->
-      setCollection()
-      spy = sinon.spy()
-      view.modelBind 'add', spy
-      collection.push new Model()
-      expect(spy).was.called()
-
-    it 'should unbind handlers from model events', ->
-      expect(view.modelUnbind).to.be.a 'function'
-
-      setModel()
-      spy = sinon.spy()
-      view.modelBind 'change:foo', spy
-      view.modelUnbind 'change:foo', spy
-      model.set foo: 'bar'
-      expect(spy).was.notCalled()
-
-    it 'should unbind handlers from collection events', ->
-      setCollection()
-      spy = sinon.spy()
-      view.modelBind 'add', spy
-      view.modelUnbind 'add', spy
-      collection.push new Model()
-      expect(spy).was.notCalled()
-
-    it 'should force the context of model event handlers', ->
-      setModel()
-
-      context = null
-      view.modelBind 'foo', ->
-        context = this
-      model.trigger 'foo'
-      expect(context).to.be view
-
-    bindAndTrigger = (model, view) ->
-      fooSpy = sinon.spy()
-      view.modelBind 'foo', fooSpy
-      barSpy = sinon.spy()
-      view.modelBind 'bar', barSpy
-      allSpy = sinon.spy()
-      view.modelBind 'all', allSpy
-      model.trigger 'foo bar'
-      expect(fooSpy.callCount).to.be 1
-      expect(barSpy.callCount).to.be 1
-      expect(allSpy.callCount).to.be 2
-      view.modelUnbindAll()
-      view.trigger 'foo bar'
-      expect(fooSpy.callCount).to.be 1
-      expect(barSpy.callCount).to.be 1
-      expect(allSpy.callCount).to.be 2
-
-    it 'should unbind all model handlers', ->
-      expect(view.modelUnbindAll).to.be.a 'function'
-      setModel()
-      bindAndTrigger model, view
-
-    it 'should unbind all collection handlers', ->
-      setCollection()
-      bindAndTrigger collection, view
-      collection.dispose()
-
     it 'should pass model attributes to elements', ->
       expect(view.pass).to.be.a 'function'
       setModel()
@@ -505,13 +427,13 @@ define [
 
     it 'should unsubscribe from model events', ->
       setModel()
-      modelBindSpy = sinon.spy()
-      view.modelBind 'foo', modelBindSpy
+      spy = sinon.spy()
+      view.listenTo view.model, 'foo', spy
 
       view.dispose()
 
       model.trigger 'foo'
-      expect(modelBindSpy).was.notCalled()
+      expect(spy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->
       viewBindSpy = sinon.spy()
