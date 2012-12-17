@@ -128,11 +128,13 @@ define [
       expect(names).to.eql ['home', 'phonebook', 'about']
 
     it 'should allow for rerversing a route instance to get its url', ->
-      named = new Route 'params/:two', 'null#null', name: 'about'
+      named = new Route 'params/:two',
+        controller: 'null', action: 'null', name: 'about'
       url = named.reverse two: 1151
       expect(url).to.eql 'params/1151'
 
-      named = new Route 'params/:two/:one/*other', 'null#null', name: 'about'
+      named = new Route 'params/:two/:one/*other',
+        controller: 'null', action: 'null', name: 'about'
       url = named.reverse
         two: 32
         one: 156
@@ -167,6 +169,33 @@ define [
     it 'should reject reserved controller action names', ->
       for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
         expect(-> router.match '', "null##{prop}").to.throwError()
+
+    it 'should allow specifying controller and action in options', ->
+      delay = (callback) ->
+        window.setTimeout callback, 20
+      expect(->
+        router.match /url/, 'null#null', controller: 'c', action: 'a'
+      ).to.throwError()
+      expect(->
+        router.match /url/, {}
+      ).to.throwError()
+
+      url = /url/
+      options = {controller: 'c', action: 'a'}
+      url2 = /url2/
+      options2 = {}
+
+      router.match url, options
+      handler = Backbone.history.handlers[0].route
+      expect(handler.controller).to.equal 'c'
+      expect(handler.action).to.equal 'a'
+      expect(handler.url).to.equal options.url
+
+      router.match url2, 'c2#a2', options2
+      handler2 = Backbone.history.handlers[1].route
+      expect(handler2.controller).to.equal 'c2'
+      expect(handler2.action).to.equal 'a2'
+      expect(handler2.url).to.equal options2.url
 
     # Tests for passed route
     # -----------------------
