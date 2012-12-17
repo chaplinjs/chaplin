@@ -180,21 +180,22 @@ define [
         router.match /url/, {}
       ).to.throwError()
 
-      # TODO: stub constructor somehow. It does not work now.
-      # spy = sinon.spy(Route, 'constructor')
+      url = /url/
+      options = {controller: 'c', action: 'a'}
+      url2 = /url2/
+      options2 = {}
 
-      # url = /url/
-      # options = {controller: 'c', action: 'a'}
-      # url2 = /url2/
-      # options2 = {}
+      router.match url, options
+      handler = Backbone.history.handlers[0].route
+      expect(handler.controller).to.equal 'c'
+      expect(handler.action).to.equal 'a'
+      expect(handler.url).to.equal options.url
 
-      # valid1 = router.match url, options
-      # expect(spy).was.called()
-      # expect(Route.constructor).was.calledWith url, 'c', 'a'
-
-      # valid2 = router.match url2, 'c#a', options2
-      # expect(Route).was.calledWith url2, 'c', 'a', options2
-      # spy.restore()
+      router.match url2, 'c2#a2', options2
+      handler2 = Backbone.history.handlers[1].route
+      expect(handler2.controller).to.equal 'c2'
+      expect(handler2.action).to.equal 'a2'
+      expect(handler2.url).to.equal options2.url
 
     # Tests for passed route
     # -----------------------
