@@ -13,7 +13,10 @@
   "devDependencies": {
     "coffee-script": "1.4.x",
     "mocha-phantomjs": "1.0.x",
-    "shelljs": "0.0.x"
+    "shelljs": "0.0.x",
+    "jade": "0.27.x",
+    "visionmedia-jscoverage": "1.0.x",
+    "phantomjs": "0.2.x"
   },
   "scripts": {
     "test": "cake test && mocha-phantomjs -R dot test/index.html"

@@ -8,3 +8,5 @@ test/js/*/*/*.js
 
 .DS_Store
 node_modules/
+
+test/coverage.html
