@@ -110,7 +110,7 @@ define [
     addCollectionListeners: ->
       @listenTo @collection, 'add',    @itemAdded
       @listenTo @collection, 'remove', @itemRemoved
-      @listenTo @collection, 'reset',  @itemsResetted
+      @listenTo @collection, 'reset sort',  @itemsResetted
 
     # Rendering
     # ---------
