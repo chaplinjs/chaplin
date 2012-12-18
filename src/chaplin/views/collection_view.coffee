@@ -115,6 +115,20 @@ define [
     # Rendering
     # ---------
 
+    # Override View#getTemplateData, don’t serialize collection items here.
+    getTemplateData: ->
+      templateData = {length: @collection.length}
+
+      # If the collection is a Deferred, add a `resolved` flag
+      if typeof @collection.state is 'function'
+        templateData.resolved = @collection.state() is 'resolved'
+
+      # If the collection is a SyncMachine, add a `synced` flag
+      if typeof @collection.isSynced is 'function'
+        templateData.synced = @collection.isSynced()
+
+      templateData
+
     # In contrast to normal views, a template is not mandatory
     # for CollectionViews. Provide an empty `getTemplateFunction`.
     getTemplateFunction: ->
