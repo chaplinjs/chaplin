@@ -309,6 +309,10 @@ define [
       renderSpy.restore()
       renderAllItemsSpy.restore()
 
+    it 'should not return item data in getTemplateData', ->
+      data = collectionView.getTemplateData()
+      expect(data).to.eql {length: collection.length}
+
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
@@ -543,6 +547,12 @@ define [
         # Filled + synced = not visible
         addOne()
         expect($loading.css('display')).to.be 'none'
+
+      it 'should pass sync status to template data', ->
+        data = collectionView.getTemplateData()
+        expect(data).to.eql {
+          length: collection.length, synced: collection.isSynced()
+        }
 
       it 'should also dispose when templated', ->
         collectionView.dispose()
