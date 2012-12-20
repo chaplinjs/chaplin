@@ -1,5 +1,9 @@
 # Chaplin 0.6.0 (unreleased)
 * Updated required Backbone version to 0.9.9+.
+* Improved `Chaplin.Collection`:
+    * Removed `Collection#update` since this function is now provided
+      by Backbone itself. The `deep` option is now called `merge` and it
+      defaults to true.
 * Improved `Chaplin.Controller`:
     * Added Rails-like before action filters to `Controller`s.
     * Added `Controller#redirectToRoute` which works like
@@ -8,18 +12,6 @@
     * Removed `Controller#title` and `Controller#historyURL`.
     * Removed ability of redirecting to standalone controllers and action names
       in `Controller#redirectTo`.
-* Improved `Chaplin.Collection`:
-    * Removed `Collection#update` since this function is now provided
-      by Backbone itself. The `deep` option is now called `merge` and it
-      defaults to true.
-* Improved `Chaplin.View`:
-    * Removed `View#modelBind`, `View#modelUnbind` and `View#modelUnbindAll`,
-      since Backbone now implements superior `Events.listenTo` API.
-    * Chaplin will now fix incorrect inheritance of view DOM events,
-      bound in declarative manner (with `events` hash).
-    * Moved `View#wrapMethod` to `Chaplin.utils.wrapMethod`.
-    * `View#dispose` will now throw an error if
-      `View#initialize` was called without `super`.
 * Improved `Chaplin.Router`:
     * Added support for named routes.
     * Added new global `!router:routeByName` event, which allows to
@@ -29,6 +21,14 @@
     * Added `names` option to `Router#match`, which allows to name
       route’s regular expression matches.
     * Removed global `!startupController` event.
+* Improved `Chaplin.View`:
+    * Removed `View#modelBind`, `View#modelUnbind` and `View#modelUnbindAll`,
+      since Backbone now implements superior `Events.listenTo` API.
+    * Chaplin will now fix incorrect inheritance of view DOM events,
+      bound in declarative manner (with `events` hash).
+    * Moved `View#wrapMethod` to `Chaplin.utils.wrapMethod`.
+    * `View#dispose` will now throw an error if
+      `View#initialize` was called without `super`.
 * Router options are now allowed to be passed in many places.
   New signatures are:
     * `!router:route` global event: path, *options*, callback
