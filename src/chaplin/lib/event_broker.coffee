@@ -47,13 +47,13 @@ define [
       # Remove all handlers with a context of this subscriber
       Backbone.off null, null, this
 
-    publishEvent: (type, args...) ->
+    publishEvent: (type) ->
       if typeof type isnt 'string'
         throw new TypeError 'EventBroker#publishEvent: ' +
           'type argument must be a string'
 
       # Publish global handler
-      Backbone.trigger type, args...
+      Backbone.trigger.apply Backbone, arguments
 
   # You’re frozen when your heart’s not open
   Object.freeze? EventBroker
