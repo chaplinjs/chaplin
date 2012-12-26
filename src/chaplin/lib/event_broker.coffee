@@ -1,6 +1,6 @@
 define [
-  'chaplin/mediator'
-], (mediator) ->
+  'backbone'
+], (Backbone) ->
   'use strict'
 
   # Add functionality to subscribe and publish to global
@@ -26,10 +26,10 @@ define [
           'handler argument must be a function'
 
       # Ensure that a handler isn’t registered twice
-      mediator.unsubscribe type, handler, this
+      Backbone.off type, handler, this
 
       # Register global handler, force context to the subscriber
-      mediator.subscribe type, handler, this
+      Backbone.on type, handler, this
 
     unsubscribeEvent: (type, handler) ->
       if typeof type isnt 'string'
@@ -40,12 +40,12 @@ define [
           'handler argument must be a function'
 
       # Remove global handler
-      mediator.unsubscribe type, handler
+      Backbone.off type, handler
 
     # Unbind all global handlers
     unsubscribeAllEvents: ->
       # Remove all handlers with a context of this subscriber
-      mediator.unsubscribe null, null, this
+      Backbone.off null, null, this
 
     publishEvent: (type, args...) ->
       if typeof type isnt 'string'
@@ -53,7 +53,7 @@ define [
           'type argument must be a string'
 
       # Publish global handler
-      mediator.publish type, args...
+      Backbone.trigger type, args...
 
   # You’re frozen when your heart’s not open
   Object.freeze? EventBroker

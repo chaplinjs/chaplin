@@ -1,10 +1,11 @@
 define [
   'underscore'
   'jquery'
+  'backbone'
   'chaplin/mediator'
   'chaplin/controllers/controller'
   'chaplin/dispatcher'
-], (_, $, mediator, Controller, Dispatcher) ->
+], (_, $, Backbone, mediator, Controller, Dispatcher) ->
   'use strict'
   describe 'Dispatcher', ->
     #console.debug 'Dispatcher spec'
@@ -86,7 +87,7 @@ define [
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         expect(initialize).was.calledWith params, null
@@ -98,14 +99,14 @@ define [
         done()
 
     it 'should not start the same controller if params match', (done)->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         proto = Test1Controller.prototype
         initialize = sinon.spy proto, 'initialize'
         action     = sinon.spy proto, 'show'
 
-        mediator.publish 'matchRoute', route1, params, routeOptions
+        Backbone.trigger 'matchRoute', route1, params, routeOptions
 
         loadTest1ControllerAndExecute ->
           expect(initialize).was.notCalled()
@@ -117,14 +118,14 @@ define [
           done()
 
     it 'should start the same controller if params differ', (done) ->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       proto = Test1Controller.prototype
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
       refreshParams()
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         expect(initialize).was.calledWith params, 'test1'
@@ -136,14 +137,14 @@ define [
         done()
 
     it 'should start the same controller if forced', (done) ->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       proto = Test1Controller.prototype
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
       routeOptions.forceStartup = true
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         expect(initialize).was.calledWith params, 'test1'
@@ -157,10 +158,10 @@ define [
     it 'should save the controller, action, params and url', (done) ->
 
       # Call one route
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       # Now open another route
-      mediator.publish 'matchRoute', route2, params, routeOptions
+      Backbone.trigger 'matchRoute', route2, params, routeOptions
 
       # Check that previous route is saved
       loadTest2ControllerAndExecute ->
@@ -175,12 +176,12 @@ define [
         done()
 
     it 'should dispose inactive controllers and fire beforeControllerDispose events', (done) ->
-      mediator.publish 'matchRoute', route2, params, routeOptions
+      Backbone.trigger 'matchRoute', route2, params, routeOptions
 
       dispose = sinon.spy Test2Controller.prototype, 'dispose'
 
       # Route back to Test1Controller
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest2ControllerAndExecute ->
         expect(dispose).was.calledWith params, 'test1'
@@ -190,13 +191,13 @@ define [
         done()
 
     it 'should fire beforeControllerDispose events', (done) ->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       beforeControllerDispose = sinon.spy()
-      mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
+      Backbone.on 'beforeControllerDispose', beforeControllerDispose
 
       # Now route to Test2Controller
-      mediator.publish 'matchRoute', route2, params, routeOptions
+      Backbone.trigger 'matchRoute', route2, params, routeOptions
 
       loadTest2ControllerAndExecute ->
         expect(beforeControllerDispose).was.called()
@@ -204,18 +205,18 @@ define [
         expect(passedController).to.be.a Test1Controller
         expect(passedController.disposed).to.be true
 
-        mediator.unsubscribe 'beforeControllerDispose', beforeControllerDispose
+        Backbone.off 'beforeControllerDispose', beforeControllerDispose
 
         done()
 
     it 'should publish startupController events', (done) ->
-      mediator.publish 'matchRoute', route2, params, routeOptions
+      Backbone.trigger 'matchRoute', route2, params, routeOptions
 
       startupController = sinon.spy()
-      mediator.subscribe 'startupController', startupController
+      Backbone.on 'startupController', startupController
 
       # Route back to Test1Controller
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         passedEvent = startupController.lastCall.args[0]
@@ -225,13 +226,13 @@ define [
         expect(passedEvent.params).to.be params
         expect(passedEvent.previousControllerName).to.be 'test2'
 
-        mediator.unsubscribe 'startupController', startupController
+        Backbone.off 'startupController', startupController
 
         done()
 
     it 'should adjust the URL and pass route options', (done) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:changeURL', spy
+      Backbone.on '!router:changeURL', spy
 
       routeOptions = replace: true, path: 'some-path'
       dispatcher.startupController 'test1', 'show', params, routeOptions
@@ -239,13 +240,13 @@ define [
       loadTest1ControllerAndExecute ->
         expect(spy).was.calledWith routeOptions.path, routeOptions
 
-        mediator.unsubscribe '!router:changeURL', spy
+        Backbone.off '!router:changeURL', spy
 
         done()
 
     it 'should use the path from the route options', (done) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:changeURL', spy
+      Backbone.on '!router:changeURL', spy
 
       routeOptions = path: 'custom-path-from-options'
       dispatcher.startupController 'test1', 'show', params, routeOptions
@@ -253,7 +254,7 @@ define [
       loadTest1ControllerAndExecute ->
         expect(spy).was.calledWith routeOptions.path, routeOptions
 
-        mediator.unsubscribe '!router:changeURL', spy
+        Backbone.off '!router:changeURL', spy
 
         done()
 
@@ -262,17 +263,17 @@ define [
       # Open a route to check if previous controller info is correct after
       # redirection
 
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
       refreshParams()
 
       action = sinon.spy Test1Controller.prototype, 'redirectToURL'
 
       startupController = sinon.spy()
-      mediator.subscribe 'startupController', startupController
+      Backbone.on 'startupController', startupController
 
       # Open another route that redirects somewhere
 
-      mediator.publish 'matchRoute', redirectToURLRoute, params, routeOptions
+      Backbone.trigger 'matchRoute', redirectToURLRoute, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         expect(action).was.calledWith params, 'test1'
@@ -290,7 +291,7 @@ define [
 
         expect(startupController).was.calledOnce()
 
-        mediator.unsubscribe 'startupController', startupController
+        Backbone.off 'startupController', startupController
         action.restore()
 
         done()
@@ -300,7 +301,7 @@ define [
       dispatcher.dispose()
 
       initialize = sinon.spy Test1Controller.prototype, 'initialize'
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      Backbone.trigger 'matchRoute', route1, params, routeOptions
 
       loadTest1ControllerAndExecute ->
         expect(initialize).was.notCalled()
@@ -347,7 +348,7 @@ define [
         # Replace executeBeforeActionChain with a no-op stub
         executeBeforeActionChain = sinon.stub dispatcher, 'executeBeforeActionChain'
 
-        mediator.publish 'matchRoute', route, params, routeOptions
+        Backbone.trigger 'matchRoute', route, params, routeOptions
 
         loadBeforeActionsAndExecute ->
           expect(executeAction).was.notCalled()
@@ -364,7 +365,7 @@ define [
       it 'should call executeAction after with exactly the same arguments', (done) ->
         executeAction = sinon.spy dispatcher, 'executeAction'
 
-        mediator.publish 'matchRoute', route, params, routeOptions
+        Backbone.trigger 'matchRoute', route, params, routeOptions
 
         loadBeforeActionsAndExecute ->
           args = executeAction.firstCall.args

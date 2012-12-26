@@ -1,10 +1,10 @@
 define [
-  'backbone'
   'underscore'
+  'backbone'
   'chaplin/mediator'
   'chaplin/lib/router'
   'chaplin/lib/route'
-], (Backbone, _, mediator, Router, Route) ->
+], (_, Backbone, mediator, Router, Route) ->
   'use strict'
 
   describe 'Router and Route', ->
@@ -22,12 +22,12 @@ define [
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
       router = new Router randomOption: 'foo'
-      mediator.subscribe 'matchRoute', matchRoute
+      Backbone.on 'matchRoute', matchRoute
 
     afterEach ->
       passedRoute = passedParams = passedOptions = null
       router.dispose()
-      mediator.unsubscribe 'matchRoute', matchRoute
+      Backbone.off 'matchRoute', matchRoute
 
     it 'should create a Backbone.History instance', ->
       expect(Backbone.history).to.be.a Backbone.History
@@ -66,17 +66,17 @@ define [
 
     it 'should fire a matchRoute event when a route matches', ->
       spy = sinon.spy()
-      mediator.subscribe 'matchRoute', spy
+      Backbone.on 'matchRoute', spy
       router.match '', 'null#null'
 
       router.route '/'
       expect(spy).was.called()
 
-      mediator.unsubscribe 'matchRoute', spy
+      Backbone.off 'matchRoute', spy
 
     it 'should match correctly', ->
       spy = sinon.spy()
-      mediator.subscribe 'matchRoute', spy
+      Backbone.on 'matchRoute', spy
       router.match 'correct-match1', 'null#null'
       router.match 'correct-match2', 'null#null'
 
@@ -84,11 +84,11 @@ define [
       expect(routed).to.be true
       expect(spy.callCount).to.be 1
 
-      mediator.unsubscribe 'matchRoute', spy
+      Backbone.off 'matchRoute', spy
 
     it 'should match in order specified when calling router.route', ->
       spy = sinon.spy()
-      mediator.subscribe 'matchRoute', spy
+      Backbone.on 'matchRoute', spy
       router.match 'params/:one', 'null#null'
       router.match 'params/:two', 'null#null'
 
@@ -100,11 +100,11 @@ define [
       expect(passedParams.one).to.be '1'
       expect(passedParams.two).to.be undefined
 
-      mediator.unsubscribe 'matchRoute', spy
+      Backbone.off 'matchRoute', spy
 
     it 'should match in order specified when called by Backbone.History', ->
       spy = sinon.spy()
-      mediator.subscribe 'matchRoute', spy
+      Backbone.on 'matchRoute', spy
       router.match 'params/:one', 'null#null'
       router.match 'params/:two', 'null#null'
 
@@ -117,7 +117,7 @@ define [
       expect(passedParams.one).to.be '1'
       expect(passedParams.two).to.be undefined
 
-      mediator.unsubscribe 'matchRoute', spy
+      Backbone.off 'matchRoute', spy
 
     it 'should allow for registering routes with a name', ->
       router.match 'index', 'null#null', name: 'home'
@@ -163,7 +163,7 @@ define [
       url = false
       params = one: 145
       spy = sinon.spy()
-      mediator.publish '!router:reverse', 'phonebook', params, spy
+      Backbone.trigger '!router:reverse', 'phonebook', params, spy
       expect(spy).was.calledWith 'phoneparams/145'
 
     it 'should reject reserved controller action names', ->
@@ -276,7 +276,7 @@ define [
 
     it 'should impose constraints', ->
       spy = sinon.spy()
-      mediator.subscribe 'matchRoute', spy
+      Backbone.on 'matchRoute', spy
       router.match 'constraints/:id', 'null#null',
         constraints:
           id: /^\d+$/
@@ -287,7 +287,7 @@ define [
       router.route '/constraints/123'
       expect(spy).was.called()
 
-      mediator.unsubscribe 'matchRoute', spy
+      Backbone.off 'matchRoute', spy
 
     it 'should pass fixed parameters', ->
       router.match 'fixed-params/:id', 'null#null',
@@ -366,7 +366,7 @@ define [
       routeSpy = sinon.spy router, 'route'
       router.match path, 'router#route'
 
-      mediator.publish '!router:route', path, options, callback
+      Backbone.trigger '!router:route', path, options, callback
       expect(routeSpy).was.calledWith path, options
       expect(callback).was.calledWith true
       expect(passedRoute).to.be.an 'object'
@@ -375,7 +375,7 @@ define [
       expect(passedOptions).to.eql _.extend(options, {path})
 
       callback = sinon.spy()
-      mediator.publish '!router:route', 'different-path', options, callback
+      Backbone.trigger '!router:route', 'different-path', options, callback
       expect(callback).was.calledWith false
 
       routeSpy.restore()
@@ -385,7 +385,7 @@ define [
       callback = sinon.spy()
       router.match path, 'router#route'
 
-      mediator.publish '!router:route', path, callback
+      Backbone.trigger '!router:route', path, callback
       expect(callback).was.calledWith true
       expect(passedRoute).to.be.an 'object'
       expect(passedRoute.controller).to.be 'router'
@@ -401,7 +401,7 @@ define [
 
       routeSpy = sinon.spy router, 'route'
 
-      mediator.publish '!router:routeByName', 'phonebook', one: 145
+      Backbone.trigger '!router:routeByName', 'phonebook', one: 145
       expect(passedRoute.controller).to.be 'phonebook'
       expect(passedRoute.action).to.be 'dial'
       expect(passedOptions.path).to.be 'phoneparams/145'
@@ -413,7 +413,7 @@ define [
       path = 'router-changeurl-event'
       changeURL = sinon.spy router, 'changeURL'
 
-      mediator.publish '!router:changeURL', path
+      Backbone.trigger '!router:changeURL', path
       expect(changeURL).was.calledWith path
 
       changeURL.restore()
@@ -424,12 +424,12 @@ define [
       navigate = sinon.stub Backbone.history, 'navigate'
 
       options = some: 'stuff'
-      mediator.publish '!router:changeURL', path, options
+      Backbone.trigger '!router:changeURL', path, options
       expect(navigate).was.calledWith path,
         replace: false, trigger: false
 
       options = replace: true, trigger: true, some: 'stuff'
-      mediator.publish '!router:changeURL', path, options
+      Backbone.trigger '!router:changeURL', path, options
       expect(Backbone.history.navigate).was.calledWith path,
         replace: true, trigger: true
 

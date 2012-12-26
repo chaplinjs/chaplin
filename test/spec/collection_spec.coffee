@@ -1,11 +1,10 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
   'chaplin/models/collection'
   'chaplin/models/model'
   'chaplin/lib/event_broker'
-], (_, Backbone, mediator, Collection, Model, EventBroker) ->
+], (_, Backbone, Collection, Model, EventBroker) ->
   'use strict'
 
   describe 'Collection', ->
@@ -110,7 +109,7 @@ define [
 
       collection.dispose()
 
-      mediator.publish 'foo'
+      Backbone.trigger 'foo'
       expect(pubSubSpy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->

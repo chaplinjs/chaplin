@@ -422,7 +422,7 @@ define [
 
       view.dispose()
 
-      mediator.publish 'foo'
+      Backbone.trigger 'foo'
       expect(pubSubSpy).was.notCalled()
 
     it 'should unsubscribe from model events', ->

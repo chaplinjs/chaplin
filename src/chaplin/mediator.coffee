@@ -9,12 +9,7 @@ define [
   # Mediator
   # --------
 
-  # The mediator is a simple object all others modules use to communicate
-  # with each other. It implements the Publish/Subscribe pattern.
-  #
-  # Additionally, it holds objects which need to be shared between modules.
-  # In this case, a `user` property is created for getting the user object
-  # and a `setUser` method for setting the user.
+  # The mediator holds objects which need to be shared between modules.
   #
   # This module returns the singleton object. This is the
   # application-wide mediator you might load into modules
@@ -22,23 +17,6 @@ define [
 
   # Start with a simple object
   mediator = {}
-
-  # Publish / Subscribe
-  # -------------------
-
-  # Mixin event methods from Backbone.Events,
-  # create Publish/Subscribe aliases
-
-  mediator.subscribe   = Backbone.on
-  mediator.unsubscribe = Backbone.off
-  mediator.publish     = Backbone.trigger
-  mediator.once        = Backbone.once
-
-  # Initialize an empty callback list so we might seal the mediator later
-  mediator._callbacks = null
-
-  # Make properties readonly
-  utils.readonly mediator, 'subscribe', 'unsubscribe', 'publish', 'once'
 
   # Sealing the mediator
   # --------------------
