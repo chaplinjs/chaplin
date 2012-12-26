@@ -19,7 +19,11 @@ define [
     afterEach ->
       controller.dispose()
 
-    it 'should mixin a EventBroker', ->
+    it 'should mixin a Backbone.Events', ->
+      for own name, value of Backbone.Events
+        expect(controller[name]).to.be Backbone.Events[name]
+
+    it 'should mixin an EventBroker', ->
       for own name, value of EventBroker
         expect(controller[name]).to.be EventBroker[name]
 
