@@ -127,20 +127,31 @@ define [
       names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
       expect(names).to.eql ['home', 'phonebook', 'about']
 
-    it 'should allow for rerversing a route instance to get its url', ->
+    it 'should allow for reversing a route instance with object to get its url', ->
       named = new Route 'params/:two',
         controller: 'null', action: 'null', name: 'about'
       url = named.reverse two: 1151
-      expect(url).to.eql 'params/1151'
+      expect(url).to.equal 'params/1151'
 
-      named = new Route 'params/:two/:one/*other',
+      named = new Route 'params/:two/:one/*other/:another',
         controller: 'null', action: 'null', name: 'about'
       url = named.reverse
         two: 32
         one: 156
         other: 'someone/out/there'
+        another: 'meh'
+      expect(url).to.equal 'params/32/156/someone/out/there/meh'
 
-      expect(url).to.eql 'params/32/156/someone/out/there'
+    it 'should allow for reversing a route instance with array to get its url', ->
+      named = new Route 'params/:two',
+        controller: 'null', action: 'null', name: 'about'
+      url = named.reverse [1151]
+      expect(url).to.equal 'params/1151'
+
+      named = new Route 'params/:two/:one/*other/:another',
+        controller: 'null', action: 'null', name: 'about'
+      url = named.reverse [32, 156, 'someone/out/there', 'meh']
+      expect(url).to.equal 'params/32/156/someone/out/there/meh'
 
     it 'should reject reversals for regular expressions', ->
       named = new Route /params/, 'null#null', name: 'about'
