@@ -10,7 +10,8 @@ define [
     # Borrow the static extend method from Backbone
     @extend = Backbone.Model.extend
 
-    # Mixin an EventBroker
+    # Mixin Backbone events and EventBroker.
+    _(@prototype).extend Backbone.Events
     _(@prototype).extend EventBroker
 
     view: null
