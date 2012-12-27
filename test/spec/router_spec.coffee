@@ -254,9 +254,9 @@ define [
       expect(passedParams.one).to.be '123-foo'
       expect(passedParams.p_two_123).to.be '456-bar'
 
-    it 'should name parameters of a regular expression with `names` option array', ->
+    it 'should name parameters of a regular expression with `matches` option array', ->
       router.match /^params\/(\d+)\/(\w+)$/, 'null#null',
-        names: ['one', 'two']
+        matches: ['one', 'two']
       router.route '/params/123/foo'
       expect(passedParams).to.be.an 'object'
       expect(passedParams.one).to.be '123'
