@@ -4,11 +4,15 @@
     * Removed `Collection#update` since this function is now provided
       by Backbone itself. The `deep` option is now called `merge` and it
       defaults to true.
+* Improved `Chaplin.CollectionView`:
+    * `CollectionView#getTemplateData` no longer returns `items` property,
+    which increases performance.
 * Improved `Chaplin.Controller`:
     * Added Rails-like before action filters to `Controller`s.
     * Added `Controller#redirectToRoute` which works like
       `Controller#redirectTo`, but accepts route name instead of URL.
     * Added flexible `Controller#adjustTitle` method which sets window title.
+    * Added `Backbone.Events` mix-in.
     * Removed `Controller#title` and `Controller#historyURL`.
     * Removed ability of redirecting to standalone controllers and action names
       in `Controller#redirectTo`.
