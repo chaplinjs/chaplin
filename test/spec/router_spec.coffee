@@ -158,6 +158,13 @@ define [
       url = named.reverse two: 1151
       expect(url).to.be false
 
+    it 'should reject reversals when there are noe enough params', ->
+      named = new Route 'params/:one/:two',
+        controller: 'null', action: 'null', name: 'about'
+      expect(-> named.reverse [1]).to.throwError()
+      expect(-> named.reverse one: 1).to.throwError()
+      expect(-> named.reverse two: 2).to.throwError()
+
     it 'should allow for reversing a route by its name', ->
       router.match 'index', 'null#null', name: 'home'
       router.match 'phoneparams/:one', 'null#null', name: 'phonebook'

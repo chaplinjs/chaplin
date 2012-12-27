@@ -37,14 +37,11 @@ define [
       url = @pattern
       # TODO: add support for regular expressions in reverser.
       return false if _.isRegExp url
+      notEnoughParams = 'Route#reverse: Not enough parameters to reverse'
 
-      # From a params hash; we need to be able to return
-      # the actual URL this route represents
-      # Iterate and attempt to replace params in pattern
       if _.isArray params
         # Ensure we have enough parameters
-        if params.length < @paramNames.length
-          throw new Error 'Route: Not enough parameters to reverse'
+        throw new Error notEnoughParams if params.length < @paramNames.length
 
         index = 0
         url = url.replace /[:*][^\/\?]+/g, (match) ->
@@ -52,12 +49,12 @@ define [
           index += 1
           result
       else
+        # From a params hash; we need to be able to return
+        # the actual URL this route represents
+        # Iterate and attempt to replace params in pattern
         for name in @paramNames
           value = params[name]
-
-          if value is undefined
-            throw new Error 'Route: Not enough parameters to reverse'
-
+          throw new Error notEnoughParams if value is undefined
           url = url.replace ///[:*]#{name}///g, value
 
       # If the url tests out good; return the url; else, false
