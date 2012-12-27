@@ -42,14 +42,24 @@ define [
       # the actual URL this route represents
       # Iterate and attempt to replace params in pattern
       if _.isArray params
+        # Ensure we have enough parameters
+        if params.length < @paramNames.length
+          throw new Error 'Route: Not enough parameters to reverse'
+
         index = 0
         url = url.replace /[:*][^\/\?]+/g, (match) ->
           result = params[index]
           index += 1
           result
       else
-        for name, value of params
+        for name in @paramNames
+          value = params[name]
+
+          if value is undefined
+            throw new Error 'Route: Not enough parameters to reverse'
+
           url = url.replace ///[:*]#{name}///g, value
+
       # If the url tests out good; return the url; else, false
       if @test url then url else false
 
