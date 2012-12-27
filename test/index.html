@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8">
     <title>Chaplin Test Runner</title>
-    <link rel="stylesheet" href="lib/mocha-1.7.4.css">
-    <script src="lib/mocha-1.7.4.js"></script>
-    <script src="lib/expect-0.2.0.js"></script>
+    <link rel="stylesheet" href="components/mocha/mocha.css">
+    <script src="components/mocha/mocha.js"></script>
+    <script src="components/expect/expect.js"></script>
     <script src="lib/sinon-1.5.2.js"></script>
     <script src="lib/sinon-expect-0.2.0.js"></script>
-    <script src="lib/require-2.1.1.js"></script>
+    <script src="components/require/require.js"></script>
     <script>
       requirejs.config({
         baseUrl: 'js/',
         paths: {
-          jquery: '../lib/jquery-1.8.3',
-          underscore: '../lib/underscore-1.4.2',
-          backbone: '../lib/backbone-0.9.9'
+          jquery: '../components/jquery/jquery',
+          underscore: '../components/underscore/underscore',
+          backbone: '../components/backbone/backbone'
         },
         shim: {
           backbone: {
@@ -27,7 +27,7 @@
           }
         },
         // For easier development, disable browser caching
-        urlArgs: 'bust=' +  (new Date()).getTime()
+        urlArgs: 'bust=' + (new Date()).getTime()
       });
       mocha.setup({ ui: 'bdd', ignoreLeaks: true });
       window.expect = SinonExpect.enhance(expect, sinon, 'was');
