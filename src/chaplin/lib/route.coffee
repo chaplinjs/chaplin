@@ -23,10 +23,7 @@ define [
 
     # Create a route for a URL pattern and a controller action
     # e.g. new Route '/users/:id', 'users#show'
-    constructor: (pattern, @controller, @action, @options = {}) ->
-      # Save the raw pattern
-      @pattern = pattern
-
+    constructor: (@pattern, @controller, @action, @options = {}) ->
       # Store the name on the route if given
       @name = @options.name if @options.name?
 
@@ -40,19 +37,31 @@ define [
       url = @pattern
       # TODO: add support for regular expressions in reverser.
       return false if _.isRegExp url
+      notEnoughParams = 'Route#reverse: Not enough parameters to reverse'
 
-      # From a params hash; we need to be able to return
-      # the actual URL this route represents
-      # Iterate and attempt to replace params in pattern
-      for name, value of params
-        url = url.replace ///:#{name}///g, value
-        url = url.replace ///\*#{name}///g, value
+      if _.isArray params
+        # Ensure we have enough parameters
+        throw new Error notEnoughParams if params.length < @paramNames.length
+
+        index = 0
+        url = url.replace /[:*][^\/\?]+/g, (match) ->
+          result = params[index]
+          index += 1
+          result
+      else
+        # From a params hash; we need to be able to return
+        # the actual URL this route represents
+        # Iterate and attempt to replace params in pattern
+        for name in @paramNames
+          value = params[name]
+          throw new Error notEnoughParams if value is undefined
+          url = url.replace ///[:*]#{name}///g, value
 
       # If the url tests out good; return the url; else, false
       if @test url then url else false
 
     createRegExp: ->
-      if _.isRegExp(@pattern)
+      if _.isRegExp @pattern
         @regExp = @pattern
         @paramNames = @options.names if _.isArray @options.names
         return

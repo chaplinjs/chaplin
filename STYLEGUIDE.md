@@ -77,7 +77,7 @@ Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowi
 - Use the `of` operator to check for properties that might be inherited
 - Use `_.has` for `hasOwnProperty` checks
 
-# Chaining function calls
+## Chaining function calls
 
 Use this style of chaining function calls:
 
@@ -88,12 +88,12 @@ foo(4).bar 8
 
 Avoid the “function grouping style”.
 
-# Spec style
+## Spec style
 
 Use `expect(…).to.be …` instead of `.to.equal` or `.to.eql`.
 
 Use the bridge between Expect.js and Sinon.js for nice spy/stub/mock expectations, see [sinon-expect.js](https://github.com/lightsofapollo/sinon-expect/blob/master/lib/sinon-expect.js).
 
-# Git style
+## Git style
 
 Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob/master/README.md#git).
