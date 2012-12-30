@@ -21,7 +21,7 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router randomOption: 'foo'
+      router = new Router randomOption: 'foo', pushState: false
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->

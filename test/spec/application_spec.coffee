@@ -45,7 +45,7 @@ define [
 
       expect(app.initRouter).to.be.a 'function'
       expect(app.initRouter.length).to.be 2
-      app.initRouter routes, root: '/'
+      app.initRouter routes, root: '/', pushState: false
 
       expect(app.router).to.be.a Router
       expect(routesCalled).to.be true
