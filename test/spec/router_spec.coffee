@@ -8,8 +8,6 @@ define [
   'use strict'
 
   describe 'Router and Route', ->
-    #console.debug 'Router spec'
-
     # Initialize shared variables
     router = passedRoute = passedParams = passedOptions = null
 
@@ -21,7 +19,7 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router randomOption: 'foo'
+      router = new Router randomOption: 'foo', pushState: false
       mediator.subscribe 'matchRoute', matchRoute
 
     afterEach ->
@@ -126,6 +124,13 @@ define [
 
       names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
       expect(names).to.eql ['home', 'phonebook', 'about']
+
+    it 'should allow for reversing a route instance to get its url', ->
+      named = new Route 'params',
+        controller: 'null', action: 'null', name: 'about'
+
+      url = named.reverse()
+      expect(url).to.equal 'params'
 
     it 'should allow for reversing a route instance with object to get its url', ->
       named = new Route 'params/:two',

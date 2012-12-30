@@ -10,8 +10,6 @@ define [
   'use strict'
 
   describe 'Controller', ->
-    #console.debug 'Controller spec'
-
     controller = null
 
     beforeEach ->

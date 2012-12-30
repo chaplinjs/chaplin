@@ -27,6 +27,9 @@ define [
       # Store the name on the route if given
       @name = @options.name if @options.name?
 
+      # Initialise list of :params which the route will use.
+      @paramNames = []
+
       # Check if the action is a reserved name
       if _(Controller.prototype).has @action
         throw new Error 'Route: You should not use existing controller properties as action names'
@@ -77,7 +80,6 @@ define [
       @regExp = ///^#{pattern}(?=\?|$)///
 
     addParamName: (match, paramName) =>
-      @paramNames ?= []
       # Test if parameter name is reserved
       if _(reservedParams).include(paramName)
         throw new Error "Route#addParamName: parameter name #{paramName} is reserved"
@@ -140,7 +142,7 @@ define [
 
       # Fill the hash using the paramNames and the matches
       for match, index in matches.slice(1)
-        paramName = if @paramNames then @paramNames[index] else index
+        paramName = if @paramNames.length then @paramNames[index] else index
         params[paramName] = match
 
       params

@@ -10,8 +10,6 @@ define [
   'use strict'
 
   describe 'CollectionView', ->
-    #console.debug 'CollectionView spec'
-
     # Initialize shared variables
     collection = collectionView = null
 
