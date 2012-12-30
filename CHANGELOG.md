@@ -1,4 +1,4 @@
-# Chaplin 0.6.0 (unreleased)
+# Chaplin 0.6.0 (December 30, 2012)
 * Updated required Backbone version to 0.9.9+.
 * Improved `Chaplin.Collection`:
     * Removed `Collection#update` since this function is now provided
