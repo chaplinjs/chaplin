@@ -1,11 +1,13 @@
 define [
-  'jquery'
   'underscore'
   'backbone'
   'chaplin/lib/utils'
   'chaplin/lib/event_broker'
-], ($, _, Backbone, utils, EventBroker) ->
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
+
+  # Shortcut to access the DOM manipulation library
+  $ = Backbone.$
 
   class Layout # This class does not extend View
 
