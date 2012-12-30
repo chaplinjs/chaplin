@@ -1,9 +1,12 @@
 define [
-  'jquery'
+  'backbone'
   'underscore'
   'chaplin/views/view'
-], ($, _, View) ->
+], (Backbone, _, View) ->
   'use strict'
+
+  # Shortcut to access the DOM manipulation library
+  $ = Backbone.$
 
   # General class for rendering Collections.
   # Derive this class and declare at least `itemView` or override
