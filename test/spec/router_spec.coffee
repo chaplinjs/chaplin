@@ -125,6 +125,13 @@ define [
       names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
       expect(names).to.eql ['home', 'phonebook', 'about']
 
+    it 'should allow for reversing a route instance to get its url', ->
+      named = new Route 'params',
+        controller: 'null', action: 'null', name: 'about'
+
+      url = named.reverse()
+      expect(url).to.equal 'params'
+
     it 'should allow for reversing a route instance with object to get its url', ->
       named = new Route 'params/:two',
         controller: 'null', action: 'null', name: 'about'
