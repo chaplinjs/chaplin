@@ -5,8 +5,6 @@ define [
   'use strict'
 
   describe 'Delayer', ->
-    #console.debug 'Delayer spec'
-
     # Set up an object which mixes in Delayer
     delayer = {}
     _(delayer).extend Delayer

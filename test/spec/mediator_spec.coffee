@@ -7,8 +7,6 @@ define [
   'use strict'
 
   describe 'mediator', ->
-    #console.debug 'mediator spec'
-
     it 'should be a simple object', ->
       expect(mediator).to.be.an 'object'
 

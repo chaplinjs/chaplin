@@ -10,8 +10,6 @@ define [
   'use strict'
 
   describe 'Application', ->
-    #console.debug 'Application spec'
-
     app = new Application()
 
     it 'should be a simple object', ->

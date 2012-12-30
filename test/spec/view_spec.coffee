@@ -12,8 +12,6 @@ define [
   'use strict'
 
   describe 'View', ->
-    #console.debug 'View spec'
-
     renderCalled = false
     view = model = collection = null
     template = '<p>content</p>'

@@ -8,8 +8,6 @@ define [
   'use strict'
 
   describe 'Router and Route', ->
-    #console.debug 'Router spec'
-
     # Initialize shared variables
     router = passedRoute = passedParams = passedOptions = null
 
