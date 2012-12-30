@@ -97,7 +97,7 @@ define [
 
       controller.redirectToRoute 'params'
 
-      callback = routerRoute.firstCall.args[2]
+      callback = routerRoute.firstCall.args[3]
       expect(callback).to.be.a 'function'
       expect(-> callback(true)).not.to.throwError()
       expect(-> callback(false)).to.throwError()
