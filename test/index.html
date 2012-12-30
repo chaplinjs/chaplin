@@ -10,6 +10,14 @@
     <script src="lib/sinon-expect-0.2.0.js"></script>
     <script src="components/require/require.js"></script>
     <script>
+      // Fix timers stubbing in IE8-9.
+      var oldTimers = {setInterval: setInterval, clearInterval: clearInterval};
+      eval('function setInterval() {}; function clearInterval() {}');
+      var oldIE = (/MSIE [89]/.test(navigator.userAgent));
+      var timers = oldIE ? sinon.clock : oldTimers;
+      window.setInterval = timers.setInterval;
+      window.clearInterval = timers.clearInterval;
+
       requirejs.config({
         baseUrl: 'js/',
         paths: {
@@ -29,7 +37,7 @@
         // For easier development, disable browser caching
         urlArgs: 'bust=' + (new Date()).getTime()
       });
-      mocha.setup({ ui: 'bdd', ignoreLeaks: true });
+      mocha.setup({ui: 'bdd', ignoreLeaks: true});
       window.expect = SinonExpect.enhance(expect, sinon, 'was');
       window.onload = function() {
         var specs = [
