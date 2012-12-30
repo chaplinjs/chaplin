@@ -51,7 +51,32 @@ define [
       expect(controller.redirected).to.be true
       expect(routerRoute).was.calledWith url, options
 
-      mediator.unsubscribe '!router:route', routerRoute
+    it 'should redirect to a named route', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:routeByName', routerRoute
+
+      name = 'params'
+      params = one: '21'
+      controller.redirectToRoute name, params
+
+      expect(controller.redirected).to.be true
+      expect(routerRoute).was.calledWith name, params
+
+      mediator.unsubscribe '!router:routeByName', routerRoute
+
+    it 'should redirect to a named route with options', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:routeByName', routerRoute
+
+      name = 'params'
+      params = one: '21'
+      options = replace: true
+      controller.redirectToRoute name, params, options
+
+      expect(controller.redirected).to.be true
+      expect(routerRoute).was.calledWith name, params, options
+
+      mediator.unsubscribe '!router:routeByName', routerRoute
 
     it 'should throw an error when redirected to a non-route', ->
       routerRoute = sinon.spy()
@@ -65,6 +90,19 @@ define [
       expect(-> callback(false)).to.throwError()
 
       mediator.unsubscribe '!router:route', routerRoute
+
+    it 'should throw an error when redirected to an unknown named route', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:routeByName', routerRoute
+
+      controller.redirectToRoute 'params'
+
+      callback = routerRoute.firstCall.args[2]
+      expect(callback).to.be.a 'function'
+      expect(-> callback(true)).not.to.throwError()
+      expect(-> callback(false)).to.throwError()
+
+      mediator.unsubscribe '!router:routeByName', routerRoute
 
     it 'should dispose itself correctly', ->
       expect(controller.dispose).to.be.a 'function'
