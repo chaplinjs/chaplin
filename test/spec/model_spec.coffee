@@ -8,8 +8,6 @@ define [
   'use strict'
 
   describe 'Model', ->
-    #console.debug 'Model spec'
-
     model = null
 
     beforeEach ->

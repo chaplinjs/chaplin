@@ -1,15 +1,13 @@
 define [
-  'underscore'
   'backbone'
+  'underscore'
   'chaplin/mediator'
   'chaplin/lib/router'
   'chaplin/lib/route'
-], (_, Backbone, mediator, Router, Route) ->
+], (Backbone, _, mediator, Router, Route) ->
   'use strict'
 
   describe 'Router and Route', ->
-    #console.debug 'Router spec'
-
     # Initialize shared variables
     router = passedRoute = passedParams = passedOptions = null
 
@@ -21,7 +19,7 @@ define [
 
     # Create a fresh Router with a fresh Backbone.History before each test
     beforeEach ->
-      router = new Router randomOption: 'foo'
+      router = new Router randomOption: 'foo', pushState: false
       Backbone.on 'matchRoute', matchRoute
 
     afterEach ->
@@ -127,25 +125,50 @@ define [
       names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
       expect(names).to.eql ['home', 'phonebook', 'about']
 
-    it 'should allow for rerversing a route instance to get its url', ->
+    it 'should allow for reversing a route instance to get its url', ->
+      named = new Route 'params',
+        controller: 'null', action: 'null', name: 'about'
+
+      url = named.reverse()
+      expect(url).to.equal 'params'
+
+    it 'should allow for reversing a route instance with object to get its url', ->
       named = new Route 'params/:two',
         controller: 'null', action: 'null', name: 'about'
       url = named.reverse two: 1151
-      expect(url).to.eql 'params/1151'
+      expect(url).to.equal 'params/1151'
 
-      named = new Route 'params/:two/:one/*other',
+      named = new Route 'params/:two/:one/*other/:another',
         controller: 'null', action: 'null', name: 'about'
       url = named.reverse
         two: 32
         one: 156
         other: 'someone/out/there'
+        another: 'meh'
+      expect(url).to.equal 'params/32/156/someone/out/there/meh'
 
-      expect(url).to.eql 'params/32/156/someone/out/there'
+    it 'should allow for reversing a route instance with array to get its url', ->
+      named = new Route 'params/:two',
+        controller: 'null', action: 'null', name: 'about'
+      url = named.reverse [1151]
+      expect(url).to.equal 'params/1151'
+
+      named = new Route 'params/:two/:one/*other/:another',
+        controller: 'null', action: 'null', name: 'about'
+      url = named.reverse [32, 156, 'someone/out/there', 'meh']
+      expect(url).to.equal 'params/32/156/someone/out/there/meh'
 
     it 'should reject reversals for regular expressions', ->
       named = new Route /params/, 'null#null', name: 'about'
       url = named.reverse two: 1151
       expect(url).to.be false
+
+    it 'should reject reversals when there are not enough params', ->
+      named = new Route 'params/:one/:two',
+        controller: 'null', action: 'null', name: 'about'
+      expect(-> named.reverse [1]).to.throwError()
+      expect(-> named.reverse one: 1).to.throwError()
+      expect(-> named.reverse two: 2).to.throwError()
 
     it 'should allow for reversing a route by its name', ->
       router.match 'index', 'null#null', name: 'home'

@@ -8,8 +8,6 @@ define [
   'use strict'
 
   describe 'Collection', ->
-    #console.debug 'Collection spec'
-
     collection = null
 
     beforeEach ->

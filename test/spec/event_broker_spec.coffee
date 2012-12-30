@@ -7,8 +7,6 @@ define [
   'use strict'
 
   describe 'EventBroker', ->
-    #console.debug 'EventBroker spec'
-
     # Create a simple object which mixes in the EventBroker
     eventBroker = _.extend {}, EventBroker
 

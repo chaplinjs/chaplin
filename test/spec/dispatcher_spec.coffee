@@ -8,8 +8,6 @@ define [
 ], (_, $, Backbone, mediator, Controller, Dispatcher) ->
   'use strict'
   describe 'Dispatcher', ->
-    #console.debug 'Dispatcher spec'
-
     # Initialize shared variables
     dispatcher = params = routeOptions = null
 

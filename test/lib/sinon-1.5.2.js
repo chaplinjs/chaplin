@@ -1,5 +1,5 @@
 /**
- * Sinon.JS 1.5.0, 2012/10/19
+ * Sinon.JS 1.5.2, 2012/11/27
  *
  * @author Christian Johansen (christian@cjohansen.no)
  * @author Contributors: https://github.com/cjohansen/Sinon.JS/blob/master/AUTHORS
@@ -494,7 +494,7 @@ var sinon = (function (buster) {
     }
 
     function isFunction(obj) {
-        return !!(obj && obj.constructor && obj.call && obj.apply);
+        return typeof obj === "function" || !!(obj && obj.constructor && obj.call && obj.apply);
     }
 
     function mirrorProperties(target, source) {
@@ -592,6 +592,10 @@ var sinon = (function (buster) {
 
             if (a === b) {
                 return true;
+            }
+
+            if ((a === null && b !== null) || (a !== null && b === null)) {
+                return false;
             }
 
             var aString = Object.prototype.toString.call(a);
@@ -737,7 +741,10 @@ var sinon = (function (buster) {
 
         typeOf: function (value) {
             if (value === null) {
-              return "null";
+                return "null";
+            }
+            else if (value === undefined) {
+                return "undefined";
             }
             var string = Object.prototype.toString.call(value);
             return string.substring(8, string.length - 1).toLowerCase();
@@ -1129,13 +1136,17 @@ var sinon = (function (buster) {
         var vars = "a,b,c,d,e,f,g,h,i,j,k,l";
         function createProxy(func) {
             // Retain the function length:
+            var p;
             if (func.length) {
-                return eval("(function proxy(" + vars.substring(0, func.length * 2 - 1) +
-                  ") { return proxy.invoke(func, this, slice.call(arguments)); })");
+                eval("p = (function proxy(" + vars.substring(0, func.length * 2 - 1) +
+                  ") { return p.invoke(func, this, slice.call(arguments)); });");
             }
-            return function proxy() {
-                return proxy.invoke(func, this, slice.call(arguments));
-            };
+            else {
+                p = function proxy() {
+                    return p.invoke(func, this, slice.call(arguments));
+                };
+            }
+            return p;
         }
 
         var uuid = 0;
@@ -2212,24 +2223,24 @@ var sinon = (function (buster) {
 
                 if (!args) {
                     sinon.expectation.fail(this.method + " received no arguments, expected " +
-                        this.expectedArguments.join());
+                        sinon.format(this.expectedArguments));
                 }
 
                 if (args.length < this.expectedArguments.length) {
-                    sinon.expectation.fail(this.method + " received too few arguments (" + args.join() +
-                        "), expected " + this.expectedArguments.join());
+                    sinon.expectation.fail(this.method + " received too few arguments (" + sinon.format(args) +
+                        "), expected " + sinon.format(this.expectedArguments));
                 }
 
                 if (this.expectsExactArgCount &&
                     args.length != this.expectedArguments.length) {
-                    sinon.expectation.fail(this.method + " received too many arguments (" + args.join() +
-                        "), expected " + this.expectedArguments.join());
+                    sinon.expectation.fail(this.method + " received too many arguments (" + sinon.format(args) +
+                        "), expected " + sinon.format(this.expectedArguments));
                 }
 
                 for (var i = 0, l = this.expectedArguments.length; i < l; i += 1) {
                     if (!sinon.deepEqual(this.expectedArguments[i], args[i])) {
-                        sinon.expectation.fail(this.method + " received wrong arguments (" + args.join() +
-                            "), expected " + this.expectedArguments.join());
+                        sinon.expectation.fail(this.method + " received wrong arguments " + sinon.format(args) +
+                            ", expected " + sinon.format(this.expectedArguments));
                     }
                 }
             },
