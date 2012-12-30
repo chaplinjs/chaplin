@@ -40,6 +40,19 @@ define [
 
       mediator.unsubscribe '!router:route', routerRoute
 
+    it 'should redirect to a URL with routing options', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:route', routerRoute
+
+      url = 'redirect-target/123'
+      options = replace: true
+      controller.redirectTo url, options
+
+      expect(controller.redirected).to.be true
+      expect(routerRoute).was.calledWith url, options
+
+      mediator.unsubscribe '!router:route', routerRoute
+
     it 'should throw an error when redirected to a non-route', ->
       routerRoute = sinon.spy()
       mediator.subscribe '!router:route', routerRoute
