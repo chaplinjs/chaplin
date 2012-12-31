@@ -36,16 +36,18 @@ define [
     # -----------
 
     # Redirect to URL.
-    redirectTo: (url, params, options) ->
+    redirectTo: (url, options = {}) ->
       @redirected = true
-      @publishEvent '!router:route', url, {}, (routed) ->
+      @publishEvent '!router:route', url, options, (routed) ->
         unless routed
           throw new Error 'Controller#redirectTo: no route matched'
 
     # Redirect to named route.
     redirectToRoute: (name, params, options) ->
       @redirected = true
-      @publishEvent '!router:routeByName', name, params, options
+      @publishEvent '!router:routeByName', name, params, options, (routed) ->
+        unless routed
+          throw new Error 'Controller#redirectToRoute: no route matched'
 
     # Disposal
     # --------
