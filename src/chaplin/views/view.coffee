@@ -1,13 +1,15 @@
 define [
-  'jquery'
   'underscore'
   'backbone'
   'chaplin/lib/utils'
   'chaplin/lib/event_broker'
   'chaplin/models/model'
   'chaplin/models/collection'
-], ($, _, Backbone, utils, EventBroker, Model, Collection) ->
+], (_, Backbone, utils, EventBroker, Model, Collection) ->
   'use strict'
+
+  # Shortcut to access the DOM manipulation library
+  $ = Backbone.$
 
   class View extends Backbone.View
 
