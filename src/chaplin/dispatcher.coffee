@@ -14,10 +14,10 @@ define [
     # Mixin an EventBroker
     _(@prototype).extend EventBroker
 
-    # The previous controller name
+    # The previous controller name, or full AMD path
     previousControllerName: null
 
-    # The current controller, its name, main view and parameters
+    # The current controller, its name (or path), main view and parameters
     currentControllerName: null
     currentController: null
     currentAction: null
@@ -34,6 +34,7 @@ define [
       @settings = _(options).defaults
         controllerPath: 'controllers/'
         controllerSuffix: '_controller'
+        controllerFullPath: false
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
@@ -90,8 +91,12 @@ define [
     # The default implementation uses require() from a AMD module loader
     # like RequireJS to fetch the constructor.
     loadController: (controllerName, handler) ->
-      controllerFileName = utils.underscorize(controllerName) + @settings.controllerSuffix
-      path = @settings.controllerPath + controllerFileName
+      if @settings.controllerFullPath
+        path = controllerName
+      else
+        controllerFileName = utils.underscorize(controllerName) + @settings.controllerSuffix
+        path = @settings.controllerPath + controllerFileName
+
       if define?.amd
         require [path], handler
       else
@@ -147,6 +152,7 @@ define [
         previousControllerName: @previousControllerName
         controller: @currentController
         controllerName: @currentControllerName
+        controllerFullPath: @settings.controllerFullPath
         params: @currentParams
 
     # Before actions with chained execution
