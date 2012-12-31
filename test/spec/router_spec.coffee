@@ -429,6 +429,25 @@ define [
       expect(passedRoute.action).to.be 'dial'
       expect(passedOptions.path).to.be 'phoneparams/145'
 
+    # Listening to the !router:routeByName event (with options passed)
+    # ----------------------------------------------------------------
+    it 'should listen to the !router:routeByName event with options passed', ->
+      router.match 'index', 'null#null', name: 'home'
+      router.match 'phoneparams/:one', 'phonebook#dial', name: 'phonebook'
+
+      routeSpy = sinon.spy router, 'route'
+      callbackSpy = sinon.spy()
+
+      options = replace: true
+      mediator.publish '!router:routeByName', 'phonebook', one: 145,
+        options, callbackSpy
+      expect(passedRoute.controller).to.be 'phonebook'
+      expect(passedRoute.action).to.be 'dial'
+      expect(passedOptions).to.eql _.extend(options, {path: 'phoneparams/145'})
+
+      expect(routeSpy).was.calledWith 'phoneparams/145', options
+      expect(callbackSpy).was.calledWith true
+
     # Listening to the !router:changeURL event
     # ----------------------------------------
 

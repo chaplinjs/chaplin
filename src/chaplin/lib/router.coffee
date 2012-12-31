@@ -115,16 +115,16 @@ define [
       routed = @route path, options
       callback? routed
 
-    routeByNameHandler: (name, params, callback) ->
-      # Support old signature: Assume only path and callback were passed
-      # if we only got two arguments
-      if arguments.length is 2 and typeof params is 'function'
-        callback = params
-        params = {}
+    routeByNameHandler: (name, params, options, callback) ->
+      # Support old signature: Assume options wasn't passed
+      # if we only got three arguments
+      if arguments.length is 3 and typeof options is 'function'
+        callback = options
+        options = {}
 
       path = @reverse name, params
       return unless path
-      @routeHandler path, callback
+      @routeHandler path, options, callback
 
     # Change the current URL, add a history entry.
     changeURL: (url, options = {}) ->
