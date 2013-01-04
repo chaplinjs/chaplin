@@ -8,7 +8,7 @@ For models and views, there are several wrapper methods for event handler regist
 
 In models and views, there is a shortcut for subscribing to global events:
 
-```
+```coffeescript
 @subscribeEvent 'login', @doSomething
 ```
 
@@ -20,7 +20,7 @@ The `subscribeEvent` method has a counterpart `unsubscribeEvent`. These mehods a
 
 In views, the standard `@model.bind` way to register a handler for a model event should not be used. Use the memory-saving wrapper `modelBind` instead:
 
-```
+```coffeescript
 @modelBind 'add', @doSomething
 ```
 
@@ -28,7 +28,7 @@ In a model, it’s fine to use `bind` directly as long as the handler is a metho
 
 A view also provides `modelUnbind` and `modelUnbindAll` for deregistering. The latter is called automatically on view disposal.
 
-```
+```coffeescript
 @modelUnbind 'add', @doSomething
 ```
 
@@ -38,7 +38,7 @@ Most views handle user input by listening to DOM events. Backbone provides the `
 
 Chaplin’s `View` class provides the `delegate` method as a shortcut for `@$el.on`. It has the same signature as the jQuery 1.7 `on` method. Some examples:
 
-```
+```coffeescript
 @delegate 'click', '.like-button', @like
 @delegate 'click', '.close-button', @skip
 ```
@@ -47,7 +47,7 @@ Chaplin’s `View` class provides the `delegate` method as a shortcut for `@$el.
 
 In addition, `delegate` automatically binds the handler to the view object, so `@`/`this` points to the view. This means `delegate` creates a wrapper function which acts as the handler. As a consequence, it’s currently not possible to unbind a specific handler. Please use `@$el.off` directly to unbind all handlers for an event type for a selector:
 
-```
+```coffeescript
 @$el.off 'click', '.like-button'
 @$el.off 'click', '.close'
 ```

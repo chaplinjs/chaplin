@@ -24,6 +24,8 @@ define [
         pushState: true
 
       @subscribeEvent '!router:route', @routeHandler
+      @subscribeEvent '!router:routeByName', @routeByNameHandler
+      @subscribeEvent '!router:reverse', @reverseHandler
       @subscribeEvent '!router:changeURL', @changeURLHandler
 
       @createHistory()
@@ -42,10 +44,24 @@ define [
       Backbone.history.stop() if Backbone.History.started
 
     # Connect an address with a controller action
-    # Directly create a route on the Backbone.History instance
+    # Creates a route on the Backbone.History instance
     match: (pattern, target, options = {}) =>
+      if arguments.length is 2 and typeof target is 'object'
+        # Handles cases like `match 'url', controller: 'c', action: 'a'`.
+        options = target
+        {controller, action} = options
+        unless controller and action
+          throw new Error 'Router#match must receive either target or options.controller & options.action'
+      else
+        # Handles `match 'url', 'c#a'`.
+        {controller, action} = options
+        if controller or action
+          throw new Error 'Router#match cannot use both target and options.controller / action'
+        # Separate target into controller and controller action.
+        [controller, action] = target.split('#')
+
       # Create the route
-      route = new Route pattern, target, options
+      route = new Route pattern, controller, action, options
       # Register the route at the Backbone.History instance.
       # Don’t use Backbone.history.route here because it calls
       # handlers.unshift, inserting the handler at the top of the list.
@@ -58,29 +74,72 @@ define [
     # This looks quite like Backbone.History::loadUrl but it
     # accepts an absolute URL with a leading slash (e.g. /foo)
     # and passes a changeURL param to the callback function.
-    route: (path) =>
+    route: (path, options = {}) =>
+      _(options).defaults
+        changeURL: true
+
       # Remove leading hash or slash
       path = path.replace /^(\/#|\/)/, ''
       for handler in Backbone.history.handlers
         if handler.route.test(path)
-          handler.callback path, changeURL: true
+          handler.callback path, options
           return true
       false
 
+    reverseHandler: (name, params, callback) ->
+      callback @reverse name, params
+
+    # Find the URL for a given name using the registered routes and
+    # provided parameters.
+    reverse: (name, params) ->
+      # First filter the route handlers to those that are of the same
+      # name
+      for handler in Backbone.history.handlers when handler.route.name is name
+        # Attempt to reverse using the provided parameter hash
+        url = handler.route.reverse params
+
+        # Return the url if we got a valid one; else we continue on
+        return url if url isnt false
+
+      # We didn't get anything
+      false
+
     # Handler for the global !router:route event
-    routeHandler: (path, callback) ->
-      routed = @route path
+    routeHandler: (path, options, callback) ->
+      # Support old signature: Assume only path and callback were passed
+      # if we only got two arguments
+      if arguments.length is 2 and typeof options is 'function'
+        callback = options
+        options = {}
+
+      routed = @route path, options
       callback? routed
 
+    routeByNameHandler: (name, params, options, callback) ->
+      # Support old signature: Assume options wasn't passed
+      # if we only got three arguments
+      if arguments.length is 3 and typeof options is 'function'
+        callback = options
+        options = {}
+
+      path = @reverse name, params
+      return unless path
+      @routeHandler path, options, callback
+
     # Change the current URL, add a history entry.
-    # Do not trigger any routes (which is Backbone’s
-    # default behavior, but added for clarity)
-    changeURL: (url) ->
-      Backbone.history.navigate url, trigger: false
+    changeURL: (url, options = {}) ->
+      navigateOptions =
+        # Do not trigger or replace per default
+        trigger: options.trigger is true
+        replace: options.replace is true
+
+      # Navigate to the passed URL and forward options to Backbone
+      Backbone.history.navigate url, navigateOptions
 
     # Handler for the global !router:changeURL event
-    changeURLHandler: (url) ->
-      @changeURL url
+    # Accepts both the url and an options hash that is forwarded to Backbone
+    changeURLHandler: (url, options) ->
+      @changeURL url, options
 
     # Disposal
     # --------

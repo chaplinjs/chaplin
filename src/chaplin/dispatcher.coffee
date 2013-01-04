@@ -37,18 +37,15 @@ define [
 
       # Listen to global events
       @subscribeEvent 'matchRoute', @matchRoute
-      @subscribeEvent '!startupController', @startupController
 
     # Controller management
     # Starting and disposing controllers
     # ----------------------------------
 
     # Handler for the global matchRoute event
-    matchRoute: (route, params) ->
-      @startupController route.controller, route.action, params
+    matchRoute: (route, params, options) ->
+      @startupController route.controller, route.action, params, options
 
-    # Handler for the global !startupController event
-    #
     # The standard flow is:
     #
     #   1. Test if it’s a new controller/action with new params
@@ -57,23 +54,24 @@ define [
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
-    startupController: (controllerName, action = 'index', params = {}) ->
+    startupController: (controllerName, action = 'index', params = {},
+                        options = {}) ->
       # Set default flags
 
       # Whether to update the URL after controller startup
       # Default to true unless explicitly set to false
-      if params.changeURL isnt false
-        params.changeURL = true
+      if options.changeURL isnt false
+        options.changeURL = true
 
       # Whether to force the controller startup even
       # when current and new controllers and params match
       # Default to false unless explicitly set to true
-      if params.forceStartup isnt true
-        params.forceStartup = false
+      if options.forceStartup isnt true
+        options.forceStartup = false
 
       # Check if the desired controller is already active
       isSameController =
-        not params.forceStartup and
+        not options.forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
@@ -83,7 +81,9 @@ define [
       return if isSameController
 
       # Fetch the new controller, then go on
-      handler = _(@controllerLoaded).bind(this, controllerName, action, params)
+      handler = _(@controllerLoaded).bind(
+        this, controllerName, action, params, options)
+
       @loadController controllerName, handler
 
     # Load the constructor for a given controller name.
@@ -97,12 +97,27 @@ define [
       else
         handler require path
 
-    # Handler for the controller lazy-loading
-    controllerLoaded: (controllerName, action, params, ControllerConstructor) ->
-
+    controllerLoaded: (controllerName, action, params, options, ControllerConstructor) ->
       # Shortcuts for the old controller
       currentControllerName = @currentControllerName or null
-      currentController     = @currentController     or null
+      # Initialize the new controller
+      # Passing the params and the old controller name
+      controller = new ControllerConstructor params, currentControllerName
+
+      method = if controller.beforeAction
+        'executeBeforeActionChain'
+      else
+        'executeAction'
+
+      this[method](controller, controllerName, action, params, options)
+
+    # Handler for the controller lazy-loading
+    executeAction: (controller, controllerName, action, params, options) ->
+      # Shortcuts for the old controller
+      currentControllerName   = @currentControllerName or null
+      currentController       = @currentController     or null
+
+      @previousControllerName = currentControllerName
 
       # Dispose the current controller
       if currentController
@@ -110,10 +125,6 @@ define [
         @publishEvent 'beforeControllerDispose', currentController
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
-
-      # Initialize the new controller
-      # Passing the params and the old controller name
-      controller = new ControllerConstructor params, currentControllerName
 
       # Call the specific controller action
       # Passing the params and the old controller name
@@ -123,13 +134,13 @@ define [
       return if controller.redirected
 
       # Save the new controller
-      @previousControllerName = currentControllerName
       @currentControllerName = controllerName
       @currentController = controller
       @currentAction = action
       @currentParams = params
 
-      @adjustURL controller, params
+      # Adjust the URL; pass in both params and options
+      @adjustURL controller, params, options
 
       # We're done! Spread the word!
       @publishEvent 'startupController',
@@ -138,27 +149,63 @@ define [
         controllerName: @currentControllerName
         params: @currentParams
 
+    # Before actions with chained execution
+    executeBeforeActionChain: (controller, controllerName, action, params) ->
+      beforeActions  = []
+      args = arguments
+
+      # Before actions can be extended by subclasses, so we need to check the
+      # whole prototype chain for matching before actions. Before actions in
+      # parent classes are executed before actions in child classes.
+
+      prototypeChain = utils.getPrototypeChain controller
+      for prototype in prototypeChain.reverse()
+        acts = prototype.beforeAction
+        # Iterate over the before actions in search for a matching
+        # name with the arguments’ action name
+        for name, beforeAction of acts when beforeAction not in beforeActions
+          # Do not add this object more than once
+          if name is action or RegExp("^#{name}$").test(action)
+            if typeof beforeAction is 'string'
+              beforeAction = controller[beforeAction]
+            if typeof beforeAction isnt 'function'
+              throw new Error 'Controller#executeBeforeActionChain: ' +
+                "#{beforeAction} is not a valid beforeAction method for #{name}."
+            # Save the before action
+            beforeActions.push beforeAction
+
+      # Save returned value and also immediately return in case the value is false
+      next = (method, previous = null) =>
+        # Stop if the action triggered a redirect
+        if controller.redirected
+          # Adjust the URL; pass in params
+          return @adjustURL controller, params, {}
+
+        # End of chain, finally start the action
+        unless method
+          return @executeAction args...
+
+        previous = method.call controller, params, previous
+
+        # Detect a CommonJS promise  in order to use pipelining below,
+        # otherwise execute next method directly
+        if previous and typeof previous.then is 'function'
+          previous.then (data) ->
+            next beforeActions.shift(), data
+        else
+          next beforeActions.shift(), previous
+
+      # Start beforeAction execution chain
+      next beforeActions.shift()
+
     # Change the URL to the new controller using the router
-    adjustURL: (controller, params) ->
-      if params.path or params.path is ''
+    adjustURL: (controller, params, options) ->
+      if typeof options.path is 'string'
         # Just use the matched path
-        url = params.path
-
-      else if typeof controller.historyURL is 'function'
-        # Use controller.historyURL to get the URL
-        # If the property is a function, call it
-        url = controller.historyURL params
-
-      else if typeof controller.historyURL is 'string'
-        # If the property is a string, read it
-        url = controller.historyURL
-
-      else
-        throw new Error 'Dispatcher#adjustURL: controller for ' +
-          "#{@currentControllerName} does not provide a historyURL"
+        url = options.path
 
       # Tell the router to actually change the current URL
-      @publishEvent '!router:changeURL', url if params.changeURL
+      @publishEvent '!router:changeURL', url, options if options.changeURL
 
       # Save the URL
       @url = url

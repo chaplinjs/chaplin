@@ -23,40 +23,54 @@ define [
 
     # Private helper function for serializing attributes recursively,
     # creating objects which delegate to the original attributes
-    # when a property needs to be overwritten.
+    # in order to protect them from changes.
     serializeAttributes = (model, attributes, modelStack) ->
-      # Create a delegator on initial call
-      unless modelStack
-        delegator = utils.beget attributes
-        modelStack = [model]
-      else
-        # Add model to stack
+      # Create a delegator object
+      delegator = utils.beget attributes
+
+      # Add model to stack
+      if modelStack
         modelStack.push model
-      # Map model/collection to their attributes
+      else
+        modelStack = [model]
+
+      # Map model/collection to their attributes. Create a property
+      # on the delegator that shadows the original attribute.
       for key, value of attributes
+
+        # Handle models
         if value instanceof Backbone.Model
-          # Don’t change the original attribute, create a property
-          # on the delegator which shadows the original attribute
-          delegator ?= utils.beget attributes
-          delegator[key] = if value is model or value in modelStack
-            # Nullify circular references
-            null
-          else
-            # Serialize recursively
-            serializeAttributes(
-              value, value.getAttributes(), modelStack
-            )
+          delegator[key] = serializeModelAttributes value, model, modelStack
+
+        # Handle collections
         else if value instanceof Backbone.Collection
-          delegator ?= utils.beget attributes
-          delegator[key] = for item in value.models
-            serializeAttributes(
-              item, item.getAttributes(), modelStack
+          serializedModels = []
+          for otherModel in value.models
+            serializedModels.push(
+              serializeModelAttributes(otherModel, model, modelStack)
             )
+          delegator[key] = serializedModels
 
       # Remove model from stack
       modelStack.pop()
-      # Return the delegator if it was created, otherwise the plain attributes
-      delegator or attributes
+
+      # Return the delegator
+      delegator
+
+    # Serialize the attributes of a given model
+    # in the context of a given tree
+    serializeModelAttributes = (model, currentModel, modelStack) ->
+      # Nullify circular references
+      if model is currentModel or model in modelStack
+        return null
+      # Serialize recursively
+      attributes = if typeof model.getAttributes is 'function'
+        # Chaplin models
+        model.getAttributes()
+      else
+        # Backbone models
+        model.attributes
+      serializeAttributes model, attributes, modelStack
 
     # Return an object which delegates to the attributes
     # (i.e. an object which has the attributes as prototype)

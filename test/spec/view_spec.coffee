@@ -12,8 +12,6 @@ define [
   'use strict'
 
   describe 'View', ->
-    #console.debug 'View spec'
-
     renderCalled = false
     view = model = collection = null
     template = '<p>content</p>'
@@ -63,6 +61,13 @@ define [
       container: '#testbed'
       containerMethod: 'before'
 
+    it 'should thrown an error if initialize super not called', ->
+      class NoInitView extends TestView
+        initialize: ->
+      view = new NoInitView
+      expect(view.dispose).to.throwError()
+      view.disposed = true
+
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
         expect(view[name]).to.be EventBroker[name]
@@ -86,7 +91,7 @@ define [
 
     it 'should attach itself to an element automatically', ->
       view = new TestView container: testbed
-      expect(renderCalled).to.not.be.ok()
+      expect(renderCalled).to.be false
       # Expect that the view is attached to the DOM *on first render*,
       # not immediately after initialize
       expect(view.el.parentNode).to.be null
@@ -169,83 +174,58 @@ define [
       expect(-> view.delegate('click', 123)).to.throwError()
       expect(-> view.delegate('click', (->), 123)).to.throwError()
 
-    it 'should bind handlers to model events', ->
-      expect(view.modelBind).to.be.a 'function'
-      expect(-> view.modelBind()).to.throwError()
-      expect(-> view.modelBind(1, 2)).to.throwError()
-      expect(-> view.modelBind(1, ->)).to.throwError()
-      expect(-> view.modelBind('change:foo', ->)).to.throwError()
+    it 'should correct inheritance of events object', (done) ->
+      delay = (callback) ->
+        window.setTimeout callback, 40
+      class A extends TestView
+        autoRender: yes
+        getTemplateFunction: -> -> '
+        <div id="a"></div>
+        <div id="b"></div>
+        <div id="c"></div>
+        <div id="d"></div>'
+        events:
+          'click #a': 'a1Handler'
+        a1Handler: sinon.spy()
 
-      setModel()
-      spy = sinon.spy()
-      view.modelBind 'change:foo', spy
-      model.set foo: 'bar'
-      expect(spy).was.called()
+        click: (index) ->
+          @$("##{index}").click()
 
-      view.modelBind 'change:foo', spy
-      model.set foo: 'qux'
-      expect(spy.callCount).to.be 2
+      class B extends A
+        events:
+          'click #a': 'a2Handler'
+          'click #b': 'bHandler'
+        a2Handler: sinon.spy()
+        bHandler: sinon.spy()
 
-    it 'should bind handlers to collection events', ->
-      setCollection()
-      spy = sinon.spy()
-      view.modelBind 'add', spy
-      collection.push new Model()
-      expect(spy).was.called()
+      class C extends B
+        events:
+          'click #a': 'a3Handler'
+          'click #c': 'cHandler'
+        a3Handler: sinon.spy()
+        cHandler: sinon.spy()
 
-    it 'should unbind handlers from model events', ->
-      expect(view.modelUnbind).to.be.a 'function'
+      class D extends C
+        events:
+          'click #a': 'a4Handler'
+          'click #d': 'dHandler'
+        a4Handler: sinon.spy()
+        dHandler: sinon.spy()
 
-      setModel()
-      spy = sinon.spy()
-      view.modelBind 'change:foo', spy
-      view.modelUnbind 'change:foo', spy
-      model.set foo: 'bar'
-      expect(spy).was.notCalled()
+      bcd = ['b', 'c', 'd']
+      d = new D
+      d.click('a')
 
-    it 'should unbind handlers from collection events', ->
-      setCollection()
-      spy = sinon.spy()
-      view.modelBind 'add', spy
-      view.modelUnbind 'add', spy
-      collection.push new Model()
-      expect(spy).was.notCalled()
-
-    it 'should force the context of model event handlers', ->
-      setModel()
-
-      context = null
-      view.modelBind 'foo', ->
-        context = this
-      model.trigger 'foo'
-      expect(context).to.be view
-
-    bindAndTrigger = (model, view) ->
-      fooSpy = sinon.spy()
-      view.modelBind 'foo', fooSpy
-      barSpy = sinon.spy()
-      view.modelBind 'bar', barSpy
-      allSpy = sinon.spy()
-      view.modelBind 'all', allSpy
-      model.trigger 'foo bar'
-      expect(fooSpy.callCount).to.be 1
-      expect(barSpy.callCount).to.be 1
-      expect(allSpy.callCount).to.be 2
-      view.modelUnbindAll()
-      view.trigger 'foo bar'
-      expect(fooSpy.callCount).to.be 1
-      expect(barSpy.callCount).to.be 1
-      expect(allSpy.callCount).to.be 2
-
-    it 'should unbind all model handlers', ->
-      expect(view.modelUnbindAll).to.be.a 'function'
-      setModel()
-      bindAndTrigger model, view
-
-    it 'should unbind all collection handlers', ->
-      setCollection()
-      bindAndTrigger collection, view
-      collection.dispose()
+      delay ->
+        for index in _.range(1, 5)
+          expect(d["a#{index}Handler"]).was.calledOnce()
+        for index in bcd
+          expect(d["#{index}Handler"]).was.notCalled()
+          d.click(index)
+        delay ->
+          for index in bcd
+            expect(d["#{index}Handler"]).was.calledOnce()
+          done()
 
     it 'should pass model attributes to elements', ->
       expect(view.pass).to.be.a 'function'
@@ -362,7 +342,7 @@ define [
       setModel()
       model.initDeferred()
       templateData = view.getTemplateData()
-      expect(templateData.resolved).to.not.be.ok()
+      expect(templateData.resolved).to.be false
       model.resolve()
       templateData = view.getTemplateData()
       expect(templateData.resolved).to.be true
@@ -371,7 +351,7 @@ define [
       setModel()
       _.extend model, SyncMachine
       templateData = view.getTemplateData()
-      expect(templateData.synced).to.not.be.ok()
+      expect(templateData.synced).to.be false
       model.beginSync()
       model.finishSync()
       templateData = view.getTemplateData()
@@ -445,13 +425,13 @@ define [
 
     it 'should unsubscribe from model events', ->
       setModel()
-      modelBindSpy = sinon.spy()
-      view.modelBind 'foo', modelBindSpy
+      spy = sinon.spy()
+      view.listenTo view.model, 'foo', spy
 
       view.dispose()
 
       model.trigger 'foo'
-      expect(modelBindSpy).was.notCalled()
+      expect(spy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->
       viewBindSpy = sinon.spy()
@@ -472,7 +452,7 @@ define [
         '_callbacks'
       ]
       for prop in properties
-        expect(_(view).has prop).to.not.be.ok()
+        expect(view).not.to.have.own.property prop
 
     it 'should dispose itself when the model or collection is disposed', ->
       model = new Model()
@@ -492,7 +472,7 @@ define [
       view.dispose()
 
       renderResult = view.render()
-      expect(renderResult).to.not.be.ok()
+      expect(renderResult).to.be false
       expect(view.afterRender.callCount).to.be 1
 
     it 'should not render when disposed given render was overridden', ->
@@ -507,7 +487,7 @@ define [
       view.dispose()
 
       renderResult = view.render()
-      expect(renderResult).to.not.be.ok()
+      expect(renderResult).to.be false
       # Render was called but super call should not do anything
       expect(renderCalled).to.be true
       expect($(testbed).children().length).to.be 0

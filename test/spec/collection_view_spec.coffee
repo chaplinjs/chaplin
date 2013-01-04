@@ -10,8 +10,6 @@ define [
   'use strict'
 
   describe 'CollectionView', ->
-    #console.debug 'CollectionView spec'
-
     # Initialize shared variables
     collection = collectionView = null
 
@@ -207,6 +205,20 @@ define [
       newView1 = collectionView.subview "itemView:#{model1.cid}"
       expect(newView1).to.be view1
 
+    it 'should reorder views on sort', ->
+      collection.reset addThree()
+
+      sortAndMatch = (comparator) ->
+        collection.comparator = comparator
+        collection.sort()
+        viewsMatchCollection()
+
+      # Explicity force a default sort to ensure two different sort orderings
+      sortAndMatch (a, b) -> a.id > b.id
+
+      # Reverse the sort order and test it
+      sortAndMatch (a, b) -> a.id < b.id
+
     it 'should insert views in the right order', ->
       m0 = new Model id: 0
       m1 = new Model id: 1
@@ -294,6 +306,10 @@ define [
 
       renderSpy.restore()
       renderAllItemsSpy.restore()
+
+    it 'should not return item data in getTemplateData', ->
+      data = collectionView.getTemplateData()
+      expect(data).to.eql {length: collection.length}
 
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
@@ -529,6 +545,12 @@ define [
         # Filled + synced = not visible
         addOne()
         expect($loading.css('display')).to.be 'none'
+
+      it 'should pass sync status to template data', ->
+        data = collectionView.getTemplateData()
+        expect(data).to.eql {
+          length: collection.length, synced: collection.isSynced()
+        }
 
       it 'should also dispose when templated', ->
         collectionView.dispose()

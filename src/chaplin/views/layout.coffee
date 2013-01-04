@@ -1,11 +1,13 @@
 define [
-  'jquery'
   'underscore'
   'backbone'
   'chaplin/lib/utils'
   'chaplin/lib/event_broker'
-], ($, _, Backbone, utils, EventBroker) ->
+], (_, Backbone, utils, EventBroker) ->
   'use strict'
+
+  # Shortcut to access the DOM manipulation library
+  $ = Backbone.$
 
   class Layout # This class does not extend View
 
@@ -45,7 +47,7 @@ define [
 
       @subscribeEvent 'beforeControllerDispose', @hideOldView
       @subscribeEvent 'startupController', @showNewView
-      @subscribeEvent 'startupController', @adjustTitle
+      @subscribeEvent '!adjustTitle', @adjustTitle
 
       # Set the app link routing
       if @settings.routeLinks
@@ -84,10 +86,8 @@ define [
     # Handler for the global startupController event
     # Change the document title to match the new controller
     # Get the title from the title property of the current controller
-    adjustTitle: (context) ->
-      title = @title or ''
-      subtitle = context.controller.title or ''
-      title = @settings.titleTemplate {title, subtitle}
+    adjustTitle: (subtitle = '') ->
+      title = @settings.titleTemplate {@title, subtitle}
 
       # Internet Explorer < 9 workaround
       setTimeout (-> document.title = title), 50
@@ -155,7 +155,7 @@ define [
         path = href
 
       # Pass to the router, try to route the path internally
-      @publishEvent '!router:route', path, (routed) ->
+      @publishEvent '!router:route', path, {}, (routed) ->
         # Prevent default handling if the URL could be routed
         if routed
           event.preventDefault()

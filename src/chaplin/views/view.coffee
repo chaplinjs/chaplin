@@ -1,13 +1,15 @@
 define [
-  'jquery'
   'underscore'
   'backbone'
   'chaplin/lib/utils'
   'chaplin/lib/event_broker'
   'chaplin/models/model'
   'chaplin/models/collection'
-], ($, _, Backbone, utils, EventBroker, Model, Collection) ->
+], (_, Backbone, utils, EventBroker, Model, Collection) ->
   'use strict'
+
+  # Shortcut to access the DOM manipulation library
+  $ = Backbone.$
 
   class View extends Backbone.View
 
@@ -43,62 +45,39 @@ define [
     subviews: null
     subviewsByName: null
 
-    # Method wrapping to enable `afterRender` and `afterInitialize`
-    # -------------------------------------------------------------
-
-    # Wrap a method in order to call the corresponding
-    # `after-` method automatically
-    wrapMethod: (name) ->
-      instance = this
-      # Enclose the original function
-      func = instance[name]
-      # Set a flag
-      instance["#{name}IsWrapped"] = true
-      # Create the wrapper method
-      instance[name] = ->
-        # Stop if the view was already disposed
-        return false if @disposed
-        # Call the original method
-        func.apply instance, arguments
-        # Call the corresponding `after-` method
-        instance["after#{utils.upcase(name)}"] arguments...
-        # Return the view
-        instance
-
-    constructor: ->
+    constructor: (options) ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
-      # Only wrap if there is an overring method, otherwise we
+      # Only wrap if there is an overriding method, otherwise we
       # can call the `after-` method directly
       unless @initialize is View::initialize
-        @wrapMethod 'initialize'
+        utils.wrapMethod this, 'initialize'
 
       # Wrap `render` so `afterRender` is called afterwards
-      unless @render is View::render
-        @wrapMethod 'render'
-      else
-        # Otherwise just bind the `render` method
+      if @render is View::render
         @render = _(@render).bind this
+      else
+        utils.wrapMethod this, 'render'
+
+      # Copy some options to instance properties
+      if options
+        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
 
       # Call Backbone’s constructor
       super
 
+    # Inheriting classes must call `super` in their `initialize` method to
+    # properly inflate subviews and set up options
     initialize: (options) ->
       # No super call here, Backbone’s `initialize` is a no-op
-
-      # Copy some options to instance properties
-      if options
-        for prop in ['autoRender', 'container', 'containerMethod']
-          if options[prop]?
-            @[prop] = options[prop]
 
       # Initialize subviews
       @subviews = []
       @subviewsByName = {}
 
-      # Listen for disposal of the model
+      # Listen for disposal of the model or collection.
       # If the model is disposed, automatically dispose the associated view
-      if @model or @collection
-        @modelBind 'dispose', @dispose
+      @listenTo @model, 'dispose', @dispose if @model
+      @listenTo @collection, 'dispose', @dispose if @collection
 
       # Call `afterInitialize` if `initialize` was not wrapped
       unless @initializeIsWrapped
@@ -159,60 +138,44 @@ define [
       # Return the bound handler
       handler
 
-    # Remove all handlers registered with @delegate
+    # Copy of original backbone method without `undelegateEvents` call.
+    _delegateEvents: (events) ->
+      # Call Backbone.delegateEvents on all superclasses events.
+      return unless events or (events = getValue(this, 'events'))
+      for key of events
+        method = events[key]
+        method = this[method] unless _.isFunction(method)
+        unless method
+          throw new Error("Method '#{events[key]}' does not exist")
+        match = key.match(/^(\S+)\s*(.*)$/)
+        eventName = match[1]
+        selector = match[2]
+        method = _.bind(method, this)
+        eventName += ".delegateEvents#{@cid}"
+        if selector is ''
+          @$el.bind eventName, method
+        else
+          @$el.delegate selector, eventName, method
 
+    # Override Backbones method to combine the events
+    # of the parent view if it exists.
+    delegateEvents: ->
+      @undelegateEvents()
+
+      # Get 'events' props from every prototype,
+      # filter-out falsy values and duplicates.
+      _(utils.getPrototypeChain this)
+        .chain()
+        .pluck('events')
+        .compact()
+        .uniq()
+        .each (events) =>
+          @_delegateEvents events
+      return
+
+    # Remove all handlers registered with @delegate.
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
-
-    # Model binding
-    # The following implementation resembles EventBroker
-    # --------------------------------------------------
-
-    # Bind to a model event
-    modelBind: (type, handler) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'View#modelBind: ' +
-          'type must be a string'
-      if typeof handler isnt 'function'
-        throw new TypeError 'View#modelBind: ' +
-          'handler argument must be function'
-
-      # Get model/collection reference
-      modelOrCollection = @model or @collection
-      unless modelOrCollection
-        throw new TypeError 'View#modelBind: no model or collection set'
-
-      # Ensure that a handler isn’t registered twice
-      modelOrCollection.off type, handler, this
-
-      # Register model handler, force context to the view
-      modelOrCollection.on type, handler, this
-
-    # Unbind from a model event
-
-    modelUnbind: (type, handler) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'View#modelUnbind: ' +
-          'type argument must be a string'
-      if typeof handler isnt 'function'
-        throw new TypeError 'View#modelUnbind: ' +
-          'handler argument must be a function'
-
-      # Get model/collection reference
-      modelOrCollection = @model or @collection
-      return unless modelOrCollection
-
-      # Remove model handler
-      modelOrCollection.off type, handler
-
-    # Unbind all recorded model event handlers
-    modelUnbindAll: ->
-      # Get model/collection reference
-      modelOrCollection = @model or @collection
-      return unless modelOrCollection
-
-      # Remove all handlers with a context of this view
-      modelOrCollection.off null, null, this
 
     # Setup a simple one-way model-view binding
     # Pass changed attribute values to specific elements in the view
@@ -220,7 +183,7 @@ define [
     # text content is set to the model attribute value.
     # Example: @pass 'attribute', '.selector'
     pass: (attribute, selector) ->
-      @modelBind "change:#{attribute}", (model, value) =>
+      @listenTo @model, "change:#{attribute}", (model, value) =>
         $el = @$(selector)
         if $el.is('input, textarea, select, button')
           $el.val value
@@ -276,27 +239,25 @@ define [
     # Get the model/collection data for the templating function
     # Uses optimized Chaplin serialization if available.
     getTemplateData: ->
-      if @model
-        templateData = if @model instanceof Model
+      templateData = if @model
+        if @model instanceof Model
           @model.serialize()
         else
           utils.beget @model.attributes
       else if @collection
-        # Collection: Serialize all models
-        if @collection instanceof Collection
-          items = @collection.serialize()
+        # Collection: Serialize all models.
+        items = if @collection instanceof Collection
+          @collection.serialize()
         else
-          items = []
-          for model in @collection.models
-            items.push utils.beget(model.attributes)
-        templateData = {items}
+          @collection.map (model) ->
+            utils.beget model.attributes
+        {items}
       else
-        # Empty object
-        templateData = {}
+        # Empty object.
+        {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
-
         # If the model/collection is a Deferred, add a `resolved` flag,
         # but only if it’s not present yet
         if typeof modelOrCollection.state is 'function' and
@@ -372,6 +333,9 @@ define [
     dispose: ->
       return if @disposed
 
+      throw new Error('Your `initialize` method must include a super call to
+        Chaplin `initialize`') unless @subviews?
+
       # Dispose subviews
       if @subviews
         subview.dispose() for subview in @subviews
@@ -379,8 +343,8 @@ define [
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
-      # Unbind all model handlers
-      @modelUnbindAll()
+      # Unbind all referenced handlers
+      @stopListening()
 
       # Remove all event handlers on this module
       @off()

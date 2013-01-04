@@ -125,7 +125,7 @@ Handler for the globalized `!router:changeURL` event.  Calls `@changeURL`.
 Stops the Backbone.history instance and removes it from the Router object.  Also unsubscribes any events attached to the Router.  Attempts to freeze the Router to prevent any changes to the Router. See [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
 
 ## Usage
-The Chaplin Router is a dependancy of [Chaplin.Application](./application.html) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
+The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
 
 ```coffeescript
 define [

@@ -3,7 +3,7 @@ As all modules are encapsulated and independent from each other, we need a way t
 
 To inform other modules that something happened, a module doesn’t send messages directly (i.e. calling methods of specific objects). Instead, it publishes a message to the mediator without having to know who is listening. Other application modules might subscribe to these messages and react upon them.
 
-Note: If you want to give Pub/Sub functionality to a Class, also look at the [Subscriber](subscriber.md).
+Note: If you want to give Pub/Sub functionality to a Class, also look at the [Subscriber](./chaplin.subscriber.md).
 
 
 ## Methods of `Chaplin.mediator`
@@ -34,10 +34,10 @@ Any module that need to publish or subscrib to messages to/from other modules mu
 define ['chaplin', 'otherdependency'], (Chaplin, OtherDependency) ->
 ```
 
-For example, if you have a session_controller that login the user, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
+For example, if you have a session_controller that logs the user in, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
 
 ```coffeescript
-mediator.publish 'login', user
+Chaplin.mediator.publish 'login', user
 ```
 
 Any module that is interested to know about the user login will subscribe to it by doing:

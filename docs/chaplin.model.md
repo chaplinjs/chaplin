@@ -16,7 +16,7 @@ Creates a new [jQuery Deferred object](http://api.jquery.com/category/deferred-o
 
 ### initSyncMachine
 
-Creates a new [Chaplin.SyncMachine](./syncmachine.html) instance.
+Creates a new [Chaplin.SyncMachine](./chaplin.sync_machine.md) instance.
 
 
 <a name="getAttributes"></a>

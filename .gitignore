@@ -1,10 +1,14 @@
-build/amd
-build/commonjs
-test/js/*.js
-test/js/*/*.js
-test/js/*/*/*.js
-
-/build/chaplin-*
-
+# System-specific, temporary files
 .DS_Store
-node_modules/
+
+# Generated folders from build process
+/build/amd
+/build/commonjs
+
+# Generated files used during testing
+test/js
+!test/js/.gitkeep
+
+# Local package dependencies
+/node_modules
+/test/components

@@ -1,9 +1,12 @@
 define [
-  'jquery'
+  'backbone'
   'underscore'
   'chaplin/views/view'
-], ($, _, View) ->
+], (Backbone, _, View) ->
   'use strict'
+
+  # Shortcut to access the DOM manipulation library
+  $ = Backbone.$
 
   # General class for rendering Collections.
   # Derive this class and declare at least `itemView` or override
@@ -81,6 +84,16 @@ define [
     # Track a list of the visible views
     visibleItems: null
 
+    # Constructor
+    # -----------
+
+    constructor: (options) ->
+      # Apply options to view instance
+      if (options)
+        _(this).extend _.pick options, ['renderItems', 'itemView']
+
+      super
+
     # Initialization
     # --------------
 
@@ -93,19 +106,31 @@ define [
       # Start observing the collection
       @addCollectionListeners()
 
-      # Apply options
-      @renderItems = options.renderItems if options.renderItems?
-      @itemView = options.itemView       if options.itemView?
-      @filter options.filterer           if options.filterer?
+      # Apply a filter if one provided
+      @filter options.filterer if options.filterer?
 
     # Binding of collection listeners
     addCollectionListeners: ->
-      @modelBind 'add',    @itemAdded
-      @modelBind 'remove', @itemRemoved
-      @modelBind 'reset',  @itemsResetted
+      @listenTo @collection, 'add',    @itemAdded
+      @listenTo @collection, 'remove', @itemRemoved
+      @listenTo @collection, 'reset sort',  @itemsResetted
 
     # Rendering
     # ---------
+
+    # Override View#getTemplateData, don’t serialize collection items here.
+    getTemplateData: ->
+      templateData = {length: @collection.length}
+
+      # If the collection is a Deferred, add a `resolved` flag
+      if typeof @collection.state is 'function'
+        templateData.resolved = @collection.state() is 'resolved'
+
+      # If the collection is a SyncMachine, add a `synced` flag
+      if typeof @collection.isSynced is 'function'
+        templateData.synced = @collection.isSynced()
+
+      templateData
 
     # In contrast to normal views, a template is not mandatory
     # for CollectionViews. Provide an empty `getTemplateFunction`.
@@ -152,7 +177,7 @@ define [
       @on 'visibilityChange', @showHideFallback
 
       # Listen for sync events on the collection
-      @modelBind 'syncStateChange', @showHideFallback
+      @listenTo @collection, 'syncStateChange', @showHideFallback
 
       # Set visibility initially
       @showHideFallback()
@@ -182,7 +207,7 @@ define [
       @$loading = @$(@loadingSelector)
 
       # Listen for sync events on the collection
-      @modelBind 'syncStateChange', @showHideLoadingIndicator
+      @listenTo @collection, 'syncStateChange', @showHideLoadingIndicator
 
       # Set visibility initially
       @showHideLoadingIndicator()

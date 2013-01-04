@@ -9,8 +9,6 @@ define [
   'use strict'
 
   describe 'Collection', ->
-    #console.debug 'Collection spec'
-
     collection = null
 
     beforeEach ->
@@ -63,45 +61,6 @@ define [
 
       expect(addSpy).was.notCalled()
       expect(resetSpy).was.called()
-
-    it 'should update models', ->
-      expect(collection.update).to.be.a 'function'
-
-      collection.reset ({id: i} for i in [0..5])
-
-      addSpy = sinon.spy()
-      collection.on 'add', addSpy
-      removeSpy = sinon.spy()
-      collection.on 'remove', removeSpy
-      resetSpy = sinon.spy()
-      collection.on 'reset', resetSpy
-
-      newOrder = [1, 3, 5, 7, 9, 11]
-      collection.update ({id: i} for i in newOrder)
-      expectOrder newOrder
-
-      expect(addSpy.callCount).to.be 3
-      expect(removeSpy.callCount).to.be 3
-      expect(resetSpy).was.notCalled()
-
-    it 'should update models deeply', ->
-      collection.reset ({id: i, old1: true, old2: false} for i in [0..5])
-      newOrder = [1, 3, 5, 7, 9, 11]
-      models = ({id: i, old2: true, new: true} for i in newOrder)
-
-      collection.update models, deep: true
-      expectOrder newOrder
-
-      for id in [1, 3, 5]
-        model = collection.get id
-        expect(model.get('old1')).to.be true
-        expect(model.get('old2')).to.be true
-        expect(model.get('new')).to.be true
-      for id in [7, 9, 11]
-        model = collection.get id
-        expect(model.get('old1')).to.be undefined
-        expect(model.get('old2')).to.be true
-        expect(model.get('new')).to.be true
 
     it 'should serialize the models', ->
       model1 = new Model id: 1, foo: 'foo'
@@ -175,4 +134,4 @@ define [
       collection.dispose()
 
       for prop in ['model', 'models', '_byId', '_byCid']
-        expect(_(collection).has prop).to.not.be.ok()
+        expect(collection).not.to.have.own.property prop

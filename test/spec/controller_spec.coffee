@@ -1,16 +1,15 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
   'chaplin/lib/event_broker'
   'chaplin/controllers/controller'
   'chaplin/models/model'
   'chaplin/views/view'
-], (_, mediator, EventBroker, Controller, Model, View) ->
+], (_, Backbone, mediator, EventBroker, Controller, Model, View) ->
   'use strict'
 
   describe 'Controller', ->
-    #console.debug 'Controller spec'
-
     controller = null
 
     beforeEach ->
@@ -19,7 +18,11 @@ define [
     afterEach ->
       controller.dispose()
 
-    it 'should mixin a EventBroker', ->
+    it 'should mixin a Backbone.Events', ->
+      for own name, value of Backbone.Events
+        expect(controller[name]).to.be Backbone.Events[name]
+
+    it 'should mixin an EventBroker', ->
       for own name, value of EventBroker
         expect(controller[name]).to.be EventBroker[name]
 
@@ -33,22 +36,73 @@ define [
       controller.redirectTo url
 
       expect(controller.redirected).to.be true
-      expect(routerRoute).was.called()
-      expect(routerRoute.lastCall.args[0]).to.be url
+      expect(routerRoute).was.calledWith url
 
-    it 'should redirect to a controller action', ->
-      startupController = sinon.spy()
-      mediator.subscribe '!startupController', startupController
+      mediator.unsubscribe '!router:route', routerRoute
 
-      controllerName = 'redirect-controller'
-      action = 'redirect-action'
-      params = redirectParams: true
-      controller.redirectTo controllerName, action, params
+    it 'should redirect to a URL with routing options', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:route', routerRoute
+
+      url = 'redirect-target/123'
+      options = replace: true
+      controller.redirectTo url, options
 
       expect(controller.redirected).to.be true
-      expect(startupController).was.calledWith(
-        controllerName, action, params
-      )
+      expect(routerRoute).was.calledWith url, options
+
+    it 'should redirect to a named route', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:routeByName', routerRoute
+
+      name = 'params'
+      params = one: '21'
+      controller.redirectToRoute name, params
+
+      expect(controller.redirected).to.be true
+      expect(routerRoute).was.calledWith name, params
+
+      mediator.unsubscribe '!router:routeByName', routerRoute
+
+    it 'should redirect to a named route with options', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:routeByName', routerRoute
+
+      name = 'params'
+      params = one: '21'
+      options = replace: true
+      controller.redirectToRoute name, params, options
+
+      expect(controller.redirected).to.be true
+      expect(routerRoute).was.calledWith name, params, options
+
+      mediator.unsubscribe '!router:routeByName', routerRoute
+
+    it 'should throw an error when redirected to a non-route', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:route', routerRoute
+
+      controller.redirectTo 'redirect-target/123'
+
+      callback = routerRoute.firstCall.args[2]
+      expect(callback).to.be.a 'function'
+      expect(-> callback(true)).not.to.throwError()
+      expect(-> callback(false)).to.throwError()
+
+      mediator.unsubscribe '!router:route', routerRoute
+
+    it 'should throw an error when redirected to an unknown named route', ->
+      routerRoute = sinon.spy()
+      mediator.subscribe '!router:routeByName', routerRoute
+
+      controller.redirectToRoute 'params'
+
+      callback = routerRoute.firstCall.args[3]
+      expect(callback).to.be.a 'function'
+      expect(-> callback(true)).not.to.throwError()
+      expect(-> callback(false)).to.throwError()
+
+      mediator.unsubscribe '!router:routeByName', routerRoute
 
     it 'should dispose itself correctly', ->
       expect(controller.dispose).to.be.a 'function'
@@ -64,8 +118,8 @@ define [
 
       controller.dispose()
 
-      expect(_(controller).has 'model').to.not.be.ok()
-      expect(_(controller).has 'view').to.not.be.ok()
+      expect(controller).not.to.have.own.property 'model'
+      expect(controller).not.to.have.own.property 'view'
 
       expect(model.disposed).to.be true
       expect(view.disposed).to.be true

@@ -6,7 +6,6 @@
 
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-* [Upcoming Version: Chaplin as a Library](#upcoming-version-10-chaplin-as-a-library)
 * [Support and Help](#support-and-help)
 * [Commercial Support and Training](#commercial-support-and-training)
 * [Key Features](#key-features)
@@ -14,24 +13,16 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Dependencies](#dependencies)
 * [Building Chaplin](#building-chaplin)
 * [Running the Tests](#running-the-tests)
-* [Boilerplate and Examples](#boilerplate-and-examples)
+* [Boilerplate](#boilerplate)
+* [Examples](#examples)
 * [Documentation](#documentation)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
 * [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)
 
-## Upcoming Version 1.0: Chaplin as a Library
+## Documentation and Support
 
-While the initial release of Chaplin was merely an example application structure, Chaplin is being rewritten into a reusable and fully unit-tested library. The `master` branch already reflects these changes. We’re almost done, the code is already stable and successfully used in production. We don’t expect breaking API changes until version 1.0. There are only a few things to polish up before the 1.0 release:
-
-* [A comprehensive documentation and class reference](http://chaplinjs.github.com/)
-* Easier configurability of the default behavior
-* Flexibility, like use in non-CoffeeScript and non-AMD environments
-
-How about joining us? You might have a look at the [issue discussions](https://github.com/chaplinjs/chaplin/issues).
-
-## Support and Help
-
-* For general support and discussion, there’s a [Google Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js) and a [forum on ost.io](http://ost.io/chaplinjs/chaplin).
+* We’re working on a [comprehensive documentation and class reference](https://github.com/chaplinjs/chaplin/tree/master/docs) on Github.
+* For general support and discussion, there’s a [Google Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js), a [forum on ost.io](http://ost.io/chaplinjs/chaplin) and an IRC channel `#chaplinjs` on [Freenode](http://webchat.freenode.net?channels=chaplinjs).
 * If you’d like to report a bug or propose a feature, please use the [Github issues](https://github.com/chaplinjs/chaplin/issues). The issue tracker can also be used for general questions and task management.
 * [Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
 
@@ -125,6 +116,8 @@ To run the tests, the source files and the specs need to be compiled using the C
 [Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application project for Chaplin. You can use it freely as a skeleton for your chaplin project.
 
 If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerplate: [Chaplin Boilerplate-Plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
+
+[Boilerplate Rails Application with Backbone, Chaplin and Require.js](https://github.com/chaplinjs/chaplin-rails)
 
 ### Brunch with Chaplin
 [github.com/paulmillr/brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin)

@@ -6,7 +6,7 @@
 
 <a name="initialize"></a>
 
-### initialize( [options={}] )
+### initialize([options={}])
 
 * **options**:
     * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*
@@ -15,14 +15,14 @@
         * function: check the return value. Return `true` to continue routing, return `false` to stop routing. The path and the elements are passed as parameters. Example: `function(href, el) { return href == 'bla'; }`
         * false: never skip routing
     Default: '.noscript'*. That is, you can add a `noscript` class to internal links to prevent routing by the Chaplin application.
-    * **openExternalToBlank**: wheter or not links to external domains should open in a new window/tab. *Default: false*
+    * **openExternalToBlank**: whether or not links to external domains should open in a new window/tab. *Default: false*
     * **scrollTo**: the coordinates (x, y) you want to scroll to on view replacement. Set to *false* to deactivate it. *Default: [0, 0]*
     * **titleTemplate**: a function which returns the document title. Per default, it gets a object passed with the properties `title` and `subtitle`. *Default: _.template("<%= subtitle %> - <%= title %>")*
 
 
 <a name="delegateEvents"></a>
 
-### delegateEvents( [events] )
+### delegateEvents([events])
 
 A wrapper for `Backbone.View.delegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-delegateEvents) for more details.
 
@@ -31,35 +31,35 @@ A wrapper for `Backbone.View.delegateEvents`. See Backbone [documentation](http:
 
 ### undelegateEvents()
 
-A wrapper for `Backbone.View.delegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-undelegateEvents) for more details.
+A wrapper for `Backbone.View.undelegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-undelegateEvents) for more details.
 
 
 <a name="hideOldView"></a>
 
-### hideOldView( controller )
+### hideOldView(controller)
 
 Hide the active (old) view on the `beforeControllerDispose` event sent by the dispatcher on route change and scroll to the coordinates specified by the initialize `scrollTo` option.
 
 
 <a name="showNewView"></a>
 
-### showNewView( context )
+### showNewView(context)
 
 Show the new view on the `startupController` event sent by the dispatcher on route change.
 
 
 <a name="adjustTitle"></a>
 
-### adjustTitle( context )
+### adjustTitle(context)
 
 Adjust the title of the page base on the `titleTemplate` option. The `title` variable is the one defined at the application level and the `subtitle` the one at the controller level.
 
 
 <a name="openLink"></a>
 
-### openLink( event )
+### openLink(event)
 
-Open the `href` or `data-href` URL of a DOM element. When `openLink` is called it checks if the `href` is valid and runs the `skipRouting` functin if set by the user. If the href valid, it checks if it is an external link and depending on the `openExternalToBlank` option, opens it in a new window. Finally, if it is an internal link, it starts routing the URL.
+Open the `href` or `data-href` URL of a DOM element. When `openLink` is called it checks if the `href` is valid and runs the `skipRouting` function if set by the user. If the href valid, it checks if it is an external link and depending on the `openExternalToBlank` option, opens it in a new window. Finally, if it is an internal link, it starts routing the URL.
 
 ## Usage
 

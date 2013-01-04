@@ -1,6 +1,4 @@
-var SinonExpect;
-
-SinonExpect = {
+var SinonExpect = {
 
   /**
    * Sinon assertions supported.
@@ -115,7 +113,7 @@ SinonExpect.ExpectWrapper = function(){
  * Spy flag class.
  * Instance used when using expect(foo).spy.
  * where `spy` is an actual instance of SinonAssertions.
- * 
+ *
  *
  * @constructor
  * @class SinonAssertions
@@ -127,5 +125,6 @@ SinonExpect.SinonAssertions = function(obj){
 };
 
 
-// module.exports = exports = SinonExpect;
-
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = exports = SinonExpect;
+}
