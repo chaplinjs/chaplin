@@ -4,13 +4,14 @@
 
 ## Introduction
 
-Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
+Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library.
 
 * [Support and Help](#support-and-help)
 * [Commercial Support and Training](#commercial-support-and-training)
 * [Key Features](#key-features)
 * [Motivation](#motivation)
 * [Dependencies](#dependencies)
+* [Downloading Chaplin](#downloading-chaplin)
 * [Building Chaplin](#building-chaplin)
 * [Running the Tests](#running-the-tests)
 * [Boilerplate](#boilerplate)
@@ -37,8 +38,8 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * CoffeeScript class hierarchies as well as object composition
 * Module encapsulation and lazy-loading using AMD modules
 * Cross-module communication using the Mediator and Publish/Subscribe patterns
-* Controllers for managing individual UI views
-* Rails-style routes which map URLs to controller actions
+* Introducing Controllers that represent UI screens
+* Rails-style declarative routes that map URLs to controller actions
 * A route dispatcher and a top-level view manager
 * Extended model, view and collection classes to avoid repetition and enforce conventions
 * Strict memory management and object disposal
@@ -48,13 +49,11 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 
 ![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
-While developing several web applications using Backbone.js, we felt the need for conventions on how to structure such applications. While Backbone is fine at what it’s doing, it’s not a [framework](http://stackoverflow.com/questions/148747/what-is-the-difference-between-a-framework-and-a-library) for single-page applications. Yet it’s often used for this purpose.
+While developing several web applications using Backbone.js, we felt the need for conventions on how to structure such applications. Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “[Todo list example](http://todomvc.com/)” is not an application in the strict sense nor does it teach best practices how to structure Backbone code.
 
-Chaplin is mostly derived and generalized from the codebase of [moviepilot.com](http://moviepilot.com/), a real-world single-page application. Chaplin tries to draw the attention to top-level application architecture. “Application” means everything above simple routing, individual models, views and their binding.
+Backbone doesn’t intend to be an all-round [framework](http://stackoverflow.com/questions/148747/what-is-the-difference-between-a-framework-and-a-library) so it’s not appropriate to blame Backbone for these deliberate limitations. Nonetheless, most Backbone use cases need a sophisticated application architecture.
 
-Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “Todo list example” is not an application in the strict sense nor does it teach best practices how to structure Backbone code.
-
-To be fair, Backbone doesn’t intend to be an all-round framework so it wouldn’t be appropriate to blame Backbone for this deliberate limitations. Nonetheless, most Backbone use cases clearly need a sophisticated application architecture. This is where Chaplin enters the stage.
+This is where Chaplin enters the stage. Chaplin is derived from the codebase of [moviepilot.com](http://moviepilot.com/), a real-world single-page application. It draws attention to the top-level architecture: everything above simple routing, individual models, views and their binding.
 
 ## Dependencies
 
@@ -66,29 +65,34 @@ Chaplin depends on the following libraries:
 
 If you’ll be using AMD version, you will also need an AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
+## Downloading Chaplin
+
+[Download the latest release on Chaplinjs.org](http://chaplinjs.org/#downloads). See above on how to compile from source manually.
+
 ## Building Chaplin
 
-The individual source files of Chaplin are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. However, the Chaplin library file is a compiled JavaScript file which defines a single `chaplin` module.
+The Chaplin source files are originally written in the [CoffeeScript](http://coffeescript.org/) meta-language. However, the Chaplin library file is a compiled JavaScript file which defines the `chaplin` module.
 
-There’s a build script which compiles the CoffeeScripts and bundles them into one file. To run the script, follow these steps:
+Our build script compiles the CoffeeScripts and bundles them into one file. To run the script, follow these steps:
 
 1. Download and install [Node.js](http://nodejs.org/).
-2. Install the Node packages for CoffeeScript and UglifierJS globally. Open a shell (aka terminal aka command prompt) and run these commands:
+2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
+3. Install the Node packages for CoffeeScript and UglifierJS globally.
 
    ```
    sudo npm install -g coffee-script
    sudo npm install -g uglify-js
    ```
 
-   This assumes you’re working on a Unix machine (Linux, Mac OS, BSD…). On Windows, you can omit the `sudo` command at the beginning.
+   On Windows, you can omit the `sudo` command at the beginning.
 
-3. Install the Node package ShellJS normally. On the shell, run this command:
+4. Install the Node package ShellJS normally.
 
    ```
    npm install shelljs
    ```
 
-4. On the shell, start the build by typing:
+5. Start the build:
 
    ```
    cake build
@@ -110,7 +114,23 @@ These directories contain four files each:
 
 Chaplin aims to be fully unit-tested. At the moment most of the modules are covered by Mocha tests.
 
-To run the tests, the source files and the specs need to be compiled using the CoffeeScript compiler first. Run `cake test` in the repository’s root directory, then open the test runner (`test/index.html`) in a browser.
+How to run the tests:
+
+1. Download and install [Node.js](http://nodejs.org/).
+2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
+3. Install the Node package for CoffeeScript  globally.
+   ```
+   sudo npm install -g coffee-script
+   ```
+   On Windows, you can omit the `sudo` command at the beginning.
+4. Install the Node package for the Bower package manager.
+   ```
+   sudo npm install bower -g
+   ```
+5. Change into the Chaplin root directory.
+6. Run `bower install` to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
+7. Run `cake test` to compile the CoffeeScripts to JavaScripts.
+8. Open the test runner `test/index.html` in a browser.
 
 ## Boilerplate
 [Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application project for Chaplin. You can use it freely as a skeleton for your chaplin project.
