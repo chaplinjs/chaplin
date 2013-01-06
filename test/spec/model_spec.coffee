@@ -167,7 +167,7 @@ define [
 
       model.dispose()
 
-      mediator.publish 'foo'
+      Backbone.trigger 'foo'
       expect(pubSubSpy).was.notCalled()
 
     it 'should remove all event handlers from itself', ->

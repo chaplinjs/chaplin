@@ -1,11 +1,12 @@
 define [
-  'jquery'
   'underscore'
+  'jquery'
+  'backbone'
   'chaplin/mediator'
   'chaplin/controllers/controller'
   'chaplin/views/layout'
   'chaplin/views/view'
-], ($, _, mediator, Controller, Layout, View) ->
+], (_, $, Backbone, mediator, Controller, Layout, View) ->
   'use strict'
 
   describe 'Layout', ->
@@ -28,21 +29,21 @@ define [
 
     expectWasRouted = (linkAttributes) ->
       stub = sinon.stub().yields false
-      mediator.subscribe '!router:route', stub
+      Backbone.on '!router:route', stub
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
       [passedPath, passedOptions, passedCallback] = stub.firstCall.args
       expect(passedPath).to.be linkAttributes.href
       expect(passedCallback).to.be.a 'function'
-      mediator.unsubscribe '!router:route', stub
+      Backbone.off '!router:route', stub
       stub
 
     expectWasNotRouted = (linkAttributes) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
+      Backbone.on '!router:route', spy
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      Backbone.off '!router:route', spy
       spy
 
     beforeEach ->
@@ -67,19 +68,19 @@ define [
 
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
-      mediator.publish 'beforeControllerDispose', testController
+      Backbone.trigger 'beforeControllerDispose', testController
       expect(testController.view.$el.css('display')).to.be 'none'
 
     it 'should show the view of the active controller', ->
       testController.view.$el.css 'display', 'none'
-      mediator.publish 'startupController', startupControllerContext
+      Backbone.trigger 'startupController', startupControllerContext
       $el = testController.view.$el
       expect($el.css('display')).to.be 'block'
       expect($el.css('opacity')).to.be '1'
       expect($el.css('visibility')).to.be 'visible'
 
     it 'should set the document title', (done) ->
-      mediator.publish '!adjustTitle', testController.title
+      Backbone.trigger '!adjustTitle', testController.title
       setTimeout ->
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).to.be title
@@ -130,7 +131,7 @@ define [
 
     it 'should route clicks on elements with the “go-to” class', ->
       stub = sinon.stub().yields true
-      mediator.subscribe '!router:route', stub
+      Backbone.on '!router:route', stub
       path = '/an/internal/link'
       $span = $(document.createElement 'span')
         .addClass('go-to').attr('data-href', path)
@@ -140,7 +141,7 @@ define [
       expect(passedPath).to.be path
       expect(passedOptions).to.be.an 'object'
       expect(passedCallback).to.be.a 'function'
-      mediator.unsubscribe '!router:route', stub
+      Backbone.off '!router:route', stub
 
     # With custom routing options
     # ---------------------------
@@ -244,7 +245,7 @@ define [
       if Object.isFrozen
         expect(Object.isFrozen(layout)).to.be true
 
-      mediator.publish 'foo'
+      Backbone.trigger 'foo'
       $('#testbed').click()
 
       # It should unsubscribe from events

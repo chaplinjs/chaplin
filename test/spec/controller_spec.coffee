@@ -1,12 +1,11 @@
 define [
   'underscore'
   'backbone'
-  'chaplin/mediator'
   'chaplin/lib/event_broker'
   'chaplin/controllers/controller'
   'chaplin/models/model'
   'chaplin/views/view'
-], (_, Backbone, mediator, EventBroker, Controller, Model, View) ->
+], (_, Backbone, EventBroker, Controller, Model, View) ->
   'use strict'
 
   describe 'Controller', ->
@@ -30,7 +29,7 @@ define [
       expect(controller.redirectTo).to.be.a 'function'
 
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
+      Backbone.on '!router:route', routerRoute
 
       url = 'redirect-target/123'
       controller.redirectTo url
@@ -38,7 +37,7 @@ define [
       expect(controller.redirected).to.be true
       expect(routerRoute).was.calledWith url
 
-      mediator.unsubscribe '!router:route', routerRoute
+      Backbone.off '!router:route', routerRoute
 
     it 'should redirect to a URL with routing options', ->
       routerRoute = sinon.spy()
@@ -80,7 +79,7 @@ define [
 
     it 'should throw an error when redirected to a non-route', ->
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
+      Backbone.on '!router:route', routerRoute
 
       controller.redirectTo 'redirect-target/123'
 
@@ -89,7 +88,7 @@ define [
       expect(-> callback(true)).not.to.throwError()
       expect(-> callback(false)).to.throwError()
 
-      mediator.unsubscribe '!router:route', routerRoute
+      Backbone.off '!router:route', routerRoute
 
     it 'should throw an error when redirected to an unknown named route', ->
       routerRoute = sinon.spy()
@@ -130,7 +129,7 @@ define [
 
       controller.dispose()
 
-      mediator.publish 'foo'
+      Backbone.trigger 'foo'
       expect(pubSubSpy).was.notCalled()
 
     it 'should be extendable', ->
