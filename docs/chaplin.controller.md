@@ -3,8 +3,11 @@
 A controller is the place where a model/collection and an associated views are instantiated. It is also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers which govern special views like a header, a navigation sidebar or a footer.
 
 ## Methods of `Chaplin.Controller`
-
-Chaplin.Controller doesn't provide public methods. See the usage below:
+### adjustTitle(subtitle)
+### redirectTo(url, options)
+### redirectToRoute(name, params, options)
+### adjustTitle(options)
+### dispose()
 
 ## Usage
 
