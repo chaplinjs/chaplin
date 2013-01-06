@@ -1,61 +1,60 @@
-define [
-  'chaplin/mediator'
-], (mediator) ->
-  'use strict'
+'use strict'
 
-  # Add functionality to subscribe and publish to global
-  # Publish/Subscribe events so they can be removed afterwards
-  # when disposing the object.
-  #
-  # Mixin this object to add the subscriber capability to any object:
-  # _(object).extend EventBroker
-  # Or to a prototype of a class:
-  # _(@prototype).extend EventBroker
-  #
-  # Since Backbone 0.9.2 this abstraction just serves the purpose
-  # that a handler cannot be registered twice for the same event.
+mediator = require 'chaplin/mediator'
 
-  EventBroker =
+# Add functionality to subscribe and publish to global
+# Publish/Subscribe events so they can be removed afterwards
+# when disposing the object.
+#
+# Mixin this object to add the subscriber capability to any object:
+# _(object).extend EventBroker
+# Or to a prototype of a class:
+# _(@prototype).extend EventBroker
+#
+# Since Backbone 0.9.2 this abstraction just serves the purpose
+# that a handler cannot be registered twice for the same event.
 
-    subscribeEvent: (type, handler) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'EventBroker#subscribeEvent: ' +
-          'type argument must be a string'
-      if typeof handler isnt 'function'
-        throw new TypeError 'EventBroker#subscribeEvent: ' +
-          'handler argument must be a function'
+EventBroker =
 
-      # Ensure that a handler isn’t registered twice
-      mediator.unsubscribe type, handler, this
+  subscribeEvent: (type, handler) ->
+    if typeof type isnt 'string'
+      throw new TypeError 'EventBroker#subscribeEvent: ' +
+        'type argument must be a string'
+    if typeof handler isnt 'function'
+      throw new TypeError 'EventBroker#subscribeEvent: ' +
+        'handler argument must be a function'
 
-      # Register global handler, force context to the subscriber
-      mediator.subscribe type, handler, this
+    # Ensure that a handler isn’t registered twice
+    mediator.unsubscribe type, handler, this
 
-    unsubscribeEvent: (type, handler) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'EventBroker#unsubscribeEvent: ' +
-          'type argument must be a string'
-      if typeof handler isnt 'function'
-        throw new TypeError 'EventBroker#unsubscribeEvent: ' +
-          'handler argument must be a function'
+    # Register global handler, force context to the subscriber
+    mediator.subscribe type, handler, this
 
-      # Remove global handler
-      mediator.unsubscribe type, handler
+  unsubscribeEvent: (type, handler) ->
+    if typeof type isnt 'string'
+      throw new TypeError 'EventBroker#unsubscribeEvent: ' +
+        'type argument must be a string'
+    if typeof handler isnt 'function'
+      throw new TypeError 'EventBroker#unsubscribeEvent: ' +
+        'handler argument must be a function'
 
-    # Unbind all global handlers
-    unsubscribeAllEvents: ->
-      # Remove all handlers with a context of this subscriber
-      mediator.unsubscribe null, null, this
+    # Remove global handler
+    mediator.unsubscribe type, handler
 
-    publishEvent: (type, args...) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'EventBroker#publishEvent: ' +
-          'type argument must be a string'
+  # Unbind all global handlers
+  unsubscribeAllEvents: ->
+    # Remove all handlers with a context of this subscriber
+    mediator.unsubscribe null, null, this
 
-      # Publish global handler
-      mediator.publish type, args...
+  publishEvent: (type, args...) ->
+    if typeof type isnt 'string'
+      throw new TypeError 'EventBroker#publishEvent: ' +
+        'type argument must be a string'
 
-  # You’re frozen when your heart’s not open
-  Object.freeze? EventBroker
+    # Publish global handler
+    mediator.publish type, args...
 
-  EventBroker
+# You’re frozen when your heart’s not open
+Object.freeze? EventBroker
+
+EventBroker

@@ -1,81 +1,80 @@
-define [
-  'underscore'
-  'backbone'
-  'chaplin/lib/event_broker'
-  'chaplin/models/model'
-], (_, Backbone, EventBroker, Model) ->
-  'use strict'
+'use strict'
 
-  # Abstract class which extends the standard Backbone collection
-  # in order to add some functionality
-  class Collection extends Backbone.Collection
+_ = require 'underscore'
+Backbone = require 'backbone'
+EventBroker = require 'chaplin/lib/event_broker'
+Model = require 'chaplin/models/model'
 
-    # Mixin an EventBroker
-    _(@prototype).extend EventBroker
+# Abstract class which extends the standard Backbone collection
+# in order to add some functionality
+class Collection extends Backbone.Collection
 
-    # Use the Chaplin model per default, not Backbone.Model
-    model: Model
+  # Mixin an EventBroker
+  _(@prototype).extend EventBroker
 
-    # Mixin a Deferred
-    initDeferred: ->
-      _(this).extend $.Deferred()
+  # Use the Chaplin model per default, not Backbone.Model
+  model: Model
 
-    # Serializes collection
-    serialize: ->
-      for model in @models
-        if model instanceof Model
-          # Use optimized Chaplin serialization
-          model.serialize()
-        else
-          # Fall back to unoptimized Backbone stuff
-          model.toJSON()
+  # Mixin a Deferred
+  initDeferred: ->
+    _(this).extend $.Deferred()
 
-    # Adds a collection atomically, i.e. throws no event until
-    # all members have been added
-    addAtomic: (models, options = {}) ->
-      return unless models.length
-      options.silent = true
-      direction = if typeof options.at is 'number' then 'pop' else 'shift'
-      while model = models[direction]()
-        @add model, options
-      @trigger 'reset'
+  # Serializes collection
+  serialize: ->
+    for model in @models
+      if model instanceof Model
+        # Use optimized Chaplin serialization
+        model.serialize()
+      else
+        # Fall back to unoptimized Backbone stuff
+        model.toJSON()
 
-    # Disposal
-    # --------
+  # Adds a collection atomically, i.e. throws no event until
+  # all members have been added
+  addAtomic: (models, options = {}) ->
+    return unless models.length
+    options.silent = true
+    direction = if typeof options.at is 'number' then 'pop' else 'shift'
+    while model = models[direction]()
+      @add model, options
+    @trigger 'reset'
 
-    disposed: false
+  # Disposal
+  # --------
 
-    dispose: ->
-      return if @disposed
+  disposed: false
 
-      # Fire an event to notify associated views
-      @trigger 'dispose', this
+  dispose: ->
+    return if @disposed
 
-      # Empty the list silently, but do not dispose all models since
-      # they might be referenced elsewhere
-      @reset [], silent: true
+    # Fire an event to notify associated views
+    @trigger 'dispose', this
 
-      # Unbind all global event handlers
-      @unsubscribeAllEvents()
+    # Empty the list silently, but do not dispose all models since
+    # they might be referenced elsewhere
+    @reset [], silent: true
 
-      # Remove all event handlers on this module
-      @off()
+    # Unbind all global event handlers
+    @unsubscribeAllEvents()
 
-      # If the model is a Deferred, reject it
-      # This does nothing if it was resolved before
-      @reject?()
+    # Remove all event handlers on this module
+    @off()
 
-      # Remove model constructor reference, internal model lists
-      # and event handlers
-      properties = [
-        'model',
-        'models', '_byId', '_byCid',
-        '_callbacks'
-      ]
-      delete this[prop] for prop in properties
+    # If the model is a Deferred, reject it
+    # This does nothing if it was resolved before
+    @reject?()
 
-      # Finished
-      @disposed = true
+    # Remove model constructor reference, internal model lists
+    # and event handlers
+    properties = [
+      'model',
+      'models', '_byId', '_byCid',
+      '_callbacks'
+    ]
+    delete this[prop] for prop in properties
 
-      # You’re frozen when your heart’s not open
-      Object.freeze? this
+    # Finished
+    @disposed = true
+
+    # You’re frozen when your heart’s not open
+    Object.freeze? this

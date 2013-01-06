@@ -1,78 +1,77 @@
-define [
-  'underscore'
-  'backbone'
-  'chaplin/lib/event_broker'
-], (_, Backbone, EventBroker) ->
-  'use strict'
+'use strict'
 
-  class Controller
+_ = require 'underscore'
+Backbone = require 'backbone'
+EventBroker = require 'chaplin/lib/event_broker'
 
-    # Borrow the static extend method from Backbone
-    @extend = Backbone.Model.extend
+class Controller
 
-    # Mixin Backbone events and EventBroker.
-    _(@prototype).extend Backbone.Events
-    _(@prototype).extend EventBroker
+  # Borrow the static extend method from Backbone
+  @extend = Backbone.Model.extend
 
-    view: null
+  # Mixin Backbone events and EventBroker.
+  _(@prototype).extend Backbone.Events
+  _(@prototype).extend EventBroker
 
-    # Internal flag which stores whether `redirectTo`
-    # was called in the current action
-    redirected: false
+  view: null
 
-    # You should set a `title` property on the derived controller. Like this:
-    # title: 'foo'
+  # Internal flag which stores whether `redirectTo`
+  # was called in the current action
+  redirected: false
 
-    constructor: ->
-      @initialize arguments...
+  # You should set a `title` property on the derived controller. Like this:
+  # title: 'foo'
 
-    initialize: ->
-      # Empty per default
+  constructor: ->
+    @initialize arguments...
 
-    adjustTitle: (subtitle) ->
-      @publishEvent '!adjustTitle', subtitle
+  initialize: ->
+    # Empty per default
 
-    # Redirection
-    # -----------
+  adjustTitle: (subtitle) ->
+    @publishEvent '!adjustTitle', subtitle
 
-    # Redirect to URL.
-    redirectTo: (url, options = {}) ->
-      @redirected = true
-      @publishEvent '!router:route', url, options, (routed) ->
-        unless routed
-          throw new Error 'Controller#redirectTo: no route matched'
+  # Redirection
+  # -----------
 
-    # Redirect to named route.
-    redirectToRoute: (name, params, options) ->
-      @redirected = true
-      @publishEvent '!router:routeByName', name, params, options, (routed) ->
-        unless routed
-          throw new Error 'Controller#redirectToRoute: no route matched'
+  # Redirect to URL.
+  redirectTo: (url, options = {}) ->
+    @redirected = true
+    @publishEvent '!router:route', url, options, (routed) ->
+      unless routed
+        throw new Error 'Controller#redirectTo: no route matched'
 
-    # Disposal
-    # --------
+  # Redirect to named route.
+  redirectToRoute: (name, params, options) ->
+    @redirected = true
+    @publishEvent '!router:routeByName', name, params, options, (routed) ->
+      unless routed
+        throw new Error 'Controller#redirectToRoute: no route matched'
 
-    disposed: false
+  # Disposal
+  # --------
 
-    dispose: ->
-      return if @disposed
+  disposed: false
 
-      # Dispose and delete all members which are disposable
-      for own prop of this
-        obj = this[prop]
-        if obj and typeof obj.dispose is 'function'
-          obj.dispose()
-          delete this[prop]
+  dispose: ->
+    return if @disposed
 
-      # Unbind handlers of global events
-      @unsubscribeAllEvents()
+    # Dispose and delete all members which are disposable
+    for own prop of this
+      obj = this[prop]
+      if obj and typeof obj.dispose is 'function'
+        obj.dispose()
+        delete this[prop]
 
-      # Remove properties which are not disposable
-      properties = ['redirected']
-      delete this[prop] for prop in properties
+    # Unbind handlers of global events
+    @unsubscribeAllEvents()
 
-      # Finished
-      @disposed = true
+    # Remove properties which are not disposable
+    properties = ['redirected']
+    delete this[prop] for prop in properties
 
-      # You're frozen when your heart’s not open
-      Object.freeze? this
+    # Finished
+    @disposed = true
+
+    # You're frozen when your heart’s not open
+    Object.freeze? this

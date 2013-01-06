@@ -1,185 +1,184 @@
-define [
-  'underscore'
-  'backbone'
-  'chaplin/lib/utils'
-  'chaplin/lib/event_broker'
-], (_, Backbone, utils, EventBroker) ->
-  'use strict'
+'use strict'
 
-  # Shortcut to access the DOM manipulation library
-  $ = Backbone.$
+_ = require 'underscore'
+Backbone = require 'backbone'
+utils = require 'chaplin/lib/utils'
+EventBroker = require 'chaplin/lib/event_broker'
 
-  class Layout # This class does not extend View
+# Shortcut to access the DOM manipulation library
+$ = Backbone.$
 
-    # Borrow the static extend method from Backbone
-    @extend = Backbone.Model.extend
+class Layout # This class does not extend View
 
-    # Mixin an EventBroker
-    _(@prototype).extend EventBroker
+  # Borrow the static extend method from Backbone
+  @extend = Backbone.Model.extend
 
-    # The site title used in the document title.
-    # This should be set in your app-specific Application class
-    # and passed as an option
-    title: ''
+  # Mixin an EventBroker
+  _(@prototype).extend EventBroker
 
-    # An hash to register events, like in Backbone.View
-    # It is only meant for events that are app-wide
-    # independent from any view
-    events: {}
+  # The site title used in the document title.
+  # This should be set in your app-specific Application class
+  # and passed as an option
+  title: ''
 
-    # Register @el, @$el and @cid for delegating events
-    el: document
-    $el: $(document)
-    cid: 'chaplin-layout'
+  # An hash to register events, like in Backbone.View
+  # It is only meant for events that are app-wide
+  # independent from any view
+  events: {}
 
-    constructor: ->
-      @initialize arguments...
+  # Register @el, @$el and @cid for delegating events
+  el: document
+  $el: $(document)
+  cid: 'chaplin-layout'
 
-    initialize: (options = {}) ->
-      @title = options.title
-      @settings = _(options).defaults
-        titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
-        openExternalToBlank: false
-        routeLinks: 'a, .go-to'
-        skipRouting: '.noscript'
-        # Per default, jump to the top of the page
-        scrollTo: [0, 0]
+  constructor: ->
+    @initialize arguments...
 
-      @subscribeEvent 'beforeControllerDispose', @hideOldView
-      @subscribeEvent 'startupController', @showNewView
-      @subscribeEvent '!adjustTitle', @adjustTitle
+  initialize: (options = {}) ->
+    @title = options.title
+    @settings = _(options).defaults
+      titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
+      openExternalToBlank: false
+      routeLinks: 'a, .go-to'
+      skipRouting: '.noscript'
+      # Per default, jump to the top of the page
+      scrollTo: [0, 0]
 
-      # Set the app link routing
-      if @settings.routeLinks
-        @startLinkRouting()
+    @subscribeEvent 'beforeControllerDispose', @hideOldView
+    @subscribeEvent 'startupController', @showNewView
+    @subscribeEvent '!adjustTitle', @adjustTitle
 
-      # Set app wide event handlers
-      @delegateEvents()
+    # Set the app link routing
+    if @settings.routeLinks
+      @startLinkRouting()
 
-    # Take (un)delegateEvents from Backbone
-    # -------------------------------------
-    delegateEvents: Backbone.View::delegateEvents
-    undelegateEvents: Backbone.View::undelegateEvents
+    # Set app wide event handlers
+    @delegateEvents()
 
-    # Controller startup and disposal
-    # -------------------------------
+  # Take (un)delegateEvents from Backbone
+  # -------------------------------------
+  delegateEvents: Backbone.View::delegateEvents
+  undelegateEvents: Backbone.View::undelegateEvents
 
-    # Handler for the global beforeControllerDispose event
-    hideOldView: (controller) ->
-      # Reset the scroll position
-      scrollTo = @settings.scrollTo
-      if scrollTo
-        window.scrollTo scrollTo[0], scrollTo[1]
+  # Controller startup and disposal
+  # -------------------------------
 
-      # Hide the current view
-      view = controller.view
-      if view
-        view.$el.css 'display', 'none'
+  # Handler for the global beforeControllerDispose event
+  hideOldView: (controller) ->
+    # Reset the scroll position
+    scrollTo = @settings.scrollTo
+    if scrollTo
+      window.scrollTo scrollTo[0], scrollTo[1]
 
-    # Handler for the global startupController event
-    # Show the new view
-    showNewView: (context) ->
-      view = context.controller.view
-      if view
-        view.$el.css display: 'block', opacity: 1, visibility: 'visible'
+    # Hide the current view
+    view = controller.view
+    if view
+      view.$el.css 'display', 'none'
 
-    # Handler for the global startupController event
-    # Change the document title to match the new controller
-    # Get the title from the title property of the current controller
-    adjustTitle: (subtitle = '') ->
-      title = @settings.titleTemplate {@title, subtitle}
+  # Handler for the global startupController event
+  # Show the new view
+  showNewView: (context) ->
+    view = context.controller.view
+    if view
+      view.$el.css display: 'block', opacity: 1, visibility: 'visible'
 
-      # Internet Explorer < 9 workaround
-      setTimeout (-> document.title = title), 50
+  # Handler for the global startupController event
+  # Change the document title to match the new controller
+  # Get the title from the title property of the current controller
+  adjustTitle: (subtitle = '') ->
+    title = @settings.titleTemplate {@title, subtitle}
 
-    # Automatic routing of internal links
-    # -----------------------------------
+    # Internet Explorer < 9 workaround
+    setTimeout (-> document.title = title), 50
 
-    startLinkRouting: ->
-      if @settings.routeLinks
-        $(document).on 'click', @settings.routeLinks, @openLink
+  # Automatic routing of internal links
+  # -----------------------------------
 
-    stopLinkRouting: ->
-      if @settings.routeLinks
-        $(document).off 'click', @settings.routeLinks
+  startLinkRouting: ->
+    if @settings.routeLinks
+      $(document).on 'click', @settings.routeLinks, @openLink
 
-    # Handle all clicks on A elements and try to route them internally
-    openLink: (event) =>
-      return if utils.modifierKeyPressed(event)
+  stopLinkRouting: ->
+    if @settings.routeLinks
+      $(document).off 'click', @settings.routeLinks
 
-      el = event.currentTarget
-      $el = $(el)
-      isAnchor = el.nodeName is 'A'
+  # Handle all clicks on A elements and try to route them internally
+  openLink: (event) =>
+    return if utils.modifierKeyPressed(event)
 
-      # Get the href and perform checks on it
-      href = $el.attr('href') or $el.data('href') or null
+    el = event.currentTarget
+    $el = $(el)
+    isAnchor = el.nodeName is 'A'
 
-      # Basic href checks
-      return if href is null or href is undefined or
-        # Technically an empty string is a valid relative URL
-        # but it doesn’t make sense to route it.
-        href is '' or
-        # Exclude fragment links
-        href.charAt(0) is '#'
+    # Get the href and perform checks on it
+    href = $el.attr('href') or $el.data('href') or null
 
-      # Checks for A elements
-      return if isAnchor and (
-        # Exclude links marked as external
-        $el.attr('target') is '_blank' or
-        $el.attr('rel') is 'external' or
-        # Exclude links to non-HTTP ressources
-        el.protocol not in ['http:', 'https:', 'file:']
-      )
+    # Basic href checks
+    return if href is null or href is undefined or
+      # Technically an empty string is a valid relative URL
+      # but it doesn’t make sense to route it.
+      href is '' or
+      # Exclude fragment links
+      href.charAt(0) is '#'
 
-      # Apply skipRouting option
-      skipRouting = @settings.skipRouting
-      type = typeof skipRouting
-      return if type is 'function' and not skipRouting(href, el) or
-        type is 'string' and $el.is skipRouting
+    # Checks for A elements
+    return if isAnchor and (
+      # Exclude links marked as external
+      $el.attr('target') is '_blank' or
+      $el.attr('rel') is 'external' or
+      # Exclude links to non-HTTP ressources
+      el.protocol not in ['http:', 'https:', 'file:']
+    )
 
-      # Handle external links
-      internal = not isAnchor or el.hostname in [location.hostname, '']
-      unless internal
-        if @settings.openExternalToBlank
-          # Open external links normally in a new tab
-          event.preventDefault()
-          window.open el.href
-        return
+    # Apply skipRouting option
+    skipRouting = @settings.skipRouting
+    type = typeof skipRouting
+    return if type is 'function' and not skipRouting(href, el) or
+      type is 'string' and $el.is skipRouting
 
-      if isAnchor
-        # Get the path with query string
-        path = el.pathname + el.search
-        # Leading slash for IE8
-        path = "/#{path}" if path.charAt(0) isnt '/'
-      else
-        path = href
-
-      # Pass to the router, try to route the path internally
-      @publishEvent '!router:route', path, {}, (routed) ->
-        # Prevent default handling if the URL could be routed
-        if routed
-          event.preventDefault()
-        else unless isAnchor
-          location.href = path
-        return
-
+    # Handle external links
+    internal = not isAnchor or el.hostname in [location.hostname, '']
+    unless internal
+      if @settings.openExternalToBlank
+        # Open external links normally in a new tab
+        event.preventDefault()
+        window.open el.href
       return
 
-    # Disposal
-    # --------
+    if isAnchor
+      # Get the path with query string
+      path = el.pathname + el.search
+      # Leading slash for IE8
+      path = "/#{path}" if path.charAt(0) isnt '/'
+    else
+      path = href
 
-    disposed: false
+    # Pass to the router, try to route the path internally
+    @publishEvent '!router:route', path, {}, (routed) ->
+      # Prevent default handling if the URL could be routed
+      if routed
+        event.preventDefault()
+      else unless isAnchor
+        location.href = path
+      return
 
-    dispose: ->
-      return if @disposed
+    return
 
-      @stopLinkRouting()
-      @unsubscribeAllEvents()
-      @undelegateEvents()
+  # Disposal
+  # --------
 
-      delete @title
+  disposed: false
 
-      @disposed = true
+  dispose: ->
+    return if @disposed
 
-      # You’re frozen when your heart’s not open
-      Object.freeze? this
+    @stopLinkRouting()
+    @unsubscribeAllEvents()
+    @undelegateEvents()
+
+    delete @title
+
+    @disposed = true
+
+    # You’re frozen when your heart’s not open
+    Object.freeze? this
