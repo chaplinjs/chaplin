@@ -11,10 +11,10 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Key Features](#key-features)
 * [Motivation](#motivation)
 * [Dependencies](#dependencies)
-* [Downloading Chaplin](#downloading-chaplin)
+* [Download Chaplin](#download-chaplin)
 * [Building Chaplin](#building-chaplin)
 * [Running the Tests](#running-the-tests)
-* [Boilerplate](#boilerplate)
+* [Boilerplates](#boilerplates)
 * [Examples](#examples)
 * [Documentation](#documentation)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
@@ -65,7 +65,7 @@ Chaplin depends on the following libraries:
 
 If you’ll be using AMD version, you will also need an AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
-## Downloading Chaplin
+## Download Chaplin
 
 [Download the latest release on chaplinjs.org](http://chaplinjs.org/#downloads). See below on how to compile from source manually.
 
@@ -137,13 +137,13 @@ How to run the tests:
 7. Run `cake test` to compile the CoffeeScripts to JavaScripts.
 8. Open the test runner `test/index.html` in a browser.
 
-## Boilerplate
+## Boilerplates
 
-[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application project for Chaplin. You can use it freely as a skeleton for your chaplin project.
+Chaplin needs a simple skeleton to start up and configure the core modules. We provides several boilerplates to make the start easier.
 
-If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerplate: [Chaplin Boilerplate-Plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
+[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a “Hello world” example project using Chaplin. If you’re not a CoffeeScript user, there’s also a [plain JavaScript boilerplate](https://github.com/chaplinjs/chaplin-boilerplate-plain).
 
-[Boilerplate Rails Application with Backbone, Chaplin and Require.js](https://github.com/chaplinjs/chaplin-rails)
+For Ruby on Rails users, we’ve compiled a [Boilerplate Rails Application with Backbone, Chaplin and Require.js](https://github.com/chaplinjs/chaplin-rails).
 
 ### Brunch with Chaplin
 
