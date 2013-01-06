@@ -8,7 +8,7 @@ The templating function is provided by `getTemplateFunction`. The input data for
 
 In addition to Backbone’s `events` hash and the `delegateEvents` method, Chaplin has the `delegate` method to register user input handlers. The declarative `events` hash doesn’t work well for class hierarchies when several `initialize` methods register their own handlers. The programatic approach of `delegate` solves these problems.
 
-Also, `@model.bind()` should not be used directly. Chaplin has `@modelBind()` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `bind`, you have to deregister the handler manually to clear the reference from the model to the view.
+Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model, ...)` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `on`, you have to deregister the handler manually to clear the reference from the model to the view.
 
 
 ## Features und purpose
@@ -172,45 +172,6 @@ method signature.
 # delegate(eventType, selector, handler)
 @delegate('click', 'button.confirm', @confirm)
 ```
-
-<a id="model-binding"></a>
-## Model binding
-Disposal-aware event binding. Binds to the view's `@model` or `@collection`.
-
-<a id="modelBind"></a>
-### modelBind(type, handler)
-* **String type - Backbone event type (e.g. 'change:title', 'error', etc )**
-* **function handler**
-
-  Listen for model events and call an appropriate handler. Ensures
-  events are only bound once per handler by calling [`modelUnbind`](#modelUnbind)
-  before binding.
-
-  A common pattern is to listen for the 'change' event and trigger
-  a render, or show error message for failed model validation
-
-```coffeescript
-class LikeView extends View
-  initialize: ->
-    @modelBind 'change' @render
-    @modelBind 'error' @showErrorMessage
-    super
-
-  showErrorMessage: (message) ->
-    @$('.errors').append(message)
-```
-
-<a id="modelUnbind"></a>
-### modelUnbind(type, handler)
-* **String type - Backbone event type (e.g. 'change:title', 'error', etc )**
-* **function handler**
-
-  Unbind a handler from a model event
-
-<a id="modelUnbindAll"></a>
-### modelUnbindAll()
-
-  Unbind all recorded model event handlers.
 
 <a id="pass"></a>
 ### pass(attribute, selector)
