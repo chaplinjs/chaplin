@@ -49,7 +49,7 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 
 ![Modern Times](http://s3.amazonaws.com/imgly_production/3359809/original.jpg)
 
-While developing several web applications using Backbone.js, we felt the need for conventions on how to structure such applications. Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “[Todo list example](http://todomvc.com/)” is not an application in the strict sense nor does it teach best practices how to structure Backbone code.
+While developing several web applications using Backbone.js, we felt the need for conventions on how to structure such applications. Backbone is an easy starting point, but provides only basic, low-level patterns. Especially, Backbone provides little to structure an actual application. For example, the famous “[Todo list](http://todomvc.com/)” is not an application in the strict sense nor does it teach best practices how to structure Backbone code.
 
 Backbone doesn’t intend to be an all-round [framework](http://stackoverflow.com/questions/148747/what-is-the-difference-between-a-framework-and-a-library) so it’s not appropriate to blame Backbone for these deliberate limitations. Nonetheless, most Backbone use cases need a sophisticated application architecture.
 
@@ -67,7 +67,7 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
 
 ## Downloading Chaplin
 
-[Download the latest release on Chaplinjs.org](http://chaplinjs.org/#downloads). See above on how to compile from source manually.
+[Download the latest release on chaplinjs.org](http://chaplinjs.org/#downloads). See below on how to compile from source manually.
 
 ## Building Chaplin
 
@@ -119,20 +119,26 @@ How to run the tests:
 1. Download and install [Node.js](http://nodejs.org/).
 2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
 3. Install the Node package for CoffeeScript  globally.
+
    ```
    sudo npm install -g coffee-script
    ```
+
    On Windows, you can omit the `sudo` command at the beginning.
+   
 4. Install the Node package for the Bower package manager.
+
    ```
    sudo npm install bower -g
    ```
+
 5. Change into the Chaplin root directory.
 6. Run `bower install` to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
 7. Run `cake test` to compile the CoffeeScripts to JavaScripts.
 8. Open the test runner `test/index.html` in a browser.
 
 ## Boilerplate
+
 [Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application project for Chaplin. You can use it freely as a skeleton for your chaplin project.
 
 If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerplate: [Chaplin Boilerplate-Plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
@@ -140,6 +146,7 @@ If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerpla
 [Boilerplate Rails Application with Backbone, Chaplin and Require.js](https://github.com/chaplinjs/chaplin-rails)
 
 ### Brunch with Chaplin
+
 [github.com/paulmillr/brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin)
 
 Brunch with Chaplin is a skeleton application, where [brunch](http://brunch.io) is used for assembling files & assets. It has ready-to-use classes for session management, html5boilerplate and stylus / handlebars.js as app languages.
@@ -149,19 +156,23 @@ Brunch with Chaplin is a skeleton application, where [brunch](http://brunch.io) 
 Several example applications are available today:
 
 ### Facebook Like Browser
+
 [github.com/chaplinjs/facebook-example](https://github.com/chaplinjs/facebook-example)
 
 This example uses Facebook client-side authentication to display the user’s Likes.
 
 ### Ost.io
+
 [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
 
 Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
 
 ### Tweet your Brunch
+
 [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
 
 ## Documentation
+
 All docs are located in [docs/](https://github.com/chaplinjs/chaplin/tree/master/docs) subdirectory.
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
