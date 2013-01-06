@@ -110,10 +110,14 @@ define [
       return true
 
     # The handler which is called by Backbone.History when the route matched.
-    # It is also called by Router#route which might pass options
+    # It is also called by Router#route which might pass options.
     handler: (path, options = {}) =>
+      # If no query string was passed, use the current
+      queryString = options.queryString ? location.search.substring 1
+      console.log 'Route#handler', 'path:', path, 'queryString:', queryString, 'options:', options
+
       # Build params hash
-      params = @buildParams path
+      params = @buildParams path, queryString
 
       # Add a `path` routing option with the whole path match
       options.path = path
@@ -123,10 +127,10 @@ define [
       @publishEvent 'matchRoute', this, params, options
 
     # Create a proper Rails-like params hash, not an array like Backbone
-    buildParams: (path) ->
+    buildParams: (path, queryString) ->
       _.extend {},
         # Add params from query string
-        @extractQueryParams(path),
+        @extractQueryParams(queryString),
         # Add named params from pattern matches
         @extractParams(path),
         # Add additional params from options
@@ -148,14 +152,9 @@ define [
       params
 
     # Extract parameters from the query string
-    extractQueryParams: (path) ->
+    extractQueryParams: (queryString) ->
       params = {}
-
-      regExp = /\?(.+?)(?=#|$)/
-      matches = regExp.exec path
-      return params unless matches
-
-      queryString = matches[1]
+      return params unless queryString
       pairs = queryString.split queryStringFieldSeparator
       for pair in pairs
         continue unless pair.length

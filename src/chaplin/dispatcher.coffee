@@ -56,7 +56,7 @@ define [
     #
     startupController: (controllerName, action = 'index', params = {},
                         options = {}) ->
-      # Set default flags
+      # Set some routing options
 
       # Whether to update the URL after controller startup
       # Default to true unless explicitly set to false
@@ -64,21 +64,21 @@ define [
         options.changeURL = true
 
       # Whether to force the controller startup even
-      # when current and new controllers and params match
+      # if current and new controllers and params match
       # Default to false unless explicitly set to true
       if options.forceStartup isnt true
         options.forceStartup = false
 
-      # Check if the desired controller is already active
-      isSameController =
-        not options.forceStartup and
+      # Add the old controller name to the routing options
+      options.previousControllerName = @currentControllerName
+
+      # Stop if the desired controller/action is already active
+      # with the same params
+      return if not options.forceStartup and
         @currentControllerName is controllerName and
         @currentAction is action and
         # Deep parameters check is not nice but the simplest way for now
         (not @currentParams or _(params).isEqual(@currentParams))
-
-      # Stop if it’s the same controller/action with the same params
-      return if isSameController
 
       # Fetch the new controller, then go on
       handler = _(@controllerLoaded).bind(
@@ -90,25 +90,24 @@ define [
     # The default implementation uses require() from a AMD module loader
     # like RequireJS to fetch the constructor.
     loadController: (controllerName, handler) ->
-      controllerFileName = utils.underscorize(controllerName) + @settings.controllerSuffix
-      path = @settings.controllerPath + controllerFileName
+      fileName = utils.underscorize(controllerName) +
+        @settings.controllerSuffix
+      moduleName = @settings.controllerPath + fileName
       if define?.amd
-        require [path], handler
+        require [moduleName], handler
       else
-        handler require path
+        handler require moduleName
 
-    controllerLoaded: (controllerName, action, params, options, ControllerConstructor) ->
-      # Shortcuts for the old controller
-      currentControllerName = @currentControllerName or null
+    controllerLoaded: (controllerName, action, params, options,
+                       ControllerConstructor) ->
       # Initialize the new controller
-      # Passing the params and the old controller name
-      controller = new ControllerConstructor params, currentControllerName
+      controller = new ControllerConstructor params, options
 
+      # Execute before actions if necessary
       method = if controller.beforeAction
         'executeBeforeActionChain'
       else
         'executeAction'
-
       this[method](controller, controllerName, action, params, options)
 
     # Handler for the controller lazy-loading
@@ -126,9 +125,8 @@ define [
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
 
-      # Call the specific controller action
-      # Passing the params and the old controller name
-      controller[action] params, currentControllerName
+      # Call the controller action with params and options
+      controller[action] params, options
 
       # Stop if the action triggered a redirect
       return if controller.redirected
@@ -150,8 +148,9 @@ define [
         params: @currentParams
 
     # Before actions with chained execution
-    executeBeforeActionChain: (controller, controllerName, action, params) ->
-      beforeActions  = []
+    executeBeforeActionChain: (controller, controllerName, action, params,
+                               options) ->
+      beforeActions = []
       args = arguments
 
       # Before actions can be extended by subclasses, so we need to check the
@@ -177,13 +176,12 @@ define [
       # Save returned value and also immediately return in case the value is false
       next = (method, previous = null) =>
         # Stop if the action triggered a redirect
-        if controller.redirected
-          # Adjust the URL; pass in params
-          return @adjustURL controller, params, {}
+        return if controller.redirected
 
         # End of chain, finally start the action
         unless method
-          return @executeAction args...
+          @executeAction args...
+          return
 
         previous = method.call controller, params, previous
 
@@ -202,7 +200,8 @@ define [
     adjustURL: (controller, params, options) ->
       if typeof options.path is 'string'
         # Just use the matched path
-        url = options.path
+        url = options.path +
+          if options.queryString then "?#{options.queryString}" else ""
 
       # Tell the router to actually change the current URL
       @publishEvent '!router:changeURL', url, options if options.changeURL
