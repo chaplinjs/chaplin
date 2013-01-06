@@ -183,7 +183,7 @@ define [
           @executeAction args...
           return
 
-        previous = method.call controller, params, previous
+        previous = method.call controller, params, options, previous
 
         # Detect a CommonJS promise  in order to use pipelining below,
         # otherwise execute next method directly
