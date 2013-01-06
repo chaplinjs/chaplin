@@ -92,7 +92,8 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
    npm install shelljs
    ```
 
-5. Start the build:
+5. Change into the Chaplin root directory.
+6. Start the build.
 
    ```
    cake build
@@ -129,13 +130,23 @@ How to run the tests:
 4. Install the Node package for the Bower package manager.
 
    ```
-   sudo npm install bower -g
+   sudo npm install -g bower
    ```
 
 5. Change into the Chaplin root directory.
-6. Run `bower install` to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
-7. Run `cake test` to compile the CoffeeScripts to JavaScripts.
-8. Open the test runner `test/index.html` in a browser.
+6. Use Bower to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
+
+   ```
+   bower install
+   ```
+   
+7. Compile the CoffeeScripts to JavaScripts.
+
+   ```
+   cake test
+   ```
+   
+9. Finally, open the test runner `test/index.html` in a browser.
 
 ## Boilerplates
 
