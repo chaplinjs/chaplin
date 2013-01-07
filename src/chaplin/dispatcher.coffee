@@ -184,8 +184,10 @@ module.exports = class Dispatcher
       # Detect a CommonJS promise  in order to use pipelining below,
       # otherwise execute next method directly
       if previous and typeof previous.then is 'function'
-        previous.then (data) ->
-          next beforeActions.shift(), data
+        previous.then (data) =>
+          # Execute as long as the currentController is the callee for this promise
+          if not @currentController or controller is @currentController
+            next beforeActions.shift(), data
       else
         next beforeActions.shift(), previous
 
