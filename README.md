@@ -86,8 +86,8 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
    bower install chaplin#0.6.0
    ```
 
-   > _Note_ that this will also download the required version of backbone
-   > but will __not__ download the required DOM manipulation library. That can
+   > __Note__ that this will also download the required version of backbone
+   > but will _not_ download the required DOM manipulation library. That can
    > be done separately via `bower install jquery` or `bower install zepto`.
 
 ### Manually
