@@ -49,8 +49,8 @@ define [
     # The standard flow is:
     #
     #   1. Test if it’s a new controller/action with new params
-    #   1. Hide the old view
-    #   2. Dispose the old controller
+    #   1. Hide the previous view
+    #   2. Dispose the previous controller
     #   3. Instantiate the new controller, call the controller action
     #   4. Show the new view
     #
@@ -69,9 +69,6 @@ define [
       if options.forceStartup isnt true
         options.forceStartup = false
 
-      # Add the old controller name to the routing options
-      options.previousControllerName = @currentControllerName
-
       # Stop if the desired controller/action is already active
       # with the same params
       return if not options.forceStartup and
@@ -81,10 +78,9 @@ define [
         (not @currentParams or _(params).isEqual(@currentParams))
 
       # Fetch the new controller, then go on
-      handler = _(@controllerLoaded).bind(
-        this, controllerName, action, params, options)
-
-      @loadController controllerName, handler
+      @loadController controllerName, (ControllerConstructor) =>
+        @controllerLoaded controllerName, action, params, options,
+          ControllerConstructor
 
     # Load the constructor for a given controller name.
     # The default implementation uses require() from a AMD module loader
@@ -104,26 +100,29 @@ define [
       controller = new ControllerConstructor params, options
 
       # Execute before actions if necessary
-      method = if controller.beforeAction
+      methodName = if controller.beforeAction
         'executeBeforeActionChain'
       else
         'executeAction'
-      this[method](controller, controllerName, action, params, options)
+      this[methodName](controller, controllerName, action, params, options)
 
     # Handler for the controller lazy-loading
     executeAction: (controller, controllerName, action, params, options) ->
-      # Shortcuts for the old controller
+      # Shortcuts for the previous controller
       currentControllerName   = @currentControllerName or null
       currentController       = @currentController     or null
 
       @previousControllerName = currentControllerName
 
-      # Dispose the current controller
+      # Dispose the previous controller
       if currentController
         # Notify the rest of the world beforehand
         @publishEvent 'beforeControllerDispose', currentController
         # Passing the params and the new controller name
         currentController.dispose params, controllerName
+
+      # Add the previous controller name to the routing options
+      options.previousControllerName = currentControllerName
 
       # Call the controller action with params and options
       controller[action] params, options
@@ -137,8 +136,8 @@ define [
       @currentAction = action
       @currentParams = params
 
-      # Adjust the URL; pass in both params and options
-      @adjustURL controller, params, options
+      # Adjust the URL
+      @adjustURL params, options
 
       # We're done! Spread the word!
       @publishEvent 'startupController',
@@ -146,6 +145,7 @@ define [
         controller: @currentController
         controllerName: @currentControllerName
         params: @currentParams
+        options: options
 
     # Before actions with chained execution
     executeBeforeActionChain: (controller, controllerName, action, params,
@@ -197,11 +197,11 @@ define [
       next beforeActions.shift()
 
     # Change the URL to the new controller using the router
-    adjustURL: (controller, params, options) ->
-      if typeof options.path is 'string'
-        # Just use the matched path
-        url = options.path +
-          if options.queryString then "?#{options.queryString}" else ""
+    adjustURL: (params, options) ->
+      return unless options.path?
+
+      url = options.path +
+        if options.queryString then "?#{options.queryString}" else ""
 
       # Tell the router to actually change the current URL
       @publishEvent '!router:changeURL', url, options if options.changeURL
