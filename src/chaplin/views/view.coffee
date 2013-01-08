@@ -177,19 +177,6 @@ define [
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
 
-    # Setup a simple one-way model-view binding
-    # Pass changed attribute values to specific elements in the view
-    # For form controls, the value is changed, otherwise the element
-    # text content is set to the model attribute value.
-    # Example: @pass 'attribute', '.selector'
-    pass: (attribute, selector) ->
-      @listenTo @model, "change:#{attribute}", (model, value) =>
-        $el = @$(selector)
-        if $el.is('input, textarea, select, button')
-          $el.val value
-        else
-          $el.text value
-
     # Subviews
     # --------
 
