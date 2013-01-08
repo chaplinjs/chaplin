@@ -76,8 +76,7 @@ define [
     # A function that will be executed after each filter.
     # Hides excluded items by default.
     filterCallback: (view, included) ->
-      display = if included then '' else 'none'
-      view.$el.stop(true, true).css('display', display)
+      view.$el.stop(true, true).toggle included
 
     # View lists
 
@@ -192,7 +191,7 @@ define [
           # Assume it is synced
           true
       )
-      @$fallback.css 'display', if visible then 'block' else 'none'
+      @$fallback.toggle visible
 
     # Loading indicator
     # -----------------
@@ -219,7 +218,7 @@ define [
       # show up in this case, you need to overwrite this method to
       # disable the check.
       visible = @collection.length is 0 and @collection.isSyncing()
-      @$loading.css 'display', if visible then 'block' else 'none'
+      @$loading.toggle visible
 
     # Filtering
     # ---------

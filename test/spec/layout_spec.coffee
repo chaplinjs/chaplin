@@ -75,8 +75,6 @@ define [
       mediator.publish 'startupController', startupControllerContext
       $el = testController.view.$el
       expect($el.css('display')).to.be 'block'
-      expect($el.css('opacity')).to.be '1'
-      expect($el.css('visibility')).to.be 'visible'
 
     it 'should set the document title', (done) ->
       mediator.publish '!adjustTitle', testController.title

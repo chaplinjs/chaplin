@@ -73,15 +73,13 @@ define [
 
       # Hide the current view
       view = controller.view
-      if view
-        view.$el.css 'display', 'none'
+      view.$el.hide() if view
 
     # Handler for the global startupController event
     # Show the new view
     showNewView: (context) ->
       view = context.controller.view
-      if view
-        view.$el.css display: 'block', opacity: 1, visibility: 'visible'
+      view.$el.show() if view
 
     # Handler for the global startupController event
     # Change the document title to match the new controller
