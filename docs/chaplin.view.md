@@ -42,7 +42,7 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
   Your application should provide a standard way of rendering DOM
   nodes by creating HTML from templates and template data. Chaplin
   provides `getTemplateFunction` and `getTemplateData` for this purpose.
-  
+
   Set [`autorender`](#autoRender) to true to enable rendering upon
   View instantiation. Will automatically append to a [`container`](#container)
   if one is set, although the method of appending can be overriden
@@ -115,7 +115,7 @@ getTemplateData: ->
   class heirarchies. In the default implementation, only `initialize` and `render` are
   wrapped, giving the View `afterInitialize` and `afterRender` methods that are called
   after the prototype chain has completed for their respective heirarchy.
-  
+
   `afterInitialize` calls `render` if `autoRender` is true, and `afterRender` attaches
   the View to its `container` element.
 
@@ -125,32 +125,32 @@ getTemplateData: ->
 <a id="autoRender"></a>
 ### autoRender
 * **Boolean, default: false**
-  
+
   Specifies whether the the View's `render` method should be called when
   a view is instantiated.
 
 <a id="container"></a>
 ### container
 * **jQuery object, selector string, or element, default: null**
-  
+
   A selector for the View's containg element into which the `$el`
   will be rendered. The container must exist in the DOM.
-  
+
   Set this property in a derived class to specify the container element.
   Normally this is a selector string but it might also be an element or
   jQuery object. View is automatically inserted into the container when
   it’s rendered (in the `afterRender` method). As an alternative you
   might pass a `container` option to the constructor.
-  
+
   A container is often an empty element within a parent view.
 
 <a id="containerMethod"></a>
 ### containerMethod
 * **String, jQuery object method (default: 'append')**
-  
+
   Method which is used for adding the view to the DOM via the `container`
   element. (Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.)
-  
+
 ## Event delegation
 <a id="delegate"></a>
 ### delegate(eventType, [selector], handler)
@@ -173,37 +173,16 @@ method signature.
 @delegate('click', 'button.confirm', @confirm)
 ```
 
-<a id="pass"></a>
-### pass(attribute, selector)
-* **String attribute - corresponds to a field on the model**
-* **String selector - a jQuery selector, object, or element**
-
-  Simple one-way model-view binding (closing the gap on one of the
-  key differences between Backbone and other frameworks like Ember,
-  Angular, etc)
-
-  Pass changed attribute values to specific elements in the view
-  For form controls, the value is changed, otherwise the element
-  text content is set to the model attribute value.
-
-  Useful for form views and other forms of user input, or updating
-  individual parts of the View from changed attributes
-
-```coffeescript
-@pass 'email', 'input[name="email"]'
-@pass 'author', 'h2.author-name'
-```
-
 
 ## Subviews
 
 ### subview(name, [view])
 * **String name**,
 * **View view (when setting the subview)**
-  
+
   Add a subview to the View to be referenced by `name`. Calling with just the
   `name` argument will return the subview associated with that `name`.
-  
+
   Subviews are not automatically rendered. This is often done in an
   inheriting view (i.e. in [CollectionView](./chaplin.collection_view.md)
   or your own PageView base class).
