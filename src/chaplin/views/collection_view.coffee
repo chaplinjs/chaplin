@@ -389,8 +389,8 @@ define [
             $previous = children.eq position - 1
             $previous.after viewEl
 
-      # Tell the view that it was added to the DOM
-      view.trigger 'addedToDOM'
+      # Tell the view that it was added to its parent.
+      view.trigger 'addedToParent'
 
       # Update the list of visible items, trigger a `visibilityChange` event
       @updateVisibleItems item, included
