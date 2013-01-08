@@ -27,7 +27,7 @@ define [
       $link.attr attributes
 
     expectWasRouted = (linkAttributes) ->
-      stub = sinon.stub().yields false
+      stub = sinon.stub().yields true
       mediator.subscribe '!router:route', stub
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
@@ -90,10 +90,22 @@ define [
     # -----------------------
 
     it 'should route clicks on internal links', ->
-      expectWasRouted href: '/an/internal/link'
+      expectWasRouted href: '/internal/link'
 
     it 'should correctly pass the query string', ->
-      expectWasRouted href: '/another/link?foo=bar&baz=qux'
+      path = '/internal/link'
+      queryString = 'foo=bar&baz=qux'
+
+      stub = sinon.stub().yields true
+      mediator.subscribe '!router:route', stub
+      linkAttributes = href: "#{path}?#{queryString}"
+      createLink(linkAttributes).appendTo(document.body).click().remove()
+      expect(stub).was.calledOnce()
+      [passedPath, passedOptions, passedCallback] = stub.firstCall.args
+      expect(passedPath).to.be path
+      expect(passedOptions).to.eql {queryString}
+      expect(passedCallback).to.be.a 'function'
+      mediator.unsubscribe '!router:route', stub
 
     it 'should not route links without href attributes', ->
       expectWasNotRouted name: 'foo'
@@ -119,19 +131,16 @@ define [
       expectWasNotRouted href: 'tel:1488'
 
     it 'should not route clicks on external links', ->
-      # IE8 workaround.
-      old = window.open
-      window.open = sinon.stub()
+      stub = sinon.stub window, 'open'
       expectWasNotRouted href: 'http://example.com/'
-      expectWasNotRouted href: '//example.com/'
       expectWasNotRouted href: 'https://example.com/'
-      expect(window.open).was.notCalled()
-      window.open = old
+      expect(stub).was.notCalled()
+      stub.restore()
 
     it 'should route clicks on elements with the “go-to” class', ->
       stub = sinon.stub().yields true
       mediator.subscribe '!router:route', stub
-      path = '/an/internal/link'
+      path = '/internal/link'
       $span = $(document.createElement 'span')
         .addClass('go-to').attr('data-href', path)
         .appendTo(document.body).click().remove()
@@ -148,16 +157,15 @@ define [
     it 'routeLinks=false should NOT route clicks on internal links', ->
       layout.dispose()
       layout = new Layout title: '', routeLinks: false
-      expectWasNotRouted href: '/an/internal/link'
+      expectWasNotRouted href: '/internal/link'
 
     it 'openExternalToBlank=true should open external links in a new tab', ->
-      old = window.open
-      window.open = sinon.stub()
+      stub = sinon.stub window, 'open'
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: 'http://www.example.org/'
-      expect(window.open).was.called()
-      window.open = old
+      expect(stub).was.called()
+      stub.restore()
 
     it 'skipRouting=false should route links with a noscript class', ->
       layout.dispose()
