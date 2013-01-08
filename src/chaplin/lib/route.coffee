@@ -27,7 +27,7 @@ define [
       # Store the name on the route if given
       @name = @options.name if @options.name?
 
-      # Initialise list of :params which the route will use.
+      # Initialize list of :params which the route will use.
       @paramNames = []
 
       # Check if the action is a reserved name
@@ -113,8 +113,7 @@ define [
     # It is also called by Router#route which might pass options.
     handler: (path, options = {}) =>
       # If no query string was passed, use the current
-      queryString = options.queryString ? location.search.substring 1
-      console.log 'Route#handler', 'path:', path, 'queryString:', queryString, 'options:', options
+      queryString = options.queryString ? @getCurrentQueryString()
 
       # Build params hash
       params = @buildParams path, queryString
@@ -125,6 +124,10 @@ define [
       # Publish a global matchRoute event passing the route and the params
       # Original options hash forwarded to allow further forwarding to backbone
       @publishEvent 'matchRoute', this, params, options
+
+    # Returns the query string for the current document
+    getCurrentQueryString: ->
+      location.search.substring 1
 
     # Create a proper Rails-like params hash, not an array like Backbone
     buildParams: (path, queryString) ->
