@@ -5,6 +5,14 @@
     * Controller actions will now receive `options` hash
       as second argument, that contains `path`, `previousControllerName`
       and routing options.
+    * Fixed `Controller#redirectTo` signature (`url, options`).
+* Improved `Chaplin.CollectionView`:
+    * Item views will now emit `addedToParent` event instead of `addedToDOM`
+    when they are appended to collection view.
+* Improved `Chaplin.View`
+    * Switched to `$el.toggle()` instead of manual css `display` setting.
+    Which means non-block elements will behave correctly.
+    * Switched to `Backbone.$` reference for DOM manipulation.
 
 # Chaplin 0.6.0 (December 30, 2012)
 * Updated required Backbone version to 0.9.9+.
