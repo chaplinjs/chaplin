@@ -153,10 +153,11 @@ define [
         path = "/#{path}" if path.charAt(0) isnt '/'
       else
         [path, queryString] = href.split '?'
+        queryString ?= ''
 
-      routingOptions = {queryString}
-
-      routingCallback = (routed) ->
+      # Create routing options and callback
+      options = {queryString}
+      callback = (routed) ->
         # Prevent default handling if the URL could be routed
         if routed
           event.preventDefault()
@@ -165,7 +166,7 @@ define [
         return
 
       # Pass to the router, try to route the path internally
-      @publishEvent '!router:route', path, routingOptions, routingCallback
+      @publishEvent '!router:route', path, options, callback
 
       return
 
