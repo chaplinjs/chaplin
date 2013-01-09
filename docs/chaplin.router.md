@@ -11,7 +11,7 @@ By convention, all application routes should be declared in a separate file, the
 
 ```coffeescript
 match '', 'home#index'
-match 'likes/:id', 'likes#show'
+match 'likes/:id', controller: 'controllers/likes', action: 'show'
 ```
 
 `match` works much like the Ruby on Rails counterpart. If a route matches, a `matchRoute` event is published passing the route instance and a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.

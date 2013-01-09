@@ -67,6 +67,31 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
 
 ## Download Chaplin
 
+### Using bower
+1. Install the Node package for the Bower package manager.
+
+   ```
+   sudo npm install -g bower
+   ```
+
+2. Install chaplin via bower.
+
+   ```sh
+   bower install chaplin
+   ```
+
+   Specific versions may be requested as follows:
+
+   ```sh
+   bower install chaplin#0.6.0
+   ```
+
+   This will also download the required version of backbone but will _not_ 
+   download the required DOM manipulation or utility libraries. These can be 
+   installed separately via `bower install underscore`, `bower install jquery`, 
+   `bower install lodash`, etc.
+
+### Manually
 [Download the latest release on chaplinjs.org](http://chaplinjs.org/#downloads). See below on how to compile from source manually.
 
 ## Building Chaplin
@@ -126,7 +151,7 @@ How to run the tests:
    ```
 
    On Windows, you can omit the `sudo` command at the beginning.
-   
+
 4. Install the Node package for the Bower package manager.
 
    ```
@@ -139,13 +164,13 @@ How to run the tests:
    ```
    bower install
    ```
-   
+
 7. Compile the CoffeeScripts to JavaScripts.
 
    ```
    cake test
    ```
-   
+
 9. Finally, open the test runner `test/index.html` in a browser.
 
 ## Boilerplates
