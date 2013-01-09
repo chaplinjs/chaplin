@@ -4,7 +4,7 @@
 
 Chaplin is an architecture for JavaScript web applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-While Backbone is an easy starting point, it provides only basic, low-level patterns. Especially, Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses this limitations by providing a light-weight but flexible structure which leverages well-profen design patterns and best practises.
+While Backbone is an easy starting point, it provides only basic, low-level patterns. Especially, Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses this limitations by providing a light-weight but flexible structure which leverages well-proven design patterns and best practises.
 
 ## Chaplin’s Structure
 
