@@ -347,6 +347,137 @@ define [
       expect(templateData.resolved).to.be 'foo'
       expect(templateData.synced).to.be 'bar'
 
+    describe 'Events', ->
+      class EventedViewParent extends View
+        listen:
+          # @model
+          'change:a model': 'a1Handler'
+          'change:b model': 'b1Handler'
+
+          # @collection
+          'reset collection': 'a1Handler'
+          'custom collection': 'b1Handler'
+
+          # self
+          'ns:a': 'a1Handler'
+          'ns:b': 'b1Handler'
+
+          # self
+          'ns:a :el': 'a1Handler'
+          'ns:b :el': 'b1Handler'
+
+        initialize: ->
+          @a1Handler = sinon.spy()
+          @b1Handler = sinon.spy()
+          super
+
+      class EventedView extends EventedViewParent
+        listen:
+          # @model
+          'change:a model': 'a2Handler'
+          'change:b model': 'b2Handler'
+
+          # @collection
+          'reset collection': 'a2Handler'
+          'custom collection': 'b2Handler'
+
+          # global
+          'ns:a': 'a2Handler'
+          'ns:b': 'b2Handler'
+
+          # self
+          'ns:a :el': 'a2Handler'
+          'ns:b :el': 'b2Handler'
+
+        initialize: ->
+          @a2Handler = sinon.spy()
+          @b2Handler = sinon.spy()
+          super
+
+      beforeEach ->
+        @view = null
+
+      afterEach ->
+        @view.dispose()
+        @view.model?.dispose()
+        @view.collection?.dispose()
+
+      it 'should support declarative model event binding with listen', ->
+        @view = new EventedView model: new Model
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.model.set 'a', 1
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.model.set 'b', 2
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
+      it 'should support declarative collection event binding with listen', ->
+        @view = new EventedView collection: new Collection
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.collection.reset [{a: 1}]
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.collection.trigger 'custom'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
+      it 'should support declarative global event binding with listen', ->
+        @view = new EventedView
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.trigger 'ns:a'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.trigger 'ns:b'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
+      it 'should support declarative self event binding with listen', ->
+        @view = new EventedView
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.trigger 'ns:a'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.trigger 'ns:b'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
     it 'should pass model attributes to the template function', ->
       setModel()
 

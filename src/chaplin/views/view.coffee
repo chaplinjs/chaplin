@@ -74,6 +74,9 @@ define [
       @subviews = []
       @subviewsByName = {}
 
+      # Add ability to use declarative bindings for models, collections etc.
+      @_delegateEntityEvents()
+
       # Listen for disposal of the model or collection.
       # If the model is disposed, automatically dispose the associated view
       @listenTo @model, 'dispose', @dispose if @model
@@ -168,6 +171,42 @@ define [
     # Remove all handlers registered with @delegate.
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
+
+    # Declarative callback to register entity events.
+    delegateListener: (event, target, callback) ->
+      if target is ':el'
+        # Special target that refers to ourself, bind the event on ourself.
+        @on event, callback
+
+      else if target
+        # Does this target exist? Ignore the bind if it doesn't.
+        method = this[target]
+        @listenTo method, event, callback if method?
+
+      else
+        # No target; subscribe to it
+        @subscribeEvent event, callback
+
+    # Declarative handling of `listen`.
+    _delegateEntityEvents: ->
+      return unless this.listen?
+      for version in utils.getAllPropertyVersions this, 'listen'
+        for event, method of version
+          # Grab the method name; ensure it is a function, but allow methods
+          # to be declared in the hash.
+          method = this[method] unless _.isFunction method
+          if typeof method isnt 'function'
+            console.log this, methodName, method
+            throw new Error 'View#_delegateEntityEvents: ' +
+              "#{method} must be function"
+
+          # Break apart the event name.
+          segments = event.split(' ')
+          name = if segments.length > 1 then segments.pop() else null
+          eventName = segments.join(' ')
+
+          # Delegate to the listener method to register the entity event
+          @delegateListener eventName, name, method
 
     # Subviews
     # --------
