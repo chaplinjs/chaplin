@@ -229,7 +229,7 @@ define [
       templateData = if @model
         utils.serialize @model
       else if @collection
-        {items: utils.serialize(@collection), length: @collection.length}
+        {items: @collection.map(utils.serialize), length: @collection.length}
       else
         {}
 
