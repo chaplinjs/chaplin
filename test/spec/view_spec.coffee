@@ -227,6 +227,108 @@ define [
             expect(d["#{index}Handler"]).was.calledOnce()
           done()
 
+    describe 'Events', ->
+      class EventedViewParent extends View
+        modelEvents:
+          'change:a': 'a1Handler'
+          'change:b': 'b1Handler'
+
+        collectionEvents:
+          'reset': 'a1Handler'
+          'custom': 'b1Handler'
+
+        mediatorEvents:
+          'ns:a': 'a1Handler'
+          'ns:b': 'b1Handler'
+
+        initialize: ->
+          @a1Handler = sinon.spy()
+          @b1Handler = sinon.spy()
+          super
+
+      class EventedView extends EventedViewParent
+        modelEvents:
+          'change:a': 'a2Handler'
+          'change:b': 'b2Handler'
+
+        collectionEvents:
+          'reset': 'a2Handler'
+          'custom': 'b2Handler'
+
+        mediatorEvents:
+          'ns:a': 'a2Handler'
+          'ns:b': 'b2Handler'
+
+        initialize: ->
+          @a2Handler = sinon.spy()
+          @b2Handler = sinon.spy()
+          super
+
+      beforeEach ->
+        @view = null
+
+      afterEach ->
+        @view.dispose()
+        @view.model?.dispose()
+        @view.collection?.dispose()
+
+      it 'should support declarative event binding with modelEvents', ->
+        @view = new EventedView model: new Model
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.model.set 'a', 1
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.model.set 'b', 2
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
+      it 'should support declarative event binding with collectionEvents', ->
+        @view = new EventedView collection: new Collection
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.collection.reset [{a: 1}]
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        @view.collection.trigger 'custom'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
+      it 'should support declarative event binding with mediatorEvents', ->
+        @view = new EventedView
+        expect(@view.a1Handler).was.notCalled()
+        expect(@view.a2Handler).was.notCalled()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        mediator.publish 'ns:a'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.notCalled()
+        expect(@view.b2Handler).was.notCalled()
+
+        mediator.publish 'ns:b'
+        expect(@view.a1Handler).was.calledOnce()
+        expect(@view.a2Handler).was.calledOnce()
+        expect(@view.b1Handler).was.calledOnce()
+        expect(@view.b2Handler).was.calledOnce()
+
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
 
