@@ -2,8 +2,9 @@ define [
   'underscore'
   'backbone'
   'chaplin/lib/event_broker'
+  'chaplin/lib/utils'
   'chaplin/models/model'
-], (_, Backbone, EventBroker, Model) ->
+], (_, Backbone, EventBroker, utils, Model) ->
   'use strict'
 
   # Abstract class which extends the standard Backbone collection
@@ -22,13 +23,7 @@ define [
 
     # Serializes collection
     serialize: ->
-      for model in @models
-        if model instanceof Model
-          # Use optimized Chaplin serialization
-          model.serialize()
-        else
-          # Fall back to unoptimized Backbone stuff
-          model.toJSON()
+      @map utils.serialize
 
     # Adds a collection atomically, i.e. throws no event until
     # all members have been added
