@@ -161,16 +161,8 @@ define [
     # of the parent view if it exists.
     delegateEvents: ->
       @undelegateEvents()
-
-      # Get 'events' props from every prototype,
-      # filter-out falsy values and duplicates.
-      _(utils.getPrototypeChain this)
-        .chain()
-        .pluck('events')
-        .compact()
-        .uniq()
-        .each (events) =>
-          @_delegateEvents events
+      for events in utils.getAllPropertyVersions this, 'events'
+        @_delegateEvents events
       return
 
     # Remove all handlers registered with @delegate.

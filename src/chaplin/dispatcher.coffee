@@ -156,13 +156,10 @@ define [
       # Before actions can be extended by subclasses, so we need to check the
       # whole prototype chain for matching before actions. Before actions in
       # parent classes are executed before actions in child classes.
-
-      prototypeChain = utils.getPrototypeChain controller
-      for prototype in prototypeChain.reverse()
-        acts = prototype.beforeAction
+      for acts in utils.getAllPropertyVersions controller, 'beforeAction'
         # Iterate over the before actions in search for a matching
         # name with the arguments’ action name
-        for name, beforeAction of acts when beforeAction not in beforeActions
+        for name, beforeAction of acts
           # Do not add this object more than once
           if name is action or RegExp("^#{name}$").test(action)
             if typeof beforeAction is 'string'
