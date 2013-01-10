@@ -227,17 +227,16 @@ define [
     # Uses optimized Chaplin serialization if available.
     getTemplateData: ->
       templateData = if @model
-        if @model instanceof Model
+        if @model.serialize
           @model.serialize()
         else
-          utils.beget @model.attributes
+          @model.toJSON()
       else if @collection
         # Collection: Serialize all models.
-        items = if @collection instanceof Collection
+        items = if @collection.serialize
           @collection.serialize()
         else
-          @collection.map (model) ->
-            utils.beget model.attributes
+          @collection.toJSON()
         {items}
       else
         # Empty object.
