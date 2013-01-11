@@ -23,10 +23,10 @@ define [
       _(@options).defaults
         pushState: true
 
-      @subscribeEvent '!router:route', @routeHandler
-      @subscribeEvent '!router:routeByName', @routeByNameHandler
-      @subscribeEvent '!router:reverse', @reverseHandler
-      @subscribeEvent '!router:changeURL', @changeURLHandler
+      @subscribeEvent '!router:route', @_routeHandler
+      @subscribeEvent '!router:routeByName', @_routeByNameHandler
+      @subscribeEvent '!router:reverse', @_reverseHandler
+      @subscribeEvent '!router:changeURL', @_changeURLHandler
 
       @createHistory()
 
@@ -87,9 +87,6 @@ define [
           return true
       false
 
-    reverseHandler: (name, params, callback) ->
-      callback @reverse name, params
-
     # Find the URL for a given name using the registered routes and
     # provided parameters.
     reverse: (name, params) ->
@@ -105,28 +102,6 @@ define [
       # We didn't get anything
       false
 
-    # Handler for the global !router:route event
-    routeHandler: (path, options, callback) ->
-      # Support old signature: Assume only path and callback were passed
-      # if we only got two arguments
-      if arguments.length is 2 and typeof options is 'function'
-        callback = options
-        options = {}
-
-      routed = @route path, options
-      callback? routed
-
-    routeByNameHandler: (name, params, options, callback) ->
-      # Support old signature: Assume options wasn't passed
-      # if we only got three arguments
-      if arguments.length is 3 and typeof options is 'function'
-        callback = options
-        options = {}
-
-      path = @reverse name, params
-      return unless path
-      @routeHandler path, options, callback
-
     # Change the current URL, add a history entry.
     changeURL: (url, options = {}) ->
       navigateOptions =
@@ -137,9 +112,34 @@ define [
       # Navigate to the passed URL and forward options to Backbone
       Backbone.history.navigate url, navigateOptions
 
+    _reverseHandler: (name, params, callback) ->
+      callback @reverse name, params
+
+    # Handler for the global !router:route event
+    _routeHandler: (path, options, callback) ->
+      # Support old signature: Assume only path and callback were passed
+      # if we only got two arguments
+      if arguments.length is 2 and typeof options is 'function'
+        callback = options
+        options = {}
+
+      routed = @route path, options
+      callback? routed
+
+    _routeByNameHandler: (name, params, options, callback) ->
+      # Support old signature: Assume options wasn't passed
+      # if we only got three arguments
+      if arguments.length is 3 and typeof options is 'function'
+        callback = options
+        options = {}
+
+      path = @reverse name, params
+      return unless path
+      @_routeHandler path, options, callback
+
     # Handler for the global !router:changeURL event
     # Accepts both the url and an options hash that is forwarded to Backbone
-    changeURLHandler: (url, options) ->
+    _changeURLHandler: (url, options) ->
       @changeURL url, options
 
     # Disposal
