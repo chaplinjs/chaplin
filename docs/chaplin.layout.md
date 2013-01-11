@@ -1,6 +1,6 @@
 # Chaplin.Layout
 
-`Chaplin.Layout` is the top-level application 'view'. It doesn't inherit from `Chaplin.View` but borrows some of its functionnalities. It is tied to the `document` dom element and register app-wide events, such as internal links. And mainly, When a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.
+`Chaplin.Layout` is the top-level application 'view'. It doesn't inherit from `Chaplin.View` but borrows some of its functionalities. It is tied to the `document` dom element and register app-wide events, such as internal links. And mainly, When a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.
 
 ## Methods of `Chaplin.Layout`
 
