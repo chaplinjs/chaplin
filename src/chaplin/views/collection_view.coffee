@@ -142,8 +142,8 @@ define [
       # Set the $list property with the actual list container
       @$list = if @listSelector then @$(@listSelector) else @$el
 
-      @initFallback()
-      @initLoadingIndicator()
+      @_initFallback()
+      @_initLoadingIndicator()
 
       # Render all items
       @renderAllItems() if @renderItems
@@ -166,7 +166,7 @@ define [
     # Fallback message when the collection is empty
     # ---------------------------------------------
 
-    initFallback: ->
+    _initFallback: ->
       return unless @fallbackSelector
 
       # Set the $fallback property
@@ -196,7 +196,7 @@ define [
     # Loading indicator
     # -----------------
 
-    initLoadingIndicator: ->
+    _initLoadingIndicator: ->
       # The loading indicator only works for Collections
       # which are SyncMachines.
       return unless @loadingSelector and
@@ -224,7 +224,7 @@ define [
     # ---------
 
     # Filters only child item views from all current subviews.
-    getItemViews: ->
+    _getItemViews: ->
       itemViews = {}
       for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
         itemViews[name.slice(9)] = view
@@ -242,7 +242,7 @@ define [
       filterCallback ?= @filterCallback
 
       # Show/hide existing views
-      unless _(@getItemViews()).isEmpty()
+      unless _(@_getItemViews()).isEmpty()
         for item, index in @collection.models
 
           # Apply filter to the item
