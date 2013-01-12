@@ -10,7 +10,7 @@ EventBroker = require 'chaplin/lib/event_broker'
 # The application bootstrapper
 # ----------------------------
 
-module.expors = class Application
+module.exports = class Application
 
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend
