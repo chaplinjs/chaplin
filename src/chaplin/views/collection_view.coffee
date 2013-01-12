@@ -224,7 +224,7 @@ define [
     # ---------
 
     # Filters only child item views from all current subviews.
-    _getItemViews: ->
+    getItemViews: ->
       itemViews = {}
       for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
         itemViews[name.slice(9)] = view
@@ -242,7 +242,7 @@ define [
       filterCallback ?= @filterCallback
 
       # Show/hide existing views
-      unless _(@_getItemViews()).isEmpty()
+      unless _(@getItemViews()).isEmpty()
         for item, index in @collection.models
 
           # Apply filter to the item
