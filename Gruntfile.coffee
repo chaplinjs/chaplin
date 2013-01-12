@@ -45,6 +45,7 @@ module.exports = (grunt) ->
     clean:
       build: 'build'
       temp: 'temp'
+      components: 'components'
       test: ['test/temp*', 'test/coverage']
 
     # Compilation
@@ -195,6 +196,14 @@ module.exports = (grunt) ->
         type: 'html'
         dir: 'test/coverage'
 
+    # Browser dependencies
+    # --------------------
+    bower:
+      install:
+        options:
+          targetDir: './test/components'
+          cleanup: true
+
     # Test runner
     # -----------
     mocha:
@@ -246,6 +255,14 @@ module.exports = (grunt) ->
   # Tasks
   # =====
 
+  # Prepare
+  # -------
+  grunt.registerTask 'prepare', [
+    'clean'
+    'bower'
+    'clean:components'
+  ]
+
   # Build
   # -----
   grunt.registerTask 'build:commonjs', [
@@ -278,6 +295,7 @@ module.exports = (grunt) ->
   # Test
   # ----
   grunt.registerTask 'test', [
+    'prepare'
     'build:amd'
     'copy:test'
     'coffee:test'

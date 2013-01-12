@@ -3,8 +3,8 @@
 
 # Generated folders from build process
 /build
-temp
+temp*
 
 # Local package dependencies
 /node_modules
-/test/components
+components
