@@ -16,10 +16,12 @@
     "grunt-contrib-concat": "git://github.com/mehcode/grunt-contrib-concat.git#frozen",
     "grunt-contrib-copy": "git://github.com/concordusapps/grunt-contrib-copy.git",
     "grunt-contrib-compress": "0.3.x",
+    "grunt-contrib-uglify": "git://github.com/concordusapps/grunt-contrib-uglify.git#frozen",
     "grunt-filesize": "0.0.x",
+    "grunt-istanbul": "git://github.com/taichi/grunt-istanbul.git",
     "grunt-urequire": "git://github.com/concordusapps/grunt-urequire",
     "grunt-coffeelint": "0.0.x",
-    "grunt-mocha": "0.2.x",
+    "grunt-mocha": "git://github.com/concordusapps/grunt-mocha.git",
     "phantomjs": "1.8.x"
   }
 }

@@ -45,7 +45,7 @@ module.exports = (grunt) ->
     clean:
       build: 'build'
       temp: 'temp'
-      test: 'test/temp'
+      test: ['test/temp*', 'test/coverage']
 
     # Compilation
     # -----------
@@ -55,6 +55,15 @@ module.exports = (grunt) ->
           expand: true
           dest: 'temp/'
           cwd: 'src'
+          src: '**/*.coffee'
+          ext: '.js'
+        ]
+
+      test:
+        files: [
+          expand: true
+          dest: 'test/temp/'
+          cwd: 'test/spec'
           src: '**/*.coffee'
           ext: '.js'
         ]
@@ -91,7 +100,7 @@ module.exports = (grunt) ->
             """
             require.define({'#{name}': function(exports, require, module) {
             #{content}
-            });
+            }});
             """
 
       amd:
@@ -106,6 +115,30 @@ module.exports = (grunt) ->
           processContent: (content, path) ->
             name = ///temp/(.*)\.js///.exec(path)[1]
             content.replace ///define\(///, "define('#{name}',"
+
+      test:
+        files: [
+          expand: true
+          dest: 'test/temp/'
+          cwd: 'temp'
+          src: '**/*.js'
+        ]
+
+      beforeInstrument:
+        files: [
+          expand: true
+          dest: 'test/temp:original/'
+          cwd: 'test/temp'
+          src: '**/*.js'
+        ]
+
+      afterInstrument:
+        files: [
+          expand: true
+          dest: 'test/temp/'
+          cwd: 'test/temp:original'
+          src: '**/*.js'
+        ]
 
     # Module concatenation
     # --------------------
@@ -139,6 +172,72 @@ module.exports = (grunt) ->
       source: 'src/**/*.coffee'
       grunt: 'Gruntfile.coffee'
 
+    # Instrumentation
+    # ---------------
+    instrument:
+      files: [
+        'test/temp/chaplin.js'
+        'test/temp/chaplin/**/*.js'
+      ]
+
+      options:
+        basePath: '.'
+
+    storeCoverage:
+      options:
+        dir : '.'
+        json : 'coverage.json'
+        coverageVar : '__coverage__'
+
+    makeReport:
+      src: 'coverage.json'
+      options:
+        type: 'html'
+        dir: 'test/coverage'
+
+    # Test runner
+    # -----------
+    mocha:
+      index:
+        src: [ 'test/index.html' ]
+
+    # Minify
+    # ------
+    uglify:
+      options:
+        mangle: false
+
+      amd:
+        files:
+          'build/amd/chaplin.min.js': 'build/amd/chaplin.js'
+
+      commonjs:
+        files:
+          'build/commonjs/chaplin.min.js': 'build/commonjs/chaplin.js'
+
+    # Compression
+    # -----------
+    compress:
+      amd:
+        files:
+          'build/amd/chaplin.min.js.gz': 'build/amd/chaplin.min.js'
+
+      commonjs:
+        files:
+          'build/commonjs/chaplin.min.js.gz': 'build/commonjs/chaplin.min.js'
+
+    # Filesize
+    # --------
+    filesize:
+      build:
+        files: 'build/**/*'
+
+  # Events
+  # ======
+  grunt.event.on 'mocha.done', (failed, passed, total, time, coverage) ->
+    # This is needed so the coverage reporter will find the coverage variable.
+    global.__coverage__ = coverage
+
   # Dependencies
   # ============
   for name of pkg.devDependencies when name.substring(0, 6) is 'grunt-'
@@ -149,18 +248,52 @@ module.exports = (grunt) ->
 
   # Build
   # -----
-  grunt.registerTask 'build', [
-    'clean:temp'
+  grunt.registerTask 'build:commonjs', [
     'coffee:compile'
     'copy:commonjs'
     'concat:commonjs'
-    'clean:temp'
+    'uglify:commonjs'
+    'compress:commonjs'
+  ]
+
+  grunt.registerTask 'build:amd', [
     'coffee:compile'
     'urequire'
     'copy:amd'
     'concat:amd'
+    'uglify:amd'
+    'compress:amd'
+  ]
+
+  grunt.registerTask 'build', [
+    'build:amd'
+    'build:commonjs'
+    'filesize'
   ]
 
   # Lint
   # ----
   grunt.registerTask 'lint', 'coffeelint'
+
+  # Test
+  # ----
+  grunt.registerTask 'test', [
+    'build:amd'
+    'copy:test'
+    'coffee:test'
+    'copy:beforeInstrument'
+    'instrument'
+    'mocha'
+    'storeCoverage'
+    'copy:afterInstrument'
+    'makeReport'
+  ]
+
+  # Default
+  # -------
+  grunt.registerTask 'default', [
+    'lint'
+    'clean'
+    'build'
+    'test'
+  ]
