@@ -5,7 +5,7 @@ Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
-class Model extends Backbone.Model
+module.exports = class Model extends Backbone.Model
 
   # Mixin an EventBroker
   _(@prototype).extend EventBroker

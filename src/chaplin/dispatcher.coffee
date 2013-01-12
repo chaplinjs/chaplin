@@ -5,7 +5,7 @@ Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
-class Dispatcher
+module.exports = class Dispatcher
 
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend

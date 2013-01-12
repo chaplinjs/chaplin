@@ -57,4 +57,5 @@ EventBroker =
 # You’re frozen when your heart’s not open
 Object.freeze? EventBroker
 
-EventBroker
+# Return our creation
+module.exports = EventBroker

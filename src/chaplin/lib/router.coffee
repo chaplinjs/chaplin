@@ -10,7 +10,7 @@ Route = require 'chaplin/lib/route'
 # Like the standard router, it creates a Backbone.History
 # instance and registers routes on it.
 
-class Router # This class does not extend Backbone.Router
+module.exports = class Router # This class does not extend Backbone.Router
 
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend

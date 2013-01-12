@@ -10,7 +10,7 @@ Collection = require 'chaplin/models/collection'
 # Shortcut to access the DOM manipulation library
 $ = Backbone.$
 
-class View extends Backbone.View
+module.exports = class View extends Backbone.View
 
   # Mixin an EventBroker
   _(@prototype).extend EventBroker

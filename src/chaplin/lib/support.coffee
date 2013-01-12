@@ -18,4 +18,5 @@ support =
     catch error
       return false
 
-support
+# Return our creation
+module.exports = support

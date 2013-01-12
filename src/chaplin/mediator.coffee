@@ -51,4 +51,4 @@ mediator.seal = ->
 utils.readonly mediator, 'seal'
 
 # Return our creation
-mediator
+module.exports = mediator

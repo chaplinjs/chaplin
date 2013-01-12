@@ -4,7 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
 
-class Controller
+module.exports = class Controller
 
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend

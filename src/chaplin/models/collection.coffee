@@ -7,7 +7,7 @@ Model = require 'chaplin/models/model'
 
 # Abstract class which extends the standard Backbone collection
 # in order to add some functionality
-class Collection extends Backbone.Collection
+module.exports = class Collection extends Backbone.Collection
 
   # Mixin an EventBroker
   _(@prototype).extend EventBroker

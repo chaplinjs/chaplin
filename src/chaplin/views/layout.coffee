@@ -8,7 +8,7 @@ EventBroker = require 'chaplin/lib/event_broker'
 # Shortcut to access the DOM manipulation library
 $ = Backbone.$
 
-class Layout # This class does not extend View
+module.exports = class Layout # This class does not extend View
 
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend

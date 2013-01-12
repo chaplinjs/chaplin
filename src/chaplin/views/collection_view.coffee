@@ -11,7 +11,7 @@ $ = Backbone.$
 # Derive this class and declare at least `itemView` or override
 # `getView`. `getView` gets an item model and should instantiate
 # and return a corresponding item view.
-class CollectionView extends View
+module.exports = class CollectionView extends View
 
   # Configuration options
   # ---------------------

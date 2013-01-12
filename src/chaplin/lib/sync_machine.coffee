@@ -85,4 +85,5 @@ for event in [UNSYNCED, SYNCING, SYNCED, STATE_CHANGE]
 # You’re frozen when your heart’s not open
 Object.freeze? SyncMachine
 
-SyncMachine
+# Return our creation
+module.exports = SyncMachine

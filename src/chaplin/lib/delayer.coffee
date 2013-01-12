@@ -73,4 +73,5 @@ Delayer =
 # You’re frozen when your heart’s not open
 Object.freeze? Delayer
 
-Delayer
+# Return our creation
+module.exports = Delayer

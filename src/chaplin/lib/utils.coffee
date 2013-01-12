@@ -91,4 +91,5 @@ utils =
 # Seal the utils object
 Object.seal? utils
 
-utils
+# Return our creation
+module.exports = utils
