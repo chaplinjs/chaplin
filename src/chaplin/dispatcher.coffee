@@ -186,7 +186,7 @@ module.exports = class Dispatcher
       if previous and typeof previous.then is 'function'
         previous.then (data) =>
           # Execute as long as the currentController is the callee for this promise
-          if not @currentController or controller is @currentController
+          if not @currentController or controllerName is @currentControllerName
             next beforeActions.shift(), data
       else
         next beforeActions.shift(), previous
