@@ -14,23 +14,17 @@ In models and views, there is a shortcut for subscribing to global events:
 
 This method has the advantage of removing the subscription on model or view disposal.
 
-The `subscribeEvent` method has a counterpart `unsubscribeEvent`. These mehods are defined in the `Subscriber` mixin, which also provides the `unsubscribeAllEvents` method.
+The `subscribeEvent` method has a counterpart `unsubscribeEvent`. These mehods are defined in the `EventBroker` mixin, which also provides the `publishEvent` and `unsubscribeAllEvents` methods.
 
 ## Model Events
 
-In views, the standard `@model.bind` way to register a handler for a model event should not be used. Use the memory-saving wrapper `modelBind` instead:
+In views, the standard `@model.on` way to register a handler for a model event should not be used. Use the memory-saving wrapper `listenTo` instead:
 
 ```coffeescript
-@modelBind 'add', @doSomething
+@listenTo @model, 'add', @doSomething
 ```
 
-In a model, it’s fine to use `bind` directly as long as the handler is a method of the model itself.
-
-A view also provides `modelUnbind` and `modelUnbindAll` for deregistering. The latter is called automatically on view disposal.
-
-```coffeescript
-@modelUnbind 'add', @doSomething
-```
+In a model, it’s fine to use `on` directly as long as the handler is a method of the model itself.
 
 ## User Input Events
 
