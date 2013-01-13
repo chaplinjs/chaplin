@@ -8,3 +8,6 @@ temp*
 # Local package dependencies
 /node_modules
 components
+
+# Coverage report
+coverage*
