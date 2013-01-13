@@ -24,9 +24,9 @@ define [
 
     # Simple duck-typing serializer for models and collections.
     serialize: (data) ->
-      if data.serialize
+      if typeof data.serialize is 'function'
         data.serialize()
-      else if data.toJSON
+      else if typeof data.toJSON is 'function'
         data.toJSON()
       else
         throw new TypeError 'utils.serialize: Unknown data was passed'
