@@ -142,8 +142,8 @@ define [
       # Set the $list property with the actual list container
       @$list = if @listSelector then @$(@listSelector) else @$el
 
-      @initFallback()
-      @initLoadingIndicator()
+      @_initFallback()
+      @_initLoadingIndicator()
 
       # Render all items
       @renderAllItems() if @renderItems
@@ -166,7 +166,7 @@ define [
     # Fallback message when the collection is empty
     # ---------------------------------------------
 
-    initFallback: ->
+    _initFallback: ->
       return unless @fallbackSelector
 
       # Set the $fallback property
@@ -196,7 +196,7 @@ define [
     # Loading indicator
     # -----------------
 
-    initLoadingIndicator: ->
+    _initLoadingIndicator: ->
       # The loading indicator only works for Collections
       # which are SyncMachines.
       return unless @loadingSelector and
