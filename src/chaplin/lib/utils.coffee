@@ -22,6 +22,15 @@ define [
           ctor.prototype = obj
           new ctor
 
+    # Simple duck-typing serializer for models and collections.
+    serialize: (data) ->
+      if typeof data.serialize is 'function'
+        data.serialize()
+      else if typeof data.toJSON is 'function'
+        data.toJSON()
+      else
+        throw new TypeError 'utils.serialize: Unknown data was passed'
+
     # Make properties readonly and not configurable
     # using ECMAScript 5 property descriptors
     readonly: do ->
