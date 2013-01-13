@@ -1,7 +1,7 @@
 # Chaplin 0.7.0 (unreleased)
-* Query string params are now passed to controllers
-  (a feature removed from Backbone 0.9.9).
 * Improved `Chaplin.Controller`:
+    * Query string params are now passed to controllers
+      (a feature removed from Backbone 0.9.9). 
     * Controller actions will now receive `options` hash
       as second argument, that contains `path`, `previousControllerName`
       and routing options.
