@@ -72,9 +72,10 @@ module.exports = class Router # This class does not extend Backbone.Router
   # Route a given URL path manually, returns whether a route matched
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)
-  # and passes a changeURL param to the callback function.
+  # and passes the routing options to the callback function.
   route: (path, options = {}) =>
     _(options).defaults
+      # Update the URL programmatically after routing
       changeURL: true
 
     # Remove leading hash or slash

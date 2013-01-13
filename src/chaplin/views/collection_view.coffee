@@ -75,8 +75,7 @@ module.exports = class CollectionView extends View
   # A function that will be executed after each filter.
   # Hides excluded items by default.
   filterCallback: (view, included) ->
-    display = if included then '' else 'none'
-    view.$el.stop(true, true).css('display', display)
+    view.$el.stop(true, true).toggle included
 
   # View lists
 
@@ -191,7 +190,7 @@ module.exports = class CollectionView extends View
         # Assume it is synced
         true
     )
-    @$fallback.css 'display', if visible then 'block' else 'none'
+    @$fallback.toggle visible
 
   # Loading indicator
   # -----------------
@@ -218,7 +217,7 @@ module.exports = class CollectionView extends View
     # show up in this case, you need to overwrite this method to
     # disable the check.
     visible = @collection.length is 0 and @collection.isSyncing()
-    @$loading.css 'display', if visible then 'block' else 'none'
+    @$loading.toggle visible
 
   # Filtering
   # ---------
@@ -389,8 +388,8 @@ module.exports = class CollectionView extends View
           $previous = children.eq position - 1
           $previous.after viewEl
 
-    # Tell the view that it was added to the DOM
-    view.trigger 'addedToDOM'
+    # Tell the view that it was added to its parent.
+    view.trigger 'addedToParent'
 
     # Update the list of visible items, trigger a `visibilityChange` event
     @updateVisibleItems item, included

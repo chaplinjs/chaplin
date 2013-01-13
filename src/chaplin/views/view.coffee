@@ -160,34 +160,13 @@ module.exports = class View extends Backbone.View
   # of the parent view if it exists.
   delegateEvents: ->
     @undelegateEvents()
-
-    # Get 'events' props from every prototype,
-    # filter-out falsy values and duplicates.
-    _(utils.getPrototypeChain this)
-      .chain()
-      .pluck('events')
-      .compact()
-      .uniq()
-      .each (events) =>
-        @_delegateEvents events
+    for events in utils.getAllPropertyVersions this, 'events'
+      @_delegateEvents events
     return
 
   # Remove all handlers registered with @delegate.
   undelegate: ->
     @$el.unbind ".delegate#{@cid}"
-
-  # Setup a simple one-way model-view binding
-  # Pass changed attribute values to specific elements in the view
-  # For form controls, the value is changed, otherwise the element
-  # text content is set to the model attribute value.
-  # Example: @pass 'attribute', '.selector'
-  pass: (attribute, selector) ->
-    @listenTo @model, "change:#{attribute}", (model, value) =>
-      $el = @$(selector)
-      if $el.is('input, textarea, select, button')
-        $el.val value
-      else
-        $el.text value
 
   # Subviews
   # --------

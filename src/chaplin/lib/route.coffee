@@ -26,7 +26,7 @@ module.exports = class Route
     # Store the name on the route if given
     @name = @options.name if @options.name?
 
-    # Initialise list of :params which the route will use.
+    # Initialize list of :params which the route will use.
     @paramNames = []
 
     # Check if the action is a reserved name
@@ -109,10 +109,13 @@ module.exports = class Route
     return true
 
   # The handler which is called by Backbone.History when the route matched.
-  # It is also called by Router#route which might pass options
+  # It is also called by Router#route which might pass options.
   handler: (path, options = {}) =>
+    # If no query string was passed, use the current
+    queryString = options.queryString ? @getCurrentQueryString()
+
     # Build params hash
-    params = @buildParams path
+    params = @buildParams path, queryString
 
     # Add a `path` routing option with the whole path match
     options.path = path
@@ -121,11 +124,15 @@ module.exports = class Route
     # Original options hash forwarded to allow further forwarding to backbone
     @publishEvent 'matchRoute', this, params, options
 
+  # Returns the query string for the current document
+  getCurrentQueryString: ->
+    location.search.substring 1
+
   # Create a proper Rails-like params hash, not an array like Backbone
-  buildParams: (path) ->
+  buildParams: (path, queryString) ->
     _.extend {},
       # Add params from query string
-      @extractQueryParams(path),
+      @extractQueryParams(queryString),
       # Add named params from pattern matches
       @extractParams(path),
       # Add additional params from options
@@ -147,14 +154,9 @@ module.exports = class Route
     params
 
   # Extract parameters from the query string
-  extractQueryParams: (path) ->
+  extractQueryParams: (queryString) ->
     params = {}
-
-    regExp = /\?(.+?)(?=#|$)/
-    matches = regExp.exec path
-    return params unless matches
-
-    queryString = matches[1]
+    return params unless queryString
     pairs = queryString.split queryStringFieldSeparator
     for pair in pairs
       continue unless pair.length

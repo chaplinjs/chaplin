@@ -6,9 +6,10 @@ define [
   'chaplin/dispatcher'
 ], (_, $, mediator, Controller, Dispatcher) ->
   'use strict'
+
   describe 'Dispatcher', ->
     # Initialize shared variables
-    dispatcher = params = routeOptions = null
+    dispatcher = params = options = null
 
     # Fake route objects, walk like a route and swim like a route
 
@@ -20,28 +21,30 @@ define [
 
     # Define test controllers
 
-    Test1Controller = class Test1Controller extends Controller
-      initialize: (params, oldControllerName) ->
-        #console.debug 'Test1Controller#initialize', params.id, oldControllerName
+    class Test1Controller extends Controller
+
+      initialize: (params, options) ->
+        #console.debug 'Test1Controller#initialize', params, options
         super
 
-      show: (params, oldControllerName) ->
-        #console.debug 'Test1Controller#show', params, oldControllerName
+      show: (params, options) ->
+        #console.debug 'Test1Controller#show', params, options
 
-      redirectToURL: (params, oldControllerName) ->
+      redirectToURL: (params, options) ->
         @redirectTo '/test/123'
 
       dispose: (params, newControllerName) ->
         #console.debug 'Test1Controller#dispose'
         super
 
-    Test2Controller = class Test2Controller extends Controller
-      initialize: (params, oldControllerName) ->
-        #console.debug 'Test2Controller#initialize', params, oldControllerName
+    class Test2Controller extends Controller
+
+      initialize: (params, options) ->
+        #console.debug 'Test2Controller#initialize', params, options
         super
 
-      show: (params, oldControllerName) ->
-        #console.debug 'Test2Controller#show', params, oldControllerName
+      show: (params, options) ->
+        #console.debug 'Test2Controller#show', params, options
 
       dispose: (params, newControllerName) ->
         #console.debug 'Test2Controller#dispose'
@@ -54,8 +57,8 @@ define [
     define test2Module, -> Test2Controller
 
     # Helpers for asynchronous tests
-    loadTest1ControllerAndExecute = (callback) -> require [test1Module], callback
-    loadTest2ControllerAndExecute = (callback) -> require [test2Module], callback
+    loadTest1Controller = (callback) -> require [test1Module], callback
+    loadTest2Controller = (callback) -> require [test2Module], callback
 
     # Create a fresh Dispatcher instance for each test
 
@@ -68,13 +71,10 @@ define [
 
     # Reset helpers
 
-    # Unique ID counter for creating params objects
-    paramsId = 0
-
+    # Create fresh params and options
     refreshParams = ->
-      # Create a fresh params object which does not equal the previous one
-      params = id: paramsId++
-      routeOptions = changeURL: false, path: "test/#{params.id}"
+      params = id: _.uniqueId('paramsId')
+      options = changeURL: false, path: "test/#{params.id}"
 
     beforeEach refreshParams
 
@@ -84,28 +84,29 @@ define [
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
-        expect(initialize).was.calledWith params, null
-        expect(action).was.calledWith params, null
+      loadTest1Controller ->
+        expect(initialize).was.calledWith params, options
+        expect(action).was.calledWith params, options
+
+        expect(options.previousControllerName).to.be null
 
         initialize.restore()
         action.restore()
-
         done()
 
     it 'should not start the same controller if params match', (done)->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
+      loadTest1Controller ->
         proto = Test1Controller.prototype
         initialize = sinon.spy proto, 'initialize'
         action     = sinon.spy proto, 'show'
 
-        mediator.publish 'matchRoute', route1, params, routeOptions
+        mediator.publish 'matchRoute', route1, params, options
 
-        loadTest1ControllerAndExecute ->
+        loadTest1Controller ->
           expect(initialize).was.notCalled()
           expect(action).was.notCalled()
 
@@ -115,18 +116,18 @@ define [
           done()
 
     it 'should start the same controller if params differ', (done) ->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
       proto = Test1Controller.prototype
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
       refreshParams()
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
-        expect(initialize).was.calledWith params, 'test1'
-        expect(action).was.calledWith params, 'test1'
+      loadTest1Controller ->
+        expect(initialize).was.calledWith params, options
+        expect(action).was.calledWith params, options
 
         initialize.restore()
         action.restore()
@@ -134,18 +135,18 @@ define [
         done()
 
     it 'should start the same controller if forced', (done) ->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
       proto = Test1Controller.prototype
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
-      routeOptions.forceStartup = true
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      options.forceStartup = true
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
-        expect(initialize).was.calledWith params, 'test1'
-        expect(action).was.calledWith params, 'test1'
+      loadTest1Controller ->
+        expect(initialize).was.calledWith params, options
+        expect(action).was.calledWith params, options
 
         initialize.restore()
         action.restore()
@@ -153,15 +154,11 @@ define [
         done()
 
     it 'should save the controller, action, params and url', (done) ->
-
-      # Call one route
-      mediator.publish 'matchRoute', route1, params, routeOptions
-
-      # Now open another route
-      mediator.publish 'matchRoute', route2, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
+      mediator.publish 'matchRoute', route2, params, options
 
       # Check that previous route is saved
-      loadTest2ControllerAndExecute ->
+      loadTest2Controller ->
         d = dispatcher
         expect(d.previousControllerName).to.be 'test1'
         expect(d.currentControllerName).to.be 'test2'
@@ -172,33 +169,42 @@ define [
 
         done()
 
-    it 'should dispose inactive controllers and fire beforeControllerDispose events', (done) ->
-      mediator.publish 'matchRoute', route2, params, routeOptions
+    it 'should add the previous controller name to the routing options', (done) ->
+      expect(options.previousControllerName).to.be undefined
+      mediator.publish 'matchRoute', route1, params, options
+      mediator.publish 'matchRoute', route2, params, options
 
-      dispose = sinon.spy Test2Controller.prototype, 'dispose'
+      loadTest1Controller -> loadTest2Controller ->
+        expect(options.previousControllerName).to.be 'test1'
 
-      # Route back to Test1Controller
-      mediator.publish 'matchRoute', route1, params, routeOptions
+        done()
 
-      loadTest2ControllerAndExecute ->
-        expect(dispose).was.calledWith params, 'test1'
+    it 'should dispose inactive controllers', (done) ->
+      dispose = sinon.spy Test1Controller.prototype, 'dispose'
+      mediator.publish 'matchRoute', route1, params, options
+      mediator.publish 'matchRoute', route2, params, options
+
+      loadTest2Controller ->
+        # It should pass the params and the new controller name
+        expect(dispose).was.calledWith params, 'test2'
 
         dispose.restore()
 
         done()
 
     it 'should fire beforeControllerDispose events', (done) ->
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
       beforeControllerDispose = sinon.spy()
       mediator.subscribe 'beforeControllerDispose', beforeControllerDispose
 
       # Now route to Test2Controller
-      mediator.publish 'matchRoute', route2, params, routeOptions
+      mediator.publish 'matchRoute', route2, params, options
 
-      loadTest2ControllerAndExecute ->
-        expect(beforeControllerDispose).was.called()
-        passedController = beforeControllerDispose.lastCall.args[0]
+      loadTest2Controller ->
+        expect(beforeControllerDispose).was.calledOnce()
+        # Event payload should be the now disposed controller
+        passedController = beforeControllerDispose.firstCall.args[0]
         expect(passedController).to.be.a Test1Controller
         expect(passedController.disposed).to.be true
 
@@ -207,21 +213,34 @@ define [
         done()
 
     it 'should publish startupController events', (done) ->
-      mediator.publish 'matchRoute', route2, params, routeOptions
-
       startupController = sinon.spy()
       mediator.subscribe 'startupController', startupController
 
-      # Route back to Test1Controller
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
+      mediator.publish 'matchRoute', route2, params, options
 
-      loadTest1ControllerAndExecute ->
-        passedEvent = startupController.lastCall.args[0]
+      loadTest1Controller ->
+        expect(startupController).was.calledTwice()
+
+        args = startupController.firstCall.args
+        expect(args.length).to.be 1
+        passedEvent = args[0]
         expect(passedEvent).to.be.an 'object'
+        expect(passedEvent.previousControllerName).to.be null
         expect(passedEvent.controller).to.be.a Test1Controller
         expect(passedEvent.controllerName).to.be 'test1'
         expect(passedEvent.params).to.be params
-        expect(passedEvent.previousControllerName).to.be 'test2'
+        expect(passedEvent.options).to.be options
+
+        args = startupController.secondCall.args
+        expect(args.length).to.be 1
+        passedEvent = args[0]
+        expect(passedEvent).to.be.an 'object'
+        expect(passedEvent.previousControllerName).to.be 'test1'
+        expect(passedEvent.controller).to.be.a Test2Controller
+        expect(passedEvent.controllerName).to.be 'test2'
+        expect(passedEvent.params).to.be params
+        expect(passedEvent.options).to.be options
 
         mediator.unsubscribe 'startupController', startupController
 
@@ -231,49 +250,60 @@ define [
       spy = sinon.spy()
       mediator.subscribe '!router:changeURL', spy
 
-      routeOptions = replace: true, path: 'some-path'
-      dispatcher.startupController 'test1', 'show', params, routeOptions
+      options = path: 'my-little-path'
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
-        expect(spy).was.calledWith routeOptions.path, routeOptions
+      loadTest1Controller ->
+        expect(spy).was.calledWith options.path, options
 
         mediator.unsubscribe '!router:changeURL', spy
 
         done()
 
-    it 'should use the path from the route options', (done) ->
+    it 'should not adjust the URL if not desired', (done) ->
       spy = sinon.spy()
       mediator.subscribe '!router:changeURL', spy
 
-      routeOptions = path: 'custom-path-from-options'
-      dispatcher.startupController 'test1', 'show', params, routeOptions
+      options = path: 'my-little-path', changeURL: false
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
-        expect(spy).was.calledWith routeOptions.path, routeOptions
+      loadTest1Controller ->
+        expect(spy).was.notCalled()
+
+        mediator.unsubscribe '!router:changeURL', spy
+
+        done()
+
+    it 'should use add the query string when adjusting the URL', (done) ->
+      spy = sinon.spy()
+      mediator.subscribe '!router:changeURL', spy
+
+      options = path: 'my-little-path', queryString: '?foo=bar'
+      mediator.publish 'matchRoute', route1, params, options
+
+      loadTest1Controller ->
+        expect(spy).was.calledWith "#{options.path}?#{options.queryString}",
+          options
 
         mediator.unsubscribe '!router:changeURL', spy
 
         done()
 
     it 'should support redirection to a URL', (done) ->
-
-      # Open a route to check if previous controller info is correct after
-      # redirection
-
-      mediator.publish 'matchRoute', route1, params, routeOptions
-      refreshParams()
-
-      action = sinon.spy Test1Controller.prototype, 'redirectToURL'
-
       startupController = sinon.spy()
       mediator.subscribe 'startupController', startupController
 
+      # Open a route to check if previous controller info is correct after
+      # redirection
+      mediator.publish 'matchRoute', route1, params, options
+      refreshParams()
+
       # Open another route that redirects somewhere
+      action = sinon.spy Test1Controller.prototype, 'redirectToURL'
+      mediator.publish 'matchRoute', redirectToURLRoute, params, options
 
-      mediator.publish 'matchRoute', redirectToURLRoute, params, routeOptions
-
-      loadTest1ControllerAndExecute ->
-        expect(action).was.calledWith params, 'test1'
+      loadTest1Controller ->
+        expect(action).was.calledWith params, options
 
         # Don’t expect that the new controller was called
         # because we’re not testing the router. Just test
@@ -298,9 +328,9 @@ define [
       dispatcher.dispose()
 
       initialize = sinon.spy Test1Controller.prototype, 'initialize'
-      mediator.publish 'matchRoute', route1, params, routeOptions
+      mediator.publish 'matchRoute', route1, params, options
 
-      loadTest1ControllerAndExecute ->
+      loadTest1Controller ->
         expect(initialize).was.notCalled()
 
         expect(dispatcher.disposed).to.be true
@@ -324,20 +354,21 @@ define [
       route = controller: 'test_before_actions', action: 'show'
 
       class TestBeforeActionsController extends Controller
+
         beforeAction:
           show: ->
           index: ->
 
-        show: (params, oldControllerName) ->
+        show: ->
 
-        index: (params, oldControllerName) ->
+        index: ->
 
       # Define a test controller AMD module
       testBeforeActionsModule = 'controllers/test_before_actions_controller'
       define testBeforeActionsModule, -> TestBeforeActionsController
 
       # Helpers for asynchronous tests
-      loadBeforeActionsAndExecute = (callback) ->
+      loadBeforeActionsController = (callback) ->
         require [testBeforeActionsModule], callback
 
       it 'should not run executeAction directly if before actions are present', (done) ->
@@ -345,9 +376,9 @@ define [
         # Replace executeBeforeActionChain with a no-op stub
         executeBeforeActionChain = sinon.stub dispatcher, 'executeBeforeActionChain'
 
-        mediator.publish 'matchRoute', route, params, routeOptions
+        mediator.publish 'matchRoute', route, params, options
 
-        loadBeforeActionsAndExecute ->
+        loadBeforeActionsController ->
           expect(executeAction).was.notCalled()
           expect(executeBeforeActionChain).was.called()
           expect(executeBeforeActionChain.firstCall.args[0]).to.be.a(
@@ -362,11 +393,10 @@ define [
       it 'should call executeAction after with exactly the same arguments', (done) ->
         executeAction = sinon.spy dispatcher, 'executeAction'
 
-        mediator.publish 'matchRoute', route, params, routeOptions
+        mediator.publish 'matchRoute', route, params, options
 
-        loadBeforeActionsAndExecute ->
+        loadBeforeActionsController ->
           args = executeAction.firstCall.args
-
           expect(args).to.have.length 5
           expect(args[0]).to.be.a TestBeforeActionsController
           expect(args[1]).to.be 'test_before_actions'
@@ -382,6 +412,7 @@ define [
         called = []
 
         class TestController extends Controller
+
           beforeAction:
             show: -> called.push 'showBeforeAction'
             'show*': 'beforeShow'
@@ -397,7 +428,7 @@ define [
         controller = new TestController()
 
         dispatcher.executeBeforeActionChain controller, 'test', 'show',
-          params, routeOptions
+          params, options
 
         expect(called).to.have.length 2
         expect(called).to.contain 'showBeforeAction'
@@ -406,50 +437,56 @@ define [
         called = []
 
         dispatcher.executeBeforeActionChain controller, 'test', 'create',
-          params, routeOptions
+          params, options
 
         expect(called).to.have.length 1
         expect(called).to.contain 'createBeforeAction'
 
       it 'should run all before actions of the whole prototype chain in correct order', ->
 
+        userModel = isAdmin: -> true
+
         class BaseController extends Controller
+
           beforeAction:
             '.*': 'loadSession'
 
           loadSession: ->
-            userModel = isAdmin: -> true
+            userModel
 
         class AdminController extends BaseController
 
           beforeAction:
             '.*': 'checkAdminPrivileges'
 
-          checkAdminPrivileges: (params, userModel) ->
+          checkAdminPrivileges: (params, options, userModel) ->
             unless userModel.isAdmin()
               @redirectTo '500'
+            return
 
         class UserBanningController extends AdminController
 
           beforeAction:
             index: 'loadUsers'
 
-          index: ->
-
           loadUsers: ->
+
+          index: ->
 
         loadSession = sinon.spy BaseController.prototype, 'loadSession'
         checkAdminPrivileges = sinon.spy AdminController.prototype,
           'checkAdminPrivileges'
         loadUsers = sinon.spy UserBanningController.prototype, 'loadUsers'
+        indexAction = sinon.spy UserBanningController.prototype, 'index'
 
         controller = new UserBanningController()
         dispatcher.executeBeforeActionChain controller, 'user_banning',
-          'index', params, routeOptions
+          'index', params, options
 
-        expect(loadSession).was.called()
-        expect(checkAdminPrivileges).was.called()
-        expect(loadUsers).was.called()
+        expect(loadSession).was.calledWith params, options
+        expect(checkAdminPrivileges).was.calledWith params, options, userModel
+        expect(loadUsers).was.calledWith params, options
+        expect(indexAction).was.calledWith params, options
 
         expect(loadSession).was.calledOn controller
         expect(checkAdminPrivileges).was.calledOn controller
@@ -461,6 +498,7 @@ define [
       it 'should throw an error if a before action method isn’t a function or a string', ->
 
         class BrokenBeforeActionController extends Controller
+
           beforeAction:
             index: new Date()
 
@@ -470,35 +508,38 @@ define [
 
         failFn = ->
           dispatcher.executeBeforeActionChain controller, 'broken_before_action',
-            'index', params, routeOptions
+            'index', params, options
 
         expect(failFn).to.throwError()
 
       it 'should handle sync. before actions then pass the params and the returned value', ->
-        previousReturnValueToCheck = null
+        showBeforeAction = sinon.spy()
 
         class BeforeActionChainController extends Controller
+
           beforeAction:
             '.*': (params) ->
               params.bar = 'qux'
+              options.bar = 'qux'
               # This return value should be passed to next before action in the chain
               'foo'
-            show: (params, previousReturnValue) ->
-              previousReturnValueToCheck = previousReturnValue
+            show: showBeforeAction
 
           show: ->
 
         controller = new BeforeActionChainController()
         dispatcher.executeBeforeActionChain controller,
-          'before_action_chain', 'show', params, routeOptions
-        expect(params.bar).to.be 'qux'
+          'before_action_chain', 'show', params, options
 
-        # This is done here to ensure the method before actions are actually
-        # run synchronous and not asynchronous.
-        expect(previousReturnValueToCheck).to.be 'foo'
+        expect(params.bar).to.be 'qux'
+        expect(options.bar).to.be 'qux'
+
+        # Ensure the before actions are run synchronous
+        expect(showBeforeAction).was.calledWith params, options, 'foo'
 
       it 'should handle single async. before action', ->
         deferred = $.Deferred()
+        promise = deferred.promise()
 
         class AsyncBeforeActionChainController extends Controller
 
@@ -507,7 +548,7 @@ define [
           beforeAction:
             '.*': ->
               # Returning a promise here triggers asynchronous behavior.
-              deferred.promise()
+              promise
 
           show: ->
 
@@ -516,7 +557,7 @@ define [
         action = sinon.spy controller, 'show'
 
         dispatcher.executeBeforeActionChain controller,
-          'async_before_action_chain', 'show', params, routeOptions
+          'async_before_action_chain', 'show', params, options
 
         expect(action).was.notCalled()
 
@@ -545,7 +586,7 @@ define [
         beforeAction = sinon.spy controller.beforeAction, 'show'
 
         dispatcher.executeBeforeActionChain controller,
-          'async_before_action_chain', 'show', params, routeOptions
+          'async_before_action_chain', 'show', params, options
 
         expect(beforeAction).was.notCalled()
         expect(action).was.notCalled()
@@ -554,6 +595,7 @@ define [
         deferred.resolve resolveArgument
 
         expect(beforeAction).was.calledOnce()
-        expect(beforeAction).was.calledWith params, resolveArgument
+        expect(beforeAction).was.calledWith params, options, resolveArgument
 
         expect(action).was.calledOnce()
+        expect(action).was.calledWith params, options
