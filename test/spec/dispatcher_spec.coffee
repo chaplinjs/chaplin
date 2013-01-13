@@ -483,10 +483,10 @@ define [
         dispatcher.executeBeforeActionChain controller, 'user_banning',
           'index', params, options
 
-        expect(loadSession).was.calledWith params, options
+        expect(loadSession).was.calledWith params
         expect(checkAdminPrivileges).was.calledWith params, options, userModel
-        expect(loadUsers).was.calledWith params, options
-        expect(indexAction).was.calledWith params, options
+        expect(loadUsers).was.calledWith params
+        expect(indexAction).was.calledWith params
 
         expect(loadSession).was.calledOn controller
         expect(checkAdminPrivileges).was.calledOn controller
@@ -598,4 +598,48 @@ define [
         expect(beforeAction).was.calledWith params, options, resolveArgument
 
         expect(action).was.calledOnce()
-        expect(action).was.calledWith params, options
+        expect(action).was.calledWith params
+
+      it 'should not call a deferred callback upon a new route being fired with a different controller', (done) ->
+        deferred = $.Deferred()
+        promise = deferred.promise()
+        route1 = controller: 'test_stalled_before_actions', action: 'show'
+        route2 = controller: 'test_before_actions', action: 'index'
+
+        # First order controller
+        class TestStalledBeforeActionsController extends Controller
+
+          beforeAction:
+            '.*': ->
+              promise
+            show: ->
+              console.log 'show'
+              null
+
+          show: ->
+            console.log 'show action'
+
+        # Spies
+        proto = TestBeforeActionsController.prototype
+        indexActionSpy = sinon.spy proto, 'index'
+        proto = TestStalledBeforeActionsController.prototype
+        beforeActionSpy = sinon.spy proto.beforeAction, 'show'
+        # Define a test controller AMD module
+        testStalledBeforeActionsModule = 'controllers/test_stalled_before_actions_controller'
+        define testStalledBeforeActionsModule, -> TestStalledBeforeActionsController
+        # Helpers for asynchronous tests
+        loadStalledBeforeActionsController = (callback) ->
+          require [testStalledBeforeActionsModule], callback
+
+        mediator.publish 'matchRoute', route1, params, options
+        loadStalledBeforeActionsController ->
+          mediator.publish 'matchRoute', route2, params, options
+          loadBeforeActionsController ->
+            expect(indexActionSpy).was.called()
+
+            deferred.resolve()
+            expect(beforeActionSpy).was.notCalled()
+
+            beforeActionSpy.restore()
+            indexActionSpy.restore()
+            done()
