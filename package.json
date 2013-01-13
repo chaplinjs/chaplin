@@ -25,6 +25,7 @@
     "grunt-mocha": "git://github.com/concordusapps/grunt-mocha.git",
     "phantomjs": "1.8.x"
   },
+  "main": "build/commonjs/chaplin.js",
   "scripts": {
     "install": "grunt build",
     "test": "grunt test"
