@@ -150,4 +150,36 @@ define [
       console.debug 'state changed'
 ```
 
+Another example of using `SyncMachine` with `Model`:
+
+```coffeescript
+class Model extends Chaplin.Model
+  _(@prototype).extend Chaplin.SyncMachine
+
+  fetch: (options = {}) ->
+    @beginSync()
+    success = options.success
+    options.success = (model, response) =>
+      success? model, response
+      @finishSync()
+    super
+
+# Will render view when model data will arrive from server.
+class View extends Chaplin.View
+  rendered: no
+  initialize: ->
+    super
+    # Render.
+    @model.synced =>
+      unless @rendered
+        @render()
+        @rendered = yes
+
+...
+
+model = new Model
+view = new View {model}
+model.fetch()
+```
+
 ## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/lib/sync_machine.coffee)

@@ -13,11 +13,11 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 
 ## Features und purpose
 
-- Rendering model data using templates in a conventional way
-- Robust and memory-safe model binding
-- Automatic rendering and appending to the DOM
-- Creating subviews
-- Disposal which cleans up all subviews, model bindings and Pub/Sub events
+* Rendering model data using templates in a conventional way
+* Robust and memory-safe model binding
+* Automatic rendering and appending to the DOM
+* Creating subviews
+* Disposal which cleans up all subviews, model bindings and Pub/Sub events
 
 <a id="initialize"></a>
 ### initialize(options)
@@ -189,6 +189,19 @@ method signature.
 
 ### removeSubview(nameOrView)
 Remove the specified subview. Can be called with either the `name` associated with the subview, or a reference to the subview instance.
+
+### Usage
+
+```coffeescript
+class YourView extends View
+  renderSubviews: ->
+    @subview 'name', new View
+    @subview('name').render()
+
+  afterRender: ->
+    super
+    @renderSubviews()
+```
 
 # Publish/Subscribe
 
