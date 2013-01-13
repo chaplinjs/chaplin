@@ -86,7 +86,7 @@ By convention, there is a controller for each application module. A controller m
 
 ### Mediator
 
-The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `mediator.publish` in order to notify other modules, and listen for such events using `mediator.subscribe`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
+The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `this.publishEvent` in order to notify other modules, and listen for such events using `this.subscribeEvent`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
 
 [Learn more about the mediator](./chaplin.mediator.md)
 

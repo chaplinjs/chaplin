@@ -8,7 +8,6 @@ Model = require 'chaplin/models/model'
 # Abstract class which extends the standard Backbone collection
 # in order to add some functionality
 module.exports = class Collection extends Backbone.Collection
-
   # Mixin an EventBroker
   _(@prototype).extend EventBroker
 
@@ -21,13 +20,7 @@ module.exports = class Collection extends Backbone.Collection
 
   # Serializes collection
   serialize: ->
-    for model in @models
-      if model instanceof Model
-        # Use optimized Chaplin serialization
-        model.serialize()
-      else
-        # Fall back to unoptimized Backbone stuff
-        model.toJSON()
+    @map utils.serialize
 
   # Adds a collection atomically, i.e. throws no event until
   # all members have been added

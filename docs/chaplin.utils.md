@@ -3,7 +3,7 @@
 Chaplin's utils provide common functions for use throughout the project.
 
 
-## beget
+## beget(object)
 * **returns beget function**
 
 A standard Javascript helper function that creates an object which
@@ -17,7 +17,28 @@ when available, and falls back to a polyfill if not present.
 Makes properties of **object** read-only so they cannot be overwritten
 if the current environment supports it.
 
-## wrapMethod(instance, name) ->
+## getPrototypeChain(object)
+* **Object object**
+
+Gets the whole chain of object prototypes.
+
+## getAllPropertyVersions(object, property)
+* **Object object**
+* **String property**
+
+Get all property versions from object’s prototype chain. Usage:
+
+```coffeescript
+class A
+  prop: 1
+class B extends A
+  prop: 2
+
+b = new B
+getAllPropertyVersions b, 'prop'  # => [1, 2]
+```
+
+## wrapMethod(instance, name)
 * **Object instance**
 * **String name, property of instance**
 * **returns the wrapped method**
@@ -39,7 +60,7 @@ utils.wrapMethod bob, 'show'
 bob.show() # 'one' 'two'
 ```
 
-## Upcase(str)
+## upcase(str)
 * **String str**
 * **returns upcased String**
 
@@ -50,7 +71,7 @@ utils.upcase 'larry bird' # 'Larry bird'
 utils.upcase 'AIR'        # 'AIR'
 ```
 
-## underscorize: (string) ->
+## underscorize(string)
 * **String string**
 * **returns underscorized String**
 

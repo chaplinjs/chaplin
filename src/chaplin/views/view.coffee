@@ -218,20 +218,10 @@ module.exports = class View extends Backbone.View
   # Uses optimized Chaplin serialization if available.
   getTemplateData: ->
     templateData = if @model
-      if @model instanceof Model
-        @model.serialize()
-      else
-        utils.beget @model.attributes
+      utils.serialize @model
     else if @collection
-      # Collection: Serialize all models.
-      items = if @collection instanceof Collection
-        @collection.serialize()
-      else
-        @collection.map (model) ->
-          utils.beget model.attributes
-      {items}
+      {items: utils.serialize(@collection), length: @collection.length}
     else
-      # Empty object.
       {}
 
     modelOrCollection = @model or @collection
