@@ -11,16 +11,11 @@ The easiest way to start a Chaplin application is to download the boilerplate. I
 
 This is just the standard setup. You may substitute Underscore with [Lodash](http://lodash.com/docs), jQuery with [Zepto](http://zeptojs.com/) and RequireJS with different other AMD module loaders like [Curl](https://github.com/cujojs/curl).
 
-The boilerplate comes in two flavours:
+The boilerplate comes in three flavours:
 
-- [CoffeeScript code](https://github.com/chaplinjs/chaplin-boilerplate), if you develop your application in CoffeeScript
-- [Plain JavaScript code](https://github.com/chaplinjs/chaplin-boilerplate-plain), if you develop your application in normal JavaScript
-
-Download the boilerplate using git:
-
-```
-git archive --remote=https://github.com/chaplinjs/chaplin-boilerplate.git  HEAD
-```
+* [CoffeeScript code](https://github.com/chaplinjs/chaplin-boilerplate), if you develop your application in CoffeeScript
+* [Plain JavaScript code](https://github.com/chaplinjs/chaplin-boilerplate-plain), if you develop your application in normal JavaScript
+* [Brunch skeleton](https://github.com/paulmillr/brunch-with-chaplin), if you prefer using [Brunch](http://brunch.io) and synchronous common.js modules.
 
 # Hello World!
 
@@ -30,9 +25,4 @@ The boilerplate contains the necessary files which inherit from the core Chaplin
 
 # Integrating Chaplin into Rails 3
 
-The requirejs-rails gem
-
-# Integrating Chaplin with Brunch
-
-Brunch is an HTML5 application processor running on Node.js. It’s an environment made for developing and delivering single-page JavaScript applications.
-
+Use `requirejs-rails` gem.

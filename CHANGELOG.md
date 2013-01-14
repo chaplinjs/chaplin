@@ -1,7 +1,7 @@
 # Chaplin 0.7.0 (unreleased)
-* Query string params are now passed to controllers
-  (a feature removed from Backbone 0.9.9).
 * Improved `Chaplin.Controller`:
+    * Query string params are now passed to controllers
+      (a feature removed from Backbone 0.9.9). 
     * Controller actions will now receive `options` hash
       as second argument, that contains `path`, `previousControllerName`
       and routing options.
@@ -9,10 +9,18 @@
 * Improved `Chaplin.CollectionView`:
     * Item views will now emit `addedToParent` event instead of `addedToDOM`
     when they are appended to collection view.
+* Improved `Chaplin.Model`:
+    * `Model#serialize` can be overridden on `Backbone.Model`s.
+      Chaplin will use it, if available, and `Model#toJSON` if not.
+* Improved `Chaplin.utils`:
+    * Added `utils.getAllPropertyVersions` that allows to gather all
+      property versions from object’s prototypes.
 * Improved `Chaplin.View`
     * Switched to `$el.toggle()` instead of manual css `display` setting.
     Which means non-block elements will behave correctly.
     * Switched to `Backbone.$` reference for DOM manipulation.
+    * Removed `View#pass`. Use [stickit](http://nytimes.github.com/backbone.stickit/)
+      for advanced model-view binding.
 
 # Chaplin 0.6.0 (December 30, 2012)
 * Updated required Backbone version to 0.9.9+.

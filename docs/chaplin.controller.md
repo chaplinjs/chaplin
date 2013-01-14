@@ -4,10 +4,19 @@ A controller is the place where a model/collection and an associated views are i
 
 ## Methods of `Chaplin.Controller`
 ### adjustTitle(subtitle)
+Adjusts document title to `subtitle - title`. Title template can be set when initializing `Dispatcher`.
+
 ### redirectTo(url, options)
+
+Navigates to `url` in app.
+
 ### redirectToRoute(name, params, options)
-### adjustTitle(options)
+
+Navigates to named route, like `@redirectToRoute 'like', id: 502`.
+
 ### dispose()
+
+Disposes all models and views on current `Controller` instance.
 
 ## Usage
 

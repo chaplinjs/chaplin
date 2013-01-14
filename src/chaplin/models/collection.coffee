@@ -1,81 +1,74 @@
-define [
-  'underscore'
-  'backbone'
-  'chaplin/lib/event_broker'
-  'chaplin/models/model'
-], (_, Backbone, EventBroker, Model) ->
-  'use strict'
+'use strict'
 
-  # Abstract class which extends the standard Backbone collection
-  # in order to add some functionality
-  class Collection extends Backbone.Collection
+_ = require 'underscore'
+Backbone = require 'backbone'
+EventBroker = require 'chaplin/lib/event_broker'
+Model = require 'chaplin/models/model'
+utils = require 'chaplin/lib/utils'
 
-    # Mixin an EventBroker
-    _(@prototype).extend EventBroker
+# Abstract class which extends the standard Backbone collection
+# in order to add some functionality
+module.exports = class Collection extends Backbone.Collection
+  # Mixin an EventBroker
+  _(@prototype).extend EventBroker
 
-    # Use the Chaplin model per default, not Backbone.Model
-    model: Model
+  # Use the Chaplin model per default, not Backbone.Model
+  model: Model
 
-    # Mixin a Deferred
-    initDeferred: ->
-      _(this).extend $.Deferred()
+  # Mixin a Deferred
+  initDeferred: ->
+    _(this).extend $.Deferred()
 
-    # Serializes collection
-    serialize: ->
-      for model in @models
-        if model instanceof Model
-          # Use optimized Chaplin serialization
-          model.serialize()
-        else
-          # Fall back to unoptimized Backbone stuff
-          model.toJSON()
+  # Serializes collection
+  serialize: ->
+    @map utils.serialize
 
-    # Adds a collection atomically, i.e. throws no event until
-    # all members have been added
-    addAtomic: (models, options = {}) ->
-      return unless models.length
-      options.silent = true
-      direction = if typeof options.at is 'number' then 'pop' else 'shift'
-      while model = models[direction]()
-        @add model, options
-      @trigger 'reset'
+  # Adds a collection atomically, i.e. throws no event until
+  # all members have been added
+  addAtomic: (models, options = {}) ->
+    return unless models.length
+    options.silent = true
+    direction = if typeof options.at is 'number' then 'pop' else 'shift'
+    while model = models[direction]()
+      @add model, options
+    @trigger 'reset'
 
-    # Disposal
-    # --------
+  # Disposal
+  # --------
 
-    disposed: false
+  disposed: false
 
-    dispose: ->
-      return if @disposed
+  dispose: ->
+    return if @disposed
 
-      # Fire an event to notify associated views
-      @trigger 'dispose', this
+    # Fire an event to notify associated views
+    @trigger 'dispose', this
 
-      # Empty the list silently, but do not dispose all models since
-      # they might be referenced elsewhere
-      @reset [], silent: true
+    # Empty the list silently, but do not dispose all models since
+    # they might be referenced elsewhere
+    @reset [], silent: true
 
-      # Unbind all global event handlers
-      @unsubscribeAllEvents()
+    # Unbind all global event handlers
+    @unsubscribeAllEvents()
 
-      # Remove all event handlers on this module
-      @off()
+    # Remove all event handlers on this module
+    @off()
 
-      # If the model is a Deferred, reject it
-      # This does nothing if it was resolved before
-      @reject?()
+    # If the model is a Deferred, reject it
+    # This does nothing if it was resolved before
+    @reject?()
 
-      # Remove model constructor reference, internal model lists
-      # and event handlers
-      properties = [
-        'model',
-        'models', '_byId', '_byCid',
-        '_callbacks'
-      ]
-      delete this[prop] for prop in properties
+    # Remove model constructor reference, internal model lists
+    # and event handlers
+    properties = [
+      'model',
+      'models', '_byId', '_byCid',
+      '_callbacks'
+    ]
+    delete this[prop] for prop in properties
 
-      # Finished
-      @disposed = true
+    # Finished
+    @disposed = true
 
-      # You’re frozen when your heart’s not open
-      Object.freeze? this
+    # You’re frozen when your heart’s not open
+    Object.freeze? this

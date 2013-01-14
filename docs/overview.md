@@ -4,7 +4,7 @@
 
 Chaplin is an architecture for JavaScript web applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-While Backbone is an easy starting point, it provides only basic, low-level patterns. Especially, Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses this limitations by providing a light-weight but flexible structure which leverages well-profen design patterns and best practises.
+While Backbone is an easy starting point, it provides only basic, low-level patterns. Especially, Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses this limitations by providing a light-weight but flexible structure which leverages well-proven design patterns and best practises.
 
 ## Chaplin’s Structure
 
@@ -86,7 +86,7 @@ By convention, there is a controller for each application module. A controller m
 
 ### Mediator
 
-The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `mediator.publish` in order to notify other modules, and listen for such events using `mediator.subscribe`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
+The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `this.publishEvent` in order to notify other modules, and listen for such events using `this.subscribeEvent`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
 
 [Learn more about the mediator](./chaplin.mediator.md)
 

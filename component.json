@@ -8,5 +8,26 @@
     "jquery": "1.8.x",
     "underscore": "1.4.x",
     "backbone": "0.9.x"
+  },
+  "exportsOverride": {
+    "mocha": {
+      "scripts/..": "mocha.js",
+      "styles/..": "mocha.css"
+    },
+    "expect": {
+      ".": "expect.js"
+    },
+    "backbone": {
+      ".": "backbone.js"
+    },
+    "require": {
+      ".": "require.js"
+    },
+    "jquery": {
+      ".": "jquery.js"
+    },
+    "underscore": {
+      ".": "underscore.js"
+    }
   }
 }

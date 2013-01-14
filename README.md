@@ -70,7 +70,7 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
 ### Using bower
 1. Install the Node package for the Bower package manager.
 
-   ```
+   ```sh
    sudo npm install -g bower
    ```
 
@@ -86,9 +86,9 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
    bower install chaplin#0.6.0
    ```
 
-   This will also download the required version of backbone but will _not_ 
-   download the required DOM manipulation or utility libraries. These can be 
-   installed separately via `bower install underscore`, `bower install jquery`, 
+   This will also download the required version of backbone but will _not_
+   download the required DOM manipulation or utility libraries. These can be
+   installed separately via `bower install underscore`, `bower install jquery`,
    `bower install lodash`, etc.
 
 ### Manually
@@ -102,26 +102,19 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
 
 1. Download and install [Node.js](http://nodejs.org/).
 2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
-3. Install the Node packages for CoffeeScript and UglifierJS globally.
+3. Install the Node package for the grunt command line interface globally.
 
-   ```
-   sudo npm install -g coffee-script
-   sudo npm install -g uglify-js
+   ```sh
+   sudo npm install -g grunt-cli
    ```
 
    On Windows, you can omit the `sudo` command at the beginning.
 
-4. Install the Node package ShellJS normally.
+4. Change into the Chaplin root directory.
+5. Start the build.
 
    ```
-   npm install shelljs
-   ```
-
-5. Change into the Chaplin root directory.
-6. Start the build.
-
-   ```
-   cake build
+   npm install
    ```
 
 This creates two directories:
@@ -131,10 +124,9 @@ This creates two directories:
 
 These directories contain four files each:
 
-* `chaplin-VERSION.coffee` – The Chaplin library as a CoffeeScript file.
-* `chaplin-VERSION.js` – The library as a compiled JavaScript file.
-* `chaplin-VERSION-min.js` – Minified. For production use you should pick this.
-* `chaplin-VERSION-min.js.gz` – Minified and GZip-compressed.
+* `chaplin.js` – The library as a compiled JavaScript file.
+* `chaplin.min.js` – Minified. For production use you should pick this.
+* `chaplin.min.js.gz` – Minified and GZip-compressed.
 
 ## Running the Tests
 
@@ -142,36 +134,17 @@ Chaplin aims to be fully unit-tested. At the moment most of the modules are cove
 
 How to run the tests:
 
-1. Download and install [Node.js](http://nodejs.org/).
+1. Follow the steps for [building chaplin](#building-chaplin).
 2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
-3. Install the Node package for CoffeeScript  globally.
+3. Change into the Chaplin root directory.
+4. Start the test runner.
 
    ```
-   sudo npm install -g coffee-script
+   npm test
    ```
 
-   On Windows, you can omit the `sudo` command at the beginning.
-
-4. Install the Node package for the Bower package manager.
-
-   ```
-   sudo npm install -g bower
-   ```
-
-5. Change into the Chaplin root directory.
-6. Use Bower to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
-
-   ```
-   bower install
-   ```
-
-7. Compile the CoffeeScripts to JavaScripts.
-
-   ```
-   cake test
-   ```
-
-9. Finally, open the test runner `test/index.html` in a browser.
+Note that you can now additionally open `test/index.html` to run the tests in your browser (instead of in node).
+Furthermore code coverage reports are generated and may be viewed by opening `test/coverage/index.html` in your browser.
 
 ## Boilerplates
 

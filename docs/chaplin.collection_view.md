@@ -179,7 +179,7 @@ filterCallback: (view, included) ->
 ## Usage
   Most inheriting classes of CollectionView should be very small, with
   the majority of implementations only needing to overwrite the itemView
-  property. Standard View conventions like adding `@modelBind` handlers
+  property. Standard View conventions like adding `@listenTo` handlers
   should still take place in `initialize`, but the majority of Collection-
   specific logic is handled by this class.
 
