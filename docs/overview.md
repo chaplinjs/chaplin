@@ -1,101 +1,163 @@
 # Overview
+__Chaplin__ empowers you to __quick__ly develop __single-page__, __scalable__
+web applications; and allows you to focus on designing and developing
+the underlying functionality in your web application.
 
-# Architecture Overview
+## Architecture
+Chaplin is an architecture for JavaScript web applications using
+the [Backbone.js][] library. The code is originally derived
+from [moviepilot.com][], a large single-page application.
 
-Chaplin is an architecture for JavaScript web applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
+While Backbone is an easy starting point, it provides only basic,
+low-level patterns. Accordingly, Backbone provides little structure above
+simple routing, individual models, views and their binding. While this is good
+in the general sense as Backbone has an overwhelmingly large demographic;
+chaplin aims to provide structure to primarily power single-page applications.
+With a well-defined goal, chaplin embraces and extends Backbone by
+providing a light-weight but flexible structure which leverages well-proven
+design patterns and best practises.
 
-While Backbone is an easy starting point, it provides only basic, low-level patterns. Especially, Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses this limitations by providing a light-weight but flexible structure which leverages well-proven design patterns and best practises.
+[Backbone.js]: http://documentcloud.github.com/backbone/
+[moviepilot.com]: http://moviepilot.com/
 
-## Chaplin’s Structure
+## Framework
+##### [Application][]
+The bootstrapper of the application; an extension point for key
+parts of the architecture.
 
-From top to bottom, a Chaplin application consists of these modules:
+[Application]: ./chaplin.application.md
 
-* `Application` – The bootstrapper of the whole application
-* `Router` – Mapping URLs to controller actions based on a configuration file
-* `Dispatcher` – Starting and stopping controllers when a route matches
-* `Layout` – Showing and hiding of main views, handling of internal links
-* `mediator` – Cross-module communication using Publish/Subscribe
-* Several `Controllers` – individual application modules
-* `Models` and `Collections` hold the data, `Views` provide the user interface
+##### [Router][]
+Facilitates mapping URLs to controller actions based on a
+user-defined configuration file. It is reponsible for observing and acting
+upon URL changes. It does no direct action apart from notifiying the dispatcher
+of such a change however.
 
-## Application Flow
+###### Routes
+By convention, routes should be declared in a separate module (typically
+`routes.coffee`). For example:
 
-Every Chaplin application starts with a class that inherits from `Application`. This is merely a bootstrapper which instantiates and configures the four core moules: `Router`, `Dispatcher`, `Layout` and `mediator`.
-
-After creating the `Router`, the routes are registered. Usually they are read from a configuration file called  `routes.coffee`/`routes.js`. A route maps a URL pattern to a controller action. For example, the path `/` can be mapped to the `index` action of the `HomeController`.
-
-Eventually, the `Application` starts the routing. The `Router` starts to observe the current URL. If a route matches, it notifies the other modules.
-
-This is where the `Dispatcher` takes over. It loads the target controller and its dependencies (e.g. `HomeController`). Then, the controller is instantiated and the controller action is called (e.g. `index`). An *action* is a method of the controller. The `Dispatcher` also keeps track of the currently active controller, and disposes the previously active controller.
-
-Typically, a controller creates a `Model` or `Collection` and a corresponding `View`. The model or collection may fetch some data from the server which is then rendered by the view. By convention, the models, collection and views are saved as properties on the controller instance.
-
-In a Chaplin application, the `Layout` module serves as the top-level view manager. After a controller action was called, the `Layout` is responsible for switching the main view. It hides the view of the previous controller and shows the view of the new controller.
-
-The `Layout` also observes clicks on `a` links in the document. If the user clicks on an internal link, it notifies the `Dispatcher` so the target controller is started.
-
-Last but not least, there’s the `mediator`. It allows other application modules to communicate with each other in a decoupled and robust way.
-
----
-
-## The Chaplin Modules in Detail
-
-### Router
-
-The `Router` is responsible for observing URL changes. It maps URLs to *separate controllers*, in particular *controller actions*.
-
-By convention, routes should be declared in a separate file, the `routes` module. For example:
-
-```coffeescript
+```coffee
 match 'likes/:id', 'likes#show'
 ```
 
-This works much like the [Ruby on Rails counterpart](http://guides.rubyonrails.org/routing.html). If a route matches, a `matchRoute` event is published passing a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.
+This works much like the [Ruby on Rails counterpart][]. If a route matches,
+a `matchRoute` event is published passing a `params` hash which contains
+pattern matches (like `id` in the example above) and additional GET parameters
+parsed from the query string. This hands control over to the __Dispatcher__.
 
-[Learn more about the Router](./chaplin.router.md)
+[Ruby on Rails counterpart]: http://guides.rubyonrails.org/routing.html
+[Router]: ./chaplin.router.md
 
-### Dispatcher
+##### [Dispatcher][]
+Between the router and the controllers, there is the __Dispatcher__ listening
+for routing events. On such events, it loads the target controller, creates an
+instance of it and calls the target action. The action is actually a method
+of the controller. The previously active controller is automatically disposed.
 
-Between the router and the controllers, there is the `Dispatcher` listening for routing events. On such events, it loads the target controller, creates an instance of it and calls the target action. The action is actually a method of the controller. The previously active controller is automatically disposed.
+[Dispatcher]: ./chaplin.dispatcher.md
 
-A specific controller may also be started programatically. To start a specific controller, an app-wide `!startupController` event can be published:
+##### [Layout][]
+The `Layout` is the top-level application view. When a new controller is
+activated, the `Layout` is responsible for changing the main view to the
+view of the new controller.
 
-```
-mediator.publish '!startupController', 'controller', 'action', params
-```
+In addition, the `Layout` handles the activation of internal links. That is,
+you can use a normal `<a href="/foo">` element to link to another
+controller module.
 
-The `Dispatcher` handles the `!startupController` event.
+Furthermore, top-level DOM events on `window` or `document`, should be
+registered here.
 
-[Learn more about the Dispatcher](./chaplin.dispatcher.md)
+[Layout]: ./chaplin.layout.md
 
-### Layout
+##### [mediator][]
+The mediator is an event broker that implements the [Publish/Subscribe]()
+design pattern. It should be used for most of the inter-module communication
+in Chaplin applications. Modules can emit events using `this.publishEvent`
+in order to notify other modules, and listen for such events
+using `this.subscribeEvent`. The mediator can also be used for sharing data
+between several modules easily, like a user model or other
+persistent and globally accessible data.
 
-The `Layout` is the top-level application view. When a new controller was activated, the `Layout` is responsible for changing the main view to the view of the new controller.
+[Publish/Subscribe]: http://en.wikipedia.org/wiki/Publish/Subscribe
+[mediator]: ./chaplin.mediator.md
 
-In addition, the `Layout` handles the activation of internal links. That is, you can use a normal `<a href="/foo">` element to link to another application module.
+##### [Controller][]
+A controller is the place where a model and associated views are instantiated.
+Typically, a controller represents one screen of the application. There can be
+one current controller which provides the main view and represents the
+current URL.
 
-[Learn more about the Layout](./chaplin.layout.md)
+By convention, there is a controller for each application module. A controller
+may provide several action methods like `index`, `show`, `edit` and so on.
+These actions are called by the `Dispatcher` when a route matches.
 
-### Controllers
+[Controller]: ./chaplin.controller.md
 
-A controller is the place where a model and associated views are instantiated. Typically, a controller represents one screen of the application. There can be one current controller which provides the main view and represents the current URL.
+##### [Model][]
+Holds reference to the data and contains any logic neccessary to retrieve the
+data from its source and optionally send it back.
 
-By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on. These actions are called by the `Dispatcher` when a route matches.
+[Model]: ./chaplin.model.md
 
-[Learn more about controllers](./chaplin.controller.md)
+##### [Collection][]
+A collection of models. Contains logic to provide client-side filtering and
+sorting of them.
 
-### Mediator
+[Collection]: ./chaplin.collection.md
 
-The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `this.publishEvent` in order to notify other modules, and listen for such events using `this.subscribeEvent`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
+##### [View][]
+Provides the logic that drives the user interface such as responding to DOM
+events and mapping data from the model to a template.
 
-[Learn more about the mediator](./chaplin.mediator.md)
+[View]: ./chaplin.view.md
 
-## Memory Management and Object Disposal
+##### [Collection View][]
+Maps to a collection to generate a list of item views that are bound to
+the models in the collection.
 
-One of the core concerns of the Chaplin architecture is a proper memory management. While there isn’t a broad discussion about garbage collection in JavaScript applications, it’s an important topic. In event-driven systems, registering events creates references between objects. If these references aren’t removed when one of the modules isn’t used any longer, the garbage collector can’t free the memory.
+[Collection View]: ./chaplin.collection.view.md
 
-Backbone provides little out of the box so Chaplin ensures that every controller, model, collection and view cleans up after itself. Chaplin extends the Model, Collection and View classes of Chaplin to implement a powerful disposal process.
+## Flow
+Every Chaplin application starts with a class that inherits
+from `Application`. This is merely a bootstrapper which instantiates and
+configures the four core moules: __Dispatcher__, __Layout__, __mediator__, and
+__Router__ (in that order).
 
-[Learn more about disposal](./disposal.md)
+After creating the __Router__, the routes are registered. Usually they are
+read from a configuration file called  `routes.{coffee,js}`. A route maps a
+URL pattern to a controller action. For example, the path `/` can be mapped to
+the `index` action of the `HomeController`.
+
+After the __Application__ invokes `initRouter`; the __Router__ starts to
+observe the current URL. If a route matches, it notifies the other modules.
+
+This is where the __Dispatcher__ takes over. It loads the target controller
+and its dependencies (e.g. `HomeController`). Then, the controller is
+instantiated and the controller action is called (e.g. `index`). An *action*
+is a method of the controller. The __Dispatcher__ also keeps track of the
+currently active controller, and disposes the previously active controller.
+
+Typically, a controller creates a __Model__ or __Collection__ and
+a corresponding __View__. The model or collection may fetch some data
+from the server which is then rendered by the view. By convention,
+the models, collection and views are saved as properties on
+the controller instance.
+
+## [Memory Management][]
+One of the core concerns of the Chaplin architecture is a proper
+memory management. While there isn’t a broad discussion about garbage
+collection in JavaScript applications, it’s an important topic.
+In event-driven systems, registering events creates references between objects.
+If these references aren’t removed when one of the modules isn’t
+used any longer, the garbage collector can’t free the memory.
+
+Backbone provides little out of the box so Chaplin ensures that every
+controller, model, collection and view cleans up after itself. Chaplin
+extends the Model, Collection and View classes of Chaplin to implement
+a powerful disposal process.
+
+[Memory Management]: ./disposal.md
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
