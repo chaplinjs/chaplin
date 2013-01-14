@@ -33,6 +33,12 @@ By convention, there is a controller for each application module. A controller m
 
 A controller is usually started following a route match.
 
+
+### Before action filters
+
+To execute code before the controller action is called, you can use the `beforeAction` object (e.g. to add some ACL checks).
+
+
 ### Example
 
 ```coffeescript
@@ -47,6 +53,11 @@ define [
   'use strict'
 
   class LikesController extends Controller
+
+    beforeAction:
+      show: (params) ->
+        @redirectUnlessLoggedIn()
+
     # Initialize method is empty here.
     index: (params) ->
       @collection = new Likes()
