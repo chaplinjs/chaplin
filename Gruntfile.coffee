@@ -241,6 +241,13 @@ module.exports = (grunt) ->
       build:
         files: 'build/**/*'
 
+    # Watching for changes
+    # --------------------
+    watch:
+      test:
+        files: ['src/**/*.coffee', 'test/spec/*.coffee'],
+        tasks: 'coffee:compile coffee:test copy:amd'
+
   # Events
   # ======
   grunt.event.on 'mocha.done', (failed, passed, total, time, coverage) ->
