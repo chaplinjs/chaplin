@@ -8,7 +8,7 @@ utils = require 'chaplin/lib/utils'
 # Mediator
 # --------
 
-# The mediator is a simple object all others modules use to communicate
+# The mediator is a simple object all other modules use to communicate
 # with each other. It implements the Publish/Subscribe pattern.
 #
 # Additionally, it holds objects which need to be shared between modules.
