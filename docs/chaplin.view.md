@@ -11,7 +11,7 @@ In addition to Backbone’s `events` hash and the `delegateEvents` method, Chapl
 Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model, ...)` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `on`, you have to deregister the handler manually to clear the reference from the model to the view.
 
 
-## Features und purpose
+## Features and purpose
 
 * Rendering model data using templates in a conventional way
 * Robust and memory-safe model binding
@@ -205,9 +205,20 @@ class YourView extends View
 
 # Publish/Subscribe
 
-The View includes the [EventBroker](./chaplin.event_broker.md) mixin
-Publish/Subscribe using the [mediator](./chaplin.mediator.md)
+The View includes the [EventBroker](./chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](./chaplin.mediator.md)
 
-subscribeEvent (type:String, handler:Function):mediator
-unsubscribeEvent (type:String, handler:Function):mediator
-unsubscribeAllEvents ():mediator
+## [Methods](./chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
+
+### publishEvent(event, arguments...)
+Publish the global `event` with `arguments`.
+
+### subscribeEvent(event, handler)
+Unsubcribe the `handler` to the `event` (if it exists) before subscribing it. It is like `Chaplin.mediator.subscribe` except it cannot subscribe twice.
+
+### unsubscribeEvent(event, handler)
+Unsubcribe the `handler` to the `event`. It is like `Chaplin.mediator.unsubscribe`.
+
+### subscribeAllEvents()
+Unsubcribe all handlers for all events.
+
+## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/views/view.coffee)
