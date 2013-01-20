@@ -244,9 +244,22 @@ module.exports = (grunt) ->
     # Watching for changes
     # --------------------
     watch:
+      coffee:
+        files: ['src/**/*.coffee']
+        tasks: [
+          'coffee:compile'
+          'urequire'
+          'copy:amd'
+          'copy:test'
+          'mocha'
+        ]
+        
       test:
-        files: ['src/**/*.coffee', 'test/spec/*.coffee'],
-        tasks: ['coffee', 'copy:amd']
+        files: ['test/spec/*.coffee'],
+        tasks: [
+          'coffee:test'
+          'mocha'
+        ]
 
   # Events
   # ======
@@ -312,6 +325,18 @@ module.exports = (grunt) ->
     'storeCoverage'
     'copy:afterInstrument'
     'makeReport'
+  ]
+  
+  # Test Watcher
+  # ------------
+  grunt.registerTask 'test-watch', [
+    'coffee:compile'
+    'urequire'
+    'copy:amd'
+    'copy:test'
+    'coffee:test'
+    'mocha'
+    'watch'
   ]
 
   # Default
