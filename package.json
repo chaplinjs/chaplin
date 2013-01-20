@@ -16,6 +16,7 @@
     "grunt-contrib-concat": "git://github.com/mehcode/grunt-contrib-concat.git#frozen",
     "grunt-contrib-copy": "git://github.com/concordusapps/grunt-contrib-copy.git",
     "grunt-contrib-compress": "0.3.x",
+    "grunt-contrib-watch": "0.1.4",
     "grunt-bower-task": "0.1.x",
     "grunt-contrib-uglify": "git://github.com/concordusapps/grunt-contrib-uglify.git#frozen",
     "grunt-filesize": "0.0.x",

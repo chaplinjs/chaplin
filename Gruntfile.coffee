@@ -241,6 +241,26 @@ module.exports = (grunt) ->
       build:
         files: 'build/**/*'
 
+    # Watching for changes
+    # --------------------
+    watch:
+      coffee:
+        files: ['src/**/*.coffee']
+        tasks: [
+          'coffee:compile'
+          'urequire'
+          'copy:amd'
+          'copy:test'
+          'mocha'
+        ]
+        
+      test:
+        files: ['test/spec/*.coffee'],
+        tasks: [
+          'coffee:test'
+          'mocha'
+        ]
+
   # Events
   # ======
   grunt.event.on 'mocha.done', (failed, passed, total, time, coverage) ->
@@ -305,6 +325,18 @@ module.exports = (grunt) ->
     'storeCoverage'
     'copy:afterInstrument'
     'makeReport'
+  ]
+  
+  # Test Watcher
+  # ------------
+  grunt.registerTask 'test-watch', [
+    'coffee:compile'
+    'urequire'
+    'copy:amd'
+    'copy:test'
+    'coffee:test'
+    'mocha'
+    'watch'
   ]
 
   # Default
