@@ -246,7 +246,7 @@ module.exports = (grunt) ->
     watch:
       test:
         files: ['src/**/*.coffee', 'test/spec/*.coffee'],
-        tasks: 'coffee:compile coffee:test copy:amd'
+        tasks: ['coffee', 'copy:amd']
 
   # Events
   # ======
