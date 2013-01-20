@@ -135,10 +135,10 @@ Stops the Backbone.history instance and removes it from the Router object.  Also
 
 `Chaplin.Router` listens to these global events:
 
-* `!route:route path[, options], callback`
-* `!route:routeByName name, params[, options], callback`
-* `!route:reverse name, params[, options], callback`
-* `!route:changeURL url[, options]`
+* `!router:route path[, options], callback`
+* `!router:routeByName name, params[, options], callback`
+* `!router:reverse name, params[, options], callback`
+* `!router:changeURL url[, options]`
 
 ## Usage
 The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
