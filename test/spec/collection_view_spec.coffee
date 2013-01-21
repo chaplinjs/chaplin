@@ -53,6 +53,15 @@ define [
         #console.debug 'TestCollectionView#getView', model
         new ItemView {model}
 
+    # Testing class for insertino animation
+    class AnimatingCollectionView extends CollectionView
+
+      tagName: 'ul'
+
+      animationDuration: 1
+
+      itemView: ItemView
+
     # Testing class for CollectionViews with template,
     # custom list, loading indicator and fallback elements
     class TemplatedCollectionView extends TestCollectionView
@@ -154,8 +163,11 @@ define [
 
     it 'should call a custom getView method', ->
       collectionView.dispose()
+      getView = sinon.spy CustomViewCollectionView.prototype, 'getView'
       collectionView = new CustomViewCollectionView {collection}
       viewsMatchCollection()
+      expect(getView.callCount).to.be collection.length
+      getView.restore()
 
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
@@ -310,6 +322,88 @@ define [
     it 'should not return item data in getTemplateData', ->
       data = collectionView.getTemplateData()
       expect(data).to.eql {length: collection.length}
+
+    it 'should animate the opacity of new items', ->
+      $css = sinon.stub jQuery.prototype, 'css', -> this
+      $animate = sinon.stub jQuery.prototype, 'animate', -> this
+
+      collectionView.dispose()
+      collectionView = new AnimatingCollectionView {collection}
+
+      expect($css.callCount).to.be collection.length
+      expect($css).was.calledWith 'opacity', 0
+
+      expect($animate.callCount).to.be collection.length
+      args = $animate.firstCall.args
+      expect(args[0]).to.eql opacity: 1
+      expect(args[1]).to.be collectionView.animationDuration
+
+      expect($css.calledBefore($animate)).to.be true
+
+      addThree()
+      expect($css.callCount).to.be collection.length
+
+      $css.restore()
+      $animate.restore()
+
+    it 'should not animate if animationDuration is 0', ->
+      $css = sinon.spy jQuery.prototype, 'css'
+      $animate = sinon.spy jQuery.prototype, 'animate'
+
+      collectionView.dispose()
+      collectionView = new TestCollectionView {collection}
+
+      expect($css).was.notCalled()
+      expect($animate).was.notCalled()
+
+      addThree()
+      expect($css).was.notCalled()
+      expect($animate).was.notCalled()
+
+      $css.restore()
+      $animate.restore()
+
+    it 'should not animate when re-inserting', ->
+      $css = sinon.stub jQuery.prototype, 'css', -> this
+      $animate = sinon.stub jQuery.prototype, 'animate', -> this
+
+      model1 = new Model id: 1
+      model2 = new Model id: 2
+      model3 = new Model id: 3
+
+      collection.reset [model1, model2]
+
+      collectionView.dispose()
+      collectionView = new AnimatingCollectionView {collection}
+
+      expect($css).was.calledTwice()
+      expect($animate).was.calledTwice()
+
+      collection.reset [model1, model2, model3]
+
+      expect($css.callCount).to.be collection.length
+      expect($animate.callCount).to.be collection.length
+
+      $css.restore()
+      $animate.restore()
+
+    it 'should animate with CSS classes', (done) ->
+      collectionView.dispose()
+
+      class AnimatingCollectionView extends CollectionView
+        useCssAnimation: true
+        itemView: ItemView
+
+      collectionView = new AnimatingCollectionView {collection}
+      children = getAllChildren()
+      for child in children
+        expect($(child).hasClass('animated-item-view')).to.be.true
+
+      setTimeout ->
+        for child in children
+          expect($(child).hasClass('animated-item-view-end')).to.be.true
+          done()
+      , 1
 
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
