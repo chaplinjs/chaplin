@@ -402,7 +402,7 @@ define [
       setTimeout ->
         for child in children
           expect($(child).hasClass('animated-item-view-end')).to.be.true
-          done()
+        done()
       , 1
 
     it 'should dispose itself correctly', ->
