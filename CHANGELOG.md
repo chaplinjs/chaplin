@@ -17,6 +17,7 @@
 * Improved `Chaplin.CollectionView`:
     * Item views will now emit `addedToParent` event instead of `addedToDOM`
     when they are appended to collection view.
+    * Optimise performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
 * Improved `Chaplin.Model`:
     * `Model#serialize` can be overridden on `Backbone.Model`s.
       Chaplin will use it, if available, and `Model#toJSON` if not.
@@ -30,8 +31,6 @@
       This will automatically use jQuery, Zepto or Ender as DOM library.
     * Removed `View#pass`. Please use [stickit](http://nytimes.github.com/backbone.stickit/) instead
       for advanced model-view binding.
-* Improved `Chaplin.CollectionView`:
-    * Performance optimization: Do not call jQuery/Zepto `css`/`animate` if animations are disabled.
 
 # Chaplin 0.6.0 (December 30, 2012)
 * Updated required Backbone version to 0.9.9+.
