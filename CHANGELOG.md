@@ -23,14 +23,14 @@
 * Improved `Chaplin.utils`:
     * Added `utils.getAllPropertyVersions` that allows to gather all
       property versions from object’s prototypes.
-* Improved `Chaplin.View`
+* Improved `Chaplin.View`:
     * Switched to `$el.toggle()` instead of manual CSS `display` setting.
     Which means non-block elements will behave correctly.
     * Switched to `Backbone.$` reference for DOM manipulation.
       This will automatically use jQuery, Zepto or Ender as DOM library.
     * Removed `View#pass`. Please use [stickit](http://nytimes.github.com/backbone.stickit/) instead
       for advanced model-view binding.
-* Improved `Chaplin.CollectionView`
+* Improved `Chaplin.CollectionView`:
     * Performance optimization: Do not call jQuery/Zepto `css`/`animate` if animations are disabled.
 
 # Chaplin 0.6.0 (December 30, 2012)
