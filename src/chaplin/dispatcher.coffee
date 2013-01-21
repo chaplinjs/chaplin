@@ -35,14 +35,14 @@ module.exports = class Dispatcher
       controllerSuffix: '_controller'
 
     # Listen to global events
-    @subscribeEvent 'matchRoute', @matchRoute
+    @subscribeEvent 'matchRoute', @matchRouteHandler
 
   # Controller management
   # Starting and disposing controllers
   # ----------------------------------
 
   # Handler for the global matchRoute event
-  matchRoute: (route, params, options) ->
+  matchRouteHandler: (route, params, options) ->
     @startupController route.controller, route.action, params, options
 
   # The standard flow is:
@@ -53,9 +53,11 @@ module.exports = class Dispatcher
   #   3. Instantiate the new controller, call the controller action
   #   4. Show the new view
   #
-  startupController: (controllerName, action = 'index', params = {},
-                      options = {}) ->
-    # Set some routing options
+  startupController: (controllerName, action = 'index', params,
+      options) ->
+    # Clone params and options so the original objects remain untouched
+    params = if params then _.clone(params) else {}
+    options = if options then _.clone(options) else {}
 
     # Whether to update the URL after controller startup
     # Default to true unless explicitly set to false
