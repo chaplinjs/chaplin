@@ -483,10 +483,10 @@ define [
         dispatcher.executeBeforeActionChain controller, 'user_banning',
           'index', params, options
 
-        expect(loadSession).was.calledWith params, options
+        expect(loadSession).was.calledWith params
         expect(checkAdminPrivileges).was.calledWith params, options, userModel
-        expect(loadUsers).was.calledWith params, options
-        expect(indexAction).was.calledWith params, options
+        expect(loadUsers).was.calledWith params
+        expect(indexAction).was.calledWith params
 
         expect(loadSession).was.calledOn controller
         expect(checkAdminPrivileges).was.calledOn controller
@@ -598,4 +598,45 @@ define [
         expect(beforeAction).was.calledWith params, options, resolveArgument
 
         expect(action).was.calledOnce()
-        expect(action).was.calledWith params, options
+        expect(action).was.calledWith params
+
+      it 'should not call a deferred callback upon a new route being fired with a different controller', (done) ->
+        deferred = $.Deferred()
+        promise = deferred.promise()
+        route1 = controller: 'test_mismatch_before_actions', action: 'show'
+        route2 = controller: 'test_before_actions', action: 'index'
+
+        # First order controller
+        class TestMismatchBeforeActionsController extends Controller
+
+          beforeAction:
+            '.*': ->
+              promise
+            show: ->
+
+          show: ->
+
+        # Spies
+        proto = TestBeforeActionsController.prototype
+        indexActionSpy = sinon.spy proto, 'index'
+        proto = TestMismatchBeforeActionsController.prototype
+        beforeActionSpy = sinon.spy proto.beforeAction, 'show'
+        # Define a test controller AMD module
+        testMismatchBeforeActionsModule = 'controllers/test_mismatch_before_actions'
+        define testMismatchBeforeActionsModule, -> TestMismatchBeforeActionsController
+        # Helpers for asynchronous tests
+        loadMismatchBeforeActionsController = (callback) ->
+          require [testMismatchBeforeActionsModule], callback
+
+        mediator.publish 'matchRoute', route1, params, options
+        loadMismatchBeforeActionsController ->
+          mediator.publish 'matchRoute', route2, params, options
+          loadBeforeActionsController ->
+            expect(indexActionSpy).was.called()
+
+            deferred.resolve()
+            expect(beforeActionSpy).was.notCalled()
+
+            beforeActionSpy.restore()
+            indexActionSpy.restore()
+            done()
