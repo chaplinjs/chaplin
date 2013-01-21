@@ -351,9 +351,9 @@ define [
 
     describe 'Before actions', ->
 
-      route = controller: 'test_before_actions', action: 'show'
+      route = controller: 'before_actions', action: 'show'
 
-      class TestBeforeActionsController extends Controller
+      class BeforeActionsController extends Controller
 
         beforeAction:
           show: ->
@@ -363,30 +363,30 @@ define [
 
         index: ->
 
-      # Define a test controller AMD module
-      testBeforeActionsModule = 'controllers/test_before_actions_controller'
-      define testBeforeActionsModule, -> TestBeforeActionsController
+      # Define controller AMD module
+      beforeActionsModule = 'controllers/before_actions_controller'
+      define beforeActionsModule, -> BeforeActionsController
 
       # Helpers for asynchronous tests
       loadBeforeActionsController = (callback) ->
-        require [testBeforeActionsModule], callback
+        require [beforeActionsModule], callback
 
       it 'should not run executeAction directly if before actions are present', (done) ->
         executeAction = sinon.spy dispatcher, 'executeAction'
-        # Replace executeBeforeActionChain with a no-op stub
-        executeBeforeActionChain = sinon.stub dispatcher, 'executeBeforeActionChain'
+        # Replace executeBeforeActions with a no-op stub
+        executeBeforeActions = sinon.stub dispatcher, 'executeBeforeActions'
 
         mediator.publish 'matchRoute', route, params, options
 
         loadBeforeActionsController ->
           expect(executeAction).was.notCalled()
-          expect(executeBeforeActionChain).was.called()
-          expect(executeBeforeActionChain.firstCall.args[0]).to.be.a(
-            TestBeforeActionsController
+          expect(executeBeforeActions).was.called()
+          expect(executeBeforeActions.firstCall.args[0]).to.be.a(
+            BeforeActionsController
           )
 
           executeAction.restore()
-          executeBeforeActionChain.restore()
+          executeBeforeActions.restore()
 
           done()
 
@@ -398,8 +398,8 @@ define [
         loadBeforeActionsController ->
           args = executeAction.firstCall.args
           expect(args).to.have.length 5
-          expect(args[0]).to.be.a TestBeforeActionsController
-          expect(args[1]).to.be 'test_before_actions'
+          expect(args[0]).to.be.a BeforeActionsController
+          expect(args[1]).to.be 'before_actions'
           expect(args[2]).to.be 'show'
           expect(args[3]).to.be.an 'object'
           expect(args[4]).to.be.an 'object'
@@ -427,7 +427,7 @@ define [
 
         controller = new TestController()
 
-        dispatcher.executeBeforeActionChain controller, 'test', 'show',
+        dispatcher.executeBeforeActions controller, 'test', 'show',
           params, options
 
         expect(called).to.have.length 2
@@ -436,7 +436,7 @@ define [
 
         called = []
 
-        dispatcher.executeBeforeActionChain controller, 'test', 'create',
+        dispatcher.executeBeforeActions controller, 'test', 'create',
           params, options
 
         expect(called).to.have.length 1
@@ -480,7 +480,7 @@ define [
         indexAction = sinon.spy UserBanningController.prototype, 'index'
 
         controller = new UserBanningController()
-        dispatcher.executeBeforeActionChain controller, 'user_banning',
+        dispatcher.executeBeforeActions controller, 'user_banning',
           'index', params, options
 
         expect(loadSession).was.calledWith params
@@ -507,7 +507,7 @@ define [
         controller = new BrokenBeforeActionController()
 
         failFn = ->
-          dispatcher.executeBeforeActionChain controller, 'broken_before_action',
+          dispatcher.executeBeforeActions controller, 'broken_before_action',
             'index', params, options
 
         expect(failFn).to.throwError()
@@ -528,7 +528,8 @@ define [
           show: ->
 
         controller = new BeforeActionChainController()
-        dispatcher.executeBeforeActionChain controller,
+
+        dispatcher.executeBeforeActions controller,
           'before_action_chain', 'show', params, options
 
         expect(params.bar).to.be 'qux'
@@ -541,23 +542,20 @@ define [
         deferred = $.Deferred()
         promise = deferred.promise()
 
-        class AsyncBeforeActionChainController extends Controller
-
-          historyURL: -> 'foo'
+        class AsyncBeforeActionController extends Controller
 
           beforeAction:
             '.*': ->
-              # Returning a promise here triggers asynchronous behavior.
               promise
 
           show: ->
 
-        controller = new AsyncBeforeActionChainController()
+        controller = new AsyncBeforeActionController()
 
         action = sinon.spy controller, 'show'
 
-        dispatcher.executeBeforeActionChain controller,
-          'async_before_action_chain', 'show', params, options
+        dispatcher.executeBeforeActions controller,
+          'async_before_action', 'show', params, options
 
         expect(action).was.notCalled()
 
@@ -571,22 +569,22 @@ define [
         promise = deferred.promise()
         resolveArgument = foo: 'bar'
 
-        class AsyncBeforeActionChainController extends Controller
+        class AsyncBeforeActionController extends Controller
+
           beforeAction:
             '.*': ->
-              # Returning a promise here triggers asynchronous behavior.
               promise
             show: ->
 
           show: ->
 
-        controller = new AsyncBeforeActionChainController()
+        controller = new AsyncBeforeActionController()
 
         action = sinon.spy controller, 'show'
         beforeAction = sinon.spy controller.beforeAction, 'show'
 
-        dispatcher.executeBeforeActionChain controller,
-          'async_before_action_chain', 'show', params, options
+        dispatcher.executeBeforeActions controller,
+          'async_before_action', 'show', params, options
 
         expect(beforeAction).was.notCalled()
         expect(action).was.notCalled()
@@ -600,14 +598,14 @@ define [
         expect(action).was.calledOnce()
         expect(action).was.calledWith params
 
-      it 'should not call a deferred callback upon a new route being fired with a different controller', (done) ->
+      it 'should stop async. dispatching when another controller is started', (done) ->
         deferred = $.Deferred()
         promise = deferred.promise()
-        route1 = controller: 'test_mismatch_before_actions', action: 'show'
-        route2 = controller: 'test_before_actions', action: 'index'
 
-        # First order controller
-        class TestMismatchBeforeActionsController extends Controller
+        firstRoute = controller: 'neverending', action: 'show'
+        secondRoute = controller: 'before_actions', action: 'index'
+
+        class NeverendingController extends Controller
 
           beforeAction:
             '.*': ->
@@ -616,27 +614,35 @@ define [
 
           show: ->
 
-        # Spies
-        proto = TestBeforeActionsController.prototype
-        indexActionSpy = sinon.spy proto, 'index'
-        proto = TestMismatchBeforeActionsController.prototype
-        beforeActionSpy = sinon.spy proto.beforeAction, 'show'
-        # Define a test controller AMD module
-        testMismatchBeforeActionsModule = 'controllers/test_mismatch_before_actions'
-        define testMismatchBeforeActionsModule, -> TestMismatchBeforeActionsController
-        # Helpers for asynchronous tests
-        loadMismatchBeforeActionsController = (callback) ->
-          require [testMismatchBeforeActionsModule], callback
+        # Define controller AMD module
+        neverendingModule = 'controllers/neverending_controller'
+        define neverendingModule, -> NeverendingController
+        loadNeverendingController = (callback) ->
+          require [neverendingModule], callback
 
-        mediator.publish 'matchRoute', route1, params, options
-        loadMismatchBeforeActionsController ->
-          mediator.publish 'matchRoute', route2, params, options
+        # Spies
+        indexAction = sinon.spy BeforeActionsController.prototype, 'index'
+        proto = NeverendingController.prototype
+        beforeShowAction = sinon.spy proto.beforeAction, 'show'
+        showAction = sinon.spy proto, 'show'
+
+        # Start with the neverending controller
+        mediator.publish 'matchRoute', firstRoute, params, options
+
+        loadNeverendingController ->
+          # While waiting for the promise, start another controller
+          mediator.publish 'matchRoute', secondRoute, params, options
+
           loadBeforeActionsController ->
-            expect(indexActionSpy).was.called()
+            expect(indexAction).was.called()
 
             deferred.resolve()
-            expect(beforeActionSpy).was.notCalled()
+            expect(beforeShowAction).was.notCalled()
+            expect(showAction).was.notCalled()
 
-            beforeActionSpy.restore()
-            indexActionSpy.restore()
+            indexAction.restore()
+            beforeShowAction.restore()
+            showAction.restore()
+            require.undef neverendingModule
+
             done()
