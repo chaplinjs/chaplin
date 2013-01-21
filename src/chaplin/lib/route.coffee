@@ -21,8 +21,10 @@ module.exports = class Route
   queryStringValueSeparator = '='
 
   # Create a route for a URL pattern and a controller action
-  # e.g. new Route '/users/:id', 'users#show'
-  constructor: (@pattern, @controller, @action, @options = {}) ->
+  # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
+  constructor: (@pattern, @controller, @action, options) ->
+    @options = if options then _.clone(options) else {}
+
     # Store the name on the route if given
     @name = @options.name if @options.name?
 
@@ -108,9 +110,11 @@ module.exports = class Route
 
     return true
 
-  # The handler which is called by Backbone.History when the route matched.
+  # The handler called by Backbone.History when the route matches.
   # It is also called by Router#route which might pass options.
-  handler: (path, options = {}) =>
+  handler: (path, options) =>
+    options = if options then _.clone(options) else {}
+
     # If no query string was passed, use the current
     queryString = options.queryString ? @getCurrentQueryString()
 
