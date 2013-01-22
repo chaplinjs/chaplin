@@ -1,5 +1,6 @@
 'use strict'
 
+_ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
 Dispatcher = require 'chaplin/dispatcher'
