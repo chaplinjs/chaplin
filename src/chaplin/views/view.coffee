@@ -160,11 +160,9 @@ module.exports = class View extends Backbone.View
   # of the parent view if it exists.
   delegateEvents: (events) ->
     @undelegateEvents()
-    if events
-      @_delegateEvents events
-      return
-    for events in utils.getAllPropertyVersions this, 'events'
-      @_delegateEvents events
+    return @_delegateEvents events if events
+    for classEvents in utils.getAllPropertyVersions this, 'events'
+      @_delegateEvents classEvents
     return
 
   # Remove all handlers registered with @delegate.
