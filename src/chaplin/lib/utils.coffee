@@ -1,5 +1,6 @@
 'use strict'
 
+_ = require 'underscore'
 support = require 'chaplin/lib/support'
 
 # Utilities
