@@ -173,11 +173,15 @@ module.exports = class View extends Backbone.View
 
   # Getting or adding a subview
   subview: (name, view) ->
-    if name and view
+    if typeof name is not 'string'
+      view = name
+      name = null
+    if view
       # Add the subview, ensure it’s unique
-      @removeSubview name
+      if name
+        @removeSubview name
+        @subviewsByName[name] = view
       @subviews.push view
-      @subviewsByName[name] = view
       view
     else if name
       # Get and return the subview by the given name
