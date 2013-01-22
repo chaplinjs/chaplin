@@ -1,11 +1,12 @@
 define [
+  'underscore'
   'backbone'
   'chaplin/mediator'
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
   'chaplin/lib/event_broker'
-], (Backbone, mediator, Dispatcher, Layout, Router, EventBroker) ->
+], (_, Backbone, mediator, Dispatcher, Layout, Router, EventBroker) ->
   'use strict'
 
   # The application bootstrapper
