@@ -32,6 +32,10 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 ###### [9elements](http://9elements.com/) — Berlin/Bochum, Germany
 One of the creators of Chaplin, is offering commercial support and training for Chaplin and Backbone-based JavaScript applications. 9elements is a software and design agency located in Berlin and Bochum, Germany. Send us a mail for more information: [contact@9elements.com](mailto:contact@9elements.com).
 
+###### [Paul Miller](http://paulmillr.com/) — Kharkiv, Ukraine
+Chaplin & Brunch maintainer is offering consulting & training for all Backbone-related stuff.
+Contact him: [paul+chaplin@paulmillr.com](mailto:paul+chaplin@paulmillr.com).
+
 ###### [Concordus Applications](http://www.concordusapps.com/) — Sacramento, CA, USA 
 Offering commerical support and training for Chaplin and Backbone-based 
 JavaScript applications. Concordus Applications is an enterprise integration 
