@@ -28,7 +28,7 @@ module.exports = class Application extends Chaplin.Application
 
 ### Properties
 
-##### [title](./../src/chaplin/application.coffee#L22)
+##### [title](./../src/chaplin/application.coffee#L23)
 This is the top-level title that is defaulted into the options hash
 forwarded to the layout module. The default title template of the layout
 module will append this value to the subtitle passed to the `!adjustTitle`
@@ -46,7 +46,7 @@ mediator.publish '!adjustTitle', 'Apple'
 
 ### Methods
 
-##### [initDispatcher([options])](./../src/chaplin/application.coffee#L31)
+##### [initDispatcher([options])](./../src/chaplin/application.coffee#L32)
 Initializes the **dispatcher** module; forwards passed options to its
 contructor. See **[Chaplin.Dispatcher][]** for more information.
 
@@ -65,7 +65,7 @@ class Application extends Chaplin.Application
     @dispatcher = new Dispatcher options
 ```
 
-##### [initLayout([options])](./../src/chaplin/application.coffee#L34)
+##### [initLayout([options])](./../src/chaplin/application.coffee#L35)
 Initializes the **layout** module; forwards passed options to its
 constructor. See **[Chaplin.Layout][]** for more information.
 
@@ -85,7 +85,7 @@ class Application extends Chaplin.Application
     @layout = new Layout _.defaults options, {@title}
 ```
 
-##### [initRouter(routes, [options])](./../src/chaplin/application.coffee#L42)
+##### [initRouter(routes, [options])](./../src/chaplin/application.coffee#L43)
 Initializes the **router** module; forwards passed options to its
 constructor. This starts the routing off by checking the current URL against
 all defined routes and executes the matched handler. See **[Chaplin.Router][]**
