@@ -9,13 +9,10 @@ the [Backbone.js][] library. The code is originally derived
 from [moviepilot.com][], a large single-page application.
 
 While Backbone is an easy starting point, it provides only basic,
-low-level patterns. Accordingly, Backbone provides little structure above
-simple routing, individual models, views and their binding. While this is good
-in the general sense as Backbone has an overwhelmingly large demographic;
-chaplin aims to provide structure to primarily power single-page applications.
-With a well-defined goal, chaplin embraces and extends Backbone by
-providing a light-weight but flexible structure which leverages well-proven
-design patterns and best practises.
+low-level patterns. Backbone provides little structure above
+simple routing, individual models, views and their binding. Chaplin addresses
+these limitations by providing a light-weight but flexible structure which
+leverages well-proven design patterns and best practises.
 
 [Backbone.js]: http://documentcloud.github.com/backbone/
 [moviepilot.com]: http://moviepilot.com/
@@ -76,8 +73,8 @@ The mediator is an event broker that implements the [Publish/Subscribe]()
 design pattern. It should be used for most of the inter-module communication
 in Chaplin applications. Modules can emit events using `this.publishEvent`
 in order to notify other modules, and listen for such events
-using `this.subscribeEvent`. The mediator can also be used for sharing data
-between several modules easily, like a user model or other
+using `this.subscribeEvent`. The mediator can also be used to easily share data
+between several modules, like a user model or other
 persistent and globally accessible data.
 
 [Publish/Subscribe]: http://en.wikipedia.org/wiki/Publish/Subscribe
@@ -146,17 +143,16 @@ the models, collection and views are saved as properties on
 the controller instance.
 
 ## [Memory Management][]
-One of the core concerns of the Chaplin architecture is a proper
-memory management. While there isn’t a broad discussion about garbage
-collection in JavaScript applications, it’s an important topic.
-In event-driven systems, registering events creates references between objects.
-If these references aren’t removed when one of the modules isn’t
-used any longer, the garbage collector can’t free the memory.
+A core concern of the Chaplin architecture is proper memory management. While
+there isn’t a broad discussion about garbage collection in JavaScript
+applications, it’s an important topic. In event-driven systems, registering
+events creates references between objects. If these references aren’t removed
+when a module is no longer in use, the garbage collector can’t free the memory.
 
-Backbone provides little out of the box so Chaplin ensures that every
-controller, model, collection and view cleans up after itself. Chaplin
-extends the Model, Collection and View classes of Chaplin to implement
-a powerful disposal process.
+Since Backbone provides little out of the box to manage memory, Chaplin extends
+Backbone's Model, Collection and View classes to implement a powerful disposal
+process which ensures that each controller, model, collection and view cleans
+up after itself.
 
 [Memory Management]: ./disposal.md
 

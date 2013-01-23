@@ -35,14 +35,14 @@ module.exports = class Dispatcher
       controllerSuffix: '_controller'
 
     # Listen to global events
-    @subscribeEvent 'matchRoute', @matchRoute
+    @subscribeEvent 'matchRoute', @matchRouteHandler
 
   # Controller management
   # Starting and disposing controllers
   # ----------------------------------
 
   # Handler for the global matchRoute event
-  matchRoute: (route, params, options) ->
+  matchRouteHandler: (route, params, options) ->
     @startupController route.controller, route.action, params, options
 
   # The standard flow is:
@@ -53,9 +53,11 @@ module.exports = class Dispatcher
   #   3. Instantiate the new controller, call the controller action
   #   4. Show the new view
   #
-  startupController: (controllerName, action = 'index', params = {},
-                      options = {}) ->
-    # Set some routing options
+  startupController: (controllerName, action = 'index', params,
+      options) ->
+    # Clone params and options so the original objects remain untouched
+    params = if params then _.clone(params) else {}
+    options = if options then _.clone(options) else {}
 
     # Whether to update the URL after controller startup
     # Default to true unless explicitly set to false
@@ -93,6 +95,7 @@ module.exports = class Dispatcher
     else
       handler require moduleName
 
+  # Handler for the controller lazy-loading
   controllerLoaded: (controllerName, action, params, options,
                      ControllerConstructor) ->
     # Initialize the new controller
@@ -100,12 +103,11 @@ module.exports = class Dispatcher
 
     # Execute before actions if necessary
     methodName = if controller.beforeAction
-      'executeBeforeActionChain'
+      'executeBeforeActions'
     else
       'executeAction'
     this[methodName](controller, controllerName, action, params, options)
 
-  # Handler for the controller lazy-loading
   executeAction: (controller, controllerName, action, params, options) ->
     # Shortcuts for the previous controller
     currentControllerName   = @currentControllerName or null
@@ -147,8 +149,8 @@ module.exports = class Dispatcher
       options: options
 
   # Before actions with chained execution
-  executeBeforeActionChain: (controller, controllerName, action, params,
-                             options) ->
+  executeBeforeActions: (controller, controllerName, action, params,
+    options) ->
     beforeActions = []
     args = arguments
 
@@ -164,7 +166,7 @@ module.exports = class Dispatcher
           if typeof beforeAction is 'string'
             beforeAction = controller[beforeAction]
           if typeof beforeAction isnt 'function'
-            throw new Error 'Controller#executeBeforeActionChain: ' +
+            throw new Error 'Controller#executeBeforeActions: ' +
               "#{beforeAction} is not a valid beforeAction method for #{name}."
           # Save the before action
           beforeActions.push beforeAction
@@ -181,11 +183,13 @@ module.exports = class Dispatcher
 
       previous = method.call controller, params, options, previous
 
-      # Detect a CommonJS promise  in order to use pipelining below,
+      # Detect a CommonJS promise in order to use pipelining below,
       # otherwise execute next method directly
       if previous and typeof previous.then is 'function'
-        previous.then (data) ->
-          next beforeActions.shift(), data
+        previous.then (data) =>
+          # Execute as long as the currentController is the callee for this promise
+          if not @currentController or controller is @currentController
+            next beforeActions.shift(), data
       else
         next beforeActions.shift(), previous
 

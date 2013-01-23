@@ -69,39 +69,24 @@ module.exports = class Router # This class does not extend Backbone.Router
     Backbone.history.handlers.push {route, callback: route.handler}
     route
 
-  # Route a given URL path manually, returns whether a route matched
+  # Route a given URL path manually. Returns whether a route matched.
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
-  route: (path, options = {}) =>
-    _(options).defaults
-      # Update the URL programmatically after routing
-      changeURL: true
+  route: (path, options) =>
+    options = if options then _.clone(options) else {}
+
+    # Update the URL programmatically after routing
+    _(options).defaults changeURL: true
 
     # Remove leading hash or slash
     path = path.replace /^(\/#|\/)/, ''
+
+    # Find a matching route
     for handler in Backbone.history.handlers
       if handler.route.test(path)
         handler.callback path, options
         return true
-    false
-
-  reverseHandler: (name, params, callback) ->
-    callback @reverse name, params
-
-  # Find the URL for a given name using the registered routes and
-  # provided parameters.
-  reverse: (name, params) ->
-    # First filter the route handlers to those that are of the same
-    # name
-    for handler in Backbone.history.handlers when handler.route.name is name
-      # Attempt to reverse using the provided parameter hash
-      url = handler.route.reverse params
-
-      # Return the url if we got a valid one; else we continue on
-      return url if url isnt false
-
-    # We didn't get anything
     false
 
   # Handler for the global !router:route event
@@ -115,6 +100,9 @@ module.exports = class Router # This class does not extend Backbone.Router
     routed = @route path, options
     callback? routed
 
+  # Find the URL for a given route name and parameters,
+  # then route the URL. Returns whether a route matched.
+  # Handler for the global !router:routeByName event
   routeByNameHandler: (name, params, options, callback) ->
     # Support old signature: Assume options wasn't passed
     # if we only got three arguments
@@ -123,8 +111,30 @@ module.exports = class Router # This class does not extend Backbone.Router
       options = {}
 
     path = @reverse name, params
-    return unless path
-    @routeHandler path, options, callback
+    if typeof path is 'string'
+      routed = @route path, options
+      callback? routed
+    else
+      callback? false
+
+  # Find the URL for a given name using the registered routes and
+  # provided parameters. Returns the URL string or false.
+  reverse: (name, params) ->
+    # First filter the route handlers to those that are of the same
+    # name
+    for handler in Backbone.history.handlers when handler.route.name is name
+      # Attempt to reverse using the provided parameter hash
+      url = handler.route.reverse params
+
+      # Return the url if we got a valid one; else we continue on
+      return url if url isnt false
+
+    # We didn't get anything
+    false
+
+  # Handler for the global !router:reverse event
+  reverseHandler: (name, params, callback) ->
+    callback @reverse name, params
 
   # Change the current URL, add a history entry.
   changeURL: (url, options = {}) ->

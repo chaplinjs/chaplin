@@ -337,6 +337,9 @@ module.exports = class CollectionView extends View
 
   # Inserts a view into the list at the proper position
   insertView: (item, view, index = null, enableAnimation = true) ->
+    if @animationDuration is 0
+      enableAnimation = false
+
     # Get the insertion offset
     position = if typeof index is 'number'
       index

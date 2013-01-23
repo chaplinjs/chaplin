@@ -158,10 +158,11 @@ module.exports = class View extends Backbone.View
 
   # Override Backbones method to combine the events
   # of the parent view if it exists.
-  delegateEvents: ->
+  delegateEvents: (events) ->
     @undelegateEvents()
-    for events in utils.getAllPropertyVersions this, 'events'
-      @_delegateEvents events
+    return @_delegateEvents events if events
+    for classEvents in utils.getAllPropertyVersions this, 'events'
+      @_delegateEvents classEvents
     return
 
   # Remove all handlers registered with @delegate.
