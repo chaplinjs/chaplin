@@ -1,5 +1,5 @@
 # Overview
-__Chaplin__ empowers you to __quick__ly develop __single-page__, __scalable__
+**Chaplin** empowers you to **quick**ly develop **single-page**, **scalable**
 web applications; and allows you to focus on designing and developing
 the underlying functionality in your web application.
 
@@ -44,13 +44,13 @@ match 'likes/:id', 'likes#show'
 This works much like the [Ruby on Rails counterpart][]. If a route matches,
 a `matchRoute` event is published passing a `params` hash which contains
 pattern matches (like `id` in the example above) and additional GET parameters
-parsed from the query string. This hands control over to the __Dispatcher__.
+parsed from the query string. This hands control over to the **Dispatcher**.
 
 [Ruby on Rails counterpart]: http://guides.rubyonrails.org/routing.html
 [Router]: ./chaplin.router.md
 
 ##### [Dispatcher][]
-Between the router and the controllers, there is the __Dispatcher__ listening
+Between the router and the controllers, there is the **Dispatcher** listening
 for routing events. On such events, it loads the target controller, creates an
 instance of it and calls the target action. The action is actually a method
 of the controller. The previously active controller is automatically disposed.
@@ -122,25 +122,25 @@ the models in the collection.
 ## Flow
 Every Chaplin application starts with a class that inherits
 from `Application`. This is merely a bootstrapper which instantiates and
-configures the four core moules: __Dispatcher__, __Layout__, __mediator__, and
-__Router__ (in that order).
+configures the four core moules: **Dispatcher**, **Layout**, **mediator**, and
+**Router** (in that order).
 
-After creating the __Router__, the routes are registered. Usually they are
+After creating the **Router**, the routes are registered. Usually they are
 read from a configuration file called  `routes.{coffee,js}`. A route maps a
 URL pattern to a controller action. For example, the path `/` can be mapped to
 the `index` action of the `HomeController`.
 
-After the __Application__ invokes `initRouter`; the __Router__ starts to
+After the **Application** invokes `initRouter`; the **Router** starts to
 observe the current URL. If a route matches, it notifies the other modules.
 
-This is where the __Dispatcher__ takes over. It loads the target controller
+This is where the **Dispatcher** takes over. It loads the target controller
 and its dependencies (e.g. `HomeController`). Then, the controller is
 instantiated and the controller action is called (e.g. `index`). An *action*
-is a method of the controller. The __Dispatcher__ also keeps track of the
+is a method of the controller. The **Dispatcher** also keeps track of the
 currently active controller, and disposes the previously active controller.
 
-Typically, a controller creates a __Model__ or __Collection__ and
-a corresponding __View__. The model or collection may fetch some data
+Typically, a controller creates a **Model** or **Collection** and
+a corresponding **View**. The model or collection may fetch some data
 from the server which is then rendered by the view. By convention,
 the models, collection and views are saved as properties on
 the controller instance.
