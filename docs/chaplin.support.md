@@ -1,19 +1,16 @@
-# Chaplin.support
+# [Chaplin.support](./../src/chaplin/lib/support.coffee)
 
-Currently `Chaplin.support` only offers feature detection for `defineProperty`.
+Provides feature detection that is used internally to determine the code path
+so that ECMAScript 5 features can be used and not break compatibility with
+engines that don't understand the newer features.
 
-## Methods of `Chaplin.support`
+### Properties
 
+##### [propertyDescriptors](./../src/chaplin/lib/support.coffee#L10)
 
-<a name="propertyDescriptors"></a>
+Boolean that indicates if **[Object.defineProperty][]** is supported. It's
+important to note that while IE8 has an implementation of
+`Object.defineProperty`, the method can only be used on DOM objects. This takes
+that in to account when determining support.
 
-### propertyDescriptors
-
-Determines if `Object.defineProperty` is supported. It's important to note that IE8 has an implementation of `Object.defineProperty` however the method can only be used on DOM objects.
-
-## Usage
-
-`Support` is used for feature detection and each method returns a boolean
-indicating feature support.
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/lib/support.coffee)
+[Object.defineProperty]: https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty
