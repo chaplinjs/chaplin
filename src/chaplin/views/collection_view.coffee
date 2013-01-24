@@ -37,8 +37,11 @@ module.exports = class CollectionView extends View
   # By default, fading in is done by javascript function which can be
   # slow on mobile devices. CSS animations are faster,
   # but require user’s manual definitions.
-  # CSS classes used are: animated-item-view, animated-item-view-end.
   useCssAnimation: false
+
+  # CSS classes that will be used when hiding / showing child views.
+  animationStartClass: 'animated-item-view'
+  animationEndClass: 'animated-item-view-end'
 
   # Selectors and Elements
 
@@ -337,8 +340,7 @@ module.exports = class CollectionView extends View
 
   # Inserts a view into the list at the proper position
   insertView: (item, view, index = null, enableAnimation = true) ->
-    if @animationDuration is 0
-      enableAnimation = false
+    enableAnimation = false if @animationDuration is 0
 
     # Get the insertion offset
     position = if typeof index is 'number'
@@ -360,7 +362,7 @@ module.exports = class CollectionView extends View
       # Make view transparent if animation is enabled
       if enableAnimation
         if @useCssAnimation
-          $viewEl.addClass 'animated-item-view'
+          $viewEl.addClass @animationStartClass
         else
           $viewEl.css 'opacity', 0
     else
@@ -402,7 +404,7 @@ module.exports = class CollectionView extends View
       if @useCssAnimation
         # Wait for DOM state change.
         setTimeout =>
-          $viewEl.addClass 'animated-item-view-end'
+          $viewEl.addClass @animationEndClass
         , 0
       else
         $viewEl.animate {opacity: 1}, @animationDuration

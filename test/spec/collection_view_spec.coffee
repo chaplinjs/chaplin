@@ -405,6 +405,26 @@ define [
         done()
       , 1
 
+    it 'should animate with custom CSS classes', (done) ->
+      collectionView.dispose()
+
+      class AnimatingCollectionView extends CollectionView
+        useCssAnimation: true
+        animationStartClass: 'a'
+        animationEndClass: 'b'
+        itemView: ItemView
+
+      collectionView = new AnimatingCollectionView {collection}
+      children = getAllChildren()
+      for child in children
+        expect($(child).hasClass('a')).to.be.true
+
+      setTimeout ->
+        for child in children
+          expect($(child).hasClass('b')).to.be.true
+        done()
+      , 1
+
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
