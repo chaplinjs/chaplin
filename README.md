@@ -159,7 +159,7 @@ Furthermore code coverage reports are generated and may be viewed by opening `te
 
 ## Boilerplates
 
-Chaplin needs a simple skeleton to start up and configure the core modules. We provides several boilerplates to make the start easier.
+Chaplin needs a simple skeleton to start up and configure the core modules. We provide several boilerplates to make the start easier.
 
 [Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a “Hello world” example project using Chaplin. If you’re not a CoffeeScript user, there’s also a [plain JavaScript boilerplate](https://github.com/chaplinjs/chaplin-boilerplate-plain).
 
@@ -185,7 +185,7 @@ This example uses Facebook client-side authentication to display the user’s Li
 
 [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
 
-Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
+Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, the frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & maintainability quite a lot.
 
 ### Tweet your Brunch
 

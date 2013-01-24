@@ -14,7 +14,7 @@ From top to bottom, a Chaplin application consists of these modules:
 * `Router` – Mapping URLs to controller actions based on a configuration file
 * `Dispatcher` – Starting and stopping controllers when a route matches
 * `Layout` – Showing and hiding of main views, handling of internal links
-* `mediator` – Cross-module communication using Publish/Subscribe
+* `Mediator` – Cross-module communication using Publish/Subscribe
 * Several `Controllers` – individual application modules
 * `Models` and `Collections` hold the data, `Views` provide the user interface
 
