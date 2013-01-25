@@ -6,7 +6,7 @@
 
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library.
 
-* [Support and Help](#support-and-help)
+* [Documentation and Support](#documentation-and-support)
 * [Commercial Support and Training](#commercial-support-and-training)
 * [Key Features](#key-features)
 * [Motivation](#motivation)
