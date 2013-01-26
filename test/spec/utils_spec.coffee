@@ -50,26 +50,20 @@ define [
 
     describe 'wrapMethod', ->
       it 'should wrap a method in order to call the corresponding `after-` method automatically', ->
-        class ThirdReich
+        class MemeClass
           constructor: ->
             @afterInit = sinon.spy()
-            @callHitler = sinon.spy()
-            @afterCallHitler = sinon.spy()
+            @callErmahgerd = sinon.spy()
+            @afterCallErmahgerd = sinon.spy()
             utils.wrapMethod this, 'init'
-            utils.wrapMethod this, 'callHitler'
+            utils.wrapMethod this, 'callErmahgerd'
             @init()
-
           init: ->
-            'HEYO'
-
-          callHitler: ->
-            'IMMA HITLER LOL'
-
-        object = new ThirdReich
+        object = new MemeClass()
         expect(object.afterInit).was.calledOnce()
-        expect(object.afterCallHitler).was.notCalled()
-        object.callHitler()
-        expect(object.afterCallHitler).was.calledOnce()
+        expect(object.afterCallErmahgerd).was.notCalled()
+        object.callErmahgerd()
+        expect(object.afterCallErmahgerd).was.calledOnce()
 
     describe 'upcase', ->
       it 'should make the first character in string upper-cased', ->

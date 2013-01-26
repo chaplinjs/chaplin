@@ -140,21 +140,19 @@ module.exports = class View extends Backbone.View
   # Copy of original backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
     # Call Backbone.delegateEvents on all superclasses events.
-    return unless events or (events = getValue(this, 'events'))
-    for key of events
-      method = events[key]
-      method = this[method] unless _.isFunction(method)
-      unless method
-        throw new Error("Method '#{events[key]}' does not exist")
-      match = key.match(/^(\S+)\s*(.*)$/)
+    return unless events
+    for key, value of events
+      method = if typeof value is 'function' then value else this[value]
+      throw new Error "Method '#{method}' does not exist" unless method
+      match = key.match /^(\S+)\s*(.*)$/
       eventName = match[1]
       selector = match[2]
-      method = _.bind(method, this)
+      bound = _.bind(method, this)
       eventName += ".delegateEvents#{@cid}"
       if selector is ''
-        @$el.bind eventName, method
+        @$el.on eventName, bound
       else
-        @$el.delegate selector, eventName, method
+        @$el.on eventName, selector, bound
 
   # Override Backbones method to combine the events
   # of the parent view if it exists.
@@ -162,6 +160,8 @@ module.exports = class View extends Backbone.View
     @undelegateEvents()
     return @_delegateEvents events if events
     for classEvents in utils.getAllPropertyVersions this, 'events'
+      if typeof classEvents is 'function'
+        throw new TypeError 'View#delegateEvents: functions are not supported'
       @_delegateEvents classEvents
     return
 
