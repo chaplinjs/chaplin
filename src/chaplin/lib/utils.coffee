@@ -100,6 +100,12 @@ utils =
     string.replace /[A-Z]/g, (char, index) ->
       (if index isnt 0 then '_' else '') + char.toLowerCase()
 
+  # Escapes a string to use in a regex
+  escapeRegExp: (str) ->
+    return unless str
+    return String(str).replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
+
+
   # Event handling helpers
   # ----------------------
 

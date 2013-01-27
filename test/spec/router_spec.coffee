@@ -60,6 +60,11 @@ define [
         expect(router.options).to.be.an 'object'
         expect(Backbone.history.options.pushState).to.be router.options.pushState
 
+      it 'should default to root', ->
+        router.startHistory()
+        expect(router.options).to.be.an 'object'
+        expect(Backbone.history.options.root).to.be router.options.root
+
       it 'should pass the options to the Backbone.History instance', ->
         router.startHistory()
         expect(Backbone.history.options.randomOption).to.be 'foo'
@@ -132,6 +137,20 @@ define [
         expect(spy).was.calledOnce()
 
         mediator.unsubscribe 'matchRoute', spy
+
+      it 'should match correctly when using the root option', ->
+        subdirRooter = new Router randomOption: 'foo', pushState: false, root: '/subdir/'
+        spy = sinon.spy()
+        mediator.subscribe 'matchRoute', spy
+        subdirRooter.match 'correct-match1', 'null#null'
+        subdirRooter.match 'correct-match2', 'null#null'
+
+        routed = subdirRooter.route '/subdir/correct-match1'
+        expect(routed).to.be true
+        expect(spy).was.calledOnce()
+
+        mediator.unsubscribe 'matchRoute', spy
+        subdirRooter.dispose()
 
       it 'should match in order specified', ->
         spy = sinon.spy()
