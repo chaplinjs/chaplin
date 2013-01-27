@@ -227,25 +227,6 @@ define [
             expect(d["#{index}Handler"]).was.calledOnce()
           done()
 
-    it 'should pass model attributes to elements', ->
-      expect(view.pass).to.be.a 'function'
-      setModel()
-      view.pass 'foo', 'p'
-      view.render()
-      p = view.$('p')
-      expect(p.text()).to.be 'content'
-      model.set foo: 'bar'
-      expect(p.text()).to.be 'bar'
-
-    it 'should pass model attributes to input elements', ->
-      setModel()
-      view.$el.html('<p><input type="text" id="foo"></p>')
-      view.pass 'foo', '#foo'
-      input = view.$('input')
-      expect(input.val()).to.be ''
-      model.set foo: 'bar'
-      expect(input.val()).to.be 'bar'
-
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
 
@@ -310,12 +291,13 @@ define [
       collection = new Collection [model1, model2]
       view.collection = collection
 
-      d = view.getTemplateData()
-      expect(d).to.be.an 'object'
-      expect(d).to.only.have.keys('items');
-      items = d.items
+      data = view.getTemplateData()
+      expect(data).to.be.an 'object'
+      expect(data).to.only.have.keys('items', 'length')
+      expect(data.length).to.be 2
+      items = data.items
       expect(items).to.be.an 'array'
-      expect(items.length).to.be 2
+      expect(data.length).to.be items.length
       expect(items[0]).to.be.an 'object'
       expect(items[0].foo).to.be 'foo'
       expect(items[1]).to.be.an 'object'
@@ -327,10 +309,11 @@ define [
       collection = new Backbone.Collection [model1, model2]
       view.collection = collection
 
-      d = view.getTemplateData()
-      expect(d).to.be.an 'object'
-      expect(d).to.only.have.keys('items');
-      items = d.items
+      data = view.getTemplateData()
+      expect(data).to.be.an 'object'
+      expect(data).to.only.have.keys('items', 'length')
+      expect(data.length).to.be 2
+      items = data.items
       expect(items).to.be.an 'array'
       expect(items.length).to.be 2
       expect(items[0]).to.be.an 'object'

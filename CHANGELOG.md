@@ -1,3 +1,37 @@
+# Chaplin 0.7.0 (unreleased)
+* Improved `Chaplin.Controller`:
+    * Query string params are now passed to controllers
+      (a feature removed from Backbone 0.9.9). 
+    * Controller actions will now receive an `options` hash
+      as second argument, that contains `path`, `previousControllerName`
+      and routing options. Previously, the second argument was just
+      a `previousControllerName` string.
+    * Fixed `Controller#redirectTo` signature (`url, options`).
+* Improved `Chaplin.Dispatcher`:
+    * Stop waiting for a Promise returned by a before action when another route is dispatched
+      or the same is dispatched again.
+* Improved `Chaplin.Dispatcher` and `Chaplin.Router`:
+    * The `params` and `options` objects are copied instead of changed to prevent conflicts.
+      If you pass `params` and `options` along with the `!router:route` event,
+      the controller action will receive a copy of them.
+* Improved `Chaplin.CollectionView`:
+    * Item views will now emit `addedToParent` event instead of `addedToDOM`
+    when they are appended to collection view.
+    * Optimise performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
+* Improved `Chaplin.Model`:
+    * `Model#serialize` can be overridden on `Backbone.Model`s.
+      Chaplin will use it, if available, and `Model#toJSON` if not.
+* Improved `Chaplin.utils`:
+    * Added `utils.getAllPropertyVersions` that allows to gather all
+      property versions from object’s prototypes.
+* Improved `Chaplin.View`:
+    * Switched to `$el.toggle()` instead of manual CSS `display` setting.
+    Which means non-block elements will behave correctly.
+    * Switched to `Backbone.$` reference for DOM manipulation.
+      This will automatically use jQuery, Zepto or Ender as DOM library.
+    * Removed `View#pass`. Please use [stickit](http://nytimes.github.com/backbone.stickit/) instead
+      for advanced model-view binding.
+
 # Chaplin 0.6.0 (December 30, 2012)
 * Updated required Backbone version to 0.9.9+.
 * Improved `Chaplin.Collection`:

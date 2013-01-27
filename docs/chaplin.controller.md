@@ -1,10 +1,22 @@
 # Chaplin.Controller
 
-A controller is the place where a model/collection and an associated views are instantiated. It is also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers which govern special views like a header, a navigation sidebar or a footer.
+A controller is the place where a model/collection and its associated views are instantiated. It's also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers which govern special views like a header, a navigation sidebar or a footer.
 
 ## Methods of `Chaplin.Controller`
+### adjustTitle(subtitle)
+Adjusts document title to `subtitle - title`. Title template can be set when initializing `Dispatcher`.
 
-Chaplin.Controller doesn't provide public methods. See the usage below:
+### redirectTo(url, options)
+
+Navigates to `url` in app.
+
+### redirectToRoute(name, params, options)
+
+Navigates to named route, like `@redirectToRoute 'like', id: 502`.
+
+### dispose()
+
+Disposes all models and views on current `Controller` instance.
 
 ## Usage
 
@@ -21,6 +33,12 @@ By convention, there is a controller for each application module. A controller m
 
 A controller is usually started following a route match.
 
+
+### Before action filters
+
+To execute code before the controller action is called, you can use the `beforeAction` object (e.g. to add some ACL checks).
+
+
 ### Example
 
 ```coffeescript
@@ -35,6 +53,11 @@ define [
   'use strict'
 
   class LikesController extends Controller
+
+    beforeAction:
+      show: (params) ->
+        @redirectUnlessLoggedIn()
+
     # Initialize method is empty here.
     index: (params) ->
       @collection = new Likes()

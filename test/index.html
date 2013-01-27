@@ -19,7 +19,7 @@
       window.clearInterval = timers.clearInterval;
 
       requirejs.config({
-        baseUrl: 'js/',
+        baseUrl: 'temp/',
         paths: {
           jquery: '../components/jquery/jquery',
           underscore: '../components/underscore/underscore',
@@ -52,7 +52,8 @@
           'collection',
           'controller',
           'view',
-          'delayer'
+          'delayer',
+          'utils'
         ];
         var loaded = [];
         for (var i = 0, l = specs.length; i < l; i++) {

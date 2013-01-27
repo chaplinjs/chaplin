@@ -4,7 +4,7 @@
 
 Chaplin is an architecture for JavaScript web applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library. The code is derived from [moviepilot.com](http://moviepilot.com/), a large single-page application.
 
-While Backbone is an easy starting point, it provides only basic, low-level patterns. Especially, Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses this limitations by providing a light-weight but flexible structure which leverages well-profen design patterns and best practises.
+While Backbone is an easy starting point, it provides only basic, low-level patterns. Backbone provides little structure above simple routing, individual models, views and their bindings. Chaplin addresses these limitations by providing a light-weight but flexible structure which leverages well-proven design patterns and best practises.
 
 ## Chaplin’s Structure
 
@@ -14,13 +14,13 @@ From top to bottom, a Chaplin application consists of these modules:
 * `Router` – Mapping URLs to controller actions based on a configuration file
 * `Dispatcher` – Starting and stopping controllers when a route matches
 * `Layout` – Showing and hiding of main views, handling of internal links
-* `mediator` – Cross-module communication using Publish/Subscribe
+* `Mediator` – Cross-module communication using Publish/Subscribe
 * Several `Controllers` – individual application modules
 * `Models` and `Collections` hold the data, `Views` provide the user interface
 
 ## Application Flow
 
-Every Chaplin application starts with a class that inherits from `Application`. This is merely a bootstrapper which instantiates and configures the four core moules: `Router`, `Dispatcher`, `Layout` and `mediator`.
+Every Chaplin application starts with a class that inherits from `Application`. This is merely a bootstrapper which instantiates and configures the four core modules: `Router`, `Dispatcher`, `Layout` and `mediator`.
 
 After creating the `Router`, the routes are registered. Usually they are read from a configuration file called  `routes.coffee`/`routes.js`. A route maps a URL pattern to a controller action. For example, the path `/` can be mapped to the `index` action of the `HomeController`.
 
@@ -86,15 +86,15 @@ By convention, there is a controller for each application module. A controller m
 
 ### Mediator
 
-The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `mediator.publish` in order to notify other modules, and listen for such events using `mediator.subscribe`. The mediator can also be used for sharing data between several modules easily, like a user model or other persistent and globally accessible data.
+The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `this.publishEvent` in order to notify other modules, and listen for such events using `this.subscribeEvent`. The mediator can also be used to easily share data between several modules, like a user model or other persistent and globally accessible data.
 
 [Learn more about the mediator](./chaplin.mediator.md)
 
 ## Memory Management and Object Disposal
 
-One of the core concerns of the Chaplin architecture is a proper memory management. While there isn’t a broad discussion about garbage collection in JavaScript applications, it’s an important topic. In event-driven systems, registering events creates references between objects. If these references aren’t removed when one of the modules isn’t used any longer, the garbage collector can’t free the memory.
+A core concern of the Chaplin architecture is proper memory management. While there isn’t a broad discussion about garbage collection in JavaScript applications, it’s an important topic. In event-driven systems, registering events creates references between objects. If these references aren’t removed when a module is no longer in use, the garbage collector can’t free the memory.
 
-Backbone provides little out of the box so Chaplin ensures that every controller, model, collection and view cleans up after itself. Chaplin extends the Model, Collection and View classes of Chaplin to implement a powerful disposal process.
+Since Backbone provides little out of the box to manage memory, Chaplin extends Backbone's Model, Collection and View classes to implement a powerful disposal process which ensures that each controller, model, collection and view cleans up after itself.
 
 [Learn more about disposal](./disposal.md)
 
