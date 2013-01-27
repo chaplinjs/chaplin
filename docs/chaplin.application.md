@@ -31,7 +31,7 @@ Initialize `Chaplin.Router`. [Chaplin.Router documentation](./chaplin.router.md)
 * **options**: none
 
 ## Usage
-The `Chaplin.Application` is intended to be extended by your Application. The `initialize` method instanciate the `Chaplin.Dispatcher`, `Chaplin.Layout` and `Chaplin.Router` by calling the `Chaplin.Application.init*` methods:
+The `Chaplin.Application` is intended to be extended by your Application. The `initialize` method instantiates the `Chaplin.Dispatcher`, `Chaplin.Layout` and `Chaplin.Router` by calling the `Chaplin.Application.init*` methods:
 
 ```coffeescript
 define [
@@ -53,7 +53,7 @@ define [
       @initRouter routes
 ```
 
-In this example, we don't extend the Layout but it is likely that you will need to. In this case, you will load it as a dependency and overwrite the `initLayout` (or skip it):
+In this example we don't extend the Layout, but it's likely that you will need to. In this case, load it as a dependency and overwrite the `initLayout` (or skip it):
 
 ```coffeescript
 define [
