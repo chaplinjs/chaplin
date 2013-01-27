@@ -123,13 +123,10 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
 
 4. Change into the Chaplin root directory.
 
-   ```
-   npm install
-   ```
-5. Start the build.
+5. Start the build (will install dependencies and build).
 
    ```
-   grunt build
+   npm install
    ```
 
 This creates two directories:
