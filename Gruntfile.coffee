@@ -128,7 +128,7 @@ module.exports = (grunt) ->
       beforeInstrument:
         files: [
           expand: true
-          dest: 'test/temp:original/'
+          dest: 'test/temp-original/'
           cwd: 'test/temp'
           src: '**/*.js'
         ]
@@ -137,7 +137,7 @@ module.exports = (grunt) ->
         files: [
           expand: true
           dest: 'test/temp/'
-          cwd: 'test/temp:original'
+          cwd: 'test/temp-original'
           src: '**/*.js'
         ]
 
