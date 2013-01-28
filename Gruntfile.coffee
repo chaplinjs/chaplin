@@ -160,12 +160,16 @@ module.exports = (grunt) ->
         '''
 
       amd:
-        dest: 'build/amd/<%= pkg.name %>.js'
-        src: modules
+        files: [
+          dest: 'build/amd/<%= pkg.name %>.js'
+          src: modules
+        ]
 
       commonjs:
-        dest: 'build/commonjs/<%= pkg.name %>.js'
-        src: modules
+        files: [
+          dest: 'build/commonjs/<%= pkg.name %>.js'
+          src: modules
+        ]
 
     # Lint
     # ----
@@ -207,8 +211,7 @@ module.exports = (grunt) ->
     # Test runner
     # -----------
     mocha:
-      index:
-        src: [ 'test/index.html' ]
+      index: 'test/index.html'
 
     # Minify
     # ------
@@ -228,18 +231,20 @@ module.exports = (grunt) ->
     # -----------
     compress:
       amd:
-        files:
-          'build/amd/chaplin.min.js.gz': 'build/amd/chaplin.min.js'
+        files: [
+          src: 'build/amd/chaplin.min.js'
+        ]
+
+        options:
+          archive: 'build/amd/chaplin.min.js.gz'
 
       commonjs:
-        files:
-          'build/commonjs/chaplin.min.js.gz': 'build/commonjs/chaplin.min.js'
+        files: [
+          src: 'build/commonjs/chaplin.min.js'
+        ]
 
-    # Filesize
-    # --------
-    filesize:
-      build:
-        files: 'build/**/*'
+        options:
+          archive: 'build/commonjs/chaplin.min.js.gz'
 
     # Watching for changes
     # --------------------
@@ -253,7 +258,7 @@ module.exports = (grunt) ->
           'copy:test'
           'mocha'
         ]
-        
+
       test:
         files: ['test/spec/*.coffee'],
         tasks: [
@@ -263,7 +268,7 @@ module.exports = (grunt) ->
 
   # Events
   # ======
-  grunt.event.on 'mocha.done', (failed, passed, total, time, coverage) ->
+  grunt.event.on 'mocha.coverage', (coverage) ->
     # This is needed so the coverage reporter will find the coverage variable.
     global.__coverage__ = coverage
 
@@ -305,7 +310,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', [
     'build:amd'
     'build:commonjs'
-    'filesize'
   ]
 
   # Lint
@@ -315,8 +319,20 @@ module.exports = (grunt) ->
   # Test
   # ----
   grunt.registerTask 'test', [
-    'prepare'
-    'build:amd'
+    'coffee:compile'
+    'urequire'
+    'copy:amd'
+    'copy:test'
+    'coffee:test'
+    'mocha'
+  ]
+
+  # Coverage
+  # --------
+  grunt.registerTask 'cover', [
+    'coffee:compile'
+    'urequire'
+    'copy:amd'
     'copy:test'
     'coffee:test'
     'copy:beforeInstrument'
@@ -326,16 +342,11 @@ module.exports = (grunt) ->
     'copy:afterInstrument'
     'makeReport'
   ]
-  
+
   # Test Watcher
   # ------------
   grunt.registerTask 'test-watch', [
-    'coffee:compile'
-    'urequire'
-    'copy:amd'
-    'copy:test'
-    'coffee:test'
-    'mocha'
+    'test'
     'watch'
   ]
 

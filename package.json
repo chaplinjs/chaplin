@@ -10,25 +10,24 @@
     "node": ">= 0.4.6 < 0.9"
   },
   "devDependencies": {
-    "grunt": "git://github.com/gruntjs/grunt#0d59f5c7e6c8b45691de40645290a20166a43386",
-    "grunt-contrib-coffee": "git://github.com/gruntjs/grunt-contrib-coffee.git#01f90adb16e315ee88c0befa5bb401bbfd4cbc6e",
-    "grunt-contrib-clean": "0.4.x",
-    "grunt-contrib-concat": "git://github.com/mehcode/grunt-contrib-concat.git#frozen",
-    "grunt-contrib-copy": "git://github.com/concordusapps/grunt-contrib-copy.git",
-    "grunt-contrib-compress": "0.3.x",
+    "grunt": "0.4.x",
+    "grunt-contrib-coffee": "0.4.x",
+    "grunt-contrib-clean": "git://github.com/gruntjs/grunt-contrib-clean.git",
+    "grunt-contrib-concat": "git://github.com/gruntjs/grunt-contrib-concat.git",
+    "grunt-contrib-copy": "0.4.x",
+    "grunt-contrib-compress": "git://github.com/gruntjs/grunt-contrib-compress.git",
     "grunt-contrib-watch": "0.1.4",
     "grunt-bower-task": "0.1.x",
-    "grunt-contrib-uglify": "git://github.com/concordusapps/grunt-contrib-uglify.git#frozen",
-    "grunt-filesize": "0.0.x",
+    "grunt-contrib-uglify": "git://github.com/gruntjs/grunt-contrib-uglify.git",
     "grunt-istanbul": "git://github.com/taichi/grunt-istanbul.git",
     "grunt-urequire": "git://github.com/concordusapps/grunt-urequire",
     "grunt-coffeelint": "0.0.x",
-    "grunt-mocha": "git://github.com/concordusapps/grunt-mocha.git",
+    "grunt-mocha": "0.2.x",
     "phantomjs": "1.8.x"
   },
   "main": "build/commonjs/chaplin.js",
   "scripts": {
-    "install": "grunt build",
-    "test": "grunt test"
+    "install": "grunt clean build",
+    "test": "grunt clean prepare test"
   }
 }
