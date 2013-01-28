@@ -122,7 +122,7 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
    On Windows, you can omit the `sudo` command at the beginning.
 
 4. Change into the Chaplin root directory.
-5. Start the build.
+5. Start the build (will install dependencies and build).
 
    ```
    npm install
