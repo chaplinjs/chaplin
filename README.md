@@ -36,10 +36,10 @@ One of the creators of Chaplin, is offering commercial support and training for 
 Chaplin & Brunch maintainer is offering consulting & training for all Backbone-related stuff.
 Contact him: [paul+chaplin@paulmillr.com](mailto:paul+chaplin@paulmillr.com).
 
-###### [Concordus Applications](http://www.concordusapps.com/) — Sacramento, CA, USA 
-Offering commerical support and training for Chaplin and Backbone-based 
-JavaScript applications. Concordus Applications is an enterprise integration 
-and software development firm. Email us for more 
+###### [Concordus Applications](http://www.concordusapps.com/) — Sacramento, CA, USA
+Offering commerical support and training for Chaplin and Backbone-based
+JavaScript applications. Concordus Applications is an enterprise integration
+and software development firm. Email us for more
 information: [support@concordusapps.com](mailto:support@concordusapps.com).
 
 ---
@@ -122,7 +122,8 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
    On Windows, you can omit the `sudo` command at the beginning.
 
 4. Change into the Chaplin root directory.
-5. Start the build.
+
+5. Start the build (will install dependencies and build).
 
    ```
    npm install
