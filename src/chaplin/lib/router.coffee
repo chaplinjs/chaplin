@@ -5,6 +5,7 @@ Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
 EventBroker = require 'chaplin/lib/event_broker'
 Route = require 'chaplin/lib/route'
+utils = require 'chaplin/lib/utils'
 
 # The router which is a replacement for Backbone.Router.
 # Like the standard router, it creates a Backbone.History
@@ -21,6 +22,10 @@ module.exports = class Router # This class does not extend Backbone.Router
   constructor: (@options = {}) ->
     _(@options).defaults
       pushState: true
+      root: '/'
+
+    # Cached regex for stripping a leading subdir and hash/slash
+    @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
 
     @subscribeEvent '!router:route', @routeHandler
     @subscribeEvent '!router:routeByName', @routeByNameHandler
@@ -79,8 +84,8 @@ module.exports = class Router # This class does not extend Backbone.Router
     # Update the URL programmatically after routing
     _(options).defaults changeURL: true
 
-    # Remove leading hash or slash
-    path = path.replace /^(\/#|\/)/, ''
+    # Remove leading subdir and hash/slash
+    path = path.replace @removeRoot, ''
 
     # Find a matching route
     for handler in Backbone.history.handlers
