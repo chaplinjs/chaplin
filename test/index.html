@@ -44,9 +44,11 @@
         alert(JSON.stringify(args));
       }
       mocha.suite.afterAll(function() {
-        // Send message to grunt with the coverage information on
-        // test completion.
-        sendMessage('mocha.coverage', window.__coverage__);
+        if (window.mochaPhantomJS) {
+          // Send message to grunt with the coverage information on
+          // test completion.
+          sendMessage('mocha.coverage', window.__coverage__);
+        }
       });
       window.expect = SinonExpect.enhance(expect, sinon, 'was');
       window.onload = function() {
