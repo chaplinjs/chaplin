@@ -16,7 +16,6 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Running the Tests](#running-the-tests)
 * [Boilerplates](#boilerplates)
 * [Examples](#examples)
-* [Documentation](#documentation)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
 * [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)
 
@@ -190,10 +189,6 @@ Ost.io serves as a good example of a fast service-based application, using *Ruby
 ### Tweet your Brunch
 
 [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
-
-## Documentation
-
-All docs are located in [docs/](https://github.com/chaplinjs/chaplin/tree/master/docs) subdirectory.
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
