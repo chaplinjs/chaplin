@@ -5,6 +5,7 @@ Chaplin is currently maintained by:
 * Mathias Schäfer ([9elements](http://9elements.com/)) – [mathias.schaefer@9elements.com](mailto:mathias.schaefer@9elements.com) – [@molily](https://twitter.com/molily) – [molily.de](http://molily.de/)
 * Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
 * Karel Ledru-Mathé – [@karelledrumathe](http://twitter.com/karelledrumathe) – [ledrumathe.com](http://ledrumathe.com/)
+* Ryan Leckey – [@mehcode](https://github.com/mehcode)
 
 Chaplin was initially written by:
 
