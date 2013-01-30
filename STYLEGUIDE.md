@@ -90,7 +90,7 @@ Avoid the “function grouping style”.
 
 ## Spec style
 
-Use `expect(…).to.be …` instead of `.to.equal` or `.to.eql`.
+Use `expect(…).to.be(…)` instead of `.to.equal()`.
 
 Use the bridge between Expect.js and Sinon.js for nice spy/stub/mock expectations, see [sinon-expect.js](https://github.com/lightsofapollo/sinon-expect/blob/master/lib/sinon-expect.js).
 
