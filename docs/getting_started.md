@@ -4,8 +4,8 @@
 
 The easiest way to start a Chaplin application is to download the boilerplate. It contains a recent build of Chaplin as well as all JavaScript libraries Chaplin depends upon:
 
-* [Underscore](http://documentcloud.github.com/underscore/)
-* [Backbone](http://documentcloud.github.com/backbone/)
+* [Underscore](http://underscorejs.org/)
+* [Backbone](http://backbonejs.org/)
 * [jQuery](http://jquery.com/)
 * [RequireJS](http://requirejs.org/) as AMD module loader
 

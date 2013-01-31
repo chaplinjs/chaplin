@@ -1,4 +1,4 @@
-# Chaplin.utils
+# [Chaplin.utils](src/chaplin/lib/utils.coffee)
 
 Chaplin's utils provide common functions for use throughout the project.
 
