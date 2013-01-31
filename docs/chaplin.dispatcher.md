@@ -1,4 +1,4 @@
-# Chaplin.Dispatcher
+# [Chaplin.Dispatcher](src/chaplin/dispatcher.coffee)
 
 The `Dispatcher` sits between the router and the controllers. It listens for a routing event to occur and then:
 
@@ -23,5 +23,3 @@ A specific controller can be started programatically by publishing an app-wide `
 ```coffeescript
 Chaplin.mediator.publish '!startupController', 'controller', 'action', params
 ```
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/dispatcher.coffee)
