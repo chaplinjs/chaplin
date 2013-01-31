@@ -31,6 +31,14 @@ module.exports = class Controller
   adjustTitle: (subtitle) ->
     @publishEvent '!adjustTitle', subtitle
 
+  # Composer
+  # --------
+
+  # Convenience method to publish the `!composer:compose` event. See the
+  # composer for information on parameters, etc.
+  compose: (params...) ->
+    @publishEvent '!composer:compose', params...
+
   # Redirection
   # -----------
 

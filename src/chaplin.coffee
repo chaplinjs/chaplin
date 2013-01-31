@@ -3,6 +3,7 @@ module.exports =
   mediator:       require 'chaplin/mediator'
   Dispatcher:     require 'chaplin/dispatcher'
   Controller:     require 'chaplin/controllers/controller'
+  Composer:       require 'chaplin/composer'
   Collection:     require 'chaplin/models/collection'
   Model:          require 'chaplin/models/model'
   Layout:         require 'chaplin/views/layout'

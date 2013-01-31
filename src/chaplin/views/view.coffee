@@ -37,12 +37,38 @@ module.exports = class View extends Backbone.View
   # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
   containerMethod: 'append'
 
+  # Regions
+  # -------
+
+  # Region registration; regions are in essence named selectors that aim
+  # to decouple the view from its parent.
+  #
+  # This functions close to the declarative events hash; use as follows:
+  # regions:
+  #   '.class': 'region'
+  #   '#id': 'region'
+  regions: null
+
+  # Region application is the reverse; you're specifying that this view
+  # will be inserted into the DOM at the named region. Error thrown if
+  # the region is unregistered at the time of initialization.
+  # Set the region name on your derived class or pass it into the
+  # constructor in controller action.
+  region: null
+
   # Subviews
   # --------
 
   # List of subviews
   subviews: null
   subviewsByName: null
+
+  # State
+  # -----
+
+  # A view is `stale` when it has been previously composed by the last
+  # route but has not yet been composed by the current route.
+  stale: false
 
   constructor: (options) ->
     # Wrap `initialize` so `afterInitialize` is called afterwards
@@ -59,7 +85,9 @@ module.exports = class View extends Backbone.View
 
     # Copy some options to instance properties
     if options
-      _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
+      _(this).extend _.pick options, [
+        'autoRender', 'container', 'containerMethod', 'region'
+      ]
 
     # Call Backbone’s constructor
     super
@@ -77,6 +105,9 @@ module.exports = class View extends Backbone.View
     # If the model is disposed, automatically dispose the associated view
     @listenTo @model, 'dispose', @dispose if @model
     @listenTo @collection, 'dispose', @dispose if @collection
+
+    # Register all exposed regions.
+    @publishEvent '!region:register', this if @regions?
 
     # Call `afterInitialize` if `initialize` was not wrapped
     unless @initializeIsWrapped
@@ -168,6 +199,21 @@ module.exports = class View extends Backbone.View
   # Remove all handlers registered with @delegate.
   undelegate: ->
     @$el.unbind ".delegate#{@cid}"
+
+  # Region management
+  # -----------------
+
+  # Functionally register a single region.
+  registerRegion: (selector, name) ->
+    @publishEvent '!region:register', this, name, selector
+
+  # Functionally unregister a single region by name.
+  unregisterRegion: (name) ->
+    @publishEvent '!region:unregister', this, name
+
+  # Unregister all regions; called upon view disposal.
+  unregisterAllRegions: ->
+    @publishEvent '!region:unregister', this
 
   # Subviews
   # --------
@@ -287,6 +333,9 @@ module.exports = class View extends Backbone.View
 
   # This method is called after a specific `render` of a derived class
   afterRender: ->
+    # Attempt to bind this view to its named region.
+    @publishEvent '!region:show', @region, this if @region?
+
     # Automatically append to DOM if the container element is set
     if @container
       # Append the view to the DOM
@@ -304,6 +353,9 @@ module.exports = class View extends Backbone.View
 
     throw new Error('Your `initialize` method must include a super call to
       Chaplin `initialize`') unless @subviews?
+
+    # Unregister all regions
+    @unregisterAllRegions()
 
     # Dispose subviews
     subview.dispose() for subview in @subviews

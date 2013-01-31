@@ -31,6 +31,9 @@ module.exports = class Layout # This class does not extend View
   $el: $(document)
   cid: 'chaplin-layout'
 
+  # Region collection; used to assign canonocial names to selectors
+  regions: null
+
   constructor: ->
     @initialize arguments...
 
@@ -44,9 +47,15 @@ module.exports = class Layout # This class does not extend View
       # Per default, jump to the top of the page
       scrollTo: [0, 0]
 
+    @regions = []
+
     @subscribeEvent 'beforeControllerDispose', @hideOldView
     @subscribeEvent 'startupController', @showNewView
     @subscribeEvent '!adjustTitle', @adjustTitle
+
+    @subscribeEvent '!region:show', @showRegion
+    @subscribeEvent '!region:register', @registerRegionHandler
+    @subscribeEvent '!region:unregister', @unregisterRegionHandler
 
     # Set the app link routing
     if @settings.routeLinks
@@ -167,6 +176,78 @@ module.exports = class Layout # This class does not extend View
 
     return
 
+  # Region management
+  # -----------------
+
+  # Handler for `!region:register`.
+  registerRegionHandler: (params...) ->
+    if arguments.length is 1
+      # A single parameter is assumed to be the view instance; register all
+      # regions exposed.
+      @registerRegions params...
+
+    else
+      # Else we're expecting all three parameters and the intent to register
+      # a single region.
+      @registerRegion params...
+
+  # Registering one region bound to a view.
+  registerRegion: (instance, name, selector) ->
+    # Remove the region if there was already one registered perhaps by
+    # a base class.
+    @unregisterRegion instance, name
+
+    # Place this region registration into the regions array.
+    @regions.unshift {instance, name, selector}
+
+  # Triggered by view; passed in the regions hash.
+  # Simply register all regions exposed by it
+  registerRegions: (instance) ->
+    # Regions can be be extended by subclasses, so we need to check the
+    # whole prototype chain for matching regions. Regions registered by the
+    # more-derived class overwrites the region registered by the less-derived
+    # class.
+    for version in utils.getAllPropertyVersions instance, 'regions'
+      # Iterate over each declared region and its selector.
+      for selector, name of version
+        @registerRegion instance, name, selector
+
+  # Handler for `!region:unregister`.
+  unregisterRegionHandler: (params...) ->
+    if arguments.length is 1
+      # A single parameter is assumed to be the view instance; unregister all
+      # regions bound to the view.
+      @unregisterRegions params...
+
+    else
+      # Else we're expecting both parameters and the intent to unregister
+      # a single named region.
+      @unregisterRegion params...
+
+  # Unregisters a specific named region from a view.
+  unregisterRegion: (instance, name) ->
+    @regions = _(@regions).reject (region) ->
+      region.instance.cid is instance.cid and region.name is name
+
+  # When views are disposed; remove all their registered regions.
+  unregisterRegions: (instance) ->
+    @regions = _(@regions).reject (region) ->
+      region.instance.cid is instance.cid
+
+  # When views are instantiated and request for a region assignment;
+  # attempt to fulfill it.
+  showRegion: (name, instance) ->
+    # Find an appropriate region
+    region = _.find @regions, (region) ->
+      region.name is name and not region.instance.stale
+
+    # Assert that we got a valid region
+    if _.isUndefined region
+      throw new Error "No region registered under #{name}"
+
+    # Apply the region selector
+    instance.container = region.instance.$el.find(region.selector)
+
   # Disposal
   # --------
 
@@ -174,6 +255,9 @@ module.exports = class Layout # This class does not extend View
 
   dispose: ->
     return if @disposed
+
+    @regions = @regions[..]
+    delete @regions
 
     @stopLinkRouting()
     @unsubscribeAllEvents()

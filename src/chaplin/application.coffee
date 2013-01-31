@@ -5,6 +5,7 @@ Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
 Dispatcher = require 'chaplin/dispatcher'
 Layout = require 'chaplin/views/layout'
+Composer = require 'chaplin/composer'
 Router = require 'chaplin/lib/router'
 EventBroker = require 'chaplin/lib/event_broker'
 
@@ -22,10 +23,11 @@ module.exports = class Application
   # The site title used in the document title
   title: ''
 
-  # The application instantiates these three core modules
+  # The application instantiates these four core modules
   dispatcher: null
   layout: null
   router: null
+  composer: null
 
   initialize: ->
 
@@ -35,6 +37,9 @@ module.exports = class Application
   initLayout: (options = {}) ->
     options.title ?= @title
     @layout = new Layout options
+
+  initComposer: (options = {}) ->
+    @composer = new Composer options
 
   # Instantiate the dispatcher
   # --------------------------
@@ -59,7 +64,7 @@ module.exports = class Application
   dispose: ->
     return if @disposed
 
-    properties = ['dispatcher', 'layout', 'router']
+    properties = ['dispatcher', 'layout', 'router', 'composer']
     for prop in properties when this[prop]?
       this[prop].dispose()
       delete this[prop]
