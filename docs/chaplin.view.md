@@ -16,6 +16,7 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 * Rendering model data using templates in a conventional way
 * Robust and memory-safe model binding
 * Automatic rendering and appending to the DOM
+* Registering regions
 * Creating subviews
 * Disposal which cleans up all subviews, model bindings and Pub/Sub events
 
@@ -172,6 +173,98 @@ method signature.
 # delegate(eventType, selector, handler)
 @delegate('click', 'button.confirm', @confirm)
 ```
+
+## Regions
+
+Provides a means to give canonical names to selectors in the view. Instead of
+binding a view to `#page .container > .sidebar` (via the container) you would
+bind it to the declared region `sidebar` which is registered by the view that
+contained `#page .container > .sidebar`. This decouples views from those that
+nests them. It allows for layouts to be drastically changed without changing
+the template.
+
+### region
+
+This is the region that the view will be bound to. This property is not
+meant to be set on the prototype -- it is meant to be passed in as part
+of the options hash.
+
+Both of the following code snippets will bind the view `MyView` to the
+declared region `sidebar`.
+
+This one sets the region directly on the prototype:
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+  region: 'sidebar'
+
+# my_controller.coffee
+# [...] inside action method
+@view = new MyView()
+```
+
+And this one passes in the value of region to the view constructor:
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+
+# my_controller.coffee
+# [...] inside action method
+@view = new MyView {region: 'sidebar'}
+```
+
+However the latter case allows the controller (through whatever logic) decide
+where to place the view.
+
+### regions
+
+Region registration hash that works much like the declarative events hash
+present in Backbone.
+
+The following snippet will register the named regions `sidebar` and `body` and
+bind them to their respective selectors.
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+  regions:
+    '#page .container > .sidebar': 'sidebar'
+    '#page .container > .content': 'body'
+```
+
+When the view is initialzied the regions hashes of all base classes are
+gathered and registered as well. When two views in an inheritance tree
+both register a region of the same name, the selector of the most-derived view
+is used.
+
+### registerRegion(selector, name)
+* **String selector**,
+* **String name**
+
+Functionally registers a region exactly the same as if it were in the regions
+hash. Meant to be called in the `initialize` method as the following code
+snippet (which is identical to the previous one using the `regions` hash).
+
+```coffeescript
+class MyView extends Chaplin.View
+  initialize: ->
+    super
+    @registerRegion '#page .container > .sidebar', 'sidebar'
+    @registerRegion '#page .container > .content', 'body'
+```
+
+### unregisterRegion(name)
+* **String name**
+
+Removes the named region as if it was not registered. Does nothing if
+there is no region named `name`.
+
+### unregisterAllRegions()
+
+Removes all regions registered by this view, automatically called on
+`View#dispose`.
 
 
 ## Subviews

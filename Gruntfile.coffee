@@ -16,6 +16,7 @@ module.exports = (grunt) ->
     'temp/chaplin/application.js'
     'temp/chaplin/mediator.js'
     'temp/chaplin/dispatcher.js'
+    'temp/chaplin/composer.js'
     'temp/chaplin/controllers/controller.js'
     'temp/chaplin/models/collection.js'
     'temp/chaplin/models/model.js'
