@@ -1,4 +1,4 @@
-# Chaplin.Router
+# [Chaplin.Router](src/chaplin/lib/router.coffee)
 The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `matchRoute` event is triggered.
 
 The Chaplin `Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from Backbone’s `Router`. It’s a different implementation with several advantages over the standard router.
@@ -141,7 +141,7 @@ Stops the Backbone.history instance and removes it from the Router object.  Also
 * `!router:changeURL url[, options]`
 
 ## Usage
-The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
+The Chaplin Router is a dependancy of [Chaplin.Application](docs/chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
 
 ```coffeescript
 define [
@@ -159,5 +159,3 @@ define [
 
       @initRouter routes
 ```
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/lib/router.coffee)

@@ -1,4 +1,4 @@
-# Chaplin.CollectionView
+# [Chaplin.CollectionView](src/chaplin/views/collection_view.coffee)
 
 The `CollectionView` is responsible for displaying collections. For every item in a collection, it instantiates a given item view and inserts it into the DOM. It reacts to collection change events (`add`, `remove` and `reset`) and provides basic filtering, caching of views, fallback content and loading indicators.
 
@@ -58,7 +58,7 @@ The `CollectionView` is responsible for displaying collections. For every item i
     * **renderItems** see [renderItems](#renderItems)
     * **itemView** see [itemView](#itemView)
     * **filterer** automatically calls [filter](#filter) if set
-    * all [View](./Chaplin.View.md#initialize) and standard
+    * all [View](docs/chaplin.view.md#initialize) and standard
     [Backbone.View](http://backbonejs.org/#View-constructor) options
 
 <a id="filter"></a>
@@ -177,11 +177,11 @@ filterCallback: (view, included) ->
 
 
 ## Usage
-  Most inheriting classes of CollectionView should be very small, with
-  the majority of implementations only needing to overwrite the itemView
-  property. Standard View conventions like adding `@listenTo` handlers
-  should still take place in `initialize`, but the majority of Collection-
-  specific logic is handled by this class.
+Most inheriting classes of CollectionView should be very small, with
+the majority of implementations only needing to overwrite the itemView
+property. Standard View conventions like adding `@listenTo` handlers
+should still take place in `initialize`, but the majority of Collection-
+specific logic is handled by this class.
 
 ```coffeescript
 class LikesView extends CollectionView
@@ -193,9 +193,6 @@ class LikesView extends CollectionView
 
 ### Examples
 
-  * [Ost.io PostsView](https://github.com/paulmillr/ostio/blob/master/app/views/post/posts-view.coffee)
-  * [Facebook LikesView](https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/likes_view.coffee)
-  * [FarmTab CustomersView](https://github.com/akre54/FT/blob/master/app/views/customers_collection_view.coffee)
-
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/views/collection_view.coffee)
+* [Ost.io PostsView](https://github.com/paulmillr/ostio/blob/master/app/views/post/posts-view.coffee)
+* [Facebook LikesView](https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/likes_view.coffee)
+* [FarmTab CustomersView](https://github.com/akre54/FT/blob/master/app/views/customers_collection_view.coffee)

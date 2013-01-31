@@ -5,8 +5,8 @@ the underlying functionality in your web application.
 
 ## Architecture
 Chaplin is an architecture for JavaScript web applications using
-the [Backbone.js][] library. The code is originally derived
-from [moviepilot.com][], a large single-page application.
+the [Backbone.js](http://backbonejs.org) library. The code is originally derived
+from [moviepilot.com](http://moviepilot.com), a large single-page application.
 
 While Backbone is an easy starting point, it provides only basic,
 low-level patterns. Backbone provides little structure above
@@ -14,17 +14,12 @@ simple routing, individual models, views and their binding. Chaplin addresses
 these limitations by providing a light-weight but flexible structure which
 leverages well-proven design patterns and best practises.
 
-[Backbone.js]: http://documentcloud.github.com/backbone/
-[moviepilot.com]: http://moviepilot.com/
-
 ## Framework
-##### [Application][]
+##### [Application](docs/chaplin.application.md)
 The bootstrapper of the application; an extension point for key
 parts of the architecture.
 
-[Application]: ./chaplin.application.md
-
-##### [Router][]
+##### [Router](docs/chaplin.router.md)
 Facilitates mapping URLs to controller actions based on a
 user-defined configuration file. It is reponsible for observing and acting
 upon URL changes. It does no direct action apart from notifiying the dispatcher
@@ -46,15 +41,13 @@ parsed from the query string. This hands control over to the **Dispatcher**.
 [Ruby on Rails counterpart]: http://guides.rubyonrails.org/routing.html
 [Router]: ./chaplin.router.md
 
-##### [Dispatcher][]
+##### [Dispatcher](docs/chaplin.dispatcher.md)
 Between the router and the controllers, there is the **Dispatcher** listening
 for routing events. On such events, it loads the target controller, creates an
 instance of it and calls the target action. The action is actually a method
 of the controller. The previously active controller is automatically disposed.
 
-[Dispatcher]: ./chaplin.dispatcher.md
-
-##### [Layout][]
+##### [Layout](docs/chaplin.layout.md)
 The `Layout` is the top-level application view. When a new controller is
 activated, the `Layout` is responsible for changing the main view to the
 view of the new controller.
@@ -66,10 +59,8 @@ controller module.
 Furthermore, top-level DOM events on `window` or `document`, should be
 registered here.
 
-[Layout]: ./chaplin.layout.md
-
-##### [mediator][]
-The mediator is an event broker that implements the [Publish/Subscribe]()
+##### [mediator](docs/chaplin.mediator.md)
+The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe)
 design pattern. It should be used for most of the inter-module communication
 in Chaplin applications. Modules can emit events using `this.publishEvent`
 in order to notify other modules, and listen for such events
@@ -77,10 +68,7 @@ using `this.subscribeEvent`. The mediator can also be used to easily share data
 between several modules, like a user model or other
 persistent and globally accessible data.
 
-[Publish/Subscribe]: http://en.wikipedia.org/wiki/Publish/Subscribe
-[mediator]: ./chaplin.mediator.md
-
-##### [Controller][]
+##### [Controller](docs/chaplin.controller.md)
 A controller is the place where a model and associated views are instantiated.
 Typically, a controller represents one screen of the application. There can be
 one current controller which provides the main view and represents the
@@ -90,31 +78,21 @@ By convention, there is a controller for each application module. A controller
 may provide several action methods like `index`, `show`, `edit` and so on.
 These actions are called by the `Dispatcher` when a route matches.
 
-[Controller]: ./chaplin.controller.md
-
-##### [Model][]
+##### [Model](docs/chaplin.model.md)
 Holds reference to the data and contains any logic neccessary to retrieve the
 data from its source and optionally send it back.
 
-[Model]: ./chaplin.model.md
-
-##### [Collection][]
+##### [Collection](docs/chaplin.collection.md)
 A collection of models. Contains logic to provide client-side filtering and
 sorting of them.
 
-[Collection]: ./chaplin.collection.md
-
-##### [View][]
+##### [View](docs/chaplin.view.md)
 Provides the logic that drives the user interface such as responding to DOM
 events and mapping data from the model to a template.
 
-[View]: ./chaplin.view.md
-
-##### [Collection View][]
+##### [Collection View](docs/chaplin.collection.view.md)
 Maps to a collection to generate a list of item views that are bound to
 the models in the collection.
-
-[Collection View]: ./chaplin.collection.view.md
 
 ## Flow
 Every Chaplin application starts with a class that inherits
@@ -142,7 +120,7 @@ from the server which is then rendered by the view. By convention,
 the models, collection and views are saved as properties on
 the controller instance.
 
-## [Memory Management][]
+## [Memory Management](docs/disposal.md)
 A core concern of the Chaplin architecture is proper memory management. While
 there isn’t a broad discussion about garbage collection in JavaScript
 applications, it’s an important topic. In event-driven systems, registering
@@ -153,7 +131,5 @@ Since Backbone provides little out of the box to manage memory, Chaplin extends
 Backbone's Model, Collection and View classes to implement a powerful disposal
 process which ensures that each controller, model, collection and view cleans
 up after itself.
-
-[Memory Management]: ./disposal.md
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)

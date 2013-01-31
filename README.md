@@ -21,7 +21,7 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 
 ## Documentation and Support
 
-* We’re working on a [comprehensive documentation and class reference](https://github.com/chaplinjs/chaplin/tree/master/docs) on Github.
+* We’re working on a [comprehensive documentation and class reference](docs/) on Github.
 * For general support and discussion, there’s a [Google Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js), a [forum on ost.io](http://ost.io/chaplinjs/chaplin) and an IRC channel `#chaplinjs` on [Freenode](http://webchat.freenode.net?channels=chaplinjs).
 * If you’d like to report a bug or propose a feature, please use the [Github issues](https://github.com/chaplinjs/chaplin/issues). The issue tracker can also be used for general questions and task management.
 * [Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
@@ -35,10 +35,10 @@ One of the creators of Chaplin, is offering commercial support and training for 
 Chaplin & Brunch maintainer is offering consulting & training for all Backbone-related stuff.
 Contact him: [paul+chaplin@paulmillr.com](mailto:paul+chaplin@paulmillr.com).
 
-###### [Concordus Applications](http://www.concordusapps.com/) — Sacramento, CA, USA 
-Offering commerical support and training for Chaplin and Backbone-based 
-JavaScript applications. Concordus Applications is an enterprise integration 
-and software development firm. Email us for more 
+###### [Concordus Applications](http://www.concordusapps.com/) — Sacramento, CA, USA
+Offering commerical support and training for Chaplin and Backbone-based
+JavaScript applications. Concordus Applications is an enterprise integration
+and software development firm. Email us for more
 information: [support@concordusapps.com](mailto:support@concordusapps.com).
 
 ---
