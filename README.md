@@ -6,7 +6,7 @@
 
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library.
 
-* [Support and Help](#support-and-help)
+* [Documentation and Support](#documentation-and-support)
 * [Commercial Support and Training](#commercial-support-and-training)
 * [Key Features](#key-features)
 * [Motivation](#motivation)
@@ -16,20 +16,30 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Running the Tests](#running-the-tests)
 * [Boilerplates](#boilerplates)
 * [Examples](#examples)
-* [Documentation](#documentation)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
 * [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)
 
 ## Documentation and Support
 
-* We’re working on a [comprehensive documentation and class reference](https://github.com/chaplinjs/chaplin/tree/master/docs) on Github.
+* We’re working on a [comprehensive documentation and class reference](docs/) on Github.
 * For general support and discussion, there’s a [Google Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/chaplin-js), a [forum on ost.io](http://ost.io/chaplinjs/chaplin) and an IRC channel `#chaplinjs` on [Freenode](http://webchat.freenode.net?channels=chaplinjs).
 * If you’d like to report a bug or propose a feature, please use the [Github issues](https://github.com/chaplinjs/chaplin/issues). The issue tracker can also be used for general questions and task management.
 * [Follow Chaplin.js on Twitter](https://twitter.com/chaplinjs) to get updates on new versions, major changes and the ongoing development.
 
 ## Commercial Support and Training
 
-[9elements](http://9elements.com/), one of the creators of Chaplin, is offering commercial support and training for Chaplin and Backbone-based JavaScript applications. 9elements is a software and design agency located in Berlin and Bochum, Germany. Send us a mail for more information: [contact@9elements.com](mailto:contact@9elements.com).
+###### [9elements](http://9elements.com/) — Berlin/Bochum, Germany
+One of the creators of Chaplin, is offering commercial support and training for Chaplin and Backbone-based JavaScript applications. 9elements is a software and design agency located in Berlin and Bochum, Germany. Send us a mail for more information: [contact@9elements.com](mailto:contact@9elements.com).
+
+###### [Paul Miller](http://paulmillr.com/) — Kharkiv, Ukraine
+Chaplin & Brunch maintainer is offering consulting & training for all Backbone-related stuff.
+Contact him: [paul+chaplin@paulmillr.com](mailto:paul+chaplin@paulmillr.com).
+
+###### [Concordus Applications](http://www.concordusapps.com/) — Sacramento, CA, USA
+Offering commerical support and training for Chaplin and Backbone-based
+JavaScript applications. Concordus Applications is an enterprise integration
+and software development firm. Email us for more
+information: [support@concordusapps.com](mailto:support@concordusapps.com).
 
 ---
 
@@ -70,7 +80,7 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
 ### Using bower
 1. Install the Node package for the Bower package manager.
 
-   ```
+   ```sh
    sudo npm install -g bower
    ```
 
@@ -86,9 +96,9 @@ If you’ll be using AMD version, you will also need an AMD module loader like [
    bower install chaplin#0.6.0
    ```
 
-   This will also download the required version of backbone but will _not_ 
-   download the required DOM manipulation or utility libraries. These can be 
-   installed separately via `bower install underscore`, `bower install jquery`, 
+   This will also download the required version of backbone but will _not_
+   download the required DOM manipulation or utility libraries. These can be
+   installed separately via `bower install underscore`, `bower install jquery`,
    `bower install lodash`, etc.
 
 ### Manually
@@ -102,26 +112,19 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
 
 1. Download and install [Node.js](http://nodejs.org/).
 2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
-3. Install the Node packages for CoffeeScript and UglifierJS globally.
+3. Install the Node package for the grunt command line interface globally.
 
-   ```
-   sudo npm install -g coffee-script
-   sudo npm install -g uglify-js
+   ```sh
+   sudo npm install -g grunt-cli
    ```
 
    On Windows, you can omit the `sudo` command at the beginning.
 
-4. Install the Node package ShellJS normally.
+4. Change into the Chaplin root directory.
+5. Start the build (will install dependencies and build).
 
    ```
-   npm install shelljs
-   ```
-
-5. Change into the Chaplin root directory.
-6. Start the build.
-
-   ```
-   cake build
+   npm install
    ```
 
 This creates two directories:
@@ -131,10 +134,9 @@ This creates two directories:
 
 These directories contain four files each:
 
-* `chaplin-VERSION.coffee` – The Chaplin library as a CoffeeScript file.
-* `chaplin-VERSION.js` – The library as a compiled JavaScript file.
-* `chaplin-VERSION-min.js` – Minified. For production use you should pick this.
-* `chaplin-VERSION-min.js.gz` – Minified and GZip-compressed.
+* `chaplin.js` – The library as a compiled JavaScript file.
+* `chaplin.min.js` – Minified. For production use you should pick this.
+* `chaplin.min.js.gz` – Minified and GZip-compressed.
 
 ## Running the Tests
 
@@ -142,40 +144,21 @@ Chaplin aims to be fully unit-tested. At the moment most of the modules are cove
 
 How to run the tests:
 
-1. Download and install [Node.js](http://nodejs.org/).
+1. Follow the steps for [building chaplin](#building-chaplin).
 2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
-3. Install the Node package for CoffeeScript  globally.
+3. Change into the Chaplin root directory.
+4. Start the test runner.
 
    ```
-   sudo npm install -g coffee-script
+   npm test
    ```
 
-   On Windows, you can omit the `sudo` command at the beginning.
-
-4. Install the Node package for the Bower package manager.
-
-   ```
-   sudo npm install -g bower
-   ```
-
-5. Change into the Chaplin root directory.
-6. Use Bower to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
-
-   ```
-   bower install
-   ```
-
-7. Compile the CoffeeScripts to JavaScripts.
-
-   ```
-   cake test
-   ```
-
-9. Finally, open the test runner `test/index.html` in a browser.
+Note that you can now additionally open `test/index.html` to run the tests in your browser (instead of in node).
+Furthermore code coverage reports are generated and may be viewed by opening `test/coverage/index.html` in your browser.
 
 ## Boilerplates
 
-Chaplin needs a simple skeleton to start up and configure the core modules. We provides several boilerplates to make the start easier.
+Chaplin needs a simple skeleton to start up and configure the core modules. We provide several boilerplates to make the start easier.
 
 [Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a “Hello world” example project using Chaplin. If you’re not a CoffeeScript user, there’s also a [plain JavaScript boilerplate](https://github.com/chaplinjs/chaplin-boilerplate-plain).
 
@@ -201,15 +184,11 @@ This example uses Facebook client-side authentication to display the user’s Li
 
 [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
 
-Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
+Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, the frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & maintainability quite a lot.
 
 ### Tweet your Brunch
 
 [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
-
-## Documentation
-
-All docs are located in [docs/](https://github.com/chaplinjs/chaplin/tree/master/docs) subdirectory.
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 

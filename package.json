@@ -9,13 +9,25 @@
   "engines": {
     "node": ">= 0.4.6 < 0.9"
   },
-  "main": "./build/chaplin.js",
   "devDependencies": {
-    "coffee-script": "1.4.x",
-    "mocha-phantomjs": "1.0.x",
-    "shelljs": "0.0.x"
+    "grunt": "0.4.x",
+    "grunt-contrib-coffee": "0.4.x",
+    "grunt-contrib-clean": "git://github.com/gruntjs/grunt-contrib-clean.git",
+    "grunt-contrib-concat": "git://github.com/gruntjs/grunt-contrib-concat.git",
+    "grunt-contrib-copy": "0.4.x",
+    "grunt-contrib-compress": "git://github.com/gruntjs/grunt-contrib-compress.git",
+    "grunt-contrib-watch": "0.1.4",
+    "grunt-bower-task": "0.1.x",
+    "grunt-contrib-uglify": "git://github.com/gruntjs/grunt-contrib-uglify.git",
+    "grunt-istanbul": "git://github.com/taichi/grunt-istanbul.git",
+    "grunt-urequire": "git://github.com/concordusapps/grunt-urequire",
+    "grunt-coffeelint": "0.0.x",
+    "grunt-mocha": "0.2.x",
+    "phantomjs": "1.8.x"
   },
+  "main": "build/commonjs/chaplin.js",
   "scripts": {
-    "test": "cake test && mocha-phantomjs -R dot test/index.html"
+    "install": "grunt clean build",
+    "test": "grunt clean prepare test"
   }
 }

@@ -53,6 +53,15 @@ define [
         #console.debug 'TestCollectionView#getView', model
         new ItemView {model}
 
+    # Testing class for insertino animation
+    class AnimatingCollectionView extends CollectionView
+
+      tagName: 'ul'
+
+      animationDuration: 1
+
+      itemView: ItemView
+
     # Testing class for CollectionViews with template,
     # custom list, loading indicator and fallback elements
     class TemplatedCollectionView extends TestCollectionView
@@ -102,11 +111,13 @@ define [
         }
       collection.reset models
 
+    # Add one model with id: one and return it
     addOne = ->
       model = new Model id: 'one', title: 'one'
       collection.add model
       model
 
+    # Add three models with id: new1-3 and return an array containing them
     addThree = ->
       model1 = new Model id: 'new1', title: 'new'
       model2 = new Model id: 'new2', title: 'new'
@@ -154,8 +165,11 @@ define [
 
     it 'should call a custom getView method', ->
       collectionView.dispose()
+      getView = sinon.spy CustomViewCollectionView.prototype, 'getView'
       collectionView = new CustomViewCollectionView {collection}
       viewsMatchCollection()
+      expect(getView.callCount).to.be collection.length
+      getView.restore()
 
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
@@ -311,6 +325,108 @@ define [
       data = collectionView.getTemplateData()
       expect(data).to.eql {length: collection.length}
 
+    it 'should animate the opacity of new items', ->
+      $css = sinon.stub jQuery.prototype, 'css', -> this
+      $animate = sinon.stub jQuery.prototype, 'animate', -> this
+
+      collectionView.dispose()
+      collectionView = new AnimatingCollectionView {collection}
+
+      expect($css.callCount).to.be collection.length
+      expect($css).was.calledWith 'opacity', 0
+
+      expect($animate.callCount).to.be collection.length
+      args = $animate.firstCall.args
+      expect(args[0]).to.eql opacity: 1
+      expect(args[1]).to.be collectionView.animationDuration
+
+      expect($css.calledBefore($animate)).to.be true
+
+      addThree()
+      expect($css.callCount).to.be collection.length
+
+      $css.restore()
+      $animate.restore()
+
+    it 'should not animate if animationDuration is 0', ->
+      $css = sinon.spy jQuery.prototype, 'css'
+      $animate = sinon.spy jQuery.prototype, 'animate'
+
+      collectionView.dispose()
+      collectionView = new TestCollectionView {collection}
+
+      expect($css).was.notCalled()
+      expect($animate).was.notCalled()
+
+      addThree()
+      expect($css).was.notCalled()
+      expect($animate).was.notCalled()
+
+      $css.restore()
+      $animate.restore()
+
+    it 'should not animate when re-inserting', ->
+      $css = sinon.stub jQuery.prototype, 'css', -> this
+      $animate = sinon.stub jQuery.prototype, 'animate', -> this
+
+      model1 = new Model id: 1
+      model2 = new Model id: 2
+      model3 = new Model id: 3
+
+      collection.reset [model1, model2]
+
+      collectionView.dispose()
+      collectionView = new AnimatingCollectionView {collection}
+
+      expect($css).was.calledTwice()
+      expect($animate).was.calledTwice()
+
+      collection.reset [model1, model2, model3]
+
+      expect($css.callCount).to.be collection.length
+      expect($animate.callCount).to.be collection.length
+
+      $css.restore()
+      $animate.restore()
+
+    it 'should animate with CSS classes', (done) ->
+      collectionView.dispose()
+
+      class AnimatingCollectionView extends CollectionView
+        useCssAnimation: true
+        itemView: ItemView
+
+      collectionView = new AnimatingCollectionView {collection}
+      children = getAllChildren()
+      for child in children
+        expect($(child).hasClass('animated-item-view')).to.be.true
+
+      setTimeout ->
+        for child in children
+          expect($(child).hasClass('animated-item-view-end')).to.be.true
+        done()
+      , 1
+
+    it 'should animate with custom CSS classes', (done) ->
+      collectionView.dispose()
+
+      class AnimatingCollectionView extends CollectionView
+        useCssAnimation: true
+        animationStartClass: 'a'
+        animationEndClass: 'b'
+        itemView: ItemView
+
+      collectionView = new AnimatingCollectionView {collection}
+      children = getAllChildren()
+      for child in children
+        expect($(child).hasClass('a')).to.be.true
+
+      setTimeout ->
+        for child in children
+          expect($(child).hasClass('b')).to.be.true
+        done()
+      , 1
+
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
@@ -329,7 +445,7 @@ define [
       for prop in ['visibleItems']
         expect(_.has collectionView, prop).to.be false
 
-    describe 'CollectionView filtering', ->
+    describe 'Filtering', ->
 
       it 'should filter views using the filterer', ->
         addThree()
@@ -367,7 +483,6 @@ define [
         expect(collectionView.visibleItems.length).to.be collection.length
 
       it 'should save the filterer', ->
-        addThree()
         filterer = -> false
         collectionView.filter filterer
         expect(collectionView.filterer).to.be filterer
@@ -393,22 +508,45 @@ define [
         expect(collectionView.visibleItems.length).to.be collection.length
 
       it 'should filter views with a callback', ->
-        addThree()
         filterer = (model) ->
           model.get('title') is 'new'
-        filterCallback = sinon.spy (view, included) ->
-          view.$el.toggleClass('included', included)
-        collectionView.filter filterer, filterCallback
 
-        # Callback was called for each model
-        expect(filterCallback.callCount).to.be collection.length
-        children = getViewChildren()
-        collection.each (model, index) ->
-          call = filterCallback.getCall index
+        filterCallback = (view, included) ->
+          view.$el.addClass(if included then 'included' else 'not-included')
+
+        filterCallbackSpy = sinon.spy filterCallback
+        collectionView.filter filterer, filterCallbackSpy
+
+        expect(filterCallbackSpy.callCount).to.be collection.length
+
+        checkCall = (model, call) ->
           view = collectionView.subview "itemView:#{model.cid}"
-          included = filterer model, index
+          included = filterer model
           expect(call.calledWith(view, included)).to.be true
-          expect(children.eq(index).hasClass('included')).to.be included
+          hasClass = view.$el.hasClass(
+            if included then 'included' else 'not-included'
+          )
+          expect(hasClass).to.be true
+
+        collection.each (model, index) ->
+          call = filterCallbackSpy.getCall index
+          checkCall model, call
+
+        models = addThree()
+        expect(filterCallbackSpy.callCount).to.be collection.length
+        startIndex = 26
+        for model, index in models
+          call = filterCallbackSpy.getCall startIndex + index
+          checkCall model, call
+
+      it 'should save the filter callback', ->
+        filterer = -> false
+        filterCallback = ->
+        expect(collectionView.filterCallback).to.be(
+          CollectionView::filterCallback
+        )
+        collectionView.filter filterer, filterCallback
+        expect(collectionView.filterCallback).to.be filterCallback
 
       it 'should respect the filterer option', ->
         filterer = (model) -> model.id is 'A'
@@ -424,7 +562,7 @@ define [
         children = getViewChildren()
         expect(children.length).to.be collection.length
 
-    describe 'TemplatedCollectionView', ->
+    describe 'Templated CollectionView', ->
 
       beforeEach ->
         # Mix in SyncMachine into Collection

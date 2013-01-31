@@ -1,4 +1,4 @@
-# Chaplin.Model
+# [Chaplin.Model](src/chaplin/models/model.coffee)
 
 `Chaplin.Model` extends the standard `Backbone.Model`. It adds disposal for cleaning up and the Pub/Sub pattern via the `Chaplin.EventBroker` mixin.
 
@@ -10,14 +10,6 @@ All `Backbone.Model` [methods](http://backbonejs.org/#Model).
 ### initDeferred
 
 Creates a new [jQuery Deferred object](http://api.jquery.com/category/deferred-object/) instance.
-
-
-<a name="initSyncMachine"></a>
-
-### initSyncMachine
-
-Creates a new [Chaplin.SyncMachine](./chaplin.sync_machine.md) instance.
-
 
 <a name="getAttributes"></a>
 
@@ -43,4 +35,4 @@ Announces to all associated collections and views that the model is being dispos
 ## Usage
 Please do not register their methods directly as Pub/Sub listeners, use `subscribeEvent` instead. This forces the handler context so the handler might be removed again on model/collection disposal. It’s crucial to remove all references to model/collection methods to allow them to be garbage collected.
 
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/models/model.coffee)
+It is also good to have `SyncMachine` mixed to models for handling asynchronous data fetching. Mixing can be done by simple `_.extend`: `_(@prototype).extend Chaplin.SyncMachine`. See [SyncMachine docs](docs/chaplin.sync_machine.md) for code.

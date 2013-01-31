@@ -1,6 +1,11 @@
-# Chaplin.Dispatcher
+# [Chaplin.Dispatcher](src/chaplin/dispatcher.coffee)
 
-The `Dispatcher` sits between the router and the controllers. It listens for routing events, loads the target controller module if one happen, creates a controller instance and calls the target action. The previously active controller is automatically disposed.
+The `Dispatcher` sits between the router and the controllers. It listens for a routing event to occur and then:
+
+* Disposes the previously active controller
+* Loads the target controller module
+* Instantiates the new controller
+* Calls the target action
 
 ## Methods of `Chaplin.Dispatcher`
 
@@ -18,5 +23,3 @@ A specific controller can be started programatically by publishing an app-wide `
 ```coffeescript
 Chaplin.mediator.publish '!startupController', 'controller', 'action', params
 ```
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/dispatcher.coffee)

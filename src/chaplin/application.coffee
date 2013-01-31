@@ -1,70 +1,70 @@
-define [
-  'backbone'
-  'chaplin/mediator'
-  'chaplin/dispatcher'
-  'chaplin/views/layout'
-  'chaplin/lib/router'
-  'chaplin/lib/event_broker'
-], (Backbone, mediator, Dispatcher, Layout, Router, EventBroker) ->
-  'use strict'
+'use strict'
 
-  # The application bootstrapper
-  # ----------------------------
+_ = require 'underscore'
+Backbone = require 'backbone'
+mediator = require 'chaplin/mediator'
+Dispatcher = require 'chaplin/dispatcher'
+Layout = require 'chaplin/views/layout'
+Router = require 'chaplin/lib/router'
+EventBroker = require 'chaplin/lib/event_broker'
 
-  class Application
+# The application bootstrapper
+# ----------------------------
 
-    # Borrow the static extend method from Backbone
-    @extend = Backbone.Model.extend
+module.exports = class Application
 
-    # Mixin an EventBroker
-    _(@prototype).extend EventBroker
+  # Borrow the static extend method from Backbone
+  @extend = Backbone.Model.extend
 
-    # The site title used in the document title
-    title: ''
+  # Mixin an EventBroker
+  _(@prototype).extend EventBroker
 
-    # The application instantiates these three core modules
-    dispatcher: null
-    layout: null
-    router: null
+  # The site title used in the document title
+  title: ''
 
-    initialize: ->
+  # The application instantiates these three core modules
+  dispatcher: null
+  layout: null
+  router: null
 
-    initDispatcher: (options) ->
-      @dispatcher = new Dispatcher options
+  initialize: ->
 
-    initLayout: (options = {}) ->
-      options.title ?= @title
-      @layout = new Layout options
+  initDispatcher: (options) ->
+    @dispatcher = new Dispatcher options
 
-    # Instantiate the dispatcher
-    # --------------------------
+  initLayout: (options = {}) ->
+    options.title ?= @title
+    @layout = new Layout options
 
-    # Pass the function typically returned by routes.coffee
-    initRouter: (routes, options) ->
-      # Save the reference for testing introspection only.
-      # Modules should communicate with each other via Pub/Sub.
-      @router = new Router options
+  # Instantiate the dispatcher
+  # --------------------------
 
-      # Register all routes declared in routes.coffee
-      routes? @router.match
+  # Pass the function typically returned by routes.coffee
+  initRouter: (routes, options) ->
+    # Save the reference for testing introspection only.
+    # Modules should communicate with each other via Pub/Sub.
+    @router = new Router options
 
-      # After registering the routes, start Backbone.history
-      @router.startHistory()
+    # Register all routes declared in routes.coffee
+    routes? @router.match
 
-    # Disposal
-    # --------
+    # After registering the routes, start Backbone.history
+    @router.startHistory()
 
-    disposed: false
+  # Disposal
+  # --------
 
-    dispose: ->
-      return if @disposed
+  disposed: false
 
-      properties = ['dispatcher', 'layout', 'router']
-      for prop in properties when this[prop]?
-        this[prop].dispose()
-        delete this[prop]
+  dispose: ->
+    return if @disposed
 
-      @disposed = true
+    properties = ['dispatcher', 'layout', 'router']
+    for prop in properties when this[prop]?
+      this[prop].dispose()
+      delete this[prop]
 
-      # You’re frozen when your heart’s not open
-      Object.freeze? this
+    @disposed = true
+
+    # You’re frozen when your heart’s not open
+    Object.freeze? this

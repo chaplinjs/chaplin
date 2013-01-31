@@ -1,4 +1,4 @@
-# Chaplin.SyncMachine
+# [Chaplin.SyncMachine](src/chaplin/lib/sync_machine.coffee)
 
 The  `Chaplin.SyncMachine` is a [finite-state machine](http://en.wikipedia.org/wiki/Finite-state_machine) for synchronization of models/collections. There are three states in which a model or collection can be in; unsynced, syncing, and synced. When a state transition (unsynced, syncing, synced, and syncStateChange) occurs Backbone events are called on the model or collection.
 
@@ -150,4 +150,34 @@ define [
       console.debug 'state changed'
 ```
 
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/lib/sync_machine.coffee)
+Another example of using `SyncMachine` with `Model`:
+
+```coffeescript
+class Model extends Chaplin.Model
+  _(@prototype).extend Chaplin.SyncMachine
+
+  fetch: (options = {}) ->
+    @beginSync()
+    success = options.success
+    options.success = (model, response) =>
+      success? model, response
+      @finishSync()
+    super
+
+# Will render view when model data will arrive from server.
+class View extends Chaplin.View
+  rendered: no
+  initialize: ->
+    super
+    # Render.
+    @model.synced =>
+      unless @rendered
+        @render()
+        @rendered = yes
+
+...
+
+model = new Model
+view = new View {model}
+model.fetch()
+```

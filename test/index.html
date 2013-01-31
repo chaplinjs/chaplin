@@ -19,7 +19,7 @@
       window.clearInterval = timers.clearInterval;
 
       requirejs.config({
-        baseUrl: 'js/',
+        baseUrl: 'temp/',
         paths: {
           jquery: '../components/jquery/jquery',
           underscore: '../components/underscore/underscore',
@@ -38,6 +38,18 @@
         urlArgs: 'bust=' + (new Date()).getTime()
       });
       mocha.setup({ui: 'bdd', ignoreLeaks: true});
+      // Wonderful hack to send a message to grunt from inside a mocha test.
+      function sendMessage() {
+        var args = [].slice.call(arguments);
+        alert(JSON.stringify(args));
+      }
+      mocha.suite.afterAll(function() {
+        if (window.mochaPhantomJS) {
+          // Send message to grunt with the coverage information on
+          // test completion.
+          sendMessage('mocha.coverage', window.__coverage__);
+        }
+      });
       window.expect = SinonExpect.enhance(expect, sinon, 'was');
       window.onload = function() {
         var specs = [

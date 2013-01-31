@@ -1,4 +1,4 @@
-# Chaplin.View
+# [Chaplin.View](src/chaplin/views/view.coffee)
 
 Chaplin’s `View` class is a highly extended and adapted Backbone `View`. All views should inherit from this class to avoid repetition.
 
@@ -11,13 +11,13 @@ In addition to Backbone’s `events` hash and the `delegateEvents` method, Chapl
 Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model, ...)` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `on`, you have to deregister the handler manually to clear the reference from the model to the view.
 
 
-## Features und purpose
+## Features and purpose
 
-- Rendering model data using templates in a conventional way
-- Robust and memory-safe model binding
-- Automatic rendering and appending to the DOM
-- Creating subviews
-- Disposal which cleans up all subviews, model bindings and Pub/Sub events
+* Rendering model data using templates in a conventional way
+* Robust and memory-safe model binding
+* Automatic rendering and appending to the DOM
+* Creating subviews
+* Disposal which cleans up all subviews, model bindings and Pub/Sub events
 
 <a id="initialize"></a>
 ### initialize(options)
@@ -184,17 +184,39 @@ method signature.
   `name` argument will return the subview associated with that `name`.
 
   Subviews are not automatically rendered. This is often done in an
-  inheriting view (i.e. in [CollectionView](./chaplin.collection_view.md)
+  inheriting view (i.e. in [CollectionView](docs/chaplin.collection_view.md)
   or your own PageView base class).
 
 ### removeSubview(nameOrView)
 Remove the specified subview. Can be called with either the `name` associated with the subview, or a reference to the subview instance.
 
+### Usage
+
+```coffeescript
+class YourView extends View
+  renderSubviews: ->
+    @subview 'name', new View
+    @subview('name').render()
+
+  afterRender: ->
+    super
+    @renderSubviews()
+```
+
 # Publish/Subscribe
 
-The View includes the [EventBroker](./chaplin.event_broker.md) mixin
-Publish/Subscribe using the [mediator](./chaplin.mediator.md)
+The View includes the [EventBroker](docs/chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](docs/chaplin.mediator.md)
 
-subscribeEvent (type:String, handler:Function):mediator
-unsubscribeEvent (type:String, handler:Function):mediator
-unsubscribeAllEvents ():mediator
+## [Methods](docs/chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
+
+### publishEvent(event, arguments...)
+Publish the global `event` with `arguments`.
+
+### subscribeEvent(event, handler)
+Unsubcribe the `handler` to the `event` (if it exists) before subscribing it. It is like `Chaplin.mediator.subscribe` except it cannot subscribe twice.
+
+### unsubscribeEvent(event, handler)
+Unsubcribe the `handler` to the `event`. It is like `Chaplin.mediator.unsubscribe`.
+
+### subscribeAllEvents()
+Unsubcribe all handlers for all events.

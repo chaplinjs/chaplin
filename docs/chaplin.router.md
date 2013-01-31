@@ -1,4 +1,4 @@
-# Chaplin.Router
+# [Chaplin.Router](src/chaplin/lib/router.coffee)
 The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `matchRoute` event is triggered.
 
 The Chaplin `Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from Backbone’s `Router`. It’s a different implementation with several advantages over the standard router.
@@ -46,13 +46,15 @@ Stops the `Backbone.History` instance from observing URL changes.
 Connects an address with a controller action.  Creates a new Route instance and registers it on the current Backbone.History instance.
 
 * **pattern** (String): A pattern to match against the current URL
-* **target** (String): the controller action which is called when the route matches
-* **options** (Object): optional object to be passed to the Routes object
+* **target** (String): the controller action which is called when the route matches. Optional if you use proper **options** analogs.
+* **options** (Object): optional, object to be passed to the Routes object
 
-The `pattern` argument may contain named placeholders starting with a <code>:</code> (colon) followed by an identifier. For example, <code>'products/:product_id/ratings/:id'</code> will match the URLs
-<code>/products/vacuum-cleaner/ratings/jane-doe</code> as well as <code>/products/8426/ratings/72</code>. The controller action will be passed a parameter hash with `product_id: 'vacuum-cleaner', id: 'jane-doe'` and `product_id: '8426', id: '72'`, respectively.
+The `pattern` argument may contain named placeholders starting with a `:` (colon) followed by an identifier. For example, `'products/:product_id/ratings/:id'` will match the URLs
+`/products/vacuum-cleaner/ratings/jane-doe` as well as `/products/8426/ratings/72`. The controller action will be passed a parameter hash with `product_id: 'vacuum-cleaner', id: 'jane-doe'` and `product_id: '8426', id: '72'`, respectively.
 
-The `target` argument is a string with the controller name and the action name separated by the <code>#</code> character. For example, `'likes#show'` denotes the `LikesController` and its `show` action.
+The `target` argument is a string with the controller name and the action name separated by the `#` character. For example, `'likes#show'` denotes the `LikesController` and its `show` action.
+
+You can also drop `target` and use `options.{action,controller}` for more explicitness.
 
 In the third parameter, fixed parameters may be passed. They will be added to the `params` hash which will be passed to the controller action. They cannot be overwritten by parameters from the URL. For example:
 
@@ -62,7 +64,7 @@ match 'likes/:id', 'likes#show', params: { foo: 'bar' }
 
 In this example, the `LikesController` will receive a `params` hash which has a `foo` property.
 
-Additionally, the third parameter may impose additional constraints on named placeholders. Pass an object in the `constraints` property. Add a property for each placeholder you would like to put constraints on. Pass a regular expression as the value. For example:
+The third parameter may also impose additional constraints on named placeholders. Pass an object in the `constraints` property. Add a property for each placeholder you would like to put constraints on. Pass a regular expression as the value. For example:
 
 ```coffeescript
 match 'likes/:id', 'likes#show', constraints: { id: /^\d+$/ }
@@ -70,7 +72,20 @@ match 'likes/:id', 'likes#show', constraints: { id: /^\d+$/ }
 
 The regular expression if the ID consists of digits only. This route will match the URL `/likes/5636`
 
+Last, but not least, you can have named routes with `name` option. You can extract their urls by using `!router:reverse` global event.
 
+```coffeescript
+match 'likes/:id', 'likes#show', name: 'like'
+
+# Then.
+getUrl = (routeName, params...) ->
+  url = null
+  mediator.publish '!router:reverse', routeName, params, (result) ->
+    url = result
+  "/#{url}"
+
+getUrl 'like', id: 581  # => likes/581
+```
 
 <a name="route"></a>
 
@@ -82,7 +97,6 @@ This looks quite like `Backbone.history.loadUrl`, but it accepts an absolute URL
 
 * **path**: an absolute URL with a leading slash
 
-
 <a name="routeHandler"></a>
 
 ### routeHandler( [path], [callback] )
@@ -90,15 +104,8 @@ This looks quite like `Backbone.history.loadUrl`, but it accepts an absolute URL
 Listener for global `!router:route` event. Tries to match the given URL against Call the callback associated with the route.
 When the
 
-<ul class="arguments">
-  <li>
 * **path**: an absolute URL with a leading slash
-  </li>
-  <li>
 * **callback**: a callback which is called in any case after routing.
-  </li>
-</ul>
-
 
 <a name="changeURL"></a>
 
@@ -124,8 +131,17 @@ Handler for the globalized `!router:changeURL` event.  Calls `@changeURL`.
 
 Stops the Backbone.history instance and removes it from the Router object.  Also unsubscribes any events attached to the Router.  Attempts to freeze the Router to prevent any changes to the Router. See [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
 
+## Global events of `Chaplin.Router`
+
+`Chaplin.Router` listens to these global events:
+
+* `!router:route path[, options], callback`
+* `!router:routeByName name, params[, options], callback`
+* `!router:reverse name, params[, options], callback`
+* `!router:changeURL url[, options]`
+
 ## Usage
-The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
+The Chaplin Router is a dependancy of [Chaplin.Application](docs/chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
 
 ```coffeescript
 define [
@@ -143,5 +159,3 @@ define [
 
       @initRouter routes
 ```
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/lib/router.coffee)

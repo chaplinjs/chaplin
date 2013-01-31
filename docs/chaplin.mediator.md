@@ -1,9 +1,9 @@
-# Chaplin.Mediator
+# [Chaplin.mediator](src/chaplin/mediator.coffee)
 As all modules are encapsulated and independent from each other, we need a way to make them communicate. That's the Mediator's role. The Mediator implement the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) (Pub/Sub) pattern to ensure loose coupling of application modules. That’s just a simple object which has per default three methods for global Publish/Subscribe: `subscribe`, `unsubscribe` and `publish`.
 
 To inform other modules that something happened, a module doesn’t send messages directly (i.e. calling methods of specific objects). Instead, it publishes a message to the mediator without having to know who is listening. Other application modules might subscribe to these messages and react upon them.
 
-Note: If you want to give Pub/Sub functionality to a Class, also look at the [Subscriber](./chaplin.subscriber.md).
+Note: If you want to give Pub/Sub functionality to a Class, also look at the [EventBroker](docs/chaplin.event_broker.md).
 
 
 ## Methods of `Chaplin.mediator`
@@ -51,5 +51,3 @@ Finally, if this module needs to stop listening on the login event, it can just 
 ```coffeescript
 Chaplin.mediator.unsubscribe 'login', @doSomething
 ```
-
-## [Code](https://github.com/chaplinjs/chaplin/blob/master/src/chaplin/mediator.coffee)
