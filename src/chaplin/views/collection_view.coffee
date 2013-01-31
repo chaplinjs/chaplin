@@ -37,8 +37,11 @@ module.exports = class CollectionView extends View
   # By default, fading in is done by javascript function which can be
   # slow on mobile devices. CSS animations are faster,
   # but require user’s manual definitions.
-  # CSS classes used are: animated-item-view, animated-item-view-end.
   useCssAnimation: false
+
+  # CSS classes that will be used when hiding / showing child views.
+  animationStartClass: 'animated-item-view'
+  animationEndClass: 'animated-item-view-end'
 
   # Selectors and Elements
 
@@ -109,9 +112,9 @@ module.exports = class CollectionView extends View
 
   # Binding of collection listeners
   addCollectionListeners: ->
-    @listenTo @collection, 'add',    @itemAdded
+    @listenTo @collection, 'add', @itemAdded
     @listenTo @collection, 'remove', @itemRemoved
-    @listenTo @collection, 'reset sort',  @itemsResetted
+    @listenTo @collection, 'reset sort', @itemsResetted
 
   # Rendering
   # ---------
@@ -337,8 +340,7 @@ module.exports = class CollectionView extends View
 
   # Inserts a view into the list at the proper position
   insertView: (item, view, index = null, enableAnimation = true) ->
-    if @animationDuration is 0
-      enableAnimation = false
+    enableAnimation = false if @animationDuration is 0
 
     # Get the insertion offset
     position = if typeof index is 'number'
@@ -356,16 +358,15 @@ module.exports = class CollectionView extends View
     viewEl = view.el
     $viewEl = view.$el
 
-    if included
-      # Make view transparent if animation is enabled
-      if enableAnimation
-        if @useCssAnimation
-          $viewEl.addClass 'animated-item-view'
-        else
-          $viewEl.css 'opacity', 0
-    else
-      # Hide the view if it’s filtered
-      @filterCallback view, included
+    # Start animation
+    if included and enableAnimation
+      if @useCssAnimation
+        $viewEl.addClass @animationStartClass
+      else
+        $viewEl.css 'opacity', 0
+
+    # Hide or mark the view if it’s filtered
+    @filterCallback view, included
 
     # Insert the view into the list
     $list = @$list
@@ -397,14 +398,15 @@ module.exports = class CollectionView extends View
     # Update the list of visible items, trigger a `visibilityChange` event
     @updateVisibleItems item, included
 
-    # Fade the view in if it was made transparent before
-    if enableAnimation and included
+    # End animation
+    if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
         setTimeout =>
-          $viewEl.addClass 'animated-item-view-end'
+          $viewEl.addClass @animationEndClass
         , 0
       else
+        # Fade the view in if it was made transparent before
         $viewEl.animate {opacity: 1}, @animationDuration
 
     return

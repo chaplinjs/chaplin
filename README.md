@@ -16,7 +16,6 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Running the Tests](#running-the-tests)
 * [Boilerplates](#boilerplates)
 * [Examples](#examples)
-* [Documentation](#documentation)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
 * [The Producers](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-producers)
 
@@ -122,7 +121,7 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
    On Windows, you can omit the `sudo` command at the beginning.
 
 4. Change into the Chaplin root directory.
-5. Start the build.
+5. Start the build (will install dependencies and build).
 
    ```
    npm install
@@ -159,7 +158,7 @@ Furthermore code coverage reports are generated and may be viewed by opening `te
 
 ## Boilerplates
 
-Chaplin needs a simple skeleton to start up and configure the core modules. We provides several boilerplates to make the start easier.
+Chaplin needs a simple skeleton to start up and configure the core modules. We provide several boilerplates to make the start easier.
 
 [Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a “Hello world” example project using Chaplin. If you’re not a CoffeeScript user, there’s also a [plain JavaScript boilerplate](https://github.com/chaplinjs/chaplin-boilerplate-plain).
 
@@ -185,15 +184,11 @@ This example uses Facebook client-side authentication to display the user’s Li
 
 [github.com/paulmillr/ostio](https://github.com/paulmillr/ostio) is a forum for GitHub projects and a modern replacement for mailing lists.
 
-Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & mainbtability quite a lot.
+Ost.io serves as a good example of a fast service-based application, using *Ruby on Rails* as a lightweight backend [(which is open-sourced too)](https://github.com/paulmillr/ostio-api/) that only handles authentication / server-side logic & talks JSON to clients. In this way, the frontend is completely decoupled from the backend which gives the ability to work on both projects in parallel and increases scalability, speed & maintainability quite a lot.
 
 ### Tweet your Brunch
 
 [github.com/brunch/twitter](https://github.com/brunch/twitter) is a simple twitter client. It uses Twitter client-side authentication to display user’s feed and to create new tweets.
-
-## Documentation
-
-All docs are located in [docs/](https://github.com/chaplinjs/chaplin/tree/master/docs) subdirectory.
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 

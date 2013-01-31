@@ -111,11 +111,13 @@ define [
         }
       collection.reset models
 
+    # Add one model with id: one and return it
     addOne = ->
       model = new Model id: 'one', title: 'one'
       collection.add model
       model
 
+    # Add three models with id: new1-3 and return an array containing them
     addThree = ->
       model1 = new Model id: 'new1', title: 'new'
       model2 = new Model id: 'new2', title: 'new'
@@ -405,6 +407,26 @@ define [
         done()
       , 1
 
+    it 'should animate with custom CSS classes', (done) ->
+      collectionView.dispose()
+
+      class AnimatingCollectionView extends CollectionView
+        useCssAnimation: true
+        animationStartClass: 'a'
+        animationEndClass: 'b'
+        itemView: ItemView
+
+      collectionView = new AnimatingCollectionView {collection}
+      children = getAllChildren()
+      for child in children
+        expect($(child).hasClass('a')).to.be.true
+
+      setTimeout ->
+        for child in children
+          expect($(child).hasClass('b')).to.be.true
+        done()
+      , 1
+
     it 'should dispose itself correctly', ->
       expect(collectionView.dispose).to.be.a 'function'
       model = collection.at 0
@@ -423,7 +445,7 @@ define [
       for prop in ['visibleItems']
         expect(_.has collectionView, prop).to.be false
 
-    describe 'CollectionView filtering', ->
+    describe 'Filtering', ->
 
       it 'should filter views using the filterer', ->
         addThree()
@@ -461,7 +483,6 @@ define [
         expect(collectionView.visibleItems.length).to.be collection.length
 
       it 'should save the filterer', ->
-        addThree()
         filterer = -> false
         collectionView.filter filterer
         expect(collectionView.filterer).to.be filterer
@@ -487,22 +508,45 @@ define [
         expect(collectionView.visibleItems.length).to.be collection.length
 
       it 'should filter views with a callback', ->
-        addThree()
         filterer = (model) ->
           model.get('title') is 'new'
-        filterCallback = sinon.spy (view, included) ->
-          view.$el.toggleClass('included', included)
-        collectionView.filter filterer, filterCallback
 
-        # Callback was called for each model
-        expect(filterCallback.callCount).to.be collection.length
-        children = getViewChildren()
-        collection.each (model, index) ->
-          call = filterCallback.getCall index
+        filterCallback = (view, included) ->
+          view.$el.addClass(if included then 'included' else 'not-included')
+
+        filterCallbackSpy = sinon.spy filterCallback
+        collectionView.filter filterer, filterCallbackSpy
+
+        expect(filterCallbackSpy.callCount).to.be collection.length
+
+        checkCall = (model, call) ->
           view = collectionView.subview "itemView:#{model.cid}"
-          included = filterer model, index
+          included = filterer model
           expect(call.calledWith(view, included)).to.be true
-          expect(children.eq(index).hasClass('included')).to.be included
+          hasClass = view.$el.hasClass(
+            if included then 'included' else 'not-included'
+          )
+          expect(hasClass).to.be true
+
+        collection.each (model, index) ->
+          call = filterCallbackSpy.getCall index
+          checkCall model, call
+
+        models = addThree()
+        expect(filterCallbackSpy.callCount).to.be collection.length
+        startIndex = 26
+        for model, index in models
+          call = filterCallbackSpy.getCall startIndex + index
+          checkCall model, call
+
+      it 'should save the filter callback', ->
+        filterer = -> false
+        filterCallback = ->
+        expect(collectionView.filterCallback).to.be(
+          CollectionView::filterCallback
+        )
+        collectionView.filter filterer, filterCallback
+        expect(collectionView.filterCallback).to.be filterCallback
 
       it 'should respect the filterer option', ->
         filterer = (model) -> model.id is 'A'
@@ -518,7 +562,7 @@ define [
         children = getViewChildren()
         expect(children.length).to.be collection.length
 
-    describe 'TemplatedCollectionView', ->
+    describe 'Templated CollectionView', ->
 
       beforeEach ->
         # Mix in SyncMachine into Collection

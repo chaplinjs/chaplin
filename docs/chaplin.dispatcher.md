@@ -1,6 +1,11 @@
 # Chaplin.Dispatcher
 
-The `Dispatcher` sits between the router and the controllers. It listens for routing events, loads the target controller module if one happen, creates a controller instance and calls the target action. The previously active controller is automatically disposed.
+The `Dispatcher` sits between the router and the controllers. It listens for a routing event to occur and then:
+
+* Disposes the previously active controller
+* Loads the target controller module
+* Instantiates the new controller
+* Calls the target action
 
 ## Methods of `Chaplin.Dispatcher`
 
