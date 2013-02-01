@@ -69,9 +69,9 @@ This is where Chaplin enters the stage. Chaplin is derived from the codebase of 
 
 Chaplin depends on the following libraries:
 
-* [Backbone](http://documentcloud.github.com/backbone/) (> 0.9.2)
-* [Underscore](http://documentcloud.github.com/underscore/) (> 1.4.2) or [lodash](http://lodash.com/) (> 0.8.2)
-* [jQuery](http://jquery.com/) (> 1.8.2) or [Zepto](http://zeptojs.com) (> 1.0rc1)
+* [Backbone](http://documentcloud.github.com/backbone/) (> 0.9.10)
+* [Underscore](http://documentcloud.github.com/underscore/) (> 1.4.2) or [lodash](http://lodash.com/) (> 1.0-rc1)
+* [jQuery](http://jquery.com/) (> 1.9.0) or [Zepto](http://zeptojs.com) (> 1.0-rc1)
 
 If you’ll be using AMD version, you will also need an AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
