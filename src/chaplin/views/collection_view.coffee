@@ -366,7 +366,7 @@ module.exports = class CollectionView extends View
         $viewEl.css 'opacity', 0
 
     # Hide or mark the view if it’s filtered
-    @filterCallback view, included
+    @filterCallback view, included if @filterer
 
     # Insert the view into the list
     $list = @$list
