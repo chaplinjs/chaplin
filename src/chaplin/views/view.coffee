@@ -74,7 +74,7 @@ module.exports = class View extends Backbone.View
     @subviewsByName = {}
 
     # Add ability to use declarative bindings for models, collections etc.
-    @_delegateEntityEvents()
+    @_delegateListeners()
 
     # Listen for disposal of the model or collection.
     # If the model is disposed, automatically dispose the associated view
@@ -96,15 +96,15 @@ module.exports = class View extends Backbone.View
   # Event handling using event delegation
   # Register a handler for a specific event type
   # For the whole view:
-  #   delegate(eventType, handler)
+  #   delegate(eventName, handler)
   #   e.g.
   #   @delegate('click', @clicked)
   # For an element in the passing a selector:
-  #   delegate(eventType, selector, handler)
+  #   delegate(eventName, selector, handler)
   #   e.g.
   #   @delegate('click', 'button.confirm', @confirm)
-  delegate: (eventType, second, third) ->
-    if typeof eventType isnt 'string'
+  delegate: (eventName, second, third) ->
+    if typeof eventName isnt 'string'
       throw new TypeError 'View#delegate: first argument must be a string'
 
     if arguments.length is 2
@@ -124,7 +124,7 @@ module.exports = class View extends Backbone.View
         'handler argument must be function'
 
     # Add an event namespace
-    list = ("#{event}.delegate#{@cid}" for event in eventType.split(' '))
+    list = ("#{event}.delegate#{@cid}" for event in eventName.split(' '))
     events = list.join(' ')
 
     # Bind the handler to the view
@@ -172,41 +172,38 @@ module.exports = class View extends Backbone.View
   undelegate: ->
     @$el.unbind ".delegate#{@cid}"
 
-  # Declarative callback to register entity events.
-  delegateListener: (event, target, callback) ->
-    if target is ':el'
-      # Special target that refers to ourself, bind the event on ourself.
-      @on event, callback
+  # Handle declarative event bindings from `listen`
+  _delegateListeners: ->
+    return unless @listen
 
-    else if target
-      # Does this target exist? Ignore the bind if it doesn't.
-      method = this[target]
-      @listenTo method, event, callback if method?
-
-    else
-      # No target; subscribe to it
-      @subscribeEvent event, callback
-
-  # Declarative handling of `listen`.
-  _delegateEntityEvents: ->
-    return unless this.listen?
+    # Walk all `listen` hashes in the prototype chain
     for version in utils.getAllPropertyVersions this, 'listen'
-      for event, method of version
-        # Grab the method name; ensure it is a function, but allow methods
-        # to be declared in the hash.
-        method = this[method] unless _.isFunction method
+      for key, method of version
+        # Get the method, ensure it is a function
         if typeof method isnt 'function'
-          console.log this, methodName, method
-          throw new Error 'View#_delegateEntityEvents: ' +
+          method = this[method]
+        if typeof method isnt 'function'
+          throw new Error 'View#_delegateListeners: ' +
             "#{method} must be function"
 
-        # Break apart the event name.
-        segments = event.split(' ')
-        name = if segments.length > 1 then segments.pop() else null
-        eventName = segments.join(' ')
+        # Split event name and target.
+        [eventName, target] = key.split ' '
+        @delegateListener eventName, target, method
 
-        # Delegate to the listener method to register the entity event
-        @delegateListener eventName, name, method
+    return
+
+  delegateListener: (eventName, target, callback) ->
+    if target in ['model', 'collection']
+      target = this[target]
+      @listenTo target, eventName, callback if target
+
+    else if target is 'mediator'
+      @subscribeEvent eventName, callback
+
+    else unless target
+      @on eventName, callback, this
+
+    return
 
   # Subviews
   # --------
