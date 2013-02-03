@@ -371,9 +371,9 @@ define [
           'ns:b mediator': 'b1Handler'
 
         initialize: ->
+          super
           @a1Handler = sinon.spy()
           @b1Handler = sinon.spy()
-          super
 
       class EventedView extends EventedViewParent
         listen:
@@ -395,9 +395,9 @@ define [
           'ns:b mediator': 'b2Handler'
 
         initialize: ->
+          super
           @a2Handler = sinon.spy()
           @b2Handler = sinon.spy()
-          super
 
       it 'should bind to own events declaratively', ->
         view = new EventedView model: new Model()

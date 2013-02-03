@@ -64,6 +64,15 @@ module.exports = class View extends Backbone.View
     # Call Backbone’s constructor
     super
 
+    # Set up declarative bindings after `initialize` has been called
+    # so initialize may set model/collection and create or bind methods
+    @delegateListeners()
+
+    # Listen for disposal of the model or collection.
+    # If the model is disposed, automatically dispose the associated view
+    @listenTo @model, 'dispose', @dispose if @model
+    @listenTo @collection, 'dispose', @dispose if @collection
+
   # Inheriting classes must call `super` in their `initialize` method to
   # properly inflate subviews and set up options
   initialize: (options) ->
@@ -72,14 +81,6 @@ module.exports = class View extends Backbone.View
     # Initialize subviews
     @subviews = []
     @subviewsByName = {}
-
-    # Add ability to use declarative bindings for models, collections etc.
-    @_delegateListeners()
-
-    # Listen for disposal of the model or collection.
-    # If the model is disposed, automatically dispose the associated view
-    @listenTo @model, 'dispose', @dispose if @model
-    @listenTo @collection, 'dispose', @dispose if @collection
 
     # Call `afterInitialize` if `initialize` was not wrapped
     unless @initializeIsWrapped
@@ -156,12 +157,15 @@ module.exports = class View extends Backbone.View
         @$el.on eventName, bound
       else
         @$el.on eventName, selector, bound
+    return
 
   # Override Backbones method to combine the events
   # of the parent view if it exists.
   delegateEvents: (events) ->
     @undelegateEvents()
-    return @_delegateEvents events if events
+    if events
+      @_delegateEvents events
+      return
     for classEvents in utils.getAllPropertyVersions this, 'events'
       if typeof classEvents is 'function'
         throw new TypeError 'View#delegateEvents: functions are not supported'
@@ -173,7 +177,7 @@ module.exports = class View extends Backbone.View
     @$el.unbind ".delegate#{@cid}"
 
   # Handle declarative event bindings from `listen`
-  _delegateListeners: ->
+  delegateListeners: ->
     return unless @listen
 
     # Walk all `listen` hashes in the prototype chain
@@ -183,7 +187,7 @@ module.exports = class View extends Backbone.View
         if typeof method isnt 'function'
           method = this[method]
         if typeof method isnt 'function'
-          throw new Error 'View#_delegateListeners: ' +
+          throw new Error 'View#delegateListeners: ' +
             "#{method} must be function"
 
         # Split event name and target.
