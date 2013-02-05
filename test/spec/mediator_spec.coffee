@@ -46,3 +46,13 @@ define [
       mediator.publish eventName, payload
 
       expect(spy).was.neverCalledWith payload
+
+    it 'should support sealing itself', ->
+      expect(mediator.seal).to.be.a 'function'
+      old = Object.seal
+      Object.seal = undefined
+      mediator.seal()
+      expect(-> mediator.a = 1; delete mediator.a).to.not.throwError()
+      Object.seal = old
+      mediator.seal()
+      expect(-> mediator.a = 1).to.throwError()

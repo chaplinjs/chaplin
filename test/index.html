@@ -39,16 +39,12 @@
       });
       mocha.setup({ui: 'bdd', ignoreLeaks: true});
       // Wonderful hack to send a message to grunt from inside a mocha test.
-      function sendMessage() {
+      var sendMessage = function() {
         var args = [].slice.call(arguments);
         alert(JSON.stringify(args));
-      }
+      };
       mocha.suite.afterAll(function() {
-        if (window.mochaPhantomJS) {
-          // Send message to grunt with the coverage information on
-          // test completion.
-          sendMessage('mocha.coverage', window.__coverage__);
-        }
+        sendMessage('mocha.coverage', window.__coverage__);
       });
       window.expect = SinonExpect.enhance(expect, sinon, 'was');
       window.onload = function() {
@@ -71,12 +67,11 @@
         for (var i = 0, l = specs.length; i < l; i++) {
           loaded.push(specs[i] + '_spec');
         }
-        require(loaded, function () {
+        require(loaded, function() {
           if (window.mochaPhantomJS) {
             mochaPhantomJS.run();
           } else {
-            var runner = mocha.run();
-            runner.globals(['jQuery*']);
+            mocha.run();
           }
         });
       };
