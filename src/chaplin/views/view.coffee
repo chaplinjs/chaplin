@@ -144,7 +144,6 @@ module.exports = class View extends Backbone.View
   # Copy of original backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
     # Call Backbone.delegateEvents on all superclasses events.
-    return unless events
     for key, value of events
       method = if typeof value is 'function' then value else this[value]
       throw new Error "Method '#{method}' does not exist" unless method

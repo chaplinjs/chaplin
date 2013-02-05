@@ -39,6 +39,9 @@ define [
       collection = new Collection
       view.collection = collection
 
+    delay = (callback) ->
+      window.setTimeout callback, 40
+
     class TestView extends View
 
       id: 'test-view'
@@ -88,6 +91,9 @@ define [
       expect(renderCalled).to.be true
       # should not be in the DOM
       expect(view.$el.parent().length).to.be 0
+
+    it 'should not render without proper getTemplateFunction', ->
+      expect(-> new View autoRender: true).to.throwError()
 
     it 'should attach itself to an element automatically', ->
       view = new TestView container: testbed
@@ -150,6 +156,8 @@ define [
       p.trigger 'click'
       expect(spy).was.called()
 
+      expect(-> view.delegate spy).to.throwError()
+
       view.undelegate()
       p.trigger 'click'
       expect(spy.callCount).to.be 1
@@ -167,16 +175,14 @@ define [
       expect(spy).was.calledTwice()
 
     it 'should check delegate parameters', ->
-      expect(-> view.delegate()).to.throwError()
-      expect(-> view.delegate(1, 2, 3)).to.throwError()
-      expect(-> view.delegate('click', 'foo')).to.throwError()
-      expect(-> view.delegate('click', 'foo', 'bar')).to.throwError()
-      expect(-> view.delegate('click', 123)).to.throwError()
-      expect(-> view.delegate('click', (->), 123)).to.throwError()
+      expect(-> view.delegate 1, 2, 3).to.throwError()
+      expect(-> view.delegate 'click', 'foo').to.throwError()
+      expect(-> view.delegate 'click', 'foo', 'bar').to.throwError()
+      expect(-> view.delegate 'click', 123).to.throwError()
+      expect(-> view.delegate 'click', (->), 123).to.throwError()
+      expect(-> view.delegate 'click', 'foo', (->), 'other').to.throwError()
 
     it 'should correct inheritance of events object', (done) ->
-      delay = (callback) ->
-        window.setTimeout callback, 40
       class A extends TestView
         autoRender: yes
         getTemplateFunction: -> -> '
@@ -209,12 +215,14 @@ define [
         events:
           'click #a': 'a4Handler'
           'click #d': 'dHandler'
+          'click': 'globalHandler'
         a4Handler: sinon.spy()
         dHandler: sinon.spy()
+        globalHandler: sinon.spy()
 
       bcd = ['b', 'c', 'd']
       d = new D
-      d.click('a')
+      d.click 'a'
 
       delay ->
         for index in _.range(1, 5)
@@ -225,7 +233,14 @@ define [
         delay ->
           for index in bcd
             expect(d["#{index}Handler"]).was.calledOnce()
+          expect(d.globalHandler.callCount).to.be 4
           done()
+
+    it 'should throw an error when function is passed as second arg', ->
+      class E extends TestView
+        events: ->
+
+      expect(-> new E).to.throwError()
 
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
@@ -257,6 +272,10 @@ define [
 
       view.removeSubview subview
       expect(typeof view.subview('barSubview')).to.be 'undefined'
+      expect(view.subviews.length).to.be 0
+
+      # Fail silently.
+      view.removeSubview ''
       expect(view.subviews.length).to.be 0
 
     it 'should return empty template data without a model', ->
@@ -480,6 +499,25 @@ define [
         expect(view.a2Handler).was.calledOnce()
         expect(view.b1Handler).was.calledOnce()
         expect(view.b2Handler).was.calledOnce()
+
+      it 'should throw an error when corresponding method doesn’t exist', ->
+        class ErrorView extends View
+          listen:
+            'stuff': 'stuff'
+        class Error2View extends ConfiguredTestView
+          events:
+            'stuff': 'stuff'
+        expect(-> new ErrorView).to.throwError()
+        expect(-> new Error2View).to.throwError()
+
+      it 'should allow passing params to delegateEvents', (done) ->
+        spy = sinon.spy()
+        view = new ConfiguredTestView
+        view.delegateEvents 'click p': spy
+        view.$('p').click()
+        delay ->
+          expect(spy).was.calledOnce()
+          done()
 
     it 'should pass model attributes to the template function', ->
       setModel()
