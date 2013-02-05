@@ -104,6 +104,13 @@ define [
 
       mediator.unsubscribe '!router:routeByName', routerRoute
 
+    it 'should adjust page title', ->
+      spy = sinon.spy()
+      mediator.subscribe '!adjustTitle', spy
+      controller.adjustTitle 'meh'
+      expect(spy).was.calledOnce()
+      expect(spy).was.calledWith 'meh'
+
     it 'should dispose itself correctly', ->
       expect(controller.dispose).to.be.a 'function'
       controller.dispose()
