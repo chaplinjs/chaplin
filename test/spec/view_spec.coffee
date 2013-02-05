@@ -349,6 +349,138 @@ define [
       expect(templateData.resolved).to.be 'foo'
       expect(templateData.synced).to.be 'bar'
 
+    describe 'Events', ->
+
+      class EventedViewParent extends View
+        listen:
+          # self
+          'ns:a': 'a1Handler'
+          'ns:b': ->
+            @b1Handler arguments...
+
+          # model
+          'change:a model': 'a1Handler'
+          'change:b model': 'b1Handler'
+
+          # collection
+          'reset collection': 'a1Handler'
+          'custom collection': 'b1Handler'
+
+          # mediator
+          'ns:a mediator': 'a1Handler'
+          'ns:b mediator': 'b1Handler'
+
+        initialize: ->
+          super
+          @a1Handler = sinon.spy()
+          @b1Handler = sinon.spy()
+
+      class EventedView extends EventedViewParent
+        listen:
+          # self
+          'ns:a': 'a2Handler'
+          'ns:b': ->
+            @b2Handler arguments...
+
+          # model
+          'change:a model': 'a2Handler'
+          'change:b model': 'b2Handler'
+
+          # collection
+          'reset collection': 'a2Handler'
+          'custom collection': 'b2Handler'
+
+          # mediator
+          'ns:a mediator': 'a2Handler'
+          'ns:b mediator': 'b2Handler'
+
+        initialize: ->
+          super
+          @a2Handler = sinon.spy()
+          @b2Handler = sinon.spy()
+
+      it 'should bind to own events declaratively', ->
+        view = new EventedView model: new Model()
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        view.trigger 'ns:a'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        view.trigger 'ns:b'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should bind to model events declaratively', ->
+        model = new Model()
+        view = new EventedView {model}
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        model.set 'a', 1
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        model.set 'b', 2
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should bind to collection events declaratively', ->
+        collection = new Collection()
+        view = new EventedView {collection}
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        collection.reset [{a: 1}]
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        collection.trigger 'custom'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should bind to mediator events declaratively', ->
+        view = new EventedView()
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        mediator.publish 'ns:a'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        mediator.publish 'ns:b'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
     it 'should pass model attributes to the template function', ->
       setModel()
 
