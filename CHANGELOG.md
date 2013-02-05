@@ -14,7 +14,7 @@
     * The `params` and `options` objects are copied instead of changed to prevent conflicts.
       If you pass `params` and `options` along with the `!router:route` event,
       the controller action will receive a copy of them. Same for `Dispatcher`.
-    * Fixed `root` option of `Router`.
+    * Fixed `root` option.
     * Fixed route reversals on empty patterns (e.g. top-level route).
 * Improved `Chaplin.CollectionView`:
     * Item views will now emit `addedToParent` event instead of `addedToDOM`
