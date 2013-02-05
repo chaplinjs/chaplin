@@ -10,11 +10,12 @@
 * Improved `Chaplin.Dispatcher`:
     * Stop waiting for a Promise returned by a before action when another route is dispatched
       or the same is dispatched again.
-* Improved `Chaplin.Dispatcher` and `Chaplin.Router`:
+* Improved `Chaplin.Router`:
     * The `params` and `options` objects are copied instead of changed to prevent conflicts.
       If you pass `params` and `options` along with the `!router:route` event,
-      the controller action will receive a copy of them.
+      the controller action will receive a copy of them. Same for `Dispatcher`.
     * Fixed `root` option of `Router`.
+    * Fixed route reversals on empty patterns (e.g. top-level route).
 * Improved `Chaplin.CollectionView`:
     * Item views will now emit `addedToParent` event instead of `addedToDOM`
     when they are appended to collection view.
