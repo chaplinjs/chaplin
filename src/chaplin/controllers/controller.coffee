@@ -66,6 +66,9 @@ module.exports = class Controller
     # Unbind handlers of global events
     @unsubscribeAllEvents()
 
+    # Unbind all referenced handlers
+    @stopListening()
+
     # Remove properties which are not disposable
     properties = ['redirected']
     delete this[prop] for prop in properties

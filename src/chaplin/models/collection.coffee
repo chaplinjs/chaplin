@@ -51,6 +51,9 @@ module.exports = class Collection extends Backbone.Collection
     # Unbind all global event handlers
     @unsubscribeAllEvents()
 
+    # Unbind all referenced handlers.
+    @stopListening()
+
     # Remove all event handlers on this module
     @off()
 

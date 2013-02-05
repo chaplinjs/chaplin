@@ -90,6 +90,9 @@ module.exports = class Model extends Backbone.Model
     # Unbind all global event handlers
     @unsubscribeAllEvents()
 
+    # Unbind all referenced handlers
+    @stopListening()
+
     # Remove all event handlers on this module
     @off()
 
