@@ -64,6 +64,15 @@ module.exports = class View extends Backbone.View
     # Call Backbone’s constructor
     super
 
+    # Set up declarative bindings after `initialize` has been called
+    # so initialize may set model/collection and create or bind methods
+    @delegateListeners()
+
+    # Listen for disposal of the model or collection.
+    # If the model is disposed, automatically dispose the associated view
+    @listenTo @model, 'dispose', @dispose if @model
+    @listenTo @collection, 'dispose', @dispose if @collection
+
   # Inheriting classes must call `super` in their `initialize` method to
   # properly inflate subviews and set up options
   initialize: (options) ->
@@ -72,11 +81,6 @@ module.exports = class View extends Backbone.View
     # Initialize subviews
     @subviews = []
     @subviewsByName = {}
-
-    # Listen for disposal of the model or collection.
-    # If the model is disposed, automatically dispose the associated view
-    @listenTo @model, 'dispose', @dispose if @model
-    @listenTo @collection, 'dispose', @dispose if @collection
 
     # Call `afterInitialize` if `initialize` was not wrapped
     unless @initializeIsWrapped
@@ -93,15 +97,15 @@ module.exports = class View extends Backbone.View
   # Event handling using event delegation
   # Register a handler for a specific event type
   # For the whole view:
-  #   delegate(eventType, handler)
+  #   delegate(eventName, handler)
   #   e.g.
   #   @delegate('click', @clicked)
   # For an element in the passing a selector:
-  #   delegate(eventType, selector, handler)
+  #   delegate(eventName, selector, handler)
   #   e.g.
   #   @delegate('click', 'button.confirm', @confirm)
-  delegate: (eventType, second, third) ->
-    if typeof eventType isnt 'string'
+  delegate: (eventName, second, third) ->
+    if typeof eventName isnt 'string'
       throw new TypeError 'View#delegate: first argument must be a string'
 
     if arguments.length is 2
@@ -121,7 +125,7 @@ module.exports = class View extends Backbone.View
         'handler argument must be function'
 
     # Add an event namespace
-    list = ("#{event}.delegate#{@cid}" for event in eventType.split(' '))
+    list = ("#{event}.delegate#{@cid}" for event in eventName.split(' '))
     events = list.join(' ')
 
     # Bind the handler to the view
@@ -153,12 +157,15 @@ module.exports = class View extends Backbone.View
         @$el.on eventName, bound
       else
         @$el.on eventName, selector, bound
+    return
 
   # Override Backbones method to combine the events
   # of the parent view if it exists.
   delegateEvents: (events) ->
     @undelegateEvents()
-    return @_delegateEvents events if events
+    if events
+      @_delegateEvents events
+      return
     for classEvents in utils.getAllPropertyVersions this, 'events'
       if typeof classEvents is 'function'
         throw new TypeError 'View#delegateEvents: functions are not supported'
@@ -168,6 +175,39 @@ module.exports = class View extends Backbone.View
   # Remove all handlers registered with @delegate.
   undelegate: ->
     @$el.unbind ".delegate#{@cid}"
+
+  # Handle declarative event bindings from `listen`
+  delegateListeners: ->
+    return unless @listen
+
+    # Walk all `listen` hashes in the prototype chain
+    for version in utils.getAllPropertyVersions this, 'listen'
+      for key, method of version
+        # Get the method, ensure it is a function
+        if typeof method isnt 'function'
+          method = this[method]
+        if typeof method isnt 'function'
+          throw new Error 'View#delegateListeners: ' +
+            "#{method} must be function"
+
+        # Split event name and target.
+        [eventName, target] = key.split ' '
+        @delegateListener eventName, target, method
+
+    return
+
+  delegateListener: (eventName, target, callback) ->
+    if target in ['model', 'collection']
+      target = this[target]
+      @listenTo target, eventName, callback if target
+
+    else if target is 'mediator'
+      @subscribeEvent eventName, callback
+
+    else unless target
+      @on eventName, callback, this
+
+    return
 
   # Subviews
   # --------
