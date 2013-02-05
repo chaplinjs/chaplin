@@ -152,6 +152,30 @@ getTemplateData: ->
   element. (Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.)
 
 ## Event delegation
+
+<a id="listen"></a>
+### listen
+* **Object**
+
+  Property that contains declarative event bindings to non-DOM
+  listeners. Just like [Backbone.View#events](http://backbonejs.org/#View),
+  but for models / collections / mediator etc.
+
+  ```coffeescript
+  class SomeView extends View
+    listen:
+      # Listen to view events with @on.
+      'eventName': 'methodName'
+      # Same as @listenTo @model, ….
+      'change:foo model': 'methodName'
+      # Same as @listenTo @model, ….
+      'reset collection': 'methodName'
+      # Same as @subscribeEvent ….
+      'pubSubEvent mediator': 'methodName'
+      # The value can also be a function.
+      'eventName': -> alert 'Hello!'
+  ```
+
 <a id="delegate"></a>
 ### delegate(eventType, [selector], handler)
 * **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
@@ -172,7 +196,6 @@ method signature.
 # delegate(eventType, selector, handler)
 @delegate('click', 'button.confirm', @confirm)
 ```
-
 
 ## Subviews
 
