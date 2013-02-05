@@ -102,8 +102,7 @@ utils =
 
   # Escapes a string to use in a regex
   escapeRegExp: (str) ->
-    return unless str
-    return String(str).replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
+    return String(str or '').replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
 
 
   # Event handling helpers
