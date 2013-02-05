@@ -166,11 +166,11 @@ getTemplateData: ->
     listen:
       # Listen to view events with @on.
       'eventName': 'methodName'
-      # Same as @listenTo @model, ….
+      # Same as @listenTo @model, 'change:foo', this[methodName].
       'change:foo model': 'methodName'
-      # Same as @listenTo @model, ….
+      # Same as @listenTo @collection, 'reset', this[methodName].
       'reset collection': 'methodName'
-      # Same as @subscribeEvent ….
+      # Same as @subscribeEvent 'pubSubEvent', this[methodName].
       'pubSubEvent mediator': 'methodName'
       # The value can also be a function.
       'eventName': -> alert 'Hello!'
