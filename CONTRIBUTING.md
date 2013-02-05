@@ -6,7 +6,7 @@ If you submit changes to coffeescript code, make sure it conforms with the style
 
 ## Chaplin code style guide
 
-Unless states otherwise, follow the [CoffeeScript style guide](https://github.com/polarmobile/coffeescript-style-guide).
+Unless stated otherwise, follow the [CoffeeScript style guide](https://github.com/polarmobile/coffeescript-style-guide).
 
 ## Commenting and Whitespace
 
