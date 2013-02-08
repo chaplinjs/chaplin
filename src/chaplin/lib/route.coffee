@@ -33,7 +33,7 @@ module.exports = class Route
     # Check if the action is a reserved name
     if _(Controller.prototype).has @action
       throw new Error 'Route: You should not use existing controller ' +
-        'properties as action names'
+	'properties as action names'
 
     @createRegExp()
 

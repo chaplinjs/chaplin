@@ -44,7 +44,7 @@
         alert(JSON.stringify(args));
       };
       mocha.suite.afterAll(function() {
-        sendMessage('mocha.coverage', window.__coverage__);
+	sendMessage('mocha.coverage', window.__coverage__);
       });
       window.expect = SinonExpect.enhance(expect, sinon, 'was');
       window.onload = function() {
@@ -61,18 +61,18 @@
           'controller',
           'view',
           'delayer',
-          'utils',
-          'sync_machine'
+	  'utils',
+	  'sync_machine'
         ];
         var loaded = [];
         for (var i = 0, l = specs.length; i < l; i++) {
           loaded.push(specs[i] + '_spec');
         }
-        require(loaded, function() {
+	require(loaded, function() {
           if (window.mochaPhantomJS) {
             mochaPhantomJS.run();
           } else {
-            mocha.run();
+	    mocha.run();
           }
         });
       };

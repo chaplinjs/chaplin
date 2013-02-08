@@ -29,10 +29,10 @@ define [
 
     describe 'serialize', ->
       it 'should serialize objects and incorporate duck-typing', ->
-        model = new Backbone.Model a: 1
-        expect(utils.serialize model).to.eql a: 1
-        expect(utils.serialize {serialize: -> 5}).to.be 5
-        expect(-> utils.serialize {}).to.throwError()
+	model = new Backbone.Model a: 1
+	expect(utils.serialize model).to.eql a: 1
+	expect(utils.serialize {serialize: -> 5}).to.be 5
+	expect(-> utils.serialize {}).to.throwError()
 
     describe 'readonly', ->
       it 'should make property read-only', ->

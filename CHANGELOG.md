@@ -27,7 +27,7 @@
     * Added `utils.getAllPropertyVersions` that allows to gather all
       property versions from object’s prototypes.
 * Improved `Chaplin.View`:
-    * Added `View#listen` property that allows to declaratively listen to 
+    * Added `View#listen` property that allows to declaratively listen to
       model / collection / mediator / view events.
       Just like Backbone’s `View#events`, which is only for DOM events.
     * Switched to `$el.toggle()` instead of manual CSS `display` setting.
