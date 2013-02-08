@@ -207,7 +207,7 @@ method signature.
   `name` argument will return the subview associated with that `name`.
 
   Subviews are not automatically rendered. This is often done in an
-  inheriting view (i.e. in [CollectionView](docs/chaplin.collection_view.md)
+  inheriting view (i.e. in [CollectionView](./chaplin.collection_view.md)
   or your own PageView base class).
 
 ### removeSubview(nameOrView)
@@ -228,9 +228,9 @@ class YourView extends View
 
 # Publish/Subscribe
 
-The View includes the [EventBroker](docs/chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](docs/chaplin.mediator.md)
+The View includes the [EventBroker](./chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](./chaplin.mediator.md)
 
-## [Methods](docs/chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
+## [Methods](./chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
 
 ### publishEvent(event, arguments...)
 Publish the global `event` with `arguments`.
