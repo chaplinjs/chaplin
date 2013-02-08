@@ -15,7 +15,6 @@ SYNCED   = 'synced'
 STATE_CHANGE = 'syncStateChange'
 
 SyncMachine =
-
   _syncState: UNSYNCED
   _previousSyncState: null
 
@@ -78,7 +77,7 @@ SyncMachine =
 
 for event in [UNSYNCED, SYNCING, SYNCED, STATE_CHANGE]
   do (event) ->
-    SyncMachine[event] = (callback, context = @) ->
+    SyncMachine[event] = (callback, context = this) ->
       @on event, callback, context
       callback.call(context) if @_syncState is event
 

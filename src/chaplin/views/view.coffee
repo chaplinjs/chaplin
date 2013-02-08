@@ -57,7 +57,9 @@ module.exports = class View extends Backbone.View
 
     # Copy some options to instance properties
     if options
-      _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
+      _(this).extend _.pick options, [
+        'autoRender', 'container', 'containerMethod'
+      ]
 
     # Call Backbone’s constructor
     super
@@ -195,13 +197,11 @@ module.exports = class View extends Backbone.View
 
   delegateListener: (eventName, target, callback) ->
     if target in ['model', 'collection']
-      target = this[target]
-      @listenTo target, eventName, callback if target
-
+      prop = this[target]
+      @listenTo prop, eventName, callback if prop
     else if target is 'mediator'
       @subscribeEvent eventName, callback
-
-    else unless target
+    else if not target
       @on eventName, callback, this
 
     return
@@ -245,8 +245,7 @@ module.exports = class View extends Backbone.View
 
     # Remove the subview from the lists
     index = _(@subviews).indexOf(view)
-    if index > -1
-      @subviews.splice index, 1
+    @subviews.splice index, 1 if index > -1
     delete @subviewsByName[name]
 
   # Rendering
@@ -255,28 +254,26 @@ module.exports = class View extends Backbone.View
   # Get the model/collection data for the templating function
   # Uses optimized Chaplin serialization if available.
   getTemplateData: ->
-    templateData = if @model
+    data = if @model
       utils.serialize @model
     else if @collection
       {items: utils.serialize(@collection), length: @collection.length}
     else
       {}
 
-    modelOrCollection = @model or @collection
-    if modelOrCollection
+    source = @model or @collection
+    if source
       # If the model/collection is a Deferred, add a `resolved` flag,
       # but only if it’s not present yet
-      if typeof modelOrCollection.state is 'function' and
-        not ('resolved' of templateData)
-          templateData.resolved = modelOrCollection.state() is 'resolved'
+      if typeof source.state is 'function' and not ('resolved' of data)
+        data.resolved = source.state() is 'resolved'
 
       # If the model/collection is a SyncMachine, add a `synced` flag,
       # but only if it’s not present yet
-      if typeof modelOrCollection.isSynced is 'function' and
-        not ('synced' of templateData)
-          templateData.synced = modelOrCollection.isSynced()
+      if typeof source.isSynced is 'function' and not ('synced' of data)
+        data.synced = source.isSynced()
 
-    templateData
+    data
 
   # Returns the compiled template function
   getTemplateFunction: ->
