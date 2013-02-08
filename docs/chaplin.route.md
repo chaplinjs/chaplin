@@ -34,7 +34,7 @@ Tests if the route matches a path and applies any parameter constraints.  This i
 
 ### handler([path], [options])
 
-The handler is called by Backbone.History when the route is matched.  It is also called by [Router#route](docs/chaplin.router.md#routepath) and passes `changeURL: true` as an option.
+The handler is called by Backbone.History when the route is matched.  It is also called by [Router#route](./chaplin.router.md#routepath) and passes `changeURL: true` as an option.
 
 * **path**: the matched path
 * **options**: an optional object
@@ -72,4 +72,4 @@ Extracts the parameters from the query string.
 
 A new instance of `Chaplin.Route` is created for each route in the routes file of your application.  This occurs when the [match method](./router.md#matchpattern-target-options) of `Chaplin.Router` is called. The actual routes file should be in the root of your project along with your main application bootstrapper file.
 
-The routes file is basically a module that returns an anonymous function in which the [match method](docs/chaplin.router.md#matchpattern-target-options) is passed in as an argument.
+The routes file is basically a module that returns an anonymous function in which the [match method](./chaplin.router.md#matchpattern-target-options) is passed in as an argument.

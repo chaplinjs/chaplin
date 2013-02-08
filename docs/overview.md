@@ -15,11 +15,11 @@ these limitations by providing a light-weight but flexible structure which
 leverages well-proven design patterns and best practises.
 
 ## Framework
-##### [Application](docs/chaplin.application.md)
+##### [Application](./chaplin.application.md)
 The bootstrapper of the application; an extension point for key
 parts of the architecture.
 
-##### [Router](docs/chaplin.router.md)
+##### [Router](./chaplin.router.md)
 Facilitates mapping URLs to controller actions based on a
 user-defined configuration file. It is reponsible for observing and acting
 upon URL changes. It does no direct action apart from notifiying the dispatcher
@@ -41,13 +41,13 @@ parsed from the query string. This hands control over to the **Dispatcher**.
 [Ruby on Rails counterpart]: http://guides.rubyonrails.org/routing.html
 [Router]: ./chaplin.router.md
 
-##### [Dispatcher](docs/chaplin.dispatcher.md)
+##### [Dispatcher](./chaplin.dispatcher.md)
 Between the router and the controllers, there is the **Dispatcher** listening
 for routing events. On such events, it loads the target controller, creates an
 instance of it and calls the target action. The action is actually a method
 of the controller. The previously active controller is automatically disposed.
 
-##### [Layout](docs/chaplin.layout.md)
+##### [Layout](./chaplin.layout.md)
 The `Layout` is the top-level application view. When a new controller is
 activated, the `Layout` is responsible for changing the main view to the
 view of the new controller.
@@ -59,7 +59,7 @@ controller module.
 Furthermore, top-level DOM events on `window` or `document`, should be
 registered here.
 
-##### [mediator](docs/chaplin.mediator.md)
+##### [mediator](./chaplin.mediator.md)
 The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe)
 design pattern. It should be used for most of the inter-module communication
 in Chaplin applications. Modules can emit events using `this.publishEvent`
@@ -68,7 +68,7 @@ using `this.subscribeEvent`. The mediator can also be used to easily share data
 between several modules, like a user model or other
 persistent and globally accessible data.
 
-##### [Controller](docs/chaplin.controller.md)
+##### [Controller](./chaplin.controller.md)
 A controller is the place where a model and associated views are instantiated.
 Typically, a controller represents one screen of the application. There can be
 one current controller which provides the main view and represents the
@@ -78,19 +78,19 @@ By convention, there is a controller for each application module. A controller
 may provide several action methods like `index`, `show`, `edit` and so on.
 These actions are called by the `Dispatcher` when a route matches.
 
-##### [Model](docs/chaplin.model.md)
+##### [Model](./chaplin.model.md)
 Holds reference to the data and contains any logic neccessary to retrieve the
 data from its source and optionally send it back.
 
-##### [Collection](docs/chaplin.collection.md)
+##### [Collection](./chaplin.collection.md)
 A collection of models. Contains logic to provide client-side filtering and
 sorting of them.
 
-##### [View](docs/chaplin.view.md)
+##### [View](./chaplin.view.md)
 Provides the logic that drives the user interface such as responding to DOM
 events and mapping data from the model to a template.
 
-##### [Collection View](docs/chaplin.collection.view.md)
+##### [Collection View](./chaplin.collection.view.md)
 Maps to a collection to generate a list of item views that are bound to
 the models in the collection.
 
@@ -120,7 +120,7 @@ from the server which is then rendered by the view. By convention,
 the models, collection and views are saved as properties on
 the controller instance.
 
-## [Memory Management](docs/disposal.md)
+## [Memory Management](./disposal.md)
 A core concern of the Chaplin architecture is proper memory management. While
 there isn’t a broad discussion about garbage collection in JavaScript
 applications, it’s an important topic. In event-driven systems, registering
