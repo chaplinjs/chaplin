@@ -54,14 +54,14 @@ module.exports = class Router # This class does not extend Backbone.Router
       options = target
       {controller, action} = options
       unless controller and action
-        throw new Error 'Router#match must receive either target or ' +
-          'options.controller & options.action'
+	throw new Error 'Router#match must receive either target or ' +
+	  'options.controller & options.action'
     else
       # Handles `match 'url', 'c#a'`.
       {controller, action} = options
       if controller or action
-        throw new Error 'Router#match cannot use both target and ' +
-          'options.controller / options.action'
+	throw new Error 'Router#match cannot use both target and ' +
+	  'options.controller / options.action'
       # Separate target into controller and controller action.
       [controller, action] = target.split('#')
 
