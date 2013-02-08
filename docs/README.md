@@ -1,8 +1,6 @@
 # The Architecture in Detail
 The following chapters will discuss the core objects and classes of our application structure.
 
-![Machine](http://img.ly/system/uploads/003/362/032/original_machine.jpg)
-
 ## General and principles
 
 * [Overview](docs/overview.md)
