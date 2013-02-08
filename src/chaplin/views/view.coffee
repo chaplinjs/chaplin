@@ -4,8 +4,6 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
-Model = require 'chaplin/models/model'
-Collection = require 'chaplin/models/collection'
 
 # Shortcut to access the DOM manipulation library
 $ = Backbone.$

@@ -2,7 +2,6 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
 Dispatcher = require 'chaplin/dispatcher'
 Layout = require 'chaplin/views/layout'
 Router = require 'chaplin/lib/router'

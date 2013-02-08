@@ -2,7 +2,6 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
 EventBroker = require 'chaplin/lib/event_broker'
 Route = require 'chaplin/lib/route'
 utils = require 'chaplin/lib/utils'

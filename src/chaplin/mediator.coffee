@@ -1,6 +1,5 @@
 'use strict'
 
-_ = require 'underscore'
 Backbone = require 'backbone'
 support = require 'chaplin/lib/support'
 utils = require 'chaplin/lib/utils'
