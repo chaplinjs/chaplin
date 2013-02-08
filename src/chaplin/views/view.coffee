@@ -58,7 +58,7 @@ module.exports = class View extends Backbone.View
     # Copy some options to instance properties
     if options
       _(this).extend _.pick options, [
-        'autoRender', 'container', 'containerMethod'
+	'autoRender', 'container', 'containerMethod'
       ]
 
     # Call Backbone’s constructor
@@ -182,16 +182,16 @@ module.exports = class View extends Backbone.View
     # Walk all `listen` hashes in the prototype chain
     for version in utils.getAllPropertyVersions this, 'listen'
       for key, method of version
-        # Get the method, ensure it is a function
-        if typeof method isnt 'function'
-          method = this[method]
-        if typeof method isnt 'function'
-          throw new Error 'View#delegateListeners: ' +
-            "#{method} must be function"
+	# Get the method, ensure it is a function
+	if typeof method isnt 'function'
+	  method = this[method]
+	if typeof method isnt 'function'
+	  throw new Error 'View#delegateListeners: ' +
+	    "#{method} must be function"
 
-        # Split event name and target.
-        [eventName, target] = key.split ' '
-        @delegateListener eventName, target, method
+	# Split event name and target.
+	[eventName, target] = key.split ' '
+	@delegateListener eventName, target, method
 
     return
 
@@ -266,12 +266,12 @@ module.exports = class View extends Backbone.View
       # If the model/collection is a Deferred, add a `resolved` flag,
       # but only if it’s not present yet
       if typeof source.state is 'function' and not ('resolved' of data)
-        data.resolved = source.state() is 'resolved'
+	data.resolved = source.state() is 'resolved'
 
       # If the model/collection is a SyncMachine, add a `synced` flag,
       # but only if it’s not present yet
       if typeof source.isSynced is 'function' and not ('synced' of data)
-        data.synced = source.isSynced()
+	data.synced = source.isSynced()
 
     data
 
