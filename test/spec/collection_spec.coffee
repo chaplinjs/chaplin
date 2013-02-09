@@ -84,54 +84,65 @@ define [
       expect(actual[1].id).to.be expected[1].id
       expect(actual[1].foo).to.be expected[1].foo
 
-    it 'should dispose itself correctly', ->
-      expect(collection.dispose).to.be.a 'function'
-      collection.dispose()
+    describe 'Disposal', ->
+      it 'should dispose itself correctly', ->
+        expect(collection.dispose).to.be.a 'function'
+        collection.dispose()
 
-      expect(collection.length).to.be 0
+        expect(collection.length).to.be 0
 
-      expect(collection.disposed).to.be true
-      if Object.isFrozen
-        expect(Object.isFrozen(collection)).to.be true
+        expect(collection.disposed).to.be true
+        if Object.isFrozen
+          expect(Object.isFrozen(collection)).to.be true
 
-    it 'should fire a dispose event', ->
-      disposeSpy = sinon.spy()
-      collection.on 'dispose', disposeSpy
+      it 'should fire a dispose event', ->
+        disposeSpy = sinon.spy()
+        collection.on 'dispose', disposeSpy
 
-      collection.dispose()
+        collection.dispose()
 
-      expect(disposeSpy).was.called()
+        expect(disposeSpy).was.called()
 
-    it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = sinon.spy()
-      collection.subscribeEvent 'foo', pubSubSpy
+      it 'should unsubscribe from Pub/Sub events', ->
+        pubSubSpy = sinon.spy()
+        collection.subscribeEvent 'foo', pubSubSpy
 
-      collection.dispose()
+        collection.dispose()
 
-      mediator.publish 'foo'
-      expect(pubSubSpy).was.notCalled()
+        mediator.publish 'foo'
+        expect(pubSubSpy).was.notCalled()
 
-    it 'should remove all event handlers from itself', ->
-      collectionBindSpy = sinon.spy()
-      collection.on 'foo', collectionBindSpy
+      it 'should remove all event handlers from itself', ->
+        collectionBindSpy = sinon.spy()
+        collection.on 'foo', collectionBindSpy
 
-      collection.dispose()
+        collection.dispose()
 
-      collection.trigger 'foo'
-      expect(collectionBindSpy).was.notCalled()
+        collection.trigger 'foo'
+        expect(collectionBindSpy).was.notCalled()
 
-    it 'should reject the Deferred on disposal', ->
-      collection.initDeferred()
-      failSpy = sinon.spy()
-      collection.fail failSpy
+      it 'should unsubscribe from other events', ->
+        spy = sinon.spy()
+        model = new Model
+        collection.listenTo model, 'foo', spy
 
-      collection.dispose()
+        collection.dispose()
 
-      expect(collection.state()).to.be 'rejected'
-      expect(failSpy).was.called()
+        model.trigger 'foo'
+        expect(spy).was.notCalled()
 
-    it 'should remove instance properties', ->
-      collection.dispose()
+      it 'should reject the Deferred on disposal', ->
+        collection.initDeferred()
+        failSpy = sinon.spy()
+        collection.fail failSpy
 
-      for prop in ['model', 'models', '_byId', '_byCid']
-        expect(collection).not.to.have.own.property prop
+        collection.dispose()
+
+        expect(collection.state()).to.be 'rejected'
+        expect(failSpy).was.called()
+
+      it 'should remove instance properties', ->
+        collection.dispose()
+
+        for prop in ['model', 'models', '_byId', '_byCid']
+          expect(collection).not.to.have.own.property prop
