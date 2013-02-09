@@ -29,6 +29,7 @@ module.exports = (grunt) ->
     'temp/chaplin/lib/support.js'
     'temp/chaplin/lib/sync_machine.js'
     'temp/chaplin/lib/utils.js'
+    'temp/chaplin/lib/strategist.js'
     'temp/chaplin.js'
   ]
 
