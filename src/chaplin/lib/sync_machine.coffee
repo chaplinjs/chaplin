@@ -40,8 +40,8 @@ SyncMachine =
     if @_syncState in [SYNCING, SYNCED]
       @_previousSync = @_syncState
       @_syncState = UNSYNCED
-      @trigger @_syncState, this, @_syncState
-      @trigger STATE_CHANGE, this, @_syncState
+      @trigger @_syncState
+      @trigger STATE_CHANGE, @_syncState
     # when UNSYNCED do nothing
     return
 
@@ -49,8 +49,8 @@ SyncMachine =
     if @_syncState in [UNSYNCED, SYNCED]
       @_previousSync = @_syncState
       @_syncState = SYNCING
-      @trigger @_syncState, this, @_syncState
-      @trigger STATE_CHANGE, this, @_syncState
+      @trigger @_syncState
+      @trigger STATE_CHANGE, @_syncState
     # when SYNCING do nothing
     return
 
@@ -58,8 +58,8 @@ SyncMachine =
     if @_syncState is SYNCING
       @_previousSync = @_syncState
       @_syncState = SYNCED
-      @trigger @_syncState, this, @_syncState
-      @trigger STATE_CHANGE, this, @_syncState
+      @trigger @_syncState
+      @trigger STATE_CHANGE, @_syncState
     # when SYNCED, UNSYNCED do nothing
     return
 
@@ -67,8 +67,8 @@ SyncMachine =
     if @_syncState is SYNCING
       @_syncState = @_previousSync
       @_previousSync = @_syncState
-      @trigger @_syncState, this, @_syncState
-      @trigger STATE_CHANGE, this, @_syncState
+      @trigger @_syncState
+      @trigger STATE_CHANGE, @_syncState
     # when UNSYNCED, SYNCED do nothing
     return
 
@@ -77,9 +77,10 @@ SyncMachine =
 
 for event in [UNSYNCED, SYNCING, SYNCED, STATE_CHANGE]
   do (event) ->
-    SyncMachine[event] = (callback, context = this) ->
-      @on event, callback, context
-      callback.call(context) if @_syncState is event
+    eventName = event.charAt(0).toUpperCase() + event.slice(1)
+    SyncMachine["when#{eventName}"] = (callback) ->
+      @on event, callback, this
+      callback() if @_syncState is event
 
 # You’re frozen when your heart’s not open
 Object.freeze? SyncMachine
