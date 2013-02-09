@@ -333,7 +333,7 @@ module.exports = class CollectionView extends View
   # on the model type or data.
   getView: (model) ->
     if @itemView
-      new @itemView {model}
+      new @itemView {model, autoRender: false}
     else
       throw new Error 'The CollectionView#itemView property ' +
         'must be defined or the getView() must be overridden.'
