@@ -18,7 +18,6 @@ define [
 
     # Item view class
     class ItemView extends View
-
       tagName: 'li'
 
       initialize: ->
@@ -35,18 +34,13 @@ define [
 
     # Main CollectionView testing class
     class TestCollectionView extends CollectionView
-
-      tagName: 'ul'
-
       animationDuration: 0
-
       itemView: ItemView
+      tagName: 'ul'
 
     # Testing class for a custom getView method
     class CustomViewCollectionView extends CollectionView
-
       tagName: 'ul'
-
       animationDuration: 0
 
       getView: (model) ->
@@ -65,9 +59,8 @@ define [
     # Testing class for CollectionViews with template,
     # custom list, loading indicator and fallback elements
     class TemplatedCollectionView extends TestCollectionView
-
-      listSelector: '> ol'
       fallbackSelector: '> .fallback'
+      listSelector: '> ol'
       loadingSelector: '> .loading'
 
       templateFunction: (templateData) ->
@@ -83,7 +76,6 @@ define [
 
     # Testing class for a CollectionView with non-view children
     class MixedCollectionView extends TestCollectionView
-
       itemSelector: 'li'
 
       templateFunction: (templateData) ->
@@ -170,6 +162,20 @@ define [
       viewsMatchCollection()
       expect(getView.callCount).to.be collection.length
       getView.restore()
+
+    it 'should init subviews with disabled autoRender', ->
+      collectionView.dispose()
+      calls = 0
+      class AutoRenderItemView extends ItemView
+        autoRender: true
+        render: ->
+          super
+          calls += 1
+      class AutoRenderCollectionView extends CollectionView
+        itemView: AutoRenderItemView
+      expect(calls).to.be 0
+      collectionView = new AutoRenderCollectionView {collection}
+      expect(calls).to.be collection.length
 
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
