@@ -145,59 +145,70 @@ define [
       expect(actual.collection[0].number).to.be 'four'
       expect(actual.collection[1].number).to.be 'five'
 
-    it 'should dispose itself correctly', ->
-      expect(model.dispose).to.be.a 'function'
-      model.dispose()
+    describe 'Disposal', ->
+      it 'should dispose itself correctly', ->
+        expect(model.dispose).to.be.a 'function'
+        model.dispose()
 
-      expect(model.disposed).to.be true
-      if Object.isFrozen
-        expect(Object.isFrozen(model)).to.be true
+        expect(model.disposed).to.be true
+        if Object.isFrozen
+          expect(Object.isFrozen(model)).to.be true
 
-    it 'should fire a dispose event', ->
-      disposeSpy = sinon.spy()
-      model.on 'dispose', disposeSpy
+      it 'should fire a dispose event', ->
+        disposeSpy = sinon.spy()
+        model.on 'dispose', disposeSpy
 
-      model.dispose()
+        model.dispose()
 
-      expect(disposeSpy).was.called()
+        expect(disposeSpy).was.called()
 
-    it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = sinon.spy()
-      model.subscribeEvent 'foo', pubSubSpy
+      it 'should unsubscribe from Pub/Sub events', ->
+        pubSubSpy = sinon.spy()
+        model.subscribeEvent 'foo', pubSubSpy
 
-      model.dispose()
+        model.dispose()
 
-      mediator.publish 'foo'
-      expect(pubSubSpy).was.notCalled()
+        mediator.publish 'foo'
+        expect(pubSubSpy).was.notCalled()
 
-    it 'should remove all event handlers from itself', ->
-      modelBindSpy = sinon.spy()
-      model.on 'foo', modelBindSpy
+      it 'should remove all event handlers from itself', ->
+        modelBindSpy = sinon.spy()
+        model.on 'foo', modelBindSpy
 
-      model.dispose()
+        model.dispose()
 
-      model.trigger 'foo'
-      expect(modelBindSpy).was.notCalled()
+        model.trigger 'foo'
+        expect(modelBindSpy).was.notCalled()
 
-    it 'should reject the Deferred on disposal', ->
-      model.initDeferred()
-      failSpy = sinon.spy()
-      model.fail failSpy
+      it 'should unsubscribe from other events', ->
+        spy = sinon.spy()
+        model2 = new Model
+        model.listenTo model2, 'foo', spy
 
-      model.dispose()
+        model.dispose()
 
-      expect(model.state()).to.be 'rejected'
-      expect(failSpy).was.called()
+        model2.trigger 'foo'
+        expect(spy).was.notCalled()
 
-    it 'should remove instance properties', ->
-      model.dispose()
+      it 'should reject the Deferred on disposal', ->
+        model.initDeferred()
+        failSpy = sinon.spy()
+        model.fail failSpy
 
-      properties = [
-        'collection',
-        'attributes', 'changed'
-        '_escapedAttributes', '_previousAttributes',
-        '_silent', '_pending',
-        '_callbacks'
-      ]
-      for prop in properties
-        expect(model).not.to.have.own.property prop
+        model.dispose()
+
+        expect(model.state()).to.be 'rejected'
+        expect(failSpy).was.called()
+
+      it 'should remove instance properties', ->
+        model.dispose()
+
+        properties = [
+          'collection',
+          'attributes', 'changed'
+          '_escapedAttributes', '_previousAttributes',
+          '_silent', '_pending',
+          '_callbacks'
+        ]
+        for prop in properties
+          expect(model).not.to.have.own.property prop
