@@ -7,6 +7,7 @@
       and routing options. Previously, the second argument was just
       a `previousControllerName` string.
     * Fixed `Controller#redirectTo` signature (`url, options`).
+    * `Controller#dispose` will now unbind all events bound by `listenTo` method.
 * Improved `Chaplin.Dispatcher`:
     * Stop waiting for a Promise returned by a before action when another route is dispatched
       or the same is dispatched again.
@@ -16,13 +17,17 @@
       the controller action will receive a copy of them. Same for `Dispatcher`.
     * Fixed `root` option.
     * Fixed route reversals on empty patterns (e.g. top-level route).
+* Improved `Chaplin.Collection`:
+    * `Collection#dispose` will now unbind all events bound by `listenTo` method.
 * Improved `Chaplin.CollectionView`:
+    * Item views will now be called with `autoRender: false`, which prevents rendering them twice.
     * Item views will now emit `addedToParent` event instead of `addedToDOM`
     when they are appended to collection view.
     * Optimise performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
 * Improved `Chaplin.Model`:
     * `Model#serialize` can be overridden on `Backbone.Model`s.
       Chaplin will use it, if available, and `Model#toJSON` if not.
+    * `Model#dispose` will now unbind all events bound by `listenTo` method.
 * Improved `Chaplin.utils`:
     * Added `utils.getAllPropertyVersions` that allows to gather all
       property versions from object’s prototypes.
