@@ -539,109 +539,111 @@ define [
       expect(templateData.foo).to.be 'foo'
       expect(templateData.bar).to.be 'bar'
 
-    it 'should dispose itself correctly', ->
-      expect(view.dispose).to.be.a 'function'
-      view.dispose()
+    describe 'Disposal', ->
 
-      expect(view.disposed).to.be true
-      if Object.isFrozen
-        expect(Object.isFrozen(view)).to.be true
+      it 'should dispose itself correctly', ->
+        expect(view.dispose).to.be.a 'function'
+        view.dispose()
 
-    it 'should remove itself from the DOM', ->
-      view.$el
-        .attr('id', 'disposed-view')
-        .appendTo(document.body)
-      expect($('#disposed-view').length).to.be 1
+        expect(view.disposed).to.be true
+        if Object.isFrozen
+          expect(Object.isFrozen(view)).to.be true
 
-      view.dispose()
+      it 'should remove itself from the DOM', ->
+        view.$el
+          .attr('id', 'disposed-view')
+          .appendTo(document.body)
+        expect($('#disposed-view').length).to.be 1
 
-      expect($('#disposed-view').length).to.be 0
+        view.dispose()
 
-    it 'should dispose subviews', ->
-      subview = new View()
-      sinon.spy(subview, 'dispose')
-      view.subview 'foo', subview
+        expect($('#disposed-view').length).to.be 0
 
-      view.dispose()
+      it 'should dispose subviews', ->
+        subview = new View()
+        sinon.spy(subview, 'dispose')
+        view.subview 'foo', subview
 
-      expect(subview.disposed).to.be true
-      expect(subview.dispose).was.called()
+        view.dispose()
 
-    it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = sinon.spy()
-      view.subscribeEvent 'foo', pubSubSpy
+        expect(subview.disposed).to.be true
+        expect(subview.dispose).was.called()
 
-      view.dispose()
+      it 'should unsubscribe from Pub/Sub events', ->
+        pubSubSpy = sinon.spy()
+        view.subscribeEvent 'foo', pubSubSpy
 
-      mediator.publish 'foo'
-      expect(pubSubSpy).was.notCalled()
+        view.dispose()
 
-    it 'should unsubscribe from model events', ->
-      setModel()
-      spy = sinon.spy()
-      view.listenTo view.model, 'foo', spy
+        mediator.publish 'foo'
+        expect(pubSubSpy).was.notCalled()
 
-      view.dispose()
+      it 'should unsubscribe from model events', ->
+        setModel()
+        spy = sinon.spy()
+        view.listenTo view.model, 'foo', spy
 
-      model.trigger 'foo'
-      expect(spy).was.notCalled()
+        view.dispose()
 
-    it 'should remove all event handlers from itself', ->
-      viewBindSpy = sinon.spy()
-      view.on 'foo', viewBindSpy
+        model.trigger 'foo'
+        expect(spy).was.notCalled()
 
-      view.dispose()
+      it 'should remove all event handlers from itself', ->
+        viewBindSpy = sinon.spy()
+        view.on 'foo', viewBindSpy
 
-      view.trigger 'foo'
-      expect(viewBindSpy).was.notCalled()
+        view.dispose()
 
-    it 'should remove instance properties', ->
-      view.dispose()
+        view.trigger 'foo'
+        expect(viewBindSpy).was.notCalled()
 
-      properties = [
-        'el', '$el',
-        'options', 'model', 'collection',
-        'subviews', 'subviewsByName',
-        '_callbacks'
-      ]
-      for prop in properties
-        expect(view).not.to.have.own.property prop
+      it 'should remove instance properties', ->
+        view.dispose()
 
-    it 'should dispose itself when the model or collection is disposed', ->
-      model = new Model()
-      view = new TestView model: model
-      model.dispose()
-      expect(model.disposed).to.be true
-      expect(view.disposed).to.be true
+        properties = [
+          'el', '$el',
+          'options', 'model', 'collection',
+          'subviews', 'subviewsByName',
+          '_callbacks'
+        ]
+        for prop in properties
+          expect(view).not.to.have.own.property prop
 
-    it 'should not render when disposed given render wasn’t overridden', ->
-      # Vanilla View which doesn’t override render
-      view = new View()
-      view.getTemplateFunction = TestView::getTemplateFunction
-      sinon.spy(view, 'afterRender')
-      renderResult = view.render()
-      expect(renderResult).to.be view
+      it 'should dispose itself when the model or collection is disposed', ->
+        model = new Model()
+        view = new TestView model: model
+        model.dispose()
+        expect(model.disposed).to.be true
+        expect(view.disposed).to.be true
 
-      view.dispose()
+      it 'should not render when disposed given render wasn’t overridden', ->
+        # Vanilla View which doesn’t override render
+        view = new View()
+        view.getTemplateFunction = TestView::getTemplateFunction
+        sinon.spy(view, 'afterRender')
+        renderResult = view.render()
+        expect(renderResult).to.be view
 
-      renderResult = view.render()
-      expect(renderResult).to.be false
-      expect(view.afterRender.callCount).to.be 1
+        view.dispose()
 
-    it 'should not render when disposed given render was overridden', ->
-      view = new TestView container: '#testbed'
-      sinon.spy(view, 'afterRender')
-      renderResult = view.render()
-      expect(renderResult).to.be view
-      expect(view.afterRender.callCount).to.be 1
-      expect(renderCalled).to.be true
-      expect(view.el.parentNode).to.be testbed
+        renderResult = view.render()
+        expect(renderResult).to.be false
+        expect(view.afterRender.callCount).to.be 1
 
-      view.dispose()
+      it 'should not render when disposed given render was overridden', ->
+        view = new TestView container: '#testbed'
+        sinon.spy(view, 'afterRender')
+        renderResult = view.render()
+        expect(renderResult).to.be view
+        expect(view.afterRender.callCount).to.be 1
+        expect(renderCalled).to.be true
+        expect(view.el.parentNode).to.be testbed
 
-      renderResult = view.render()
-      expect(renderResult).to.be false
-      # Render was called but super call should not do anything
-      expect(renderCalled).to.be true
-      expect($(testbed).children().length).to.be 0
-      expect(view.afterRender.callCount).to.be 1
+        view.dispose()
+
+        renderResult = view.render()
+        expect(renderResult).to.be false
+        # Render was called but super call should not do anything
+        expect(renderCalled).to.be true
+        expect($(testbed).children().length).to.be 0
+        expect(view.afterRender.callCount).to.be 1
