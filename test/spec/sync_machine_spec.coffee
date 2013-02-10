@@ -37,12 +37,12 @@ define [
 
       machine.beginSync()
       expect(stateChange).was.calledOnce()
-      expect(stateChange).was.calledWith machine, 'syncing'
+      expect(stateChange).was.calledWith 'syncing'
       expect(syncing).was.calledOnce()
 
       machine.finishSync()
       expect(stateChange).was.calledTwice()
-      expect(stateChange).was.calledWith machine, 'synced'
+      expect(stateChange).was.calledWith 'synced'
       expect(synced).was.calledOnce()
 
     it 'should has shortcuts for checking sync state', ->
@@ -70,9 +70,9 @@ define [
       synced = sinon.spy()
       unsynced = sinon.spy()
 
-      machine.syncing syncing
-      machine.synced synced
-      machine.unsynced unsynced
+      machine.whenSyncing syncing
+      machine.whenSynced synced
+      machine.whenUnsynced unsynced
 
       machine.beginSync()
       expect(syncing).was.calledOnce()
