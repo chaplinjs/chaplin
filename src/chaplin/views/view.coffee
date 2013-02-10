@@ -124,38 +124,26 @@ module.exports = class View extends Backbone.View
       throw new TypeError 'View#delegate: ' +
         'handler argument must be function'
 
-    # Add an event namespace
-    list = ("#{event}.delegate#{@cid}" for event in eventName.split(' '))
+    # Add an event namespace, bind handler it to view.
+    list = _.map eventName.split(' '), (event) => "#{event}.delegate#{@cid}"
     events = list.join(' ')
+    bound = _.bind handler, this
+    @$el.on events, (selector or null), bound
 
-    # Bind the handler to the view
-    handler = _(handler).bind(this)
-
-    if selector
-      # Register handler
-      @$el.on events, selector, handler
-    else
-      # Register handler
-      @$el.on events, handler
-
-    # Return the bound handler
-    handler
+    # Return the bound handler.
+    bound
 
   # Copy of original backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
     # Call Backbone.delegateEvents on all superclasses events.
     for key, value of events
-      method = if typeof value is 'function' then value else this[value]
-      throw new Error "Method '#{method}' does not exist" unless method
+      handler = if typeof value is 'function' then value else this[value]
+      throw new Error "Method '#{handler}' does not exist" unless handler
       match = key.match /^(\S+)\s*(.*)$/
-      eventName = match[1]
+      eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
-      bound = _.bind(method, this)
-      eventName += ".delegateEvents#{@cid}"
-      if selector is ''
-        @$el.on eventName, bound
-      else
-        @$el.on eventName, selector, bound
+      bound = _.bind handler, this
+      @$el.on eventName, (selector or null), bound
     return
 
   # Override Backbones method to combine the events
