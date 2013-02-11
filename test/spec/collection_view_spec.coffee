@@ -38,13 +38,13 @@ define [
       itemView: ItemView
       tagName: 'ul'
 
-    # Testing class for a custom getView method
+    # Testing class for a custom initItemView method
     class CustomViewCollectionView extends CollectionView
       tagName: 'ul'
       animationDuration: 0
 
-      getView: (model) ->
-        #console.debug 'TestCollectionView#getView', model
+      initItemView: (model) ->
+        #console.debug 'TestCollectionView#initItemView', model
         new ItemView {model}
 
     # Testing class for insertino animation
@@ -155,13 +155,13 @@ define [
     it 'should render item views', ->
       viewsMatchCollection()
 
-    it 'should call a custom getView method', ->
+    it 'should call a custom initItemView method', ->
       collectionView.dispose()
-      getView = sinon.spy CustomViewCollectionView.prototype, 'getView'
+      initItemView = sinon.spy CustomViewCollectionView.prototype, 'initItemView'
       collectionView = new CustomViewCollectionView {collection}
       viewsMatchCollection()
-      expect(getView.callCount).to.be collection.length
-      getView.restore()
+      expect(initItemView.callCount).to.be collection.length
+      initItemView.restore()
 
     it 'should init subviews with disabled autoRender', ->
       collectionView.dispose()

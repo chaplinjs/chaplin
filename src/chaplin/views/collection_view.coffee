@@ -9,7 +9,7 @@ $ = Backbone.$
 
 # General class for rendering Collections.
 # Derive this class and declare at least `itemView` or override
-# `getView`. `getView` gets an item model and should instantiate
+# `initItemView`. `initItemView` gets an item model and should instantiate
 # and return a corresponding item view.
 module.exports = class CollectionView extends View
 
@@ -313,7 +313,7 @@ module.exports = class CollectionView extends View
 
     # Instantiate a new view if necessary
     unless view
-      view = @getView item
+      view = @initItemView item
       # Save the view in the subviews
       @subview "itemView:#{item.cid}", view
 
@@ -325,12 +325,12 @@ module.exports = class CollectionView extends View
   # Returns an instance of the view class. Override this
   # method to use several item view constructors depending
   # on the model type or data.
-  getView: (model) ->
+  initItemView: (model) ->
     if @itemView
       new @itemView {model, autoRender: false}
     else
       throw new Error 'The CollectionView#itemView property ' +
-        'must be defined or the getView() must be overridden.'
+        'must be defined or the initItemView() must be overridden.'
 
   # Inserts a view into the list at the proper position
   insertView: (item, view, index = null, enableAnimation = true) ->
@@ -445,10 +445,7 @@ module.exports = class CollectionView extends View
     return if @disposed
 
     # Remove jQuery objects, item view cache and visible items list
-    properties = [
-      '$list', '$fallback', '$loading',
-      'visibleItems'
-    ]
+    properties = ['$list', '$fallback', '$loading', 'visibleItems']
     delete this[prop] for prop in properties
 
     # Self-disposal
