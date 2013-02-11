@@ -155,7 +155,7 @@ module.exports = class CollectionView extends View
 
   # When an item is added, create a new view and insert it
   itemAdded: (item, collection, options = {}) =>
-    @renderAndInsertItem item, options.index
+    @insertView item, @renderItem(item), options.index
 
   # When an item is removed, remove the corresponding view from DOM and caches
   itemRemoved: (item) =>
@@ -301,16 +301,10 @@ module.exports = class CollectionView extends View
         @insertView item, view, index, false
       else
         # Create a new view, render and insert it
-        @renderAndInsertItem item, index
+        @insertView item, @renderItem(item), index
 
     # If no view was created, trigger `visibilityChange` event manually
-    unless items.length
-      @trigger 'visibilityChange', @visibleItems
-
-  # Render the view for an item
-  renderAndInsertItem: (item, index) ->
-    view = @renderItem item
-    @insertView item, view, index
+    @trigger 'visibilityChange', @visibleItems if items.length is 0
 
   # Instantiate and render an item using the `viewsByCid` hash as a cache
   renderItem: (item) ->
