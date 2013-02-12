@@ -32,36 +32,6 @@ define [
         expect(typeof collection[method]).to.be 'function'
       expect(collection.state()).to.be 'pending'
 
-    it 'should add models atomically', ->
-      expect(collection.addAtomic).to.be.a 'function'
-
-      collection.reset ({id: i} for i in [0..2])
-
-      addSpy = sinon.spy()
-      collection.on 'add', addSpy
-      resetSpy = sinon.spy()
-      collection.on 'reset', resetSpy
-
-      collection.addAtomic ({id: i} for i in [3..5])
-      expectOrder [0, 1, 2, 3, 4, 5]
-
-      expect(addSpy).was.notCalled()
-      expect(resetSpy).was.called()
-
-    it 'should add models atomically at a specific position', ->
-      collection.reset ({id: i} for i in [0..2])
-
-      addSpy = sinon.spy()
-      collection.on 'add', addSpy
-      resetSpy = sinon.spy()
-      collection.on 'reset', resetSpy
-
-      collection.addAtomic ({id: i} for i in [3..5]), at: 1
-      expectOrder [0, 3, 4, 5, 1, 2]
-
-      expect(addSpy).was.notCalled()
-      expect(resetSpy).was.called()
-
     it 'should serialize the models', ->
       model1 = new Model id: 1, foo: 'foo'
       model2 = new Backbone.Model id: 2, bar: 'bar'
