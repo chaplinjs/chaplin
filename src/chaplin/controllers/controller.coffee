@@ -19,15 +19,13 @@ module.exports = class Controller
   # was called in the current action
   redirected: false
 
-  # You should set a `title` property on the derived controller. Like this:
-  # title: 'foo'
-
   constructor: ->
     @initialize arguments...
 
   initialize: ->
     # Empty per default
 
+  # Change document title.
   adjustTitle: (subtitle) ->
     @publishEvent '!adjustTitle', subtitle
 
@@ -65,14 +63,15 @@ module.exports = class Controller
     return if @disposed
 
     # Dispose and delete all members which are disposable
-    for own prop of this
-      obj = this[prop]
-      if obj and typeof obj.dispose is 'function'
-        obj.dispose()
-        delete this[prop]
+    for own prop, obj of this when obj and typeof obj.dispose is 'function'
+      obj.dispose()
+      delete this[prop]
 
     # Unbind handlers of global events
     @unsubscribeAllEvents()
+
+    # Unbind all referenced handlers
+    @stopListening()
 
     # Remove properties which are not disposable
     properties = ['redirected']

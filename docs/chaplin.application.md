@@ -44,7 +44,7 @@ mediator.publish '!adjustTitle', 'Apple'
 
 ##### [initDispatcher([options])](src/chaplin/application.coffee#L32)
 Initializes the **dispatcher** module; forwards passed options to its
-contructor. See **[Chaplin.Dispatcher](docs/chaplin.dispatcher.md)**
+contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.md)**
 for more information.
 
 To replace the dispatcher with a derived class (possibly with various
@@ -62,7 +62,7 @@ class Application extends Chaplin.Application
 
 ##### [initLayout([options])](src/chaplin/application.coffee#L35)
 Initializes the **layout** module; forwards passed options to its
-constructor. See **[Chaplin.Layout](docs/chaplin.layout.md)** for more
+constructor. See **[Chaplin.Layout](./chaplin.layout.md)** for more
 information.
 
 To replace the layout with a derived class (possibly with various
@@ -82,7 +82,7 @@ class Application extends Chaplin.Application
 ##### [initRouter(routes, [options])](src/chaplin/application.coffee#L43)
 Initializes the **router** module; forwards passed options to its
 constructor. This starts the routing off by checking the current URL against
-all defined routes and executes the matched handler. See **[Chaplin.Router](docs/chaplin.router.md)**
+all defined routes and executes the matched handler. See **[Chaplin.Router](./chaplin.router.md)**
 for more information.
 
 * **routes**

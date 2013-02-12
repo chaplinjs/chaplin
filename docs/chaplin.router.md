@@ -141,7 +141,7 @@ Stops the Backbone.history instance and removes it from the Router object.  Also
 * `!router:changeURL url[, options]`
 
 ## Usage
-The Chaplin Router is a dependancy of [Chaplin.Application](docs/chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
+The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
 
 ```coffeescript
 define [

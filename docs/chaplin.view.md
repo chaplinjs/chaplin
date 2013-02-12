@@ -153,6 +153,30 @@ getTemplateData: ->
   element. (Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.)
 
 ## Event delegation
+
+<a id="listen"></a>
+### listen
+* **Object**
+
+  Property that contains declarative event bindings to non-DOM
+  listeners. Just like [Backbone.View#events](http://backbonejs.org/#View),
+  but for models / collections / mediator etc.
+
+  ```coffeescript
+  class SomeView extends View
+    listen:
+      # Listen to view events with @on.
+      'eventName': 'methodName'
+      # Same as @listenTo @model, 'change:foo', this[methodName].
+      'change:foo model': 'methodName'
+      # Same as @listenTo @collection, 'reset', this[methodName].
+      'reset collection': 'methodName'
+      # Same as @subscribeEvent 'pubSubEvent', this[methodName].
+      'pubSubEvent mediator': 'methodName'
+      # The value can also be a function.
+      'eventName': -> alert 'Hello!'
+  ```
+
 <a id="delegate"></a>
 ### delegate(eventType, [selector], handler)
 * **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
@@ -277,7 +301,7 @@ Removes all regions registered by this view, automatically called on
   `name` argument will return the subview associated with that `name`.
 
   Subviews are not automatically rendered. This is often done in an
-  inheriting view (i.e. in [CollectionView](docs/chaplin.collection_view.md)
+  inheriting view (i.e. in [CollectionView](./chaplin.collection_view.md)
   or your own PageView base class).
 
 ### removeSubview(nameOrView)
@@ -298,9 +322,9 @@ class YourView extends View
 
 # Publish/Subscribe
 
-The View includes the [EventBroker](docs/chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](docs/chaplin.mediator.md)
+The View includes the [EventBroker](./chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](./chaplin.mediator.md)
 
-## [Methods](docs/chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
+## [Methods](./chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
 
 ### publishEvent(event, arguments...)
 Publish the global `event` with `arguments`.

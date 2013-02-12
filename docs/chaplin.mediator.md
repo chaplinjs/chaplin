@@ -3,7 +3,7 @@ As all modules are encapsulated and independent from each other, we need a way t
 
 To inform other modules that something happened, a module doesn’t send messages directly (i.e. calling methods of specific objects). Instead, it publishes a message to the mediator without having to know who is listening. Other application modules might subscribe to these messages and react upon them.
 
-Note: If you want to give Pub/Sub functionality to a Class, also look at the [EventBroker](docs/chaplin.event_broker.md).
+Note: If you want to give Pub/Sub functionality to a Class, also look at the [EventBroker](./chaplin.event_broker.md).
 
 
 ## Methods of `Chaplin.mediator`

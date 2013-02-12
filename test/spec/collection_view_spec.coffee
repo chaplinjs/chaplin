@@ -18,7 +18,6 @@ define [
 
     # Item view class
     class ItemView extends View
-
       tagName: 'li'
 
       initialize: ->
@@ -35,18 +34,13 @@ define [
 
     # Main CollectionView testing class
     class TestCollectionView extends CollectionView
-
-      tagName: 'ul'
-
       animationDuration: 0
-
       itemView: ItemView
+      tagName: 'ul'
 
     # Testing class for a custom getView method
     class CustomViewCollectionView extends CollectionView
-
       tagName: 'ul'
-
       animationDuration: 0
 
       getView: (model) ->
@@ -65,9 +59,8 @@ define [
     # Testing class for CollectionViews with template,
     # custom list, loading indicator and fallback elements
     class TemplatedCollectionView extends TestCollectionView
-
-      listSelector: '> ol'
       fallbackSelector: '> .fallback'
+      listSelector: '> ol'
       loadingSelector: '> .loading'
 
       templateFunction: (templateData) ->
@@ -83,7 +76,6 @@ define [
 
     # Testing class for a CollectionView with non-view children
     class MixedCollectionView extends TestCollectionView
-
       itemSelector: 'li'
 
       templateFunction: (templateData) ->
@@ -170,6 +162,20 @@ define [
       viewsMatchCollection()
       expect(getView.callCount).to.be collection.length
       getView.restore()
+
+    it 'should init subviews with disabled autoRender', ->
+      collectionView.dispose()
+      calls = 0
+      class AutoRenderItemView extends ItemView
+        autoRender: true
+        render: ->
+          super
+          calls += 1
+      class AutoRenderCollectionView extends CollectionView
+        itemView: AutoRenderItemView
+      expect(calls).to.be 0
+      collectionView = new AutoRenderCollectionView {collection}
+      expect(calls).to.be collection.length
 
     it 'should have a visibleItems array', ->
       visibleItems = collectionView.visibleItems
@@ -465,11 +471,25 @@ define [
         collection.each (model, index) ->
           $el = children.eq(index)
           visible = model.get('title') is 'new'
-          displayValue = $el.css('display')
+          displayValue = $el.css 'display'
           if visible
             expect(displayValue).not.to.be 'none'
           else
             expect(displayValue).to.be 'none'
+
+      it 'should respect the filterer option', ->
+        filterer = (model) -> model.id is 'A'
+        collectionView.dispose()
+        collectionView = new TestCollectionView {
+          collection,
+          filterer
+        }
+
+        expect(collectionView.filterer).to.be filterer
+        expect(collectionView.visibleItems.length).to.be 1
+
+        children = getViewChildren()
+        expect(children.length).to.be collection.length
 
       it 'should remove the filter', ->
         addThree()
@@ -478,7 +498,7 @@ define [
         collectionView.filter null
         children = getViewChildren()
         children.each (index, element) ->
-          displayValue = jQuery(element).css('display')
+          displayValue = jQuery(element).css 'display'
           expect(displayValue).not.to.be 'none'
         expect(collectionView.visibleItems.length).to.be collection.length
 
@@ -499,13 +519,16 @@ define [
           model.get('title') is 'new'
 
         expect(visibilityChange).was.calledOnce()
-        expect(visibilityChange.args[0].length).to.be 1
-        expect(visibilityChange.args[0][0]).to.be collectionView.visibleItems
+        args = visibilityChange.firstCall.args
+        expect(args.length).to.be 1
+        expect(args[0]).to.be collectionView.visibleItems
         expect(collectionView.visibleItems.length).to.be 3
 
         # Remove filter again
         collectionView.filter null
         expect(collectionView.visibleItems.length).to.be collection.length
+
+    describe 'Filter callback', ->
 
       it 'should filter views with a callback', ->
         filterer = (model) ->
@@ -548,19 +571,14 @@ define [
         collectionView.filter filterer, filterCallback
         expect(collectionView.filterCallback).to.be filterCallback
 
-      it 'should respect the filterer option', ->
-        filterer = (model) -> model.id is 'A'
+      it 'should not call the filter callback when unfiltered', ->
         collectionView.dispose()
-        collectionView = new TestCollectionView {
-          collection,
-          filterer
-        }
-
-        expect(collectionView.filterer).to.be filterer
-        expect(collectionView.visibleItems.length).to.be 1
-
-        children = getViewChildren()
-        expect(children.length).to.be collection.length
+        collection = new Collection()
+        collectionView = new TestCollectionView {collection}
+        spy = sinon.spy collectionView, 'filterCallback'
+        fillCollection()
+        addThree()
+        expect(spy).was.notCalled()
 
     describe 'Templated CollectionView', ->
 

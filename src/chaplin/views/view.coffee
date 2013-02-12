@@ -4,8 +4,6 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
-Model = require 'chaplin/models/model'
-Collection = require 'chaplin/models/collection'
 
 # Shortcut to access the DOM manipulation library
 $ = Backbone.$
@@ -92,6 +90,15 @@ module.exports = class View extends Backbone.View
     # Call Backbone’s constructor
     super
 
+    # Set up declarative bindings after `initialize` has been called
+    # so initialize may set model/collection and create or bind methods
+    @delegateListeners()
+
+    # Listen for disposal of the model or collection.
+    # If the model is disposed, automatically dispose the associated view
+    @listenTo @model, 'dispose', @dispose if @model
+    @listenTo @collection, 'dispose', @dispose if @collection
+
   # Inheriting classes must call `super` in their `initialize` method to
   # properly inflate subviews and set up options
   initialize: (options) ->
@@ -100,11 +107,6 @@ module.exports = class View extends Backbone.View
     # Initialize subviews
     @subviews = []
     @subviewsByName = {}
-
-    # Listen for disposal of the model or collection.
-    # If the model is disposed, automatically dispose the associated view
-    @listenTo @model, 'dispose', @dispose if @model
-    @listenTo @collection, 'dispose', @dispose if @collection
 
     # Register all exposed regions.
     @publishEvent '!region:register', this if @regions?
@@ -124,15 +126,15 @@ module.exports = class View extends Backbone.View
   # Event handling using event delegation
   # Register a handler for a specific event type
   # For the whole view:
-  #   delegate(eventType, handler)
+  #   delegate(eventName, handler)
   #   e.g.
   #   @delegate('click', @clicked)
   # For an element in the passing a selector:
-  #   delegate(eventType, selector, handler)
+  #   delegate(eventName, selector, handler)
   #   e.g.
   #   @delegate('click', 'button.confirm', @confirm)
-  delegate: (eventType, second, third) ->
-    if typeof eventType isnt 'string'
+  delegate: (eventName, second, third) ->
+    if typeof eventName isnt 'string'
       throw new TypeError 'View#delegate: first argument must be a string'
 
     if arguments.length is 2
@@ -151,45 +153,35 @@ module.exports = class View extends Backbone.View
       throw new TypeError 'View#delegate: ' +
         'handler argument must be function'
 
-    # Add an event namespace
-    list = ("#{event}.delegate#{@cid}" for event in eventType.split(' '))
+    # Add an event namespace, bind handler it to view.
+    list = _.map eventName.split(' '), (event) => "#{event}.delegate#{@cid}"
     events = list.join(' ')
+    bound = _.bind handler, this
+    @$el.on events, (selector or null), bound
 
-    # Bind the handler to the view
-    handler = _(handler).bind(this)
-
-    if selector
-      # Register handler
-      @$el.on events, selector, handler
-    else
-      # Register handler
-      @$el.on events, handler
-
-    # Return the bound handler
-    handler
+    # Return the bound handler.
+    bound
 
   # Copy of original backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
     # Call Backbone.delegateEvents on all superclasses events.
-    return unless events
     for key, value of events
-      method = if typeof value is 'function' then value else this[value]
-      throw new Error "Method '#{method}' does not exist" unless method
+      handler = if typeof value is 'function' then value else this[value]
+      throw new Error "Method '#{handler}' does not exist" unless handler
       match = key.match /^(\S+)\s*(.*)$/
-      eventName = match[1]
+      eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
-      bound = _.bind(method, this)
-      eventName += ".delegateEvents#{@cid}"
-      if selector is ''
-        @$el.on eventName, bound
-      else
-        @$el.on eventName, selector, bound
+      bound = _.bind handler, this
+      @$el.on eventName, (selector or null), bound
+    return
 
   # Override Backbones method to combine the events
   # of the parent view if it exists.
   delegateEvents: (events) ->
     @undelegateEvents()
-    return @_delegateEvents events if events
+    if events
+      @_delegateEvents events
+      return
     for classEvents in utils.getAllPropertyVersions this, 'events'
       if typeof classEvents is 'function'
         throw new TypeError 'View#delegateEvents: functions are not supported'
@@ -199,6 +191,37 @@ module.exports = class View extends Backbone.View
   # Remove all handlers registered with @delegate.
   undelegate: ->
     @$el.unbind ".delegate#{@cid}"
+
+  # Handle declarative event bindings from `listen`
+  delegateListeners: ->
+    return unless @listen
+
+    # Walk all `listen` hashes in the prototype chain
+    for version in utils.getAllPropertyVersions this, 'listen'
+      for key, method of version
+        # Get the method, ensure it is a function
+        if typeof method isnt 'function'
+          method = this[method]
+        if typeof method isnt 'function'
+          throw new Error 'View#delegateListeners: ' +
+            "#{method} must be function"
+
+        # Split event name and target.
+        [eventName, target] = key.split ' '
+        @delegateListener eventName, target, method
+
+    return
+
+  delegateListener: (eventName, target, callback) ->
+    if target in ['model', 'collection']
+      prop = this[target]
+      @listenTo prop, eventName, callback if prop
+    else if target is 'mediator'
+      @subscribeEvent eventName, callback
+    else if not target
+      @on eventName, callback, this
+
+    return
 
   # Region management
   # -----------------
@@ -254,8 +277,7 @@ module.exports = class View extends Backbone.View
 
     # Remove the subview from the lists
     index = _(@subviews).indexOf(view)
-    if index > -1
-      @subviews.splice index, 1
+    @subviews.splice index, 1 if index > -1
     delete @subviewsByName[name]
 
   # Rendering
@@ -264,28 +286,26 @@ module.exports = class View extends Backbone.View
   # Get the model/collection data for the templating function
   # Uses optimized Chaplin serialization if available.
   getTemplateData: ->
-    templateData = if @model
+    data = if @model
       utils.serialize @model
     else if @collection
       {items: utils.serialize(@collection), length: @collection.length}
     else
       {}
 
-    modelOrCollection = @model or @collection
-    if modelOrCollection
+    source = @model or @collection
+    if source
       # If the model/collection is a Deferred, add a `resolved` flag,
       # but only if it’s not present yet
-      if typeof modelOrCollection.state is 'function' and
-        not ('resolved' of templateData)
-          templateData.resolved = modelOrCollection.state() is 'resolved'
+      if typeof source.state is 'function' and not ('resolved' of data)
+        data.resolved = source.state() is 'resolved'
 
       # If the model/collection is a SyncMachine, add a `synced` flag,
       # but only if it’s not present yet
-      if typeof modelOrCollection.isSynced is 'function' and
-        not ('synced' of templateData)
-          templateData.synced = modelOrCollection.isSynced()
+      if typeof source.isSynced is 'function' and not ('synced' of data)
+        data.synced = source.isSynced()
 
-    templateData
+    data
 
   # Returns the compiled template function
   getTemplateFunction: ->

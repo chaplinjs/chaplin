@@ -13,7 +13,6 @@ module.exports = class Route
   # Mixin an EventBroker
   _(@prototype).extend EventBroker
 
-  reservedParams = ['path', 'changeURL']
   # Taken from Backbone.Router
   escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
 
@@ -33,7 +32,8 @@ module.exports = class Route
 
     # Check if the action is a reserved name
     if _(Controller.prototype).has @action
-      throw new Error 'Route: You should not use existing controller properties as action names'
+      throw new Error 'Route: You should not use existing controller ' +
+        'properties as action names'
 
     @createRegExp()
 
@@ -81,9 +81,6 @@ module.exports = class Route
     @regExp = ///^#{pattern}(?=\?|$)///
 
   addParamName: (match, paramName) =>
-    # Test if parameter name is reserved
-    if _(reservedParams).include(paramName)
-      throw new Error "Route#addParamName: parameter name #{paramName} is reserved"
     # Save parameter name
     @paramNames.push paramName
     # Replace with a character class

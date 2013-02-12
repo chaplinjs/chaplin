@@ -13,10 +13,8 @@ serializeAttributes = (model, attributes, modelStack) ->
   delegator = utils.beget attributes
 
   # Add model to stack
-  if modelStack
-    modelStack.push model
-  else
-    modelStack = [model]
+  modelStack ?= {}
+  modelStack[model.cid] = true
 
   # Map model/collection to their attributes. Create a property
   # on the delegator that shadows the original attribute.
@@ -35,8 +33,8 @@ serializeAttributes = (model, attributes, modelStack) ->
         )
       delegator[key] = serializedModels
 
-  # Remove model from stack
-  modelStack.pop()
+  # Remove model from stack.
+  delete modelStack[model.cid]
 
   # Return the delegator
   delegator
@@ -45,7 +43,7 @@ serializeAttributes = (model, attributes, modelStack) ->
 # in the context of a given tree
 serializeModelAttributes = (model, currentModel, modelStack) ->
   # Nullify circular references
-  return null if model is currentModel or model in modelStack
+  return null if model is currentModel or _(modelStack).has model.cid
   # Serialize recursively
   attributes = if typeof model.getAttributes is 'function'
     # Chaplin models
@@ -91,6 +89,9 @@ module.exports = class Model extends Backbone.Model
 
     # Unbind all global event handlers
     @unsubscribeAllEvents()
+
+    # Unbind all referenced handlers
+    @stopListening()
 
     # Remove all event handlers on this module
     @off()

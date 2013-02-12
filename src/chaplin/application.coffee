@@ -9,21 +9,20 @@ Composer = require 'chaplin/composer'
 Router = require 'chaplin/lib/router'
 EventBroker = require 'chaplin/lib/event_broker'
 
-# The application bootstrapper
-# ----------------------------
-
+# The bootstrapper is the entry point for ChaplinJS apps.
 module.exports = class Application
 
-  # Borrow the static extend method from Backbone
+  # Borrow the `extend` method from a dear friend.
   @extend = Backbone.Model.extend
 
-  # Mixin an EventBroker
+  # Mixin an `EventBroker` for **publish/subscribe** functionality.
   _(@prototype).extend EventBroker
 
-  # The site title used in the document title
+  # Site-wide title that is mapped to HTML `title` tag.
   title: ''
 
-  # The application instantiates these four core modules
+  #### Core Object Instantiation
+  # The application instantiates three **core modules**:
   dispatcher: null
   layout: null
   router: null
@@ -31,8 +30,20 @@ module.exports = class Application
 
   initialize: ->
 
+  # **Chaplin.Dispatcher** sits between the router and controllers to listen
+  # for routing events. When they occur, Chaplin.Dispatcher loads the target
+  # controller module and instantiates it before invoking the target action.
+  # Any previously active controller is automatically disposed.
+
   initDispatcher: (options) ->
     @dispatcher = new Dispatcher options
+
+  # **Chaplin.Layout** is the top-level application view. It *does not
+  # inherit* from Chaplin.View but borrows some of its functionalities. It
+  # is tied to the document dom element and registers application-wide
+  # events, such as internal links. And mainly, when a new controller is
+  # activated, Chaplin.Layout is responsible for changing the main view to
+  # the view of the new controller.
 
   initLayout: (options = {}) ->
     options.title ?= @title
@@ -41,27 +52,28 @@ module.exports = class Application
   initComposer: (options = {}) ->
     @composer = new Composer options
 
-  # Instantiate the dispatcher
-  # --------------------------
+  # **Chaplin.Router** is responsible for observing URL changes. The router
+  # is a replacement for Backbone.Router and *does not inherit from it*
+  # directly. It's a different implementation with several advantages over
+  # the standard router provided by Backbone. The router is typically
+  # initialized by passing the function returned by **routes.coffee**.
 
-  # Pass the function typically returned by routes.coffee
   initRouter: (routes, options) ->
     # Save the reference for testing introspection only.
-    # Modules should communicate with each other via Pub/Sub.
+    # Modules should communicate with each other via **publish/subscribe**.
     @router = new Router options
 
-    # Register all routes declared in routes.coffee
+    # Register any provided routes.
     routes? @router.match
 
-    # After registering the routes, start Backbone.history
+    # After registering the routes, start **Backbone.history**.
     @router.startHistory()
 
-  # Disposal
-  # --------
-
+  #### Disposal
   disposed: false
 
   dispose: ->
+    #Am I already disposed?
     return if @disposed
 
     properties = ['dispatcher', 'layout', 'router', 'composer']
@@ -71,5 +83,5 @@ module.exports = class Application
 
     @disposed = true
 
-    # You’re frozen when your heart’s not open
+    # You're frozen when your heart's not open.
     Object.freeze? this

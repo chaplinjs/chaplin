@@ -39,6 +39,9 @@ define [
       collection = new Collection
       view.collection = collection
 
+    delay = (callback) ->
+      window.setTimeout callback, 40
+
     class TestView extends View
 
       id: 'test-view'
@@ -88,6 +91,9 @@ define [
       expect(renderCalled).to.be true
       # should not be in the DOM
       expect(view.$el.parent().length).to.be 0
+
+    it 'should not render without proper getTemplateFunction', ->
+      expect(-> new View autoRender: true).to.throwError()
 
     it 'should attach itself to an element automatically', ->
       view = new TestView container: testbed
@@ -150,6 +156,8 @@ define [
       p.trigger 'click'
       expect(spy).was.called()
 
+      expect(-> view.delegate spy).to.throwError()
+
       view.undelegate()
       p.trigger 'click'
       expect(spy.callCount).to.be 1
@@ -167,16 +175,14 @@ define [
       expect(spy).was.calledTwice()
 
     it 'should check delegate parameters', ->
-      expect(-> view.delegate()).to.throwError()
-      expect(-> view.delegate(1, 2, 3)).to.throwError()
-      expect(-> view.delegate('click', 'foo')).to.throwError()
-      expect(-> view.delegate('click', 'foo', 'bar')).to.throwError()
-      expect(-> view.delegate('click', 123)).to.throwError()
-      expect(-> view.delegate('click', (->), 123)).to.throwError()
+      expect(-> view.delegate 1, 2, 3).to.throwError()
+      expect(-> view.delegate 'click', 'foo').to.throwError()
+      expect(-> view.delegate 'click', 'foo', 'bar').to.throwError()
+      expect(-> view.delegate 'click', 123).to.throwError()
+      expect(-> view.delegate 'click', (->), 123).to.throwError()
+      expect(-> view.delegate 'click', 'foo', (->), 'other').to.throwError()
 
     it 'should correct inheritance of events object', (done) ->
-      delay = (callback) ->
-        window.setTimeout callback, 40
       class A extends TestView
         autoRender: yes
         getTemplateFunction: -> -> '
@@ -209,12 +215,14 @@ define [
         events:
           'click #a': 'a4Handler'
           'click #d': 'dHandler'
+          'click': 'globalHandler'
         a4Handler: sinon.spy()
         dHandler: sinon.spy()
+        globalHandler: sinon.spy()
 
       bcd = ['b', 'c', 'd']
       d = new D
-      d.click('a')
+      d.click 'a'
 
       delay ->
         for index in _.range(1, 5)
@@ -225,7 +233,14 @@ define [
         delay ->
           for index in bcd
             expect(d["#{index}Handler"]).was.calledOnce()
+          expect(d.globalHandler.callCount).to.be 4
           done()
+
+    it 'should throw an error when function is passed as second arg', ->
+      class E extends TestView
+        events: ->
+
+      expect(-> new E).to.throwError()
 
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
@@ -257,6 +272,10 @@ define [
 
       view.removeSubview subview
       expect(typeof view.subview('barSubview')).to.be 'undefined'
+      expect(view.subviews.length).to.be 0
+
+      # Fail silently.
+      view.removeSubview ''
       expect(view.subviews.length).to.be 0
 
     it 'should return empty template data without a model', ->
@@ -349,6 +368,157 @@ define [
       expect(templateData.resolved).to.be 'foo'
       expect(templateData.synced).to.be 'bar'
 
+    describe 'Events', ->
+
+      class EventedViewParent extends View
+        listen:
+          # self
+          'ns:a': 'a1Handler'
+          'ns:b': ->
+            @b1Handler arguments...
+
+          # model
+          'change:a model': 'a1Handler'
+          'change:b model': 'b1Handler'
+
+          # collection
+          'reset collection': 'a1Handler'
+          'custom collection': 'b1Handler'
+
+          # mediator
+          'ns:a mediator': 'a1Handler'
+          'ns:b mediator': 'b1Handler'
+
+        initialize: ->
+          super
+          @a1Handler = sinon.spy()
+          @b1Handler = sinon.spy()
+
+      class EventedView extends EventedViewParent
+        listen:
+          # self
+          'ns:a': 'a2Handler'
+          'ns:b': ->
+            @b2Handler arguments...
+
+          # model
+          'change:a model': 'a2Handler'
+          'change:b model': 'b2Handler'
+
+          # collection
+          'reset collection': 'a2Handler'
+          'custom collection': 'b2Handler'
+
+          # mediator
+          'ns:a mediator': 'a2Handler'
+          'ns:b mediator': 'b2Handler'
+
+        initialize: ->
+          super
+          @a2Handler = sinon.spy()
+          @b2Handler = sinon.spy()
+
+      it 'should bind to own events declaratively', ->
+        view = new EventedView model: new Model()
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        view.trigger 'ns:a'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        view.trigger 'ns:b'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should bind to model events declaratively', ->
+        model = new Model()
+        view = new EventedView {model}
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        model.set 'a', 1
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        model.set 'b', 2
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should bind to collection events declaratively', ->
+        collection = new Collection()
+        view = new EventedView {collection}
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        collection.reset [{a: 1}]
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        collection.trigger 'custom'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should bind to mediator events declaratively', ->
+        view = new EventedView()
+
+        expect(view.a1Handler).was.notCalled()
+        expect(view.a2Handler).was.notCalled()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        mediator.publish 'ns:a'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.notCalled()
+        expect(view.b2Handler).was.notCalled()
+
+        mediator.publish 'ns:b'
+        expect(view.a1Handler).was.calledOnce()
+        expect(view.a2Handler).was.calledOnce()
+        expect(view.b1Handler).was.calledOnce()
+        expect(view.b2Handler).was.calledOnce()
+
+      it 'should throw an error when corresponding method doesn’t exist', ->
+        class ErrorView extends View
+          listen:
+            'stuff': 'stuff'
+        class Error2View extends ConfiguredTestView
+          events:
+            'stuff': 'stuff'
+        expect(-> new ErrorView).to.throwError()
+        expect(-> new Error2View).to.throwError()
+
+      it 'should allow passing params to delegateEvents', (done) ->
+        spy = sinon.spy()
+        view = new ConfiguredTestView
+        view.delegateEvents 'click p': spy
+        view.$('p').click()
+        delay ->
+          expect(spy).was.calledOnce()
+          done()
+
     it 'should pass model attributes to the template function', ->
       setModel()
 
@@ -369,109 +539,111 @@ define [
       expect(templateData.foo).to.be 'foo'
       expect(templateData.bar).to.be 'bar'
 
-    it 'should dispose itself correctly', ->
-      expect(view.dispose).to.be.a 'function'
-      view.dispose()
+    describe 'Disposal', ->
 
-      expect(view.disposed).to.be true
-      if Object.isFrozen
-        expect(Object.isFrozen(view)).to.be true
+      it 'should dispose itself correctly', ->
+        expect(view.dispose).to.be.a 'function'
+        view.dispose()
 
-    it 'should remove itself from the DOM', ->
-      view.$el
-        .attr('id', 'disposed-view')
-        .appendTo(document.body)
-      expect($('#disposed-view').length).to.be 1
+        expect(view.disposed).to.be true
+        if Object.isFrozen
+          expect(Object.isFrozen(view)).to.be true
 
-      view.dispose()
+      it 'should remove itself from the DOM', ->
+        view.$el
+          .attr('id', 'disposed-view')
+          .appendTo(document.body)
+        expect($('#disposed-view').length).to.be 1
 
-      expect($('#disposed-view').length).to.be 0
+        view.dispose()
 
-    it 'should dispose subviews', ->
-      subview = new View()
-      sinon.spy(subview, 'dispose')
-      view.subview 'foo', subview
+        expect($('#disposed-view').length).to.be 0
 
-      view.dispose()
+      it 'should dispose subviews', ->
+        subview = new View()
+        sinon.spy(subview, 'dispose')
+        view.subview 'foo', subview
 
-      expect(subview.disposed).to.be true
-      expect(subview.dispose).was.called()
+        view.dispose()
 
-    it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = sinon.spy()
-      view.subscribeEvent 'foo', pubSubSpy
+        expect(subview.disposed).to.be true
+        expect(subview.dispose).was.called()
 
-      view.dispose()
+      it 'should unsubscribe from Pub/Sub events', ->
+        pubSubSpy = sinon.spy()
+        view.subscribeEvent 'foo', pubSubSpy
 
-      mediator.publish 'foo'
-      expect(pubSubSpy).was.notCalled()
+        view.dispose()
 
-    it 'should unsubscribe from model events', ->
-      setModel()
-      spy = sinon.spy()
-      view.listenTo view.model, 'foo', spy
+        mediator.publish 'foo'
+        expect(pubSubSpy).was.notCalled()
 
-      view.dispose()
+      it 'should unsubscribe from model events', ->
+        setModel()
+        spy = sinon.spy()
+        view.listenTo view.model, 'foo', spy
 
-      model.trigger 'foo'
-      expect(spy).was.notCalled()
+        view.dispose()
 
-    it 'should remove all event handlers from itself', ->
-      viewBindSpy = sinon.spy()
-      view.on 'foo', viewBindSpy
+        model.trigger 'foo'
+        expect(spy).was.notCalled()
 
-      view.dispose()
+      it 'should remove all event handlers from itself', ->
+        viewBindSpy = sinon.spy()
+        view.on 'foo', viewBindSpy
 
-      view.trigger 'foo'
-      expect(viewBindSpy).was.notCalled()
+        view.dispose()
 
-    it 'should remove instance properties', ->
-      view.dispose()
+        view.trigger 'foo'
+        expect(viewBindSpy).was.notCalled()
 
-      properties = [
-        'el', '$el',
-        'options', 'model', 'collection',
-        'subviews', 'subviewsByName',
-        '_callbacks'
-      ]
-      for prop in properties
-        expect(view).not.to.have.own.property prop
+      it 'should remove instance properties', ->
+        view.dispose()
 
-    it 'should dispose itself when the model or collection is disposed', ->
-      model = new Model()
-      view = new TestView model: model
-      model.dispose()
-      expect(model.disposed).to.be true
-      expect(view.disposed).to.be true
+        properties = [
+          'el', '$el',
+          'options', 'model', 'collection',
+          'subviews', 'subviewsByName',
+          '_callbacks'
+        ]
+        for prop in properties
+          expect(view).not.to.have.own.property prop
 
-    it 'should not render when disposed given render wasn’t overridden', ->
-      # Vanilla View which doesn’t override render
-      view = new View()
-      view.getTemplateFunction = TestView::getTemplateFunction
-      sinon.spy(view, 'afterRender')
-      renderResult = view.render()
-      expect(renderResult).to.be view
+      it 'should dispose itself when the model or collection is disposed', ->
+        model = new Model()
+        view = new TestView model: model
+        model.dispose()
+        expect(model.disposed).to.be true
+        expect(view.disposed).to.be true
 
-      view.dispose()
+      it 'should not render when disposed given render wasn’t overridden', ->
+        # Vanilla View which doesn’t override render
+        view = new View()
+        view.getTemplateFunction = TestView::getTemplateFunction
+        sinon.spy(view, 'afterRender')
+        renderResult = view.render()
+        expect(renderResult).to.be view
 
-      renderResult = view.render()
-      expect(renderResult).to.be false
-      expect(view.afterRender.callCount).to.be 1
+        view.dispose()
 
-    it 'should not render when disposed given render was overridden', ->
-      view = new TestView container: '#testbed'
-      sinon.spy(view, 'afterRender')
-      renderResult = view.render()
-      expect(renderResult).to.be view
-      expect(view.afterRender.callCount).to.be 1
-      expect(renderCalled).to.be true
-      expect(view.el.parentNode).to.be testbed
+        renderResult = view.render()
+        expect(renderResult).to.be false
+        expect(view.afterRender.callCount).to.be 1
 
-      view.dispose()
+      it 'should not render when disposed given render was overridden', ->
+        view = new TestView container: '#testbed'
+        sinon.spy(view, 'afterRender')
+        renderResult = view.render()
+        expect(renderResult).to.be view
+        expect(view.afterRender.callCount).to.be 1
+        expect(renderCalled).to.be true
+        expect(view.el.parentNode).to.be testbed
 
-      renderResult = view.render()
-      expect(renderResult).to.be false
-      # Render was called but super call should not do anything
-      expect(renderCalled).to.be true
-      expect($(testbed).children().length).to.be 0
-      expect(view.afterRender.callCount).to.be 1
+        view.dispose()
+
+        renderResult = view.render()
+        expect(renderResult).to.be false
+        # Render was called but super call should not do anything
+        expect(renderCalled).to.be true
+        expect($(testbed).children().length).to.be 0
+        expect(view.afterRender.callCount).to.be 1

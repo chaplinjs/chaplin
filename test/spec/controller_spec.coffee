@@ -26,6 +26,15 @@ define [
       for own name, value of EventBroker
         expect(controller[name]).to.be EventBroker[name]
 
+    it 'should be extendable', ->
+      expect(Controller.extend).to.be.a 'function'
+
+      DerivedController = Controller.extend()
+      derivedController = new DerivedController()
+      expect(derivedController).to.be.a Controller
+
+      derivedController.dispose()
+
     it 'should redirect to a URL', ->
       expect(controller.redirectTo).to.be.a 'function'
 
@@ -104,40 +113,49 @@ define [
 
       mediator.unsubscribe '!router:routeByName', routerRoute
 
-    it 'should dispose itself correctly', ->
-      expect(controller.dispose).to.be.a 'function'
-      controller.dispose()
+    it 'should adjust page title', ->
+      spy = sinon.spy()
+      mediator.subscribe '!adjustTitle', spy
+      controller.adjustTitle 'meh'
+      expect(spy).was.calledOnce()
+      expect(spy).was.calledWith 'meh'
 
-      expect(controller.disposed).to.be true
-      if Object.isFrozen
-        expect(Object.isFrozen(controller)).to.be true
+    describe 'Disposal', ->
+      it 'should dispose itself correctly', ->
+        expect(controller.dispose).to.be.a 'function'
+        controller.dispose()
 
-    it 'should dispose disposable properties', ->
-      model = controller.model = new Model()
-      view = controller.view = new View model: model
+        expect(controller.disposed).to.be true
+        if Object.isFrozen
+          expect(Object.isFrozen(controller)).to.be true
 
-      controller.dispose()
+      it 'should dispose disposable properties', ->
+        model = controller.model = new Model()
+        view = controller.view = new View model: model
 
-      expect(controller).not.to.have.own.property 'model'
-      expect(controller).not.to.have.own.property 'view'
+        controller.dispose()
 
-      expect(model.disposed).to.be true
-      expect(view.disposed).to.be true
+        expect(controller).not.to.have.own.property 'model'
+        expect(controller).not.to.have.own.property 'view'
 
-    it 'should unsubscribe from Pub/Sub events', ->
-      pubSubSpy = sinon.spy()
-      controller.subscribeEvent 'foo', pubSubSpy
+        expect(model.disposed).to.be true
+        expect(view.disposed).to.be true
 
-      controller.dispose()
+      it 'should unsubscribe from Pub/Sub events', ->
+        pubSubSpy = sinon.spy()
+        controller.subscribeEvent 'foo', pubSubSpy
 
-      mediator.publish 'foo'
-      expect(pubSubSpy).was.notCalled()
+        controller.dispose()
 
-    it 'should be extendable', ->
-      expect(Controller.extend).to.be.a 'function'
+        mediator.publish 'foo'
+        expect(pubSubSpy).was.notCalled()
 
-      DerivedController = Controller.extend()
-      derivedController = new DerivedController()
-      expect(derivedController).to.be.a Controller
+      it 'should unsubscribe from other events', ->
+        spy = sinon.spy()
+        model = new Model
+        controller.listenTo model, 'foo', spy
 
-      derivedController.dispose()
+        controller.dispose()
+
+        model.trigger 'foo'
+        expect(spy).was.notCalled()

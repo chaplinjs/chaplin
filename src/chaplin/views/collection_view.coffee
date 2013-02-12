@@ -333,7 +333,7 @@ module.exports = class CollectionView extends View
   # on the model type or data.
   getView: (model) ->
     if @itemView
-      new @itemView {model}
+      new @itemView {model, autoRender: false}
     else
       throw new Error 'The CollectionView#itemView property ' +
         'must be defined or the getView() must be overridden.'
@@ -366,7 +366,7 @@ module.exports = class CollectionView extends View
         $viewEl.css 'opacity', 0
 
     # Hide or mark the view if it’s filtered
-    @filterCallback view, included
+    @filterCallback view, included if @filterer
 
     # Insert the view into the list
     $list = @$list
