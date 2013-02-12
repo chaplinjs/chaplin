@@ -23,16 +23,6 @@ module.exports = class Collection extends Backbone.Collection
   serialize: ->
     @map utils.serialize
 
-  # Adds a collection atomically, i.e. throws no event until
-  # all members have been added
-  addAtomic: (models, options = {}) ->
-    return unless models.length
-    options.silent = true
-    direction = if typeof options.at is 'number' then 'pop' else 'shift'
-    while model = models[direction]()
-      @add model, options
-    @trigger 'reset'
-
   # Disposal
   # --------
 
