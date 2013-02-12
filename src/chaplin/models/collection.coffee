@@ -3,17 +3,47 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
+Strategist = require 'chaplin/lib/strategist'
 Model = require 'chaplin/models/model'
 utils = require 'chaplin/lib/utils'
 
 # Abstract class which extends the standard Backbone collection
 # in order to add some functionality
 module.exports = class Collection extends Backbone.Collection
+
   # Mixin an EventBroker
   _(@prototype).extend EventBroker
 
+  # Asynchronous request strategy
+  # See more information in lib/strategist.
+  strategy:
+    sync:
+      read: 'abort'
+      create: 'stack'
+      update: 'stack'
+      patch: 'stack'
+      delete: 'abort'
+
+    dispose:
+      read: 'abort'
+      create: 'null'
+      update: 'null'
+      patch: 'null'
+      delete: 'null'
+
   # Use the Chaplin model per default, not Backbone.Model
   model: Model
+
+  constructor: ->
+    # Call Backbone’s constructor
+    super
+
+    # Initialize the strategist.
+    @initStrategist() if @strategy
+
+  # Initialize a strategist.
+  initStrategist: ->
+    @strategist = new Strategist {@strategy}
 
   # Mixin a Deferred
   initDeferred: ->
@@ -33,6 +63,19 @@ module.exports = class Collection extends Backbone.Collection
       @add model, options
     @trigger 'reset'
 
+  sync: (method, model, options) ->
+    # Invoke the before handler.
+    @strategist.trigger "sync:#{method}:before", options
+
+    # Call backbone's sync method.
+    request = super
+
+    # Invoke the after handler.
+    request = @strategist.trigger "sync:#{method}:after", request
+
+    # Return the request
+    request
+
   # Disposal
   # --------
 
@@ -43,6 +86,10 @@ module.exports = class Collection extends Backbone.Collection
 
     # Fire an event to notify associated views
     @trigger 'dispose', this
+
+    # Dispose of the strategist; fires off disposal event.
+    @strategist.dispose()
+    delete @strategist
 
     # Empty the list silently, but do not dispose all models since
     # they might be referenced elsewhere

@@ -4,6 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
+Strategist = require 'chaplin/lib/strategist'
 
 # Private helper function for serializing attributes recursively,
 # creating objects which delegate to the original attributes
@@ -56,8 +57,37 @@ serializeModelAttributes = (model, currentModel, modelStack) ->
 
 # Abstraction that adds some useful functionality to backbone model.
 module.exports = class Model extends Backbone.Model
+
   # Mixin an EventBroker
   _(@prototype).extend EventBroker
+
+  # Asynchronous request strategy
+  # See more information in lib/strategist.
+  strategy:
+    sync:
+      read: 'abort'
+      create: 'stack'
+      update: 'stack'
+      patch: 'stack'
+      delete: 'abort'
+
+    dispose:
+      read: 'abort'
+      create: 'null'
+      update: 'null'
+      patch: 'null'
+      delete: 'null'
+
+  constructor: ->
+    # Call Backbone’s constructor
+    super
+
+    # Initialize the strategist.
+    @initStrategist() if @strategy
+
+  # Initialize a strategist.
+  initStrategist: ->
+    @strategist = new Strategist {@strategy}
 
   # Mixin a Deferred
   initDeferred: ->
@@ -76,6 +106,19 @@ module.exports = class Model extends Backbone.Model
   serialize: ->
     serializeAttributes this, @getAttributes()
 
+  sync: (method, model, options) ->
+    # Invoke the before handler.
+    @strategist.trigger "sync:#{method}:before", options
+
+    # Call backbone's sync method.
+    request = super
+
+    # Invoke the after handler.
+    request = @strategist.trigger "sync:#{method}:after", request
+
+    # Return the request
+    request
+
   # Disposal
   # --------
 
@@ -86,6 +129,10 @@ module.exports = class Model extends Backbone.Model
 
     # Fire an event to notify associated collections and views
     @trigger 'dispose', this
+
+    # Dispose of the strategist; fires off disposal event.
+    @strategist.dispose()
+    delete @strategist
 
     # Unbind all global event handlers
     @unsubscribeAllEvents()

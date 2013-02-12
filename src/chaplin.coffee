@@ -14,4 +14,5 @@ module.exports =
   EventBroker:    require 'chaplin/lib/event_broker'
   support:        require 'chaplin/lib/support'
   SyncMachine:    require 'chaplin/lib/sync_machine'
+  Strategist:     require 'chaplin/lib/strategist'
   utils:          require 'chaplin/lib/utils'
