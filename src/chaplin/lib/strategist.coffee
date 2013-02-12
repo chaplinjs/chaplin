@@ -166,6 +166,9 @@ module.exports = class Strategist
           if handler
             @on "#{hook}:#{method}#{suffix}", _.bind handler, this, method
 
+    # Return nothing
+    return
+
   # The various stacks and queues used to facilitate the above.
   requests: null
 
@@ -184,11 +187,15 @@ module.exports = class Strategist
       abort: (method, options) ->
         # Abort a held request if we have one.
         @requests[method].abort() if @requests[method]
+
         # Wrap the callbacks so they won't be executed if we get disposed
         # without being aborted.
         if options
           for name in ['success', 'error', 'complete']
             options[name] = makeDisposable this, options[name]
+
+        # Return nothing
+        return
 
       stack: (method, options) ->
         # Wrap the callbacks so they won't be executed if we get disposed.
@@ -196,11 +203,15 @@ module.exports = class Strategist
           for name in ['success', 'error', 'complete']
             options[name] = makeDisposable this, options[name]
 
+        # Return nothing
+        return
+
     'sync:after':
       abort: (method, request) ->
         # Wrap the request object so that it could be diposed without being
         # aborted.
         request = new Disposable this, request
+
         # Store and return the request object for later abort.
         @requests[method] = request
 
