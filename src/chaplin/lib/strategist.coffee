@@ -121,7 +121,7 @@ module.exports = class Strategist
   initialize: ->
     # Normalize the strategy object and apply defaults
     return if not @strategy or @strategy is 'null'
-    if _.isString @strategy
+    if typeof @strategy is 'string'
       # Strategy can be be declared to be universally abort or stack, etc.
       strategy = @strategy
       @strategy = {}
@@ -141,7 +141,7 @@ module.exports = class Strategist
 
     # Expands the strategy object into the full one with both hooks accessible.
     for hook in @hooks
-      if @strategy[hook] is null or _.isString @strategy[hook]
+      if @strategy[hook] is null or typeof @strategy[hook] is 'string'
         # This is being declared short-hand like `sync: 'abort'`.
         strategy = @strategy[hook]
         @strategy[hook] = {}
