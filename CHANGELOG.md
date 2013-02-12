@@ -19,11 +19,12 @@
     * Fixed route reversals on empty patterns (for example, the top-level route).
 * Improved `Chaplin.Collection`:
     * `Collection#dispose` will now unbind all events bound by `listenTo` method.
+    * Removed barely used `Collection#addAtomic`.
 * Improved `Chaplin.CollectionView`:
     * Item views will now be called with `autoRender: false`, which prevents rendering them twice.
     * Item views will now emit `addedToParent` event instead of `addedToDOM`
     when they are appended to collection view.
-    * Optimise performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
+    * Optimised performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
 * Improved `Chaplin.Model`:
     * `Model#serialize` can be overridden on `Backbone.Model`s.
       Chaplin will use it, if available, and `Model#toJSON` if not.
