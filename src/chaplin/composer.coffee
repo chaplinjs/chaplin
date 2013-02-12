@@ -9,27 +9,6 @@ EventBroker = require 'chaplin/lib/event_broker'
 # --------
 
 # The sole job of the composer is to allow views to be 'composed'.
-# To compose a view (short form):
-#
-# @publishEvent '!composer:compose', ViewClass, options
-#
-# Or (long form):
-#
-# @publishEvent '!composer:compose',
-#   compose: ->
-#     composition = {}
-#     composition.model = new Model()
-#     composition.model.id = 42
-#
-#     composition.view = new View
-#       model: composition.model
-#
-#     composition.model.fetch()
-#     composition
-#
-#   check: (composition) ->
-#     composition.model.id is 42 and
-#     typeof composition.view is typeof View
 #
 # If the view has already been composed by a previous action then nothing
 # apart from registering the view as in use happens. Else, the view
@@ -78,7 +57,6 @@ module.exports = class Composer
     composition.stale = value
 
     # Sets the stale property for every item in the composition that has it
-    console.log 124, composition
     for name, item of composition when _(item).has 'stale'
       item.stale = value
 
