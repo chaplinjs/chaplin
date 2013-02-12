@@ -114,7 +114,7 @@ module.exports = class CollectionView extends View
   addCollectionListeners: ->
     @listenTo @collection, 'add', @itemAdded
     @listenTo @collection, 'remove', @itemRemoved
-    @listenTo @collection, 'reset sort', @itemsResetted
+    @listenTo @collection, 'reset sort', @itemsReset
 
   # Rendering
   # ---------
@@ -162,7 +162,7 @@ module.exports = class CollectionView extends View
     @removeViewForItem item
 
   # When all items are resetted, render all anew
-  itemsResetted: =>
+  itemsReset: =>
     @renderAllItems()
 
   # Fallback message when the collection is empty
