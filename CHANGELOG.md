@@ -16,7 +16,7 @@
       If you pass `params` and `options` along with the `!router:route` event,
       the controller action will receive a copy of them. Same for `Dispatcher`.
     * Fixed `root` option.
-    * Fixed route reversals on empty patterns (e.g. top-level route).
+    * Fixed route reversals on empty patterns (for example, the top-level route).
 * Improved `Chaplin.Collection`:
     * `Collection#dispose` will now unbind all events bound by `listenTo` method.
 * Improved `Chaplin.CollectionView`:
@@ -28,6 +28,7 @@
     * `Model#serialize` can be overridden on `Backbone.Model`s.
       Chaplin will use it, if available, and `Model#toJSON` if not.
     * `Model#dispose` will now unbind all events bound by `listenTo` method.
+    * Improved time complexity of `Model#serialize` from O(n) to amortized O(1).
 * Improved `Chaplin.utils`:
     * Added `utils.getAllPropertyVersions` that allows to gather all
       property versions from object’s prototypes.
