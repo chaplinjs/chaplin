@@ -211,7 +211,7 @@ module.exports = class Strategist
         requests.push request
         request = request.always =>
           requests = @requests[method]
-          requests[i..i] = [] if (i = _.indexOf(requests, request)) > -1
+          requests.splice _(requests).indexOf(request), 1
 
     'dispose':
       abort: (method) ->
