@@ -55,13 +55,13 @@ define [
     it 'should initialize a view when it is composed for the first time', ->
       mediator.publish '!composer:compose', 'test1', TestView1
       expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['test1'].view).to.be.a TestView1
+      expect(composer.compositions['test1'].item).to.be.a TestView1
       mediator.publish 'startupController'
 
       mediator.publish '!composer:compose', 'test1', TestView1
       mediator.publish '!composer:compose', 'test2', TestView2
       expect(_(composer.compositions).keys().length).to.be 2
-      expect(composer.compositions['test2'].view).to.be.a TestView2
+      expect(composer.compositions['test2'].item).to.be.a TestView2
       mediator.publish 'startupController'
 
     it 'should not initialize a view if it is already composed', ->
@@ -84,25 +84,19 @@ define [
       mediator.publish '!composer:compose', 'test1', TestView1
       expect(_(composer.compositions).keys().length).to.be 1
 
-      toBeDisposed = composer.compositions['test1'].view
       mediator.publish 'startupController'
-
       mediator.publish '!composer:compose', 'test2', TestView2
-
-      toBeDisposed = composer.compositions['test2'].view
       mediator.publish 'startupController'
 
       expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['test2'].view).to.be.a TestView2
+      expect(composer.compositions['test2'].item).to.be.a TestView2
 
     # composing with the long form
     # -----------------------------
 
     it 'should invoke compose when a view should be composed', ->
       mediator.publish '!composer:compose', 'weird',
-        compose: ->
-          type: TestView1
-          view: new TestView1()
+        compose: -> @view = new TestView1()
         check: -> false
 
       expect(_(composer.compositions).keys().length).to.be 1
@@ -112,25 +106,19 @@ define [
       expect(_(composer.compositions).keys().length).to.be 1
 
       mediator.publish '!composer:compose', 'weird',
-        compose: ->
-          type: TestView2
-          view: new TestView2()
-        check: -> @type is TestView2
+        compose: -> @view = new TestView2()
 
       mediator.publish 'startupController'
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['weird'].view).to.be.a TestView2
 
     it 'should dispose the entire composition when necessary', ->
-      view1 = null
-      view12 = null
-      view2 = null
       spy = sinon.spy()
 
       mediator.publish '!composer:compose', 'weird',
         compose: ->
-          dagger: view1 = new TestView1()
-          dagger2: view12 = new TestView1()
+          @dagger = new TestView1()
+          @dagger2 = new TestView1()
         check: -> false
 
       expect(_(composer.compositions).keys().length).to.be 1
@@ -140,7 +128,7 @@ define [
       expect(_(composer.compositions).keys().length).to.be 1
 
       mediator.publish '!composer:compose', 'weird',
-        compose: -> frozen: view2 = new TestView2()
+        compose: -> @frozen = new TestView2()
         check: -> false
 
       mediator.publish 'startupController'

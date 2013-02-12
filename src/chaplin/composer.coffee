@@ -3,6 +3,7 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
+Composition = require 'chaplin/lib/composition'
 EventBroker = require 'chaplin/lib/event_broker'
 
 # Composer
@@ -30,92 +31,119 @@ module.exports = class Composer
     @initialize arguments...
 
   initialize: (options = {}) ->
-    # initialize collections
+    # Initialize collections.
     @compositions = {}
 
-    # subscribe to events
+    # Subscribe to events.
     @subscribeEvent '!composer:compose', @compose
-    @subscribeEvent 'startupController', @onStartupController
+    @subscribeEvent 'startupController', @cleanup
 
-  perform: (type, options) ->
-    # Build the composition; this is the function
-    # that is overidden when the `compose` option is passed to the
-    # compose function
-    composition =
-      params: options.params
-      view: new type options
+  # Constructs a composition and composes into the active compositions.
+  # This function has several forms as described below:
+  #
+  # a) compose('name')
+  #    Retrieves a reference to an active composition.
+  #
+  # b) compose('name', Class[, options])
+  #    Composes a class object. The options are passed to the class when
+  #    an instance is contructed and are further used to test if the
+  #    composition should be re-composed.
+  #
+  # c) compose('name', function)
+  #    Composes a function that executes in the context of the controller;
+  #    do NOT bind the function context.
+  #
+  # d) compose('name', options, function)
+  #    Composes a function that executes in the context of the controller;
+  #    do NOT bind the function context and is passed the options as a
+  #    parameter. The options are further used to test if the composition
+  #    should be recomposed.
+  #
+  # e) compose('name', options)
+  #    Gives control over the composition process; the compose method of
+  #    the options hash is executed in place of the function of form (d) and
+  #    the check method is called (if present) to determine re-composition (
+  #    otherwise this is the same as form [c]).
+  #
+  compose: (name, second, third) ->
+    # Retrieve an active composition item if only the name is passed; form (a).
+    if arguments.length is 1
+      return unless composition = @compositions[name]
+      return if composition.stale
+      return composition.item
 
-    # If the view is not automatically rendered; render it
-    # The composing controller has no idea if and when it should render
-    composition.view.render() unless composition.view.autoRender
+    # Normalize the arguments
+    # If the second parameter is a function we know it is (b) or (c).
+    if typeof second is 'function'
+      # This is form (b) with the optional options hash if the third is an obj
+      # or the second parameter's prototype has an initialize method
+      if third or second::initialize
+        @_compose name,
+          options: third
+          compose: ->
+            # The compose method here just constructs the class.
+            @item = new second @options
 
-    # Return our composition
-    composition
+            # Render this item if it has a render method and it either
+            # doesn't have an autoRender property or that autoRender
+            # property is false
+            if @item.autoRender is undefined or not @item.autoRender
+              @item.render()
 
-  stale: (composition, value) ->
-    # Set the stale property on the composition
-    composition.stale = value
+      # This is form (c).
+      return @_compose name, compose: second
 
-    # Sets the stale property for every item in the composition that has it
-    for name, item of composition when _(item).has 'stale'
-      item.stale = value
+    # If the third parameter exists and is a function this is (d).
+    if typeof third is 'function'
+      return @_compose name, {compose: third, options: second}
 
-    # Don't bother to return the for loop
-    return
+    # This must be form (e).
+    return @_compose name, second
 
-  compose: (name, type, options = {}) ->
-    # Short form (view-class, ctor-options) or long form ?
-    if arguments.length is 3 or typeof type is 'function'
-      # Assume short form; apply functions
-      options.params = _(options).clone()
-      options.compose = (options) => @perform type, options
-
-    else
-      # Long form; first argument are the options
-      options = type
-
+  _compose: (name, options) ->
     # Assert for programmer errors
     unless typeof options.compose is 'function'
-      throw new Error "options#compose must be defined"
+      throw new Error "compose was used incorrectly"
 
-    unless typeof options.check is 'function'
-      options.check = -> true  # By default; we never re-compose
+    # Create the composition and apply the methods (if available)
+    composition = new Composition options.options
+    composition.compose = options.compose
+    composition.check = options.check if options.check
 
-    # Attempt to find an active composition that matches
-    composition = @compositions[name]
+    # Check for an existing composition
+    current = @compositions[name]
 
-    if composition isnt undefined and options.check.call(composition, options.params)
-      # We have an active composition; declare composition as not stale so
-      # that its regions will now be counted
-      @stale composition, false
+    # Apply the check method
+    if current and current.check composition.options
+      # Mark the current composition as not stale
+      current.stale false
 
     else
-      # Dispose of the old composition
-      @destroy composition if composition isnt undefined
+      # Remove the current composition and apply this one
+      current.dispose() if current
+      composition.compose composition.options
+      composition.stale false
+      @compositions[name] = composition
 
-      # Perform the composition and append to the list so we can
-      # track its lifetime
-      @compositions[name] = options.compose options.params
+    # Return the active composition
+    @compositions[name]
 
-  destroy: (composition) ->
-    # Dispose of everything that can be disposed
-    for name, item of composition when typeof item?.dispose is 'function'
-      item.dispose()
-      delete composition[name]
-
-    # Don't bother to return the for loop
-    return
-
-  onStartupController: (options) ->
+  # Declare all compositions as stale and remove all that were previously
+  # marked stale without being re-composed.
+  cleanup: ->
     # Action method is done; perform post-action clean up
-    # Dispose and delete all unactive compositions
-    # Declare all active compositions as de-activated
+    # Dispose and delete all no-longer-active compositions.
+    # Declare all active compositions as de-activated (eg. to be removed
+    # on the next controller startup unless they are re-composed).
     for name, composition of @compositions
-      if composition.stale
-        @destroy composition
+      if composition.stale()
+        composition.dispose()
         delete @compositions[name]
       else
-        @stale composition, true
+        composition.stale true
+
+    # Return nothing.
+    return
 
   dispose: ->
     return if @disposed
@@ -124,7 +152,7 @@ module.exports = class Composer
     @unsubscribeAllEvents()
 
     # Dispose of all compositions and their items (that can be)
-    @destroy composition for name, composition of @compositions
+    composition.dispose() for name, composition of @compositions
 
     # Remove properties
     delete @compositions
