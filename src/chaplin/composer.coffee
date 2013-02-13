@@ -69,7 +69,7 @@ module.exports = class Composer
     # Retrieve an active composition item if only the name is passed; form (a).
     if arguments.length is 1
       return unless composition = @compositions[name]
-      return if composition.stale
+      return if composition.stale()
       return composition.item
 
     # Normalize the arguments
