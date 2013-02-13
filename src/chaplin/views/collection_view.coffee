@@ -175,16 +175,16 @@ module.exports = class CollectionView extends View
     @$fallback = @$(@fallbackSelector)
 
     # Listen for visible items changes
-    @on 'visibilityChange', @showHideFallback
+    @on 'visibilityChange', @toggleFallback
 
     # Listen for sync events on the collection
-    @listenTo @collection, 'syncStateChange', @showHideFallback
+    @listenTo @collection, 'syncStateChange', @toggleFallback
 
     # Set visibility initially
-    @showHideFallback()
+    @toggleFallback()
 
   # Show fallback if no item is visible and the collection is synced
-  showHideFallback: =>
+  toggleFallback: =>
     visible = @visibleItems.length is 0 and (
       if typeof @collection.isSynced is 'function'
         # Collection is a SyncMachine
@@ -208,12 +208,12 @@ module.exports = class CollectionView extends View
     @$loading = @$(@loadingSelector)
 
     # Listen for sync events on the collection
-    @listenTo @collection, 'syncStateChange', @showHideLoadingIndicator
+    @listenTo @collection, 'syncStateChange', @toggleLoadingIndicator
 
     # Set visibility initially
-    @showHideLoadingIndicator()
+    @toggleLoadingIndicator()
 
-  showHideLoadingIndicator: ->
+  toggleLoadingIndicator: ->
     # Only show the loading indicator if the collection is empty.
     # Otherwise loading more items in order to append them would
     # show the loading indicator. If you want the indicator to
