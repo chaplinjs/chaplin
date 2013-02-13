@@ -28,6 +28,7 @@ module.exports = (grunt) ->
     'temp/chaplin/lib/delayer.js'
     'temp/chaplin/lib/event_broker.js'
     'temp/chaplin/lib/support.js'
+    'temp/chaplin/lib/composition.js'
     'temp/chaplin/lib/sync_machine.js'
     'temp/chaplin/lib/utils.js'
     'temp/chaplin.js'

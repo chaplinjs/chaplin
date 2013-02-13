@@ -36,6 +36,8 @@ module.exports = class Composer
 
     # Subscribe to events.
     @subscribeEvent '!composer:compose', @compose
+    @subscribeEvent '!composer:retrieve', @retrieve
+
     @subscribeEvent 'startupController', @cleanup
 
   # Constructs a composition and composes into the active compositions.
@@ -65,6 +67,9 @@ module.exports = class Composer
   #    the check method is called (if present) to determine re-composition (
   #    otherwise this is the same as form [c]).
   #
+  # f) compose('name', CompositionClass[, options])
+  #    Gives complete control over the composition process.
+  #
   compose: (name, second, third) ->
     # Retrieve an active composition item if only the name is passed; form (a).
     if arguments.length is 1
@@ -75,20 +80,28 @@ module.exports = class Composer
     # Normalize the arguments
     # If the second parameter is a function we know it is (b) or (c).
     if typeof second is 'function'
-      # This is form (b) with the optional options hash if the third is an obj
-      # or the second parameter's prototype has an initialize method
-      if third or second::initialize
-        @_compose name,
-          options: third
-          compose: ->
-            # The compose method here just constructs the class.
-            @item = new second @options
+      # This is form (b) or (f) with the optional options hash if the third
+      # is an obj or the second parameter's prototype has a dispose method
+      if third or second::dispose
+        # If the class is a Composition class then it is form (f).
+        if second.prototype instanceof Composition
+          @_compose name,
+            composition: second
+            options: third
 
-            # Render this item if it has a render method and it either
-            # doesn't have an autoRender property or that autoRender
-            # property is false
-            if @item.autoRender is undefined or not @item.autoRender
-              @item.render()
+        else
+          @_compose name,
+            options: third
+            compose: ->
+              # The compose method here just constructs the class.
+              @item = new second @options
+
+              # Render this item if it has a render method and it either
+              # doesn't have an autoRender property or that autoRender
+              # property is false
+              if (@item.autoRender is undefined or not @item.autoRender) and
+                  typeof @item.render is 'function'
+                @item.render()
 
       # This is form (c).
       return @_compose name, compose: second
@@ -105,10 +118,14 @@ module.exports = class Composer
     unless typeof options.compose is 'function'
       throw new Error "compose was used incorrectly"
 
-    # Create the composition and apply the methods (if available)
-    composition = new Composition options.options
-    composition.compose = options.compose
-    composition.check = options.check if options.check
+    if options.composition?
+      # Use the passed composition directly
+      composition = new options.composition options.options
+    else
+      # Create the composition and apply the methods (if available)
+      composition = new Composition options.options
+      composition.compose = options.compose
+      composition.check = options.check if options.check
 
     # Check for an existing composition
     current = @compositions[name]
@@ -127,6 +144,11 @@ module.exports = class Composer
 
     # Return the active composition
     @compositions[name]
+
+  # Retrieves an active composition using the compose method and a passed
+  # callback.
+  retrieve: (name, callback) ->
+    callback @compose name
 
   # Declare all compositions as stale and remove all that were previously
   # marked stale without being re-composed.

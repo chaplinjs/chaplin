@@ -138,6 +138,60 @@ define [
       mediator.publish 'startupController'
       expect(_(composer.compositions).keys().length).to.be 0
 
+    # various compose forms
+    # ---------------------
+    it 'should allow a function to be composed', ->
+      spy = sinon.spy()
+
+      mediator.publish '!composer:compose', 'spy', spy
+      mediator.publish 'startupController'
+
+      expect(spy).was.called()
+
+    it 'should allow a function to be composed with options', ->
+      spy = sinon.spy()
+      params = {foo: 123, bar: 123}
+
+      mediator.publish '!composer:compose', 'spy', params, spy
+
+      expect(composer.compositions['spy'].options).to.eql params
+
+      mediator.publish 'startupController'
+
+      expect(spy).was.called()
+
+    it 'should allow a options hash with a function to be composed with options', ->
+      spy = sinon.spy()
+      params = {foo: 123, bar: 123}
+
+      mediator.publish '!composer:compose', 'spy',
+        options: params
+        compose: spy
+
+      expect(composer.compositions['spy'].options).to.eql params
+
+      mediator.publish 'startupController'
+
+      expect(spy).was.called()
+
+    it 'should allow a model to be composed', ->
+      mediator.publish '!composer:compose', 'spy', Model
+
+      expect(composer.compositions['spy'].item).to.be.a Model
+
+      mediator.publish 'startupController'
+
+    it 'should allow a composition to be retreived', ->
+      mediator.publish '!composer:compose', 'spy', Model
+
+      item = null
+      mediator.publish '!composer:retrieve', 'spy', (composition) ->
+        item = composition
+
+      expect(item).to.be composer.compositions['spy'].item
+
+      mediator.publish 'startupController'
+
     # disposal
     # --------
 
