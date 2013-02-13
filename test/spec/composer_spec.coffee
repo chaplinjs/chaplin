@@ -2,11 +2,12 @@ define [
   'underscore'
   'chaplin/mediator'
   'chaplin/lib/event_broker'
+  'chaplin/lib/composition'
   'chaplin/composer'
   'chaplin/controllers/controller'
   'chaplin/views/view'
   'chaplin/models/model'
-], (_, mediator, EventBroker, Composer, Controller, View, Model) ->
+], (_, mediator, EventBroker, Composition, Composer, Controller, View, Model) ->
   'use strict'
 
   describe 'Composer', ->
@@ -180,6 +181,16 @@ define [
       expect(composer.compositions['spy'].item).to.be.a Model
 
       mediator.publish 'startupController'
+
+    it 'should allow a composition to be composed', ->
+      spy = sinon.spy()
+      class Custom extends Composition
+        compose: spy
+
+      mediator.publish '!composer:compose', 'spy', Custom
+      mediator.publish 'startupController'
+
+      expect(spy).was.called()
 
     it 'should allow a composition to be retreived', ->
       mediator.publish '!composer:compose', 'spy', Model
