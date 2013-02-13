@@ -142,8 +142,8 @@ filterCallback: (view, included) ->
   Instantiate and render the view for an item using the `viewsByCid`
   hash as a cache.
 
-<a id="getView"></a>
-### getView(model)
+<a id="initItemView"></a>
+### initItemView(model)
 * **Model model**
 
   Returns an instance of the view class (as determined by `@itemView`).

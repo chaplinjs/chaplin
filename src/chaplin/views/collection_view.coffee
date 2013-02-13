@@ -9,7 +9,7 @@ $ = Backbone.$
 
 # General class for rendering Collections.
 # Derive this class and declare at least `itemView` or override
-# `getView`. `getView` gets an item model and should instantiate
+# `initItemView`. `initItemView` gets an item model and should instantiate
 # and return a corresponding item view.
 module.exports = class CollectionView extends View
 
@@ -114,7 +114,7 @@ module.exports = class CollectionView extends View
   addCollectionListeners: ->
     @listenTo @collection, 'add', @itemAdded
     @listenTo @collection, 'remove', @itemRemoved
-    @listenTo @collection, 'reset sort', @itemsResetted
+    @listenTo @collection, 'reset sort', @itemsReset
 
   # Rendering
   # ---------
@@ -155,14 +155,14 @@ module.exports = class CollectionView extends View
 
   # When an item is added, create a new view and insert it
   itemAdded: (item, collection, options = {}) =>
-    @renderAndInsertItem item, options.index
+    @insertView item, @renderItem(item), options.index
 
   # When an item is removed, remove the corresponding view from DOM and caches
   itemRemoved: (item) =>
     @removeViewForItem item
 
   # When all items are resetted, render all anew
-  itemsResetted: =>
+  itemsReset: =>
     @renderAllItems()
 
   # Fallback message when the collection is empty
@@ -175,16 +175,16 @@ module.exports = class CollectionView extends View
     @$fallback = @$(@fallbackSelector)
 
     # Listen for visible items changes
-    @on 'visibilityChange', @showHideFallback
+    @on 'visibilityChange', @toggleFallback
 
     # Listen for sync events on the collection
-    @listenTo @collection, 'syncStateChange', @showHideFallback
+    @listenTo @collection, 'syncStateChange', @toggleFallback
 
     # Set visibility initially
-    @showHideFallback()
+    @toggleFallback()
 
   # Show fallback if no item is visible and the collection is synced
-  showHideFallback: =>
+  toggleFallback: =>
     visible = @visibleItems.length is 0 and (
       if typeof @collection.isSynced is 'function'
         # Collection is a SyncMachine
@@ -208,12 +208,12 @@ module.exports = class CollectionView extends View
     @$loading = @$(@loadingSelector)
 
     # Listen for sync events on the collection
-    @listenTo @collection, 'syncStateChange', @showHideLoadingIndicator
+    @listenTo @collection, 'syncStateChange', @toggleLoadingIndicator
 
     # Set visibility initially
-    @showHideLoadingIndicator()
+    @toggleLoadingIndicator()
 
-  showHideLoadingIndicator: ->
+  toggleLoadingIndicator: ->
     # Only show the loading indicator if the collection is empty.
     # Otherwise loading more items in order to append them would
     # show the loading indicator. If you want the indicator to
@@ -301,16 +301,10 @@ module.exports = class CollectionView extends View
         @insertView item, view, index, false
       else
         # Create a new view, render and insert it
-        @renderAndInsertItem item, index
+        @insertView item, @renderItem(item), index
 
     # If no view was created, trigger `visibilityChange` event manually
-    unless items.length
-      @trigger 'visibilityChange', @visibleItems
-
-  # Render the view for an item
-  renderAndInsertItem: (item, index) ->
-    view = @renderItem item
-    @insertView item, view, index
+    @trigger 'visibilityChange', @visibleItems if items.length is 0
 
   # Instantiate and render an item using the `viewsByCid` hash as a cache
   renderItem: (item) ->
@@ -319,7 +313,7 @@ module.exports = class CollectionView extends View
 
     # Instantiate a new view if necessary
     unless view
-      view = @getView item
+      view = @initItemView item
       # Save the view in the subviews
       @subview "itemView:#{item.cid}", view
 
@@ -331,12 +325,12 @@ module.exports = class CollectionView extends View
   # Returns an instance of the view class. Override this
   # method to use several item view constructors depending
   # on the model type or data.
-  getView: (model) ->
+  initItemView: (model) ->
     if @itemView
       new @itemView {model, autoRender: false}
     else
       throw new Error 'The CollectionView#itemView property ' +
-        'must be defined or the getView() must be overridden.'
+        'must be defined or the initItemView() must be overridden.'
 
   # Inserts a view into the list at the proper position
   insertView: (item, view, index = null, enableAnimation = true) ->
@@ -451,10 +445,7 @@ module.exports = class CollectionView extends View
     return if @disposed
 
     # Remove jQuery objects, item view cache and visible items list
-    properties = [
-      '$list', '$fallback', '$loading',
-      'visibleItems'
-    ]
+    properties = ['$list', '$fallback', '$loading', 'visibleItems']
     delete this[prop] for prop in properties
 
     # Self-disposal

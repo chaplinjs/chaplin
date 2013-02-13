@@ -19,11 +19,7 @@
     * Fixed route reversals on empty patterns (for example, the top-level route).
 * Improved `Chaplin.Collection`:
     * `Collection#dispose` will now unbind all events bound by `listenTo` method.
-* Improved `Chaplin.CollectionView`:
-    * Item views will now be called with `autoRender: false`, which prevents rendering them twice.
-    * Item views will now emit `addedToParent` event instead of `addedToDOM`
-    when they are appended to collection view.
-    * Optimise performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
+    * Removed `Collection#addAtomic` as it was barely used.
 * Improved `Chaplin.Model`:
     * `Model#serialize` can be overridden on `Backbone.Model`s.
       Chaplin will use it, if available, and `Model#toJSON` if not.
@@ -44,6 +40,16 @@
       [stickit](http://nytimes.github.com/backbone.stickit/) instead
       for advanced model-view binding.
     * Early error is now thrown when `View#events` is a function.
+* Improved `Chaplin.CollectionView`:
+    * Renamed `CollectionView#itemsResetted` to `CollectionView#itemsReset`.
+    * Renamed `CollectionView#getView` to `CollectionView#initItemView`.
+    * Renamed `CollectionView#showHideFallback` to `CollectionView#toggleFallback`.
+    * Renamed `CollectionView#showHideLoadingIndicator` to `CollectionView#toggleLoadingIndicator`.
+    * Removed `CollectionView#renderAndInsertItem`.
+    * Item views will now be called with `autoRender: false`, which prevents rendering them twice.
+    * Item views will now emit `addedToParent` event instead of `addedToDOM`
+    when they are appended to collection view.
+    * Optimised performance by not calling jQuery / Zepto `css` / `animate` when animations are disabled.
 
 # Chaplin 0.6.0 (December 30, 2012)
 * Updated required Backbone version to 0.9.9+.
@@ -51,9 +57,6 @@
     * Removed `Collection#update` since this function is now provided
       by Backbone itself. The `deep` option is now called `merge` and it
       defaults to true.
-* Improved `Chaplin.CollectionView`:
-    * `CollectionView#getTemplateData` no longer returns `items` property,
-    which increases performance.
 * Improved `Chaplin.Controller`:
     * Added Rails-like before action filters to `Controller`s.
     * Added `Controller#redirectToRoute` which works like
@@ -80,6 +83,9 @@
     * Moved `View#wrapMethod` to `Chaplin.utils.wrapMethod`.
     * `View#dispose` will now throw an error if
       `View#initialize` was called without `super`.
+* Improved `Chaplin.CollectionView`:
+    * `CollectionView#getTemplateData` no longer returns `items` property,
+    which increases performance.
 * Router options are now allowed to be passed in many places.
   New signatures are:
     * `!router:route` global event: path, *options*, callback
