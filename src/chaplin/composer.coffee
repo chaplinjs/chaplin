@@ -121,6 +121,7 @@ module.exports = class Composer
     if options.composition?
       # Use the passed composition directly
       composition = new options.composition options.options
+
     else
       # Create the composition and apply the methods (if available)
       composition = new Composition options.options
