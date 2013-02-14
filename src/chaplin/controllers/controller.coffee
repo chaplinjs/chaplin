@@ -29,6 +29,23 @@ module.exports = class Controller
   adjustTitle: (subtitle) ->
     @publishEvent '!adjustTitle', subtitle
 
+  # Composer
+  # --------
+
+  # Convenience method to publish the `!composer:compose` event. See the
+  # composer for information on parameters, etc.
+  compose: (name) ->
+    if arguments.length is 1
+      # Retrieve an active composition using the retrieve event
+      item = null
+      @publishEvent '!composer:retrieve', name, (composition) ->
+        item = composition
+      item
+
+    else
+      # Compose the arguments using the compose method
+      @publishEvent '!composer:compose', arguments...
+
   # Redirection
   # -----------
 
