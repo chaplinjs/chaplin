@@ -64,13 +64,6 @@ define [
       container: '#testbed'
       containerMethod: 'before'
 
-    it 'should thrown an error if initialize super not called', ->
-      class NoInitView extends TestView
-        initialize: ->
-      view = new NoInitView
-      expect(view.dispose).to.throwError()
-      view.disposed = true
-
     it 'should mixin a EventBroker', ->
       for own name, value of EventBroker
         expect(view[name]).to.be EventBroker[name]

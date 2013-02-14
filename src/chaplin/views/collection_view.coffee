@@ -93,16 +93,16 @@ module.exports = class CollectionView extends View
     if (options)
       _(this).extend _.pick options, ['renderItems', 'itemView']
 
-    super
-
-  # Initialization
-  # --------------
-
-  initialize: (options = {}) ->
-    super
-
     # Initialize list for visible items
     @visibleItems = []
+
+    # Call the base view constructor
+    super
+
+  # Initializing
+  # ------------
+  initialize: (options) ->
+    # Don't call super; the base view's initialize is a no-op.
 
     # Start observing the collection
     @addCollectionListeners()
