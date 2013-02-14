@@ -180,16 +180,16 @@ module.exports = class Layout # This class does not extend View
   # -----------------
 
   # Handler for `!region:register`.
-  registerRegionHandler: (params...) ->
+  registerRegionHandler: (instance, name, selector) ->
     if arguments.length is 1
       # A single parameter is assumed to be the view instance; register all
       # regions exposed.
-      @registerRegions params...
+      @registerRegions instance
 
     else
       # Else we're expecting all three parameters and the intent to register
       # a single region.
-      @registerRegion params...
+      @registerRegion instance, name, selector
 
   # Registering one region bound to a view.
   registerRegion: (instance, name, selector) ->
@@ -212,27 +212,30 @@ module.exports = class Layout # This class does not extend View
       for selector, name of version
         @registerRegion instance, name, selector
 
+    # Return nothing
+    return
+
   # Handler for `!region:unregister`.
-  unregisterRegionHandler: (params...) ->
+  unregisterRegionHandler: (instance, name) ->
     if arguments.length is 1
       # A single parameter is assumed to be the view instance; unregister all
       # regions bound to the view.
-      @unregisterRegions params...
+      @unregisterRegions instance
 
     else
       # Else we're expecting both parameters and the intent to unregister
       # a single named region.
-      @unregisterRegion params...
+      @unregisterRegion instance, name
 
   # Unregisters a specific named region from a view.
   unregisterRegion: (instance, name) ->
-    @regions = _(@regions).reject (region) ->
-      region.instance.cid is instance.cid and region.name is name
+    @regions = _(@regions).filter (region) ->
+      not (region.instance.cid is instance.cid and region.name is name)
 
   # When views are disposed; remove all their registered regions.
   unregisterRegions: (instance) ->
-    @regions = _(@regions).reject (region) ->
-      region.instance.cid is instance.cid
+    @regions = _(@regions).filter (region) ->
+      region.instance.cid isnt instance.cid
 
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.
@@ -242,8 +245,7 @@ module.exports = class Layout # This class does not extend View
       region.name is name and not region.instance.stale
 
     # Assert that we got a valid region
-    if _.isUndefined region
-      throw new Error "No region registered under #{name}"
+    throw new Error "No region registered under #{name}" unless region
 
     # Apply the region selector
     instance.container = region.instance.$el.find(region.selector)
@@ -256,7 +258,6 @@ module.exports = class Layout # This class does not extend View
   dispose: ->
     return if @disposed
 
-    @regions = @regions[..]
     delete @regions
 
     @stopLinkRouting()

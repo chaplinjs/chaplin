@@ -108,7 +108,7 @@ module.exports = class Composer
 
     # If the third parameter exists and is a function this is (d).
     if typeof third is 'function'
-      return @_compose name, {compose: third, options: second}
+      return @_compose name, compose: third, options: second
 
     # This must be form (e).
     return @_compose name, second
@@ -121,7 +121,6 @@ module.exports = class Composer
     if options.composition?
       # Use the passed composition directly
       composition = new options.composition options.options
-
     else
       # Create the composition and apply the methods (if available)
       composition = new Composition options.options
