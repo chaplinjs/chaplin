@@ -154,12 +154,9 @@ define [
       params = {foo: 123, bar: 123}
 
       mediator.publish '!composer:compose', 'spy', params, spy
-
-      expect(composer.compositions['spy'].options).to.eql params
-
       mediator.publish 'startupController'
 
-      expect(spy).was.called()
+      expect(spy).was.calledWith(params)
 
     it 'should allow a options hash with a function to be composed with options', ->
       spy = sinon.spy()
@@ -169,11 +166,9 @@ define [
         options: params
         compose: spy
 
-      expect(composer.compositions['spy'].options).to.eql params
-
       mediator.publish 'startupController'
 
-      expect(spy).was.called()
+      expect(spy).was.calledWith(params)
 
     it 'should allow a model to be composed', ->
       mediator.publish '!composer:compose', 'spy', Model
