@@ -5,12 +5,12 @@ Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
-# Shortcut to access the DOM manipulation library
+# Shortcut to access the DOM manipulation library.
 $ = Backbone.$
 
 module.exports = class View extends Backbone.View
 
-  # Mixin an EventBroker
+  # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
   # Automatic rendering
@@ -23,7 +23,7 @@ module.exports = class View extends Backbone.View
   # Automatic inserting into DOM
   # ----------------------------
 
-  # View container element
+  # View container element.
   # Set this property in a derived class to specify the container element.
   # Normally this is a selector string but it might also be an element or
   # jQuery object.
@@ -57,7 +57,7 @@ module.exports = class View extends Backbone.View
   # Subviews
   # --------
 
-  # List of subviews
+  # List of subviews.
   subviews: null
   subviewsByName: null
 
@@ -71,53 +71,53 @@ module.exports = class View extends Backbone.View
   constructor: (options) ->
     # Wrap `initialize` so `afterInitialize` is called afterwards
     # Only wrap if there is an overriding method, otherwise we
-    # can call the `after-` method directly
+    # can call the `after-` method directly.
     unless @initialize is View::initialize
       utils.wrapMethod this, 'initialize'
 
-    # Wrap `render` so `afterRender` is called afterwards
+    # Wrap `render` so `afterRender` is called afterwards.
     if @render is View::render
       @render = _(@render).bind this
     else
       utils.wrapMethod this, 'render'
 
-    # Copy some options to instance properties
+    # Copy some options to instance properties.
     if options
       _(this).extend _.pick options, [
         'autoRender', 'container', 'containerMethod', 'region'
       ]
 
-    # Call Backbone’s constructor
+    # Call Backbone’s constructor.
     super
 
     # Set up declarative bindings after `initialize` has been called
-    # so initialize may set model/collection and create or bind methods
+    # so initialize may set model/collection and create or bind methods.
     @delegateListeners()
 
     # Listen for disposal of the model or collection.
-    # If the model is disposed, automatically dispose the associated view
+    # If the model is disposed, automatically dispose the associated view.
     @listenTo @model, 'dispose', @dispose if @model
     @listenTo @collection, 'dispose', @dispose if @collection
 
   # Inheriting classes must call `super` in their `initialize` method to
-  # properly inflate subviews and set up options
+  # properly inflate subviews and set up options.
   initialize: (options) ->
-    # No super call here, Backbone’s `initialize` is a no-op
+    # No super call here, Backbone’s `initialize` is a no-op.
 
-    # Initialize subviews
+    # Initialize subviews.
     @subviews = []
     @subviewsByName = {}
 
     # Register all exposed regions.
     @publishEvent '!region:register', this if @regions?
 
-    # Call `afterInitialize` if `initialize` was not wrapped
+    # Call `afterInitialize` if `initialize` was not wrapped.
     unless @initializeIsWrapped
       @afterInitialize()
 
-  # This method is called after a specific `initialize` of a derived class
+  # This method is called after a specific `initialize` of a derived class.
   afterInitialize: ->
-    # Render automatically if set by options or instance property
+    # Render automatically if set by options or instance property.
     @render() if @autoRender
 
   # User input event handling
@@ -196,10 +196,10 @@ module.exports = class View extends Backbone.View
   delegateListeners: ->
     return unless @listen
 
-    # Walk all `listen` hashes in the prototype chain
+    # Walk all `listen` hashes in the prototype chain.
     for version in utils.getAllPropertyVersions this, 'listen'
       for key, method of version
-        # Get the method, ensure it is a function
+        # Get the method, ensure it is a function.
         if typeof method isnt 'function'
           method = this[method]
         if typeof method isnt 'function'
@@ -241,41 +241,41 @@ module.exports = class View extends Backbone.View
   # Subviews
   # --------
 
-  # Getting or adding a subview
+  # Getting or adding a subview.
   subview: (name, view) ->
     if name and view
-      # Add the subview, ensure it’s unique
+      # Add the subview, ensure it’s unique.
       @removeSubview name
       @subviews.push view
       @subviewsByName[name] = view
       view
     else if name
-      # Get and return the subview by the given name
+      # Get and return the subview by the given name.
       @subviewsByName[name]
 
-  # Removing a subview
+  # Removing a subview.
   removeSubview: (nameOrView) ->
     return unless nameOrView
 
     if typeof nameOrView is 'string'
-      # Name given, search for a subview by name
+      # Name given, search for a subview by name.
       name = nameOrView
       view = @subviewsByName[name]
     else
-      # View instance given, search for the corresponding name
+      # View instance given, search for the corresponding name.
       view = nameOrView
       for otherName, otherView of @subviewsByName
         if view is otherView
           name = otherName
           break
 
-    # Break if no view and name were found
+    # Break if no view and name were found.
     return unless name and view and view.dispose
 
-    # Dispose the view
+    # Dispose the view.
     view.dispose()
 
-    # Remove the subview from the lists
+    # Remove the subview from the lists.
     index = _(@subviews).indexOf(view)
     @subviews.splice index, 1 if index > -1
     delete @subviewsByName[name]
@@ -296,18 +296,18 @@ module.exports = class View extends Backbone.View
     source = @model or @collection
     if source
       # If the model/collection is a Deferred, add a `resolved` flag,
-      # but only if it’s not present yet
+      # but only if it’s not present yet.
       if typeof source.state is 'function' and not ('resolved' of data)
         data.resolved = source.state() is 'resolved'
 
       # If the model/collection is a SyncMachine, add a `synced` flag,
-      # but only if it’s not present yet
+      # but only if it’s not present yet.
       if typeof source.isSynced is 'function' and not ('synced' of data)
         data.synced = source.isSynced()
 
     data
 
-  # Returns the compiled template function
+  # Returns the compiled template function.
   getTemplateFunction: ->
     # Chaplin doesn’t define how you load and compile templates in order to
     # render views. The example application uses Handlebars and RequireJS
@@ -322,18 +322,18 @@ module.exports = class View extends Backbone.View
     # JST[@templateName]
     throw new Error 'View#getTemplateFunction must be overridden'
 
-  # Main render function
+  # Main render function.
   # This method is bound to the instance in the constructor (see above)
   render: ->
     # Do not render if the object was disposed
     # (render might be called as an event handler which wasn’t
-    # removed correctly)
+    # removed correctly).
     return false if @disposed
 
     templateFunc = @getTemplateFunction()
     if typeof templateFunc is 'function'
 
-      # Call the template function passing the template data
+      # Call the template function passing the template data.
       html = templateFunc @getTemplateData()
 
       # Replace HTML
@@ -344,22 +344,22 @@ module.exports = class View extends Backbone.View
       # HTML5-only tags in IE7 and IE8.
       @$el.empty().append html
 
-    # Call `afterRender` if `render` was not wrapped
+    # Call `afterRender` if `render` was not wrapped.
     @afterRender() unless @renderIsWrapped
 
-    # Return the view
+    # Return the view.
     this
 
-  # This method is called after a specific `render` of a derived class
+  # This method is called after a specific `render` of a derived class.
   afterRender: ->
     # Attempt to bind this view to its named region.
     @publishEvent '!region:show', @region, this if @region?
 
-    # Automatically append to DOM if the container element is set
+    # Automatically append to DOM if the container element is set.
     if @container
-      # Append the view to the DOM
+      # Append the view to the DOM.
       $(@container)[@containerMethod] @el
-      # Trigger an event
+      # Trigger an event.
       @trigger 'addedToDOM'
 
   # Disposal
@@ -373,19 +373,19 @@ module.exports = class View extends Backbone.View
     throw new Error('Your `initialize` method must include a super call to
       Chaplin `initialize`') unless @subviews?
 
-    # Unregister all regions
+    # Unregister all regions.
     @unregisterAllRegions()
 
-    # Dispose subviews
+    # Dispose subviews.
     subview.dispose() for subview in @subviews
 
-    # Unbind handlers of global events
+    # Unbind handlers of global events.
     @unsubscribeAllEvents()
 
-    # Unbind all referenced handlers
+    # Unbind all referenced handlers.
     @stopListening()
 
-    # Remove all event handlers on this module
+    # Remove all event handlers on this module.
     @off()
 
     # Remove the topmost element from DOM. This also removes all event
@@ -393,7 +393,7 @@ module.exports = class View extends Backbone.View
     @$el.remove()
 
     # Remove element references, options,
-    # model/collection references and subview lists
+    # model/collection references and subview lists.
     properties = [
       'el', '$el',
       'options', 'model', 'collection',
@@ -402,8 +402,8 @@ module.exports = class View extends Backbone.View
     ]
     delete this[prop] for prop in properties
 
-    # Finished
+    # Finished.
     @disposed = true
 
-    # You’re frozen when your heart’s not open
+    # You’re frozen when your heart’s not open.
     Object.freeze? this

@@ -7,7 +7,6 @@ support = require 'chaplin/lib/support'
 # ---------
 
 utils =
-
   # Object Helpers
   # --------------
 
@@ -32,7 +31,7 @@ utils =
       throw new TypeError 'utils.serialize: Unknown data was passed'
 
   # Make properties readonly and not configurable
-  # using ECMAScript 5 property descriptors
+  # using ECMAScript 5 property descriptors.
   readonly: do ->
     if support.propertyDescriptors
       readonlyDescriptor =
@@ -73,34 +72,34 @@ utils =
   # `after-` method automatically (e.g. `afterRender` or
   # `afterInitialize`)
   wrapMethod: (instance, name) ->
-    # Enclose the original function
+    # Enclose the original function.
     func = instance[name]
-    # Set a flag
+    # Set a flag.
     instance["#{name}IsWrapped"] = true
-    # Create the wrapper method
+    # Create the wrapper method.
     instance[name] = ->
-      # Stop if the instance was already disposed
+      # Stop if the instance was already disposed.
       return false if instance.disposed
-      # Call the original method
+      # Call the original method.
       func.apply instance, arguments
-      # Call the corresponding `after-` method
+      # Call the corresponding `after-` method.
       instance["after#{utils.upcase(name)}"] arguments...
-      # Return the view
+      # Return the view.
       instance
 
   # String Helpers
   # --------------
 
-  # Upcase the first character
+  # Upcase the first character.
   upcase: (str) ->
     str.charAt(0).toUpperCase() + str.substring(1)
 
-  # underScoreHelper -> under_score_helper
+  # underScoreHelper -> under_score_helper.
   underscorize: (string) ->
     string.replace /[A-Z]/g, (char, index) ->
       (if index isnt 0 then '_' else '') + char.toLowerCase()
 
-  # Escapes a string to use in a regex
+  # Escapes a string to use in a regex.
   escapeRegExp: (str) ->
     return String(str or '').replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
 
@@ -108,15 +107,15 @@ utils =
   # Event handling helpers
   # ----------------------
 
-  # Returns whether a modifier key is pressed during a keypress or mouse click
+  # Returns whether a modifier key is pressed during a keypress or mouse click.
   modifierKeyPressed: (event) ->
     event.shiftKey or event.altKey or event.ctrlKey or event.metaKey
 
 # Finish
 # ------
 
-# Seal the utils object
+# Seal the utils object.
 Object.seal? utils
 
-# Return our creation
+# Return our creation.
 module.exports = utils

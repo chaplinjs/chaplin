@@ -25,29 +25,29 @@ mediator = {}
 # -------------------
 
 # Mixin event methods from Backbone.Events,
-# create Publish/Subscribe aliases
+# create Publish/Subscribe aliases.
 mediator.subscribe   = Backbone.Events.on
 mediator.unsubscribe = Backbone.Events.off
 mediator.publish     = Backbone.Events.trigger
 
-# Initialize an empty callback list so we might seal the mediator later
+# Initialize an empty callback list so we might seal the mediator later.
 mediator._callbacks = null
 
-# Make properties readonly
+# Make properties readonly.
 utils.readonly mediator, 'subscribe', 'unsubscribe', 'publish'
 
 # Sealing the mediator
 # --------------------
 
 # After adding all needed properties, you should seal the mediator
-# using this method
+# using this method.
 mediator.seal = ->
-  # Prevent extensions and make all properties non-configurable
+  # Prevent extensions and make all properties non-configurable.
   if support.propertyDescriptors and Object.seal
     Object.seal mediator
 
-# Make the method readonly
+# Make the method readonly.
 utils.readonly mediator, 'seal'
 
-# Return our creation
+# Return our creation.
 module.exports = mediator

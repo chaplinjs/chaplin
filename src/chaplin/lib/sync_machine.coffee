@@ -81,8 +81,8 @@ for event in [UNSYNCED, SYNCING, SYNCED, STATE_CHANGE]
       @on event, callback, context
       callback.call(context) if @_syncState is event
 
-# You’re frozen when your heart’s not open
+# You’re frozen when your heart’s not open.
 Object.freeze? SyncMachine
 
-# Return our creation
+# Return our creation.
 module.exports = SyncMachine

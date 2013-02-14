@@ -4,7 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 View = require 'chaplin/views/view'
 
-# Shortcut to access the DOM manipulation library
+# Shortcut to access the DOM manipulation library.
 $ = Backbone.$
 
 # General class for rendering Collections.
@@ -24,7 +24,7 @@ module.exports = class CollectionView extends View
 
   # Automatic rendering
 
-  # Per default, render the view itself and all items on creation
+  # Per default, render the view itself and all items on creation.
   autoRender: true
   renderItems: true
 
@@ -67,12 +67,12 @@ module.exports = class CollectionView extends View
   $loading: null
 
   # Selector which identifies child elements belonging to collection
-  # If empty, all children of $list are considered
+  # If empty, all children of $list are considered.
   itemSelector: null
 
   # Filtering
 
-  # The filter function, if any
+  # The filter function, if any.
   filterer: null
 
   # A function that will be executed after each filter.
@@ -82,14 +82,14 @@ module.exports = class CollectionView extends View
 
   # View lists
 
-  # Track a list of the visible views
+  # Track a list of the visible views.
   visibleItems: null
 
   # Constructor
   # -----------
 
   constructor: (options) ->
-    # Apply options to view instance
+    # Apply options to view instance.
     if (options)
       _(this).extend _.pick options, ['renderItems', 'itemView']
 
@@ -101,16 +101,16 @@ module.exports = class CollectionView extends View
   initialize: (options = {}) ->
     super
 
-    # Initialize list for visible items
+    # Initialize list for visible items.
     @visibleItems = []
 
-    # Start observing the collection
+    # Start observing the collection.
     @addCollectionListeners()
 
-    # Apply a filter if one provided
+    # Apply a filter if one provided.
     @filter options.filterer if options.filterer?
 
-  # Binding of collection listeners
+  # Binding of collection listeners.
   addCollectionListeners: ->
     @listenTo @collection, 'add', @itemAdded
     @listenTo @collection, 'remove', @itemRemoved
@@ -123,11 +123,11 @@ module.exports = class CollectionView extends View
   getTemplateData: ->
     templateData = {length: @collection.length}
 
-    # If the collection is a Deferred, add a `resolved` flag
+    # If the collection is a Deferred, add a `resolved` flag.
     if typeof @collection.state is 'function'
       templateData.resolved = @collection.state() is 'resolved'
 
-    # If the collection is a SyncMachine, add a `synced` flag
+    # If the collection is a SyncMachine, add a `synced` flag.
     if typeof @collection.isSynced is 'function'
       templateData.synced = @collection.isSynced()
 
@@ -141,27 +141,27 @@ module.exports = class CollectionView extends View
   render: ->
     super
 
-    # Set the $list property with the actual list container
+    # Set the $list property with the actual list container.
     @$list = if @listSelector then @$(@listSelector) else @$el
 
     @initFallback()
     @initLoadingIndicator()
 
-    # Render all items
+    # Render all items.
     @renderAllItems() if @renderItems
 
   # Adding / Removing
   # -----------------
 
-  # When an item is added, create a new view and insert it
+  # When an item is added, create a new view and insert it.
   itemAdded: (item, collection, options = {}) =>
     @insertView item, @renderItem(item), options.index
 
-  # When an item is removed, remove the corresponding view from DOM and caches
+  # When an item is removed, remove the corresponding view from DOM and caches.
   itemRemoved: (item) =>
     @removeViewForItem item
 
-  # When all items are resetted, render all anew
+  # When all items are resetted, render all anew.
   itemsReset: =>
     @renderAllItems()
 
@@ -171,26 +171,26 @@ module.exports = class CollectionView extends View
   initFallback: ->
     return unless @fallbackSelector
 
-    # Set the $fallback property
+    # Set the $fallback property.
     @$fallback = @$(@fallbackSelector)
 
-    # Listen for visible items changes
+    # Listen for visible items changes.
     @on 'visibilityChange', @toggleFallback
 
-    # Listen for sync events on the collection
+    # Listen for sync events on the collection.
     @listenTo @collection, 'syncStateChange', @toggleFallback
 
-    # Set visibility initially
+    # Set visibility initially.
     @toggleFallback()
 
-  # Show fallback if no item is visible and the collection is synced
+  # Show fallback if no item is visible and the collection is synced.
   toggleFallback: =>
     visible = @visibleItems.length is 0 and (
       if typeof @collection.isSynced is 'function'
-        # Collection is a SyncMachine
+        # Collection is a SyncMachine.
         @collection.isSynced()
       else
-        # Assume it is synced
+        # Assume it is synced.
         true
     )
     @$fallback.toggle visible
@@ -204,13 +204,13 @@ module.exports = class CollectionView extends View
     return unless @loadingSelector and
       typeof @collection.isSyncing is 'function'
 
-    # Set the $loading property
+    # Set the $loading property.
     @$loading = @$(@loadingSelector)
 
-    # Listen for sync events on the collection
+    # Listen for sync events on the collection.
     @listenTo @collection, 'syncStateChange', @toggleLoadingIndicator
 
-    # Set visibility initially
+    # Set visibility initially.
     @toggleLoadingIndicator()
 
   toggleLoadingIndicator: ->
@@ -238,86 +238,86 @@ module.exports = class CollectionView extends View
   # Optional filter callback which is called to
   # show/hide the view or mark it otherwise as filtered.
   filter: (filterer, filterCallback) ->
-    # Save the filterer and filterCallback functions
+    # Save the filterer and filterCallback functions.
     @filterer = filterer
     @filterCallback = filterCallback if filterCallback
     filterCallback ?= @filterCallback
 
-    # Show/hide existing views
+    # Show/hide existing views.
     unless _(@getItemViews()).isEmpty()
       for item, index in @collection.models
 
-        # Apply filter to the item
+        # Apply filter to the item.
         included = if typeof filterer is 'function'
           filterer item, index
         else
           true
 
-        # Show/hide the view accordingly
+        # Show/hide the view accordingly.
         view = @subview "itemView:#{item.cid}"
-        # A view has not been created for this item yet
+        # A view has not been created for this item yet.
         unless view
           throw new Error 'CollectionView#filter: ' +
             "no view found for #{item.cid}"
 
-        # Show/hide or mark the view accordingly
+        # Show/hide or mark the view accordingly.
         @filterCallback view, included
 
-        # Update visibleItems list, but do not trigger an event immediately
+        # Update visibleItems list, but do not trigger an event immediately.
         @updateVisibleItems view.model, included, false
 
-    # Trigger a combined `visibilityChange` event
+    # Trigger a combined `visibilityChange` event.
     @trigger 'visibilityChange', @visibleItems
 
   # Item view rendering
   # -------------------
 
-  # Render and insert all items
+  # Render and insert all items.
   renderAllItems: =>
     items = @collection.models
 
-    # Reset visible items
+    # Reset visible items.
     @visibleItems = []
 
-    # Collect remaining views
+    # Collect remaining views.
     remainingViewsByCid = {}
     for item in items
       view = @subview "itemView:#{item.cid}"
       if view
-        # View remains
+        # View remains.
         remainingViewsByCid[item.cid] = view
 
-    # Remove old views of items not longer in the list
+    # Remove old views of items not longer in the list.
     for own cid, view of @getItemViews() when cid not of remainingViewsByCid
-      # Remove the view
+      # Remove the view.
       @removeSubview "itemView:#{cid}"
 
-    # Re-insert remaining items; render and insert new items
+    # Re-insert remaining items; render and insert new items.
     for item, index in items
-      # Check if view was already created
+      # Check if view was already created.
       view = @subview "itemView:#{item.cid}"
       if view
-        # Re-insert the view
+        # Re-insert the view.
         @insertView item, view, index, false
       else
-        # Create a new view, render and insert it
+        # Create a new view, render and insert it.
         @insertView item, @renderItem(item), index
 
-    # If no view was created, trigger `visibilityChange` event manually
+    # If no view was created, trigger `visibilityChange` event manually.
     @trigger 'visibilityChange', @visibleItems if items.length is 0
 
-  # Instantiate and render an item using the `viewsByCid` hash as a cache
+  # Instantiate and render an item using the `viewsByCid` hash as a cache.
   renderItem: (item) ->
-    # Get the existing view
+    # Get the existing view.
     view = @subview "itemView:#{item.cid}"
 
-    # Instantiate a new view if necessary
+    # Instantiate a new view if necessary.
     unless view
       view = @initItemView item
-      # Save the view in the subviews
+      # Save the view in the subviews.
       @subview "itemView:#{item.cid}", view
 
-    # Render in any case
+    # Render in any case.
     view.render()
 
     view
@@ -332,11 +332,11 @@ module.exports = class CollectionView extends View
       throw new Error 'The CollectionView#itemView property ' +
         'must be defined or the initItemView() must be overridden.'
 
-  # Inserts a view into the list at the proper position
+  # Inserts a view into the list at the proper position.
   insertView: (item, view, index = null, enableAnimation = true) ->
     enableAnimation = false if @animationDuration is 0
 
-    # Get the insertion offset
+    # Get the insertion offset.
     position = if typeof index is 'number'
       index
     else
@@ -348,37 +348,37 @@ module.exports = class CollectionView extends View
     else
       true
 
-    # Get the view’s top element
+    # Get the view’s top element.
     viewEl = view.el
     $viewEl = view.$el
 
-    # Start animation
+    # Start animation.
     if included and enableAnimation
       if @useCssAnimation
         $viewEl.addClass @animationStartClass
       else
         $viewEl.css 'opacity', 0
 
-    # Hide or mark the view if it’s filtered
+    # Hide or mark the view if it’s filtered.
     @filterCallback view, included if @filterer
 
-    # Insert the view into the list
+    # Insert the view into the list.
     $list = @$list
 
-    # Get the children which originate from item views
+    # Get the children which originate from item views.
     children = if @itemSelector
       $list.children @itemSelector
     else
       $list.children()
 
-    # Check if it needs to be inserted
+    # Check if it needs to be inserted.
     unless children.get(position) is viewEl
       length = children.length
       if length is 0 or position is length
-        # Insert at the end
+        # Insert at the end.
         $list.append viewEl
       else
-        # Insert at the right position
+        # Insert at the right position.
         if position is 0
           $next = children.eq position
           $next.before viewEl
@@ -389,10 +389,10 @@ module.exports = class CollectionView extends View
     # Tell the view that it was added to its parent.
     view.trigger 'addedToParent'
 
-    # Update the list of visible items, trigger a `visibilityChange` event
+    # Update the list of visible items, trigger a `visibilityChange` event.
     @updateVisibleItems item, included
 
-    # End animation
+    # End animation.
     if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
@@ -400,14 +400,14 @@ module.exports = class CollectionView extends View
           $viewEl.addClass @animationEndClass
         , 0
       else
-        # Fade the view in if it was made transparent before
+        # Fade the view in if it was made transparent before.
         $viewEl.animate {opacity: 1}, @animationDuration
 
     return
 
-  # Remove the view for an item
+  # Remove the view for an item.
   removeViewForItem: (item) ->
-    # Remove item from visibleItems list, trigger a `visibilityChange` event
+    # Remove item from visibleItems list, trigger a `visibilityChange` event.
     @updateVisibleItems item, false
     @removeSubview "itemView:#{item.cid}"
 
@@ -415,7 +415,7 @@ module.exports = class CollectionView extends View
   # ---------------------
 
   # Update visibleItems list and trigger a `visibilityChanged` event
-  # if an item changed its visibility
+  # if an item changed its visibility.
   updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
     visibilityChanged = false
 
@@ -423,15 +423,15 @@ module.exports = class CollectionView extends View
     includedInVisibleItems = visibleItemsIndex > -1
 
     if includedInFilter and not includedInVisibleItems
-      # Add item to the visible items list
+      # Add item to the visible items list.
       @visibleItems.push item
       visibilityChanged = true
     else if not includedInFilter and includedInVisibleItems
-      # Remove item from the visible items list
+      # Remove item from the visible items list.
       @visibleItems.splice visibleItemsIndex, 1
       visibilityChanged = true
 
-    # Trigger a `visibilityChange` event if the visible items changed
+    # Trigger a `visibilityChange` event if the visible items changed.
     if visibilityChanged and triggerEvent
       @trigger 'visibilityChange', @visibleItems
 
@@ -443,9 +443,9 @@ module.exports = class CollectionView extends View
   dispose: ->
     return if @disposed
 
-    # Remove jQuery objects, item view cache and visible items list
+    # Remove jQuery objects, item view cache and visible items list.
     properties = ['$list', '$fallback', '$loading', 'visibleItems']
     delete this[prop] for prop in properties
 
-    # Self-disposal
+    # Self-disposal.
     super
