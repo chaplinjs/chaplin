@@ -5,7 +5,7 @@
 
 support =
   # Test for defineProperty support
-  # (IE 8 knows the method but will throw an exception)
+  # (IE 8 knows the method but will throw an exception).
   propertyDescriptors: do ->
     unless typeof Object.defineProperty is 'function' and
     typeof Object.defineProperties is 'function'
@@ -17,5 +17,5 @@ support =
     catch error
       return false
 
-# Return our creation
+# Return our creation.
 module.exports = support

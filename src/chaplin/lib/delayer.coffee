@@ -23,7 +23,6 @@
 #   super
 
 Delayer =
-
   setTimeout: (name, time, handler) ->
     @timeouts ?= {}
     @clearTimeout name

@@ -15,7 +15,6 @@ mediator = require 'chaplin/mediator'
 # that a handler cannot be registered twice for the same event.
 
 EventBroker =
-
   subscribeEvent: (type, handler) ->
     if typeof type isnt 'string'
       throw new TypeError 'EventBroker#subscribeEvent: ' +
@@ -24,10 +23,10 @@ EventBroker =
       throw new TypeError 'EventBroker#subscribeEvent: ' +
         'handler argument must be a function'
 
-    # Ensure that a handler isn’t registered twice
+    # Ensure that a handler isn’t registered twice.
     mediator.unsubscribe type, handler, this
 
-    # Register global handler, force context to the subscriber
+    # Register global handler, force context to the subscriber.
     mediator.subscribe type, handler, this
 
   unsubscribeEvent: (type, handler) ->
@@ -38,12 +37,12 @@ EventBroker =
       throw new TypeError 'EventBroker#unsubscribeEvent: ' +
         'handler argument must be a function'
 
-    # Remove global handler
+    # Remove global handler.
     mediator.unsubscribe type, handler
 
-  # Unbind all global handlers
+  # Unbind all global handlers.
   unsubscribeAllEvents: ->
-    # Remove all handlers with a context of this subscriber
+    # Remove all handlers with a context of this subscriber.
     mediator.unsubscribe null, null, this
 
   publishEvent: (type, args...) ->
@@ -51,11 +50,11 @@ EventBroker =
       throw new TypeError 'EventBroker#publishEvent: ' +
         'type argument must be a string'
 
-    # Publish global handler
+    # Publish global handler.
     mediator.publish type, args...
 
-# You’re frozen when your heart’s not open
+# You’re frozen when your heart’s not open.
 Object.freeze? EventBroker
 
-# Return our creation
+# Return our creation.
 module.exports = EventBroker

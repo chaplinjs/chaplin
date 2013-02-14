@@ -7,41 +7,41 @@ EventBroker = require 'chaplin/lib/event_broker'
 
 module.exports = class Dispatcher
 
-  # Borrow the static extend method from Backbone
+  # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
-  # Mixin an EventBroker
+  # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
-  # The previous controller name
+  # The previous controller name.
   previousControllerName: null
 
-  # The current controller, its name, main view and parameters
+  # The current controller, its name, main view and parameters.
   currentControllerName: null
   currentController: null
   currentAction: null
   currentParams: null
 
-  # The current URL
+  # The current URL.
   url: null
 
   constructor: ->
     @initialize arguments...
 
   initialize: (options = {}) ->
-    # Merge the options
+    # Merge the options.
     @settings = _(options).defaults
       controllerPath: 'controllers/'
       controllerSuffix: '_controller'
 
-    # Listen to global events
+    # Listen to global events.
     @subscribeEvent 'matchRoute', @matchRouteHandler
 
-  # Controller management
-  # Starting and disposing controllers
+  # Controller management.
+  # Starting and disposing controllers.
   # ----------------------------------
 
-  # Handler for the global matchRoute event
+  # Handler for the global matchRoute event.
   matchRouteHandler: (route, params, options) ->
     @startupController route.controller, route.action, params, options
 
@@ -55,30 +55,30 @@ module.exports = class Dispatcher
   #
   startupController: (controllerName, action = 'index', params,
       options) ->
-    # Clone params and options so the original objects remain untouched
+    # Clone params and options so the original objects remain untouched.
     params = if params then _.clone(params) else {}
     options = if options then _.clone(options) else {}
 
-    # Whether to update the URL after controller startup
-    # Default to true unless explicitly set to false
+    # Whether to update the URL after controller startup.
+    # Default to true unless explicitly set to false.
     if options.changeURL isnt false
       options.changeURL = true
 
     # Whether to force the controller startup even
     # if current and new controllers and params match
-    # Default to false unless explicitly set to true
+    # Default to false unless explicitly set to true.
     if options.forceStartup isnt true
       options.forceStartup = false
 
     # Stop if the desired controller/action is already active
-    # with the same params
+    # with the same params.
     return if not options.forceStartup and
       @currentControllerName is controllerName and
       @currentAction is action and
-      # Deep parameters check is not nice but the simplest way for now
+      # Deep parameters check is not nice but the simplest way for now.
       (not @currentParams or _(params).isEqual(@currentParams))
 
-    # Fetch the new controller, then go on
+    # Fetch the new controller, then go on.
     @loadController controllerName, (ControllerConstructor) =>
       @controllerLoaded controllerName, action, params, options,
         ControllerConstructor
@@ -95,13 +95,13 @@ module.exports = class Dispatcher
     else
       handler require moduleName
 
-  # Handler for the controller lazy-loading
+  # Handler for the controller lazy-loading.
   controllerLoaded: (controllerName, action, params, options,
                      ControllerConstructor) ->
-    # Initialize the new controller
+    # Initialize the new controller.
     controller = new ControllerConstructor params, options
 
-    # Execute before actions if necessary
+    # Execute before actions if necessary.
     methodName = if controller.beforeAction
       'executeBeforeActions'
     else
@@ -109,35 +109,35 @@ module.exports = class Dispatcher
     this[methodName](controller, controllerName, action, params, options)
 
   executeAction: (controller, controllerName, action, params, options) ->
-    # Shortcuts for the previous controller
+    # Shortcuts for the previous controller.
     currentControllerName   = @currentControllerName or null
     currentController       = @currentController     or null
 
     @previousControllerName = currentControllerName
 
-    # Dispose the previous controller
+    # Dispose the previous controller.
     if currentController
-      # Notify the rest of the world beforehand
+      # Notify the rest of the world beforehand.
       @publishEvent 'beforeControllerDispose', currentController
-      # Passing the params and the new controller name
+      # Passing the params and the new controller name.
       currentController.dispose params, controllerName
 
-    # Add the previous controller name to the routing options
+    # Add the previous controller name to the routing options.
     options.previousControllerName = currentControllerName
 
-    # Call the controller action with params and options
+    # Call the controller action with params and options.
     controller[action] params, options
 
-    # Stop if the action triggered a redirect
+    # Stop if the action triggered a redirect.
     return if controller.redirected
 
-    # Save the new controller
+    # Save the new controller.
     @currentControllerName = controllerName
     @currentController = controller
     @currentAction = action
     @currentParams = params
 
-    # Adjust the URL
+    # Adjust the URL.
     @adjustURL params, options
 
     # We're done! Spread the word!
@@ -148,7 +148,7 @@ module.exports = class Dispatcher
       params: @currentParams
       options: options
 
-  # Before actions with chained execution
+  # Before actions with chained execution.
   executeBeforeActions: (controller, controllerName, action, params,
     options) ->
     beforeActions = []
@@ -159,24 +159,24 @@ module.exports = class Dispatcher
     # parent classes are executed before actions in child classes.
     for acts in utils.getAllPropertyVersions controller, 'beforeAction'
       # Iterate over the before actions in search for a matching
-      # name with the arguments’ action name
+      # name with the arguments’ action name.
       for name, beforeAction of acts
-        # Do not add this object more than once
+        # Do not add this object more than once.
         if name is action or RegExp("^#{name}$").test(action)
           if typeof beforeAction is 'string'
             beforeAction = controller[beforeAction]
           if typeof beforeAction isnt 'function'
             throw new Error 'Controller#executeBeforeActions: ' +
               "#{beforeAction} is not a valid beforeAction method for #{name}."
-          # Save the before action
+          # Save the before action.
           beforeActions.push beforeAction
 
-    # Save returned value and also immediately return in case the value is false
+    # Save returned value and also immediately return in case the value is false.
     next = (method, previous = null) =>
-      # Stop if the action triggered a redirect
+      # Stop if the action triggered a redirect.
       return if controller.redirected
 
-      # End of chain, finally start the action
+      # End of chain, finally start the action.
       unless method
         @executeAction args...
         return
@@ -184,7 +184,7 @@ module.exports = class Dispatcher
       previous = method.call controller, params, options, previous
 
       # Detect a CommonJS promise in order to use pipelining below,
-      # otherwise execute next method directly
+      # otherwise execute next method directly.
       if previous and typeof previous.then is 'function'
         previous.then (data) =>
           # Execute as long as the currentController is
@@ -194,20 +194,20 @@ module.exports = class Dispatcher
       else
         next beforeActions.shift(), previous
 
-    # Start beforeAction execution chain
+    # Start beforeAction execution chain.
     next beforeActions.shift()
 
-  # Change the URL to the new controller using the router
+  # Change the URL to the new controller using the router.
   adjustURL: (params, options) ->
     return unless options.path?
 
     url = options.path +
       if options.queryString then "?#{options.queryString}" else ""
 
-    # Tell the router to actually change the current URL
+    # Tell the router to actually change the current URL.
     @publishEvent '!router:changeURL', url, options if options.changeURL
 
-    # Save the URL
+    # Save the URL.
     @url = url
 
   # Disposal
@@ -222,5 +222,5 @@ module.exports = class Dispatcher
 
     @disposed = true
 
-    # You’re frozen when your heart’s not open
+    # You’re frozen when your heart’s not open.
     Object.freeze? this
