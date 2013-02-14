@@ -13,8 +13,7 @@ EventBroker = require 'chaplin/lib/event_broker'
 # control over the composition process.
 
 module.exports = class Composition
-
-  # Borrow the static extend method from Backbone
+  # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
   # Mixin Backbone events and EventBroker.
@@ -36,11 +35,11 @@ module.exports = class Composition
     @initialize @options
 
   initialize: ->
-    # Empty per default
+    # Empty per default.
 
   # The compose method is called when this composition is to be composed.
   compose: ->
-    # Empty per default
+    # Empty per default.
 
   # The check method is called when this composition is asked to be
   # composed again. The passed options are the newly passed options.
@@ -49,10 +48,10 @@ module.exports = class Composition
 
   # Marks all applicable items as stale.
   stale: (value) ->
-    # Return the current property if not requesting a change
+    # Return the current property if not requesting a change.
     return @_stale unless value?
 
-    # Sets the stale property for every item in the composition that has it
+    # Sets the stale property for every item in the composition that has it.
     @_stale = value
     for name, item of this when item isnt this and _(item).has 'stale'
       item.stale = value
@@ -68,24 +67,24 @@ module.exports = class Composition
   dispose: ->
     return if @disposed
 
-    # Dispose and delete all members which are disposable
+    # Dispose and delete all members which are disposable.
     for own prop, obj of this when obj and typeof obj.dispose is 'function'
       unless obj is this
         obj.dispose()
         delete this[prop]
 
-    # Unbind handlers of global events
+    # Unbind handlers of global events.
     @unsubscribeAllEvents()
 
-    # Unbind all referenced handlers
+    # Unbind all referenced handlers.
     @stopListening()
 
-    # Remove properties which are not disposable
+    # Remove properties which are not disposable.
     properties = ['redirected']
     delete this[prop] for prop in properties
 
-    # Finished
+    # Finished.
     @disposed = true
 
-    # You're frozen when your heart’s not open
+    # You're frozen when your heart’s not open.
     Object.freeze? this

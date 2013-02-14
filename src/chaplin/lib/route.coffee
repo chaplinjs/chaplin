@@ -6,14 +6,13 @@ EventBroker = require 'chaplin/lib/event_broker'
 Controller = require 'chaplin/controllers/controller'
 
 module.exports = class Route
-
-  # Borrow the static extend method from Backbone
+  # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
-  # Mixin an EventBroker
+  # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
-  # Taken from Backbone.Router
+  # Taken from Backbone.Router.
   escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
 
   queryStringFieldSeparator = '&'
@@ -44,7 +43,7 @@ module.exports = class Route
     notEnoughParams = 'Route#reverse: Not enough parameters to reverse'
 
     if _.isArray params
-      # Ensure we have enough parameters
+      # Ensure we have enough parameters.
       throw new Error notEnoughParams if params.length < @paramNames.length
 
       index = 0
@@ -61,7 +60,7 @@ module.exports = class Route
         throw new Error notEnoughParams if value is undefined
         url = url.replace ///[:*]#{name}///g, value
 
-    # If the url tests out good; return the url; else, false
+    # If the url tests out good; return the url; else, false.
     if @test url then url else false
 
   createRegExp: ->
@@ -71,33 +70,33 @@ module.exports = class Route
       return
 
     pattern = @pattern
-      # Escape magic characters
+      # Escape magic characters.
       .replace(escapeRegExp, '\\$&')
-      # Replace named parameters, collecting their names
+      # Replace named parameters, collecting their names.
       .replace(/(?::|\*)(\w+)/g, @addParamName)
 
-    # Create the actual regular expression
-    # Match until the end of the URL or the begin of query string
+    # Create the actual regular expression, match until the end of the URL or
+    # the begin of query string.
     @regExp = ///^#{pattern}(?=\?|$)///
 
   addParamName: (match, paramName) =>
-    # Save parameter name
+    # Save parameter name.
     @paramNames.push paramName
-    # Replace with a character class
+    # Replace with a character class.
     if match.charAt(0) is ':'
-      # Regexp for :foo
+      # Regexp for :foo.
       '([^\/\?]+)'
     else
-      # Regexp for *foo
+      # Regexp for *foo.
       '(.*?)'
 
-  # Test if the route matches to a path (called by Backbone.History#loadUrl)
+  # Test if the route matches to a path (called by Backbone.History#loadUrl).
   test: (path) ->
-    # Test the main RegExp
+    # Test the main RegExp.
     matched = @regExp.test path
     return false unless matched
 
-    # Apply the parameter constraints
+    # Apply the parameter constraints.
     constraints = @options.constraints
     if constraints
       params = @extractParams path
@@ -112,49 +111,49 @@ module.exports = class Route
   handler: (path, options) =>
     options = if options then _.clone(options) else {}
 
-    # If no query string was passed, use the current
+    # If no query string was passed, use the current.
     queryString = options.queryString ? @getCurrentQueryString()
 
-    # Build params hash
+    # Build params hash.
     params = @buildParams path, queryString
 
-    # Add a `path` routing option with the whole path match
+    # Add a `path` routing option with the whole path match.
     options.path = path
 
-    # Publish a global matchRoute event passing the route and the params
-    # Original options hash forwarded to allow further forwarding to backbone
+    # Publish a global matchRoute event passing the route and the params.
+    # Original options hash forwarded to allow further forwarding to backbone.
     @publishEvent 'matchRoute', this, params, options
 
-  # Returns the query string for the current document
+  # Returns the query string for the current document.
   getCurrentQueryString: ->
     location.search.substring 1
 
-  # Create a proper Rails-like params hash, not an array like Backbone
+  # Create a proper Rails-like params hash, not an array like Backbone.
   buildParams: (path, queryString) ->
     _.extend {},
-      # Add params from query string
+      # Add params from query string.
       @extractQueryParams(queryString),
-      # Add named params from pattern matches
+      # Add named params from pattern matches.
       @extractParams(path),
-      # Add additional params from options
-      # (they might overwrite params extracted from URL)
+      # Add additional params from options as they might
+      # overwrite params extracted from URL.
       @options.params
 
-  # Extract named parameters from the URL path
+  # Extract named parameters from the URL path.
   extractParams: (path) ->
     params = {}
 
-    # Apply the regular expression
+    # Apply the regular expression.
     matches = @regExp.exec path
 
-    # Fill the hash using the paramNames and the matches
+    # Fill the hash using the paramNames and the matches.
     for match, index in matches.slice(1)
       paramName = if @paramNames.length then @paramNames[index] else index
       params[paramName] = match
 
     params
 
-  # Extract parameters from the query string
+  # Extract parameters from the query string.
   extractQueryParams: (queryString) ->
     params = {}
     return params unless queryString
@@ -168,12 +167,12 @@ module.exports = class Route
       current = params[field]
       if current
         # Handle multiple params with same name:
-        # Aggregate them in an array
+        # Aggregate them in an array.
         if current.push
-          # Add the existing array
+          # Add the existing array.
           current.push value
         else
-          # Create a new array
+          # Create a new array.
           params[field] = [current, value]
       else
         params[field] = value
