@@ -312,15 +312,14 @@ module.exports = class View extends Backbone.View
     # Chaplin doesn’t define how you load and compile templates in order to
     # render views. The example application uses Handlebars and RequireJS
     # to load and compile templates on the client side. See the derived
-    # View class in the example application:
-    # https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/base/view.coffee
+    # View class in the
+    # [example application](https://github.com/chaplinjs/facebook-example).
     #
     # If you precompile templates to JavaScript functions on the server,
     # you might just return a reference to that function.
     # Several precompilers create a global `JST` hash which stores the
     # template functions. You can get the function by the template name:
     # JST[@templateName]
-
     throw new Error 'View#getTemplateFunction must be overridden'
 
   # Main render function

@@ -36,14 +36,13 @@ module.exports = class Controller
   # composer for information on parameters, etc.
   compose: (name) ->
     if arguments.length is 1
-      # Retrieve an active composition using the retrieve event
+      # Retrieve an active composition using the retrieve event.
       item = null
       @publishEvent '!composer:retrieve', name, (composition) ->
         item = composition
       item
-
     else
-      # Compose the arguments using the compose method
+      # Compose the arguments using the compose method.
       @publishEvent '!composer:compose', arguments...
 
   # Redirection

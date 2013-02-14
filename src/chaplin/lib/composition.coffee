@@ -50,7 +50,7 @@ module.exports = class Composition
   # Marks all applicable items as stale.
   stale: (value) ->
     # Return the current property if not requesting a change
-    return @_stale unless arguments.length
+    return @_stale unless value?
 
     # Sets the stale property for every item in the composition that has it
     @_stale = value

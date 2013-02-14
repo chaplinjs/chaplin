@@ -426,7 +426,6 @@ module.exports = class CollectionView extends View
       # Add item to the visible items list
       @visibleItems.push item
       visibilityChanged = true
-
     else if not includedInFilter and includedInVisibleItems
       # Remove item from the visible items list
       @visibleItems.splice visibleItemsIndex, 1

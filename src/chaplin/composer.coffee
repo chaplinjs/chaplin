@@ -37,7 +37,6 @@ module.exports = class Composer
     # Subscribe to events.
     @subscribeEvent '!composer:compose', @compose
     @subscribeEvent '!composer:retrieve', @retrieve
-
     @subscribeEvent 'startupController', @cleanup
 
   # Constructs a composition and composes into the active compositions.
@@ -73,9 +72,11 @@ module.exports = class Composer
   compose: (name, second, third) ->
     # Retrieve an active composition item if only the name is passed; form (a).
     if arguments.length is 1
-      return unless composition = @compositions[name]
-      return if composition.stale()
-      return composition.item
+      composition = @compositions[name]
+      if not composition or composition.stale()
+        return
+      else
+        return composition.item
 
     # Normalize the arguments
     # If the second parameter is a function we know it is (b) or (c).
@@ -85,23 +86,19 @@ module.exports = class Composer
       if third or second::dispose
         # If the class is a Composition class then it is form (f).
         if second.prototype instanceof Composition
-          @_compose name,
-            composition: second
-            options: third
-
+          @_compose name, composition: second, options: third
         else
-          @_compose name,
-            options: third
-            compose: ->
-              # The compose method here just constructs the class.
-              @item = new second @options
+          @_compose name, options: third, compose: ->
+            # The compose method here just constructs the class.
+            @item = new second @options
 
-              # Render this item if it has a render method and it either
-              # doesn't have an autoRender property or that autoRender
-              # property is false
-              if (@item.autoRender is undefined or not @item.autoRender) and
-                  typeof @item.render is 'function'
-                @item.render()
+            # Render this item if it has a render method and it either
+            # doesn't have an autoRender property or that autoRender
+            # property is false
+            autoRender = @item.autoRender
+            disabledAutoRender = autoRender is undefined or not autoRender
+            if disabledAutoRender and typeof @item.render is 'function'
+              @item.render()
 
       # This is form (c).
       return @_compose name, compose: second
@@ -134,7 +131,6 @@ module.exports = class Composer
     if current and current.check composition.options
       # Mark the current composition as not stale
       current.stale false
-
     else
       # Remove the current composition and apply this one
       current.dispose() if current

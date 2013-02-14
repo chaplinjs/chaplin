@@ -9,7 +9,7 @@ Composer = require 'chaplin/composer'
 Router = require 'chaplin/lib/router'
 EventBroker = require 'chaplin/lib/event_broker'
 
-# The bootstrapper is the entry point for ChaplinJS apps.
+# The bootstrapper is the entry point for Chaplin apps.
 module.exports = class Application
 
   # Borrow the `extend` method from a dear friend.
