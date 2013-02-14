@@ -47,7 +47,7 @@ for …
 
 This is more efficient and compiles to less JavaScript code. CoffeeScript’s syntactic sugar has little value here.
 
-Use simple CoffeeScript `for in` / `for of` loops when applicable. Use the semantic `_.map`, `_.filter` functions if necessary.
+Use simple CoffeeScript `for in` / `for of` loops when applicable. Use the semantic `_.map`, `_.filter` functions from Underscore if necessary. When using Underscore, use the canonical ECMAScript 5 names (for example, `_.reduce` instead of  `_.inject`).
 
 Take care of the return value of functions. CoffeeScript adds implicit return statements. If a loop is at the end of a function, CoffeeScript creates a list comprehension which might be unnecessary:
 
@@ -72,12 +72,12 @@ Avoid using Underscore’s type checking functions. They aren’t needed in most
 
 Use duck typing instead of requiring a specific type where applicable.
 
-When expecting objects (non-primitives), just check for truthyness. This is fast and easy to read. If the value is a truthy primitive, property access will work but evaluate
+When expecting objects (non-primitives), just check for truthyness. This is fast and easy to read. If the value is a truthy primitive, the code will fail when trying to use undefined properties.
 
 Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowing all other types (truthy or falsy). But use the operator sparingly, avoid chains like `foo?.bar?.quux` because they compile to unreadable and inefficient JavaScript code. For example, use `if foo and foo.bar` instead of `if foo?.bar` if truthyness is okay.
 
 - Check for `string.length`, `number > 0` etc.
-- Use `typeof` to detect `function`, `string`, `number`
+- Use `typeof` to detect `function`, `string`, `number` (if type detection is necessary)
 - Use `is/isnt null` to detect `null`
 - Use `obj.prop is/isnt undefined` to detect `undefined`
 - Use the `of` operator to check for properties that might be inherited
@@ -88,11 +88,11 @@ Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowi
 Use this style of chaining function calls:
 
 ```
-$('#selector').addClass 'klass'
+$('#selector').addClass 'class'
 foo(4).bar 8
 ```
 
-Avoid the “function grouping style”.
+Avoid the “function grouping style”, as described in the [CoffeeScript style guide](https://github.com/polarmobile/coffeescript-style-guide).
 
 ## Spec style
 
