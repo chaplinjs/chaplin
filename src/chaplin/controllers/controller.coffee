@@ -5,8 +5,7 @@ Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
 
 module.exports = class Controller
-
-  # Borrow the static extend method from Backbone
+  # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
   # Mixin Backbone events and EventBroker.
@@ -16,18 +15,34 @@ module.exports = class Controller
   view: null
 
   # Internal flag which stores whether `redirectTo`
-  # was called in the current action
+  # was called in the current action.
   redirected: false
 
   constructor: ->
     @initialize arguments...
 
   initialize: ->
-    # Empty per default
+    # Empty per default.
 
   # Change document title.
   adjustTitle: (subtitle) ->
     @publishEvent '!adjustTitle', subtitle
+
+  # Composer
+  # --------
+
+  # Convenience method to publish the `!composer:compose` event. See the
+  # composer for information on parameters, etc.
+  compose: (name) ->
+    if arguments.length is 1
+      # Retrieve an active composition using the retrieve event.
+      item = null
+      @publishEvent '!composer:retrieve', name, (composition) ->
+        item = composition
+      item
+    else
+      # Compose the arguments using the compose method.
+      @publishEvent '!composer:compose', arguments...
 
   # Redirection
   # -----------
@@ -54,23 +69,23 @@ module.exports = class Controller
   dispose: ->
     return if @disposed
 
-    # Dispose and delete all members which are disposable
+    # Dispose and delete all members which are disposable.
     for own prop, obj of this when obj and typeof obj.dispose is 'function'
       obj.dispose()
       delete this[prop]
 
-    # Unbind handlers of global events
+    # Unbind handlers of global events.
     @unsubscribeAllEvents()
 
-    # Unbind all referenced handlers
+    # Unbind all referenced handlers.
     @stopListening()
 
-    # Remove properties which are not disposable
+    # Remove properties which are not disposable.
     properties = ['redirected']
     delete this[prop] for prop in properties
 
-    # Finished
+    # Finished.
     @disposed = true
 
-    # You're frozen when your heart’s not open
+    # You're frozen when your heart’s not open.
     Object.freeze? this

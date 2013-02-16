@@ -9,10 +9,10 @@ EventBroker = require 'chaplin/lib/event_broker'
 # creating objects which delegate to the original attributes
 # in order to protect them from changes.
 serializeAttributes = (model, attributes, modelStack) ->
-  # Create a delegator object
+  # Create a delegator object.
   delegator = utils.beget attributes
 
-  # Add model to stack
+  # Add model to stack.
   modelStack ?= {}
   modelStack[model.cid] = true
 
@@ -20,11 +20,11 @@ serializeAttributes = (model, attributes, modelStack) ->
   # on the delegator that shadows the original attribute.
   for key, value of attributes
 
-    # Handle models
+    # Handle models.
     if value instanceof Backbone.Model
       delegator[key] = serializeModelAttributes value, model, modelStack
 
-    # Handle collections
+    # Handle collections.
     else if value instanceof Backbone.Collection
       serializedModels = []
       for otherModel in value.models
@@ -36,30 +36,30 @@ serializeAttributes = (model, attributes, modelStack) ->
   # Remove model from stack.
   delete modelStack[model.cid]
 
-  # Return the delegator
+  # Return the delegator.
   delegator
 
 # Serialize the attributes of a given model
-# in the context of a given tree
+# in the context of a given tree.
 serializeModelAttributes = (model, currentModel, modelStack) ->
-  # Nullify circular references
+  # Nullify circular references.
   return null if model is currentModel or _(modelStack).has model.cid
-  # Serialize recursively
+  # Serialize recursively.
   attributes = if typeof model.getAttributes is 'function'
-    # Chaplin models
+    # Chaplin models.
     model.getAttributes()
   else
-    # Backbone models
+    # Backbone models.
     model.attributes
   serializeAttributes model, attributes, modelStack
 
 
 # Abstraction that adds some useful functionality to backbone model.
 module.exports = class Model extends Backbone.Model
-  # Mixin an EventBroker
+  # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
-  # Mixin a Deferred
+  # Mixin a Deferred.
   initDeferred: ->
     _(this).extend $.Deferred()
 
@@ -84,24 +84,24 @@ module.exports = class Model extends Backbone.Model
   dispose: ->
     return if @disposed
 
-    # Fire an event to notify associated collections and views
+    # Fire an event to notify associated collections and views.
     @trigger 'dispose', this
 
-    # Unbind all global event handlers
+    # Unbind all global event handlers.
     @unsubscribeAllEvents()
 
-    # Unbind all referenced handlers
+    # Unbind all referenced handlers.
     @stopListening()
 
-    # Remove all event handlers on this module
+    # Remove all event handlers on this module.
     @off()
 
     # If the model is a Deferred, reject it
-    # This does nothing if it was resolved before
+    # This does nothing if it was resolved before.
     @reject?()
 
     # Remove the collection reference, internal attribute hashes
-    # and event handlers
+    # and event handlers.
     properties = [
       'collection',
       'attributes', 'changed'
@@ -111,8 +111,8 @@ module.exports = class Model extends Backbone.Model
     ]
     delete this[prop] for prop in properties
 
-    # Finished
+    # Finished.
     @disposed = true
 
-    # You’re frozen when your heart’s not open
+    # You’re frozen when your heart’s not open.
     Object.freeze? this

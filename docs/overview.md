@@ -60,7 +60,7 @@ Furthermore, top-level DOM events on `window` or `document`, should be
 registered here.
 
 ##### [mediator](./chaplin.mediator.md)
-The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/Subscribe)
+The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe)
 design pattern. It should be used for most of the inter-module communication
 in Chaplin applications. Modules can emit events using `this.publishEvent`
 in order to notify other modules, and listen for such events

@@ -1,4 +1,7 @@
 # Chaplin 0.7.0 (unreleased)
+* Added support of regions and regions composition with `Chaplin.Composer`.
+  Composer grants the ability for views (and related data) to be
+  persisted beyond one controller action.
 * Improved `Chaplin.Controller`:
     * Query string params are now passed to controllers
       (a feature removed from Backbone 0.9.9).
@@ -29,7 +32,7 @@
     * Added `utils.getAllPropertyVersions` that allows to gather all
       property versions from object’s prototypes.
 * Improved `Chaplin.View`:
-    * Added `View#listen` property that allows to declaratively listen to 
+    * Added `View#listen` property that allows to declaratively listen to
       model / collection / mediator / view events.
       Just like Backbone’s `View#events`, which is only for DOM events.
     * Switched to `$el.toggle()` instead of manual CSS `display` setting.
