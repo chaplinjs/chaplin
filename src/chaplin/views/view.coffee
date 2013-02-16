@@ -75,11 +75,24 @@ module.exports = class View extends Backbone.View
         'autoRender', 'container', 'containerMethod', 'region'
       ]
 
-    # Wrap `render` so `afterRender` is called afterwards.
+    # Wrap `render` so `attach` is called afterwards.
     if @render is View::render
       @render = _(@render).bind this
     else
-      utils.wrapMethod this, 'render'
+      # Enclose the original function.
+      render = @render
+      # Set a flag.
+      @renderIsWrapped = true
+      # Create the wrapper method.
+      @render = =>
+        # Stop if the instance was already disposed.
+        return false if @disposed
+        # Call the original method.
+        render.apply this, arguments
+        # Attach to DOM.
+        @attach arguments...
+        # Return the view.
+        this
 
     # Call Backbone’s constructor.
     super
@@ -327,14 +340,14 @@ module.exports = class View extends Backbone.View
       # HTML5-only tags in IE7 and IE8.
       @$el.empty().append html
 
-    # Call `afterRender` if `render` was not wrapped.
-    @afterRender() unless @renderIsWrapped
+    # Call `attach` if `render` was not wrapped.
+    @attach() unless @renderIsWrapped
 
     # Return the view.
     this
 
   # This method is called after a specific `render` of a derived class.
-  afterRender: ->
+  attach: ->
     # Attempt to bind this view to its named region.
     @publishEvent '!region:show', @region, this if @region?
 

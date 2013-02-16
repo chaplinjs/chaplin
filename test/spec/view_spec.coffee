@@ -613,7 +613,7 @@ define [
         # Vanilla View which doesn’t override render
         view = new View()
         view.getTemplateFunction = TestView::getTemplateFunction
-        sinon.spy(view, 'afterRender')
+        sinon.spy(view, 'attach')
         renderResult = view.render()
         expect(renderResult).to.be view
 
@@ -621,14 +621,14 @@ define [
 
         renderResult = view.render()
         expect(renderResult).to.be false
-        expect(view.afterRender.callCount).to.be 1
+        expect(view.attach.callCount).to.be 1
 
       it 'should not render when disposed given render was overridden', ->
         view = new TestView container: '#testbed'
-        sinon.spy(view, 'afterRender')
+        sinon.spy(view, 'attach')
         renderResult = view.render()
         expect(renderResult).to.be view
-        expect(view.afterRender.callCount).to.be 1
+        expect(view.attach.callCount).to.be 1
         expect(renderCalled).to.be true
         expect(view.el.parentNode).to.be testbed
 
@@ -639,4 +639,4 @@ define [
         # Render was called but super call should not do anything
         expect(renderCalled).to.be true
         expect($(testbed).children().length).to.be 0
-        expect(view.afterRender.callCount).to.be 1
+        expect(view.attach.callCount).to.be 1
