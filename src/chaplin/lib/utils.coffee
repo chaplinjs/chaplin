@@ -65,28 +65,6 @@ utils =
       .value()
       .reverse()
 
-  # Function Helpers
-  # ----------------
-
-  # Wrap a method in order to call the corresponding
-  # `after-` method automatically (e.g. `afterRender` or
-  # `afterInitialize`)
-  wrapMethod: (instance, name) ->
-    # Enclose the original function.
-    func = instance[name]
-    # Set a flag.
-    instance["#{name}IsWrapped"] = true
-    # Create the wrapper method.
-    instance[name] = ->
-      # Stop if the instance was already disposed.
-      return false if instance.disposed
-      # Call the original method.
-      func.apply instance, arguments
-      # Call the corresponding `after-` method.
-      instance["after#{utils.upcase(name)}"] arguments...
-      # Return the view.
-      instance
-
   # String Helpers
   # --------------
 
