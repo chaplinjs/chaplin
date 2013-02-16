@@ -57,13 +57,12 @@ utils =
   # E.g. if object1 & object2 have `prop` and object2 inherits from
   # object1, it will get [object1prop, object2prop].
   getAllPropertyVersions: (object, property) ->
-    _(utils.getPrototypeChain object)
-      .chain()
-      .pluck(property)
-      .compact()
-      .uniq()
-      .value()
-      .reverse()
+    result = []
+    for proto in utils.getPrototypeChain object
+      value = proto[property]
+      if value and value not in result
+        result.push value
+    result.reverse()
 
   # Function Helpers
   # ----------------
