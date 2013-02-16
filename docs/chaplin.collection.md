@@ -2,8 +2,6 @@
 
 `Chaplin.Collection` extends the standard `Backbone.Collection`. It adds disposal for cleaning up and the Pub/Sub pattern via the `Chaplin.EventBroker` mixin.
 
-`Chaplin.Collection` also has `addAtomic` for adding several items while fireing a `reset` event.
-
 ## Methods of `Chaplin.Collection`
 All `Backbone.Collection` [methods](http://backbonejs.org/#Collection).
 

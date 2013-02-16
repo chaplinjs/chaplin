@@ -128,13 +128,6 @@ filterCallback: (view, included) ->
 
   Render and insert all items in collection, triggering `visibilityChange` event
 
-<a id="renderAndInsertItem"></a>
-### renderAndInsertItem(item, index)
-* **Model item**
-* **int index**
-
-  a composite of [`@renderItem()`](#renderItem) and [`@insertView()`](#insertView)
-
 <a id="renderItem"></a>
 ### renderItem(item)
 * **Model item**
