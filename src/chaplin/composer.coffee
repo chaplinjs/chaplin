@@ -42,49 +42,38 @@ module.exports = class Composer
   # Constructs a composition and composes into the active compositions.
   # This function has several forms as described below:
   #
-  # a) compose('name')
-  #    Retrieves a reference to an active composition.
-  #
-  # b) compose('name', Class[, options])
+  # a) compose('name', Class[, options])
   #    Composes a class object. The options are passed to the class when
   #    an instance is contructed and are further used to test if the
   #    composition should be re-composed.
   #
-  # c) compose('name', function)
+  # b) compose('name', function)
   #    Composes a function that executes in the context of the controller;
   #    do NOT bind the function context.
   #
-  # d) compose('name', options, function)
+  # c) compose('name', options, function)
   #    Composes a function that executes in the context of the controller;
   #    do NOT bind the function context and is passed the options as a
   #    parameter. The options are further used to test if the composition
   #    should be recomposed.
   #
-  # e) compose('name', options)
+  # d) compose('name', options)
   #    Gives control over the composition process; the compose method of
-  #    the options hash is executed in place of the function of form (d) and
+  #    the options hash is executed in place of the function of form (c) and
   #    the check method is called (if present) to determine re-composition (
   #    otherwise this is the same as form [c]).
   #
-  # f) compose('name', CompositionClass[, options])
+  # e) compose('name', CompositionClass[, options])
   #    Gives complete control over the composition process.
   #
   compose: (name, second, third) ->
-    # Retrieve an active composition item if only the name is passed; form (a).
-    if arguments.length is 1
-      composition = @compositions[name]
-      if not composition or composition.stale()
-        return
-      else
-        return composition.item
-
     # Normalize the arguments
-    # If the second parameter is a function we know it is (b) or (c).
+    # If the second parameter is a function we know it is (a) or (b).
     if typeof second is 'function'
-      # This is form (b) or (f) with the optional options hash if the third
+      # This is form (a) or (e) with the optional options hash if the third
       # is an obj or the second parameter's prototype has a dispose method
       if third or second::dispose
-        # If the class is a Composition class then it is form (f).
+        # If the class is a Composition class then it is form (e).
         if second.prototype instanceof Composition
           return @_compose name, composition: second, options: third
         else
@@ -100,14 +89,14 @@ module.exports = class Composer
             if disabledAutoRender and typeof @item.render is 'function'
               @item.render()
 
-      # This is form (c).
+      # This is form (b).
       return @_compose name, compose: second
 
-    # If the third parameter exists and is a function this is (d).
+    # If the third parameter exists and is a function this is (c).
     if typeof third is 'function'
       return @_compose name, compose: third, options: second
 
-    # This must be form (e).
+    # This must be form (d).
     return @_compose name, second
 
   _compose: (name, options) ->
@@ -144,7 +133,9 @@ module.exports = class Composer
   # Retrieves an active composition using the compose method and a passed
   # callback.
   retrieve: (name, callback) ->
-    callback @compose name
+    active = @compositions[name]
+    item = (if active and not active.stale() then active.item else undefined)
+    callback item
 
   # Declare all compositions as stale and remove all that were previously
   # marked stale without being re-composed.
