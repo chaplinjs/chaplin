@@ -55,23 +55,6 @@ define [
         object = new D
         expect(utils.getAllPropertyVersions object, 'prop').to.eql [1, 2, 3]
 
-    describe 'wrapMethod', ->
-      it 'should wrap a method in order to call the corresponding `after-` method automatically', ->
-        class MemeClass
-          constructor: ->
-            @afterInit = sinon.spy()
-            @callErmahgerd = sinon.spy()
-            @afterCallErmahgerd = sinon.spy()
-            utils.wrapMethod this, 'init'
-            utils.wrapMethod this, 'callErmahgerd'
-            @init()
-          init: ->
-        object = new MemeClass()
-        expect(object.afterInit).was.calledOnce()
-        expect(object.afterCallErmahgerd).was.notCalled()
-        object.callErmahgerd()
-        expect(object.afterCallErmahgerd).was.calledOnce()
-
     describe 'upcase', ->
       it 'should make the first character in string upper-cased', ->
         expect(utils.upcase 'stuff').to.be 'Stuff'
