@@ -179,13 +179,33 @@ define [
 
     it 'should allow a composition to be composed', ->
       spy = sinon.spy()
-      class Custom extends Composition
+
+      class CustomComposition extends Composition
         compose: spy
 
-      mediator.publish '!composer:compose', 'spy', Custom
+      mediator.publish '!composer:compose', 'spy', CustomComposition
       mediator.publish 'startupController'
 
+      expect(composer.compositions['spy'].item).to.be.a Composition
+      expect(composer.compositions['spy'].item).to.be.a CustomComposition
+
       expect(spy).was.called()
+
+    it 'should allow a composition to be composed with options', ->
+      spy = sinon.spy()
+      params = {foo: 123, bar: 123}
+
+      class CustomComposition extends Composition
+        compose: spy
+
+      mediator.publish '!composer:compose', 'spy', CustomComposition, params
+      mediator.publish 'startupController'
+
+      expect(composer.compositions['spy'].item).to.be.a Composition
+      expect(composer.compositions['spy'].item).to.be.a CustomComposition
+
+      expect(spy).was.called()
+      expect(spy).was.calledWith(params)
 
     it 'should allow a composition to be retreived', ->
       mediator.publish '!composer:compose', 'spy', Model
