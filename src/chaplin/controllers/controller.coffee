@@ -42,7 +42,7 @@ module.exports = class Controller
       item
     else
       # Compose the arguments using the compose method.
-      @publishEvent '!composer:compose', arguments...
+      @publishEvent '!composer:compose', name, arguments...
 
   # Redirection
   # -----------

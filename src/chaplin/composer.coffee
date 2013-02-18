@@ -86,9 +86,9 @@ module.exports = class Composer
       if third or second::dispose
         # If the class is a Composition class then it is form (f).
         if second.prototype instanceof Composition
-          @_compose name, composition: second, options: third
+          return @_compose name, composition: second, options: third
         else
-          @_compose name, options: third, compose: ->
+          return @_compose name, options: third, compose: ->
             # The compose method here just constructs the class.
             @item = new second @options
 
