@@ -19,7 +19,7 @@ module.exports = class View extends Backbone.View
   # Flag whether to render the view automatically on initialization.
   # As an alternative you might pass a `render` option to the constructor.
   autoRender: false
-  
+
   # Flag whether to attach the view automatically on render.
   autoAttach: true
 
@@ -97,6 +97,10 @@ module.exports = class View extends Backbone.View
         # Return the view.
         this
 
+    # Initialize subviews collections.
+    @subviews = []
+    @subviewsByName = {}
+
     # Call Backbone’s constructor.
     super
 
@@ -108,10 +112,6 @@ module.exports = class View extends Backbone.View
     # If the model is disposed, automatically dispose the associated view.
     @listenTo @model, 'dispose', @dispose if @model
     @listenTo @collection, 'dispose', @dispose if @collection
-
-    # Initialize subviews.
-    @subviews = []
-    @subviewsByName = {}
 
     # Register all exposed regions.
     @publishEvent '!region:register', this if @regions?
