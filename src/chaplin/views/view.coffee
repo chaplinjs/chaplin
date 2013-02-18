@@ -19,6 +19,9 @@ module.exports = class View extends Backbone.View
   # Flag whether to render the view automatically on initialization.
   # As an alternative you might pass a `render` option to the constructor.
   autoRender: false
+  
+  # Flag whether to attach the view automatically on render.
+  autoAttach: true
 
   # Automatic inserting into DOM
   # ----------------------------
@@ -90,7 +93,7 @@ module.exports = class View extends Backbone.View
         # Call the original method.
         render.apply this, arguments
         # Attach to DOM.
-        @attach arguments...
+        @attach arguments... if @autoAttach
         # Return the view.
         this
 
