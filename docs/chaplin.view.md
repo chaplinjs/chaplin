@@ -109,16 +109,10 @@ getTemplateData: ->
   of the `$el`. Can be overriden in your base view if needed, though should be
   suitable for the majority of cases.
 
-<a id="afterInitialize"></a>
-<a id="afterRender"></a>
-## afterInitialize and afterRender
-  Chaplin's utils provides a `wrapMethod` feature that facilitates creating complex
-  class heirarchies. In the default implementation, only `initialize` and `render` are
-  wrapped, giving the View `afterInitialize` and `afterRender` methods that are called
-  after the prototype chain has completed for their respective heirarchy.
-
-  `afterInitialize` calls `render` if `autoRender` is true, and `afterRender` attaches
-  the View to its `container` element.
+<a id="attach"></a>
+## attach
+  Attach is called after the prototype chain has completed for View#render.
+  It attaches the View to its `container` element.
 
 <a id="DOM-options"></a>
 ## Options for auto-rendering and DOM appending
@@ -140,7 +134,7 @@ getTemplateData: ->
   Set this property in a derived class to specify the container element.
   Normally this is a selector string but it might also be an element or
   jQuery object. View is automatically inserted into the container when
-  it’s rendered (in the `afterRender` method). As an alternative you
+  it’s rendered (in the `attach` method). As an alternative you
   might pass a `container` option to the constructor.
 
   A container is often an empty element within a parent view.
@@ -315,7 +309,7 @@ class YourView extends View
     @subview 'name', new View
     @subview('name').render()
 
-  afterRender: ->
+  attach: ->
     super
     @renderSubviews()
 ```

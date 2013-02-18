@@ -19,6 +19,9 @@ module.exports = class View extends Backbone.View
   # Flag whether to render the view automatically on initialization.
   # As an alternative you might pass a `render` option to the constructor.
   autoRender: false
+  
+  # Flag whether to attach the view automatically on render.
+  autoAttach: true
 
   # Automatic inserting into DOM
   # ----------------------------
@@ -69,23 +72,30 @@ module.exports = class View extends Backbone.View
   stale: false
 
   constructor: (options) ->
-    # Wrap `initialize` so `afterInitialize` is called afterwards
-    # Only wrap if there is an overriding method, otherwise we
-    # can call the `after-` method directly.
-    unless @initialize is View::initialize
-      utils.wrapMethod this, 'initialize'
-
-    # Wrap `render` so `afterRender` is called afterwards.
-    if @render is View::render
-      @render = _(@render).bind this
-    else
-      utils.wrapMethod this, 'render'
-
     # Copy some options to instance properties.
     if options
       _(this).extend _.pick options, [
         'autoRender', 'container', 'containerMethod', 'region'
       ]
+
+    # Wrap `render` so `attach` is called afterwards.
+    if @render is View::render
+      @render = _(@render).bind this
+    else
+      # Enclose the original function.
+      render = @render
+      # Set a flag.
+      @renderIsWrapped = true
+      # Create the wrapper method.
+      @render = =>
+        # Stop if the instance was already disposed.
+        return false if @disposed
+        # Call the original method.
+        render.apply this, arguments
+        # Attach to DOM.
+        @attach arguments... if @autoAttach
+        # Return the view.
+        this
 
     # Call Backbone’s constructor.
     super
@@ -99,11 +109,6 @@ module.exports = class View extends Backbone.View
     @listenTo @model, 'dispose', @dispose if @model
     @listenTo @collection, 'dispose', @dispose if @collection
 
-  # Inheriting classes must call `super` in their `initialize` method to
-  # properly inflate subviews and set up options.
-  initialize: (options) ->
-    # No super call here, Backbone’s `initialize` is a no-op.
-
     # Initialize subviews.
     @subviews = []
     @subviewsByName = {}
@@ -111,12 +116,6 @@ module.exports = class View extends Backbone.View
     # Register all exposed regions.
     @publishEvent '!region:register', this if @regions?
 
-    # Call `afterInitialize` if `initialize` was not wrapped.
-    unless @initializeIsWrapped
-      @afterInitialize()
-
-  # This method is called after a specific `initialize` of a derived class.
-  afterInitialize: ->
     # Render automatically if set by options or instance property.
     @render() if @autoRender
 
@@ -344,14 +343,14 @@ module.exports = class View extends Backbone.View
       # HTML5-only tags in IE7 and IE8.
       @$el.empty().append html
 
-    # Call `afterRender` if `render` was not wrapped.
-    @afterRender() unless @renderIsWrapped
+    # Call `attach` if `render` was not wrapped.
+    @attach() unless @renderIsWrapped
 
     # Return the view.
     this
 
   # This method is called after a specific `render` of a derived class.
-  afterRender: ->
+  attach: ->
     # Attempt to bind this view to its named region.
     @publishEvent '!region:show', @region, this if @region?
 

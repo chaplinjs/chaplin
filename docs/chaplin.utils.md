@@ -38,28 +38,6 @@ b = new B
 getAllPropertyVersions b, 'prop'  # => [1, 2]
 ```
 
-## wrapMethod(instance, name)
-* **Object instance**
-* **String name, property of instance**
-* **returns the wrapped method**
-
-Wrap a method in order to call the corresponding
-`after-` method automatically (e.g. `afterRender` or
-`afterInitialize`)
-
-Enables a much more complex classical heirarchy when instruction
-order is important
-
-```coffeescript
-bob =
-  show: -> 'one'
-  afterShow: -> 'two'
-
-bob.show() # 'one'
-utils.wrapMethod bob, 'show'
-bob.show() # 'one' 'two'
-```
-
 ## upcase(str)
 * **String str**
 * **returns upcased String**
