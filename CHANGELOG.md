@@ -31,17 +31,24 @@
 * Improved `Chaplin.utils`:
     * Added `utils.getAllPropertyVersions` that allows to gather all
       property versions from object’s prototypes.
+    * Added `utils.escapeRegExp` that escapes all regular expression characters
+    in string.
+    * Removed `utils.wrapMethod`.
 * Improved `Chaplin.View`:
     * Added `View#listen` property that allows to declaratively listen to
       model / collection / mediator / view events.
       Just like Backbone’s `View#events`, which is only for DOM events.
+    * Added new `autoAttach` option which determines whether
+      view should be automatically attached to DOM after render.
+    * Renamed `View#afterRender` to `View#attach`.
+    * Removed `View#afterInitialize`.
+    * Removed `View#pass`. Please use
+      [stickit](http://nytimes.github.com/backbone.stickit/) instead
+      for advanced model-view binding.
     * Switched to `$el.toggle()` instead of manual CSS `display` setting.
     Which means non-block elements will behave correctly.
     * Switched to `Backbone.$` reference for DOM manipulation.
       This will automatically use jQuery, Zepto or Ender as DOM library.
-    * Removed `View#pass`. Please use
-      [stickit](http://nytimes.github.com/backbone.stickit/) instead
-      for advanced model-view binding.
     * Early error is now thrown when `View#events` is a function.
 * Improved `Chaplin.CollectionView`:
     * Renamed `CollectionView#itemsResetted` to `CollectionView#itemsReset`.

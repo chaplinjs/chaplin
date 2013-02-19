@@ -103,3 +103,19 @@ Use the bridge between Expect.js and Sinon.js for nice spy/stub/mock expectation
 ## Git style
 
 Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob/master/README.md#git).
+
+# Releasing Chaplin
+
+A reminder to maintainers what should be done before release.
+
+1. Update `package.json`, commit with “Release VERSION.”, git-tag last commit with new version.
+2. Update downloads and our site.
+3. Tweet about new version. Template:
+
+    Chaplin 0.7.0 released! This is the biggest release since release. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/0.6.0...0.7.0
+
+4. Update
+[brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin),
+[chaplin-boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) and
+[chaplin-boilerplate-plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
+with new chaplin versions.

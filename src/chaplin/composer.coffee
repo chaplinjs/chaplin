@@ -102,7 +102,7 @@ module.exports = class Composer
   _compose: (name, options) ->
     # Assert for programmer errors
     if typeof options.compose isnt 'function' and not options.composition?
-      throw new Error "compose was used incorrectly"
+      throw new Error 'Composer#compose was used incorrectly'
 
     if options.composition?
       # Use the passed composition directly
