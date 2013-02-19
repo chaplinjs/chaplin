@@ -108,7 +108,8 @@ Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob
 
 A reminder to maintainers what should be done before release.
 
-1. Update `package.json`, commit with “Release VERSION.”, git-tag last commit with new version.
+1. Update `package.json`, `component.json` and `CHANGELOG.md`, commit with “Release VERSION.”,
+git-tag last commit with new version.
 2. Update downloads and our site.
 3. Tweet about new version. Template:
 

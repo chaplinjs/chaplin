@@ -1,4 +1,4 @@
-# Chaplin 0.7.0 (unreleased)
+# Chaplin 0.7.0 (February 19, 2013)
 * Added support of regions and regions composition with `Chaplin.Composer`.
   Composer grants the ability for views (and related data) to be
   persisted beyond one controller action.

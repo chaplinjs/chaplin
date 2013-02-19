@@ -1,6 +1,6 @@
 {
   "name": "chaplin",
-  "version": "0.7.0-pre",
+  "version": "0.7.0",
   "dependencies": {
     "mocha": "1.7.x",
     "expect": "0.2.x",
