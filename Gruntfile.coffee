@@ -97,6 +97,15 @@ module.exports = (grunt) ->
           src: '**/*.js'
         ]
 
+        options:
+          processContent: (content, path) ->
+            name = ///temp/(.*)\.js///.exec(path)[1]
+            """
+            require.define({'#{name}': function(exports, require, module) {
+            #{content}
+            }});
+            """
+
       amd:
         files: [
           expand: true
@@ -355,7 +364,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build:brunch', [
     'coffee:compile'
-    'urequire'
     'copy:commonjs'
     'concat:brunch'
     'uglify:brunch'
