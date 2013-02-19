@@ -97,15 +97,6 @@ module.exports = (grunt) ->
           src: '**/*.js'
         ]
 
-        options:
-          processContent: (content, path) ->
-            name = ///temp/(.*)\.js///.exec(path)[1]
-            """
-            require.define({'#{name}': function(exports, require, module) {
-            #{content}
-            }});
-            """
-
       amd:
         files: [
           expand: true
@@ -173,6 +164,47 @@ module.exports = (grunt) ->
           src: modules
         ]
 
+      brunch:
+        files: [
+          dest: 'build/brunch/<%= pkg.name %>.js'
+          src: modules
+        ]
+
+        options:
+          banner: '''
+          /*!
+           * Chaplin <%= pkg.version %>
+           *
+           * Chaplin may be freely distributed under the MIT license.
+           * For all details and documentation:
+           * http://chaplinjs.org
+           */
+
+          // Dirty hack for require-ing backbone and underscore.
+          (function() {
+            var deps = {
+              backbone: window.Backbone, underscore: window._
+            };
+
+            for (var name in deps) {
+              (function(name) {
+                var definition = {};
+                definition[name] = function(exports, require, module) {
+                  module.exports = deps[name];
+                };
+
+                try {
+                  require(item);
+                } catch(e) {
+                  require.define(definition);
+                }
+              })(name);
+            }
+          })();
+
+
+          '''
+
     # Lint
     # ----
     coffeelint:
@@ -229,6 +261,10 @@ module.exports = (grunt) ->
         files:
           'build/commonjs/chaplin.min.js': 'build/commonjs/chaplin.js'
 
+      brunch:
+        files:
+          'build/brunch/chaplin.min.js': 'build/brunch/chaplin.js'
+
     # Compression
     # -----------
     compress:
@@ -247,6 +283,14 @@ module.exports = (grunt) ->
 
         options:
           archive: 'build/commonjs/chaplin.min.js.gz'
+
+      brunch:
+        files: [
+          src: 'build/brunch/chaplin.min.js'
+        ]
+
+        options:
+          archive: 'build/brunch/chaplin.min.js.gz'
 
     # Watching for changes
     # --------------------
@@ -309,9 +353,19 @@ module.exports = (grunt) ->
     'compress:amd'
   ]
 
+  grunt.registerTask 'build:brunch', [
+    'coffee:compile'
+    'urequire'
+    'copy:commonjs'
+    'concat:brunch'
+    'uglify:brunch'
+    'compress:brunch'
+  ]
+
   grunt.registerTask 'build', [
     'build:amd'
     'build:commonjs'
+    'build:brunch'
   ]
 
   # Lint
