@@ -336,12 +336,7 @@ module.exports = class View extends Backbone.View
       html = templateFunc @getTemplateData()
 
       # Replace HTML
-      # ------------
-
-      # This is a workaround for an apparent issue with jQuery 1.7’s
-      # innerShiv feature. Using @$el.html(html) caused issues with
-      # HTML5-only tags in IE7 and IE8.
-      @$el.empty().append html
+      @$el.html html
 
     # Call `attach` if `render` was not wrapped.
     @attach() unless @renderIsWrapped
