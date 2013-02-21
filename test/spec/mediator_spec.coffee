@@ -48,6 +48,9 @@ define [
       expect(spy).was.neverCalledWith payload
 
     it 'should support sealing itself', ->
+      strict = do (-> 'use strict'; !this)
+      return unless strict
+
       expect(mediator.seal).to.be.a 'function'
       old = Object.seal
       Object.seal = undefined

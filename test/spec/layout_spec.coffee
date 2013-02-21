@@ -129,11 +129,12 @@ define [
       expectWasNotRouted href: 'tel:1488'
 
     it 'should not route clicks on external links', ->
-      stub = sinon.stub window, 'open'
+      old = window.open
+      window.open = sinon.stub()
       expectWasNotRouted href: 'http://example.com/'
       expectWasNotRouted href: 'https://example.com/'
-      expect(stub).was.notCalled()
-      stub.restore()
+      expect(window.open).was.notCalled()
+      window.open = old
 
     it 'should route clicks on elements with the “go-to” class', ->
       stub = sinon.stub().yields true
@@ -158,12 +159,13 @@ define [
       expectWasNotRouted href: '/internal/link'
 
     it 'openExternalToBlank=true should open external links in a new tab', ->
-      stub = sinon.stub window, 'open'
+      old = window.open
+      window.open = sinon.stub()
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: 'http://www.example.org/'
-      expect(stub).was.called()
-      stub.restore()
+      expect(window.open).was.called()
+      window.open = old
 
     it 'skipRouting=false should route links with a noscript class', ->
       layout.dispose()

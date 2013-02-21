@@ -36,9 +36,10 @@ define [
 
     describe 'readonly', ->
       it 'should make property read-only', ->
+        strict = do (-> 'use strict'; !this)
         object = {a: 228}
         supports = utils.readonly object, 'a'
-        expect(-> object.a = 666).to.throwError() if supports
+        expect(-> object.a = 666).to.throwError() if supports and strict
 
     describe 'getPrototypeChain', ->
       it 'should get prototype chain of instance', ->
