@@ -329,5 +329,5 @@ Unsubcribe the `handler` to the `event` (if it exists) before subscribing it. It
 ### unsubscribeEvent(event, handler)
 Unsubcribe the `handler` to the `event`. It is like `Chaplin.mediator.unsubscribe`.
 
-### subscribeAllEvents()
+### unsubscribeAllEvents()
 Unsubcribe all handlers for all events.
