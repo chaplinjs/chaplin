@@ -40,7 +40,7 @@ Site = require 'views/site'
 Header = require 'views/header'
 Footer = require 'views/footer'
 class SiteController extends Chaplin.Controller
-  before:
+  beforeAction:
     '.*': ->
       # Compose the Site view, which is a simple 3-row stacked layout that
       # provides the header, footer, and body regions
