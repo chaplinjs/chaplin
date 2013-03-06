@@ -212,7 +212,7 @@ module.exports = class View extends Backbone.View
     return
 
   delegateListener: (eventName, target, callback) ->
-    if target in ['model', 'collection']
+    if target of this
       prop = this[target]
       @listenTo prop, eventName, callback if prop
     else if target is 'mediator'
