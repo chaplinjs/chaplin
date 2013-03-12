@@ -117,7 +117,7 @@ define [
       super
 
       # Initialize the SyncMachine
-      @initSyncMachine()
+      _(@).extend Chaplin.SyncMachine
 
       # Will be called on every state change
       @syncStateChange announce
