@@ -21,7 +21,7 @@ parts of the architecture.
 
 ##### [Router](./chaplin.router.md)
 Facilitates mapping URLs to controller actions based on a
-user-defined configuration file. It is reponsible for observing and acting
+user-defined configuration file. It is responsible for observing and acting
 upon URL changes. It does no direct action apart from notifiying the dispatcher
 of such a change however.
 
