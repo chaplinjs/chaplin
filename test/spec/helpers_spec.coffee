@@ -21,14 +21,26 @@ define [
         url = helpers.reverse 'foo', id: 3, d: "data"
         expect(url).to.be '/foo/bar'
 
-      it 'should return false if no route found', ->
+      it 'should return the url for a named route with empty path', ->
+        stubbedRouteHandler = (routeName, params, cb) ->
+          expect(routeName).to.be 'home'
+          expect(params).to.eql []
+          cb ''
+        mediator.subscribe '!router:reverse', stubbedRouteHandler
+
+        url = helpers.reverse 'home'
+        expect(url).to.be '/'
+
+      it 'should throw exception if no route found', ->
         stubbedRouteHandler = (routeName, params, cb) ->
           cb false
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
-        url = helpers.reverse 'foo', id: 3, d: "data"
-        expect(url).to.be false
+        try
+          url = helpers.reverse 'foo', id: 3, d: "data"
+        catch err
+          expect(err).to.be.an.instanceof Error
 
-      it 'should return false if router doesn\'t respond', ->
+      it 'should return null if router doesn\'t respond', ->
         url = helpers.reverse 'foo', id: 3, d: "data"
-        expect(url).to.be false
+        expect(url).to.be null
