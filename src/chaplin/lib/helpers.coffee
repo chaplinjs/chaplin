@@ -8,10 +8,10 @@ helpers =
 
   # Returns the url for a named route and any params.
   reverse: (routeName, params...) ->
-    url = false
+    url = null
     # Don't worry, this callback happens synchronously.
     mediator.publish '!router:reverse', routeName, params, (result) ->
-      if result
+      if result isnt false
         url = "/#{result}"
       else
         throw new Error 'Chaplin.helpers.reverse: invalid route specified.'
