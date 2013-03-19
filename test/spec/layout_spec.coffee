@@ -244,31 +244,38 @@ define [
     it 'should allow for views to register regions', ->
       view1 = class Test1View extends View
         regions:
+          '': 'view-region1'
           '#test1': 'test1'
           '#test2': 'test2'
 
       view2 = class Test2View extends View
         regions:
+          '': 'view-region2'
           '#test1': 'test3'
           '#test2': 'test4'
 
       spy = sinon.spy(layout, 'registerRegion')
       instance1 = new Test1View()
+      expect(spy).was.calledWith instance1, 'view-region1', ''
       expect(spy).was.calledWith instance1, 'test1', '#test1'
       expect(spy).was.calledWith instance1, 'test2', '#test2'
       expect(layout.regions).to.eql [
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
+        {instance: instance1, name: 'view-region1', selector: ''}
       ]
 
       instance2 = new Test2View()
+      expect(spy).was.calledWith instance2, 'view-region2', ''
       expect(spy).was.calledWith instance2, 'test3', '#test1'
       expect(spy).was.calledWith instance2, 'test4', '#test2'
       expect(layout.regions).to.eql [
         {instance: instance2, name: 'test4', selector: '#test2'}
         {instance: instance2, name: 'test3', selector: '#test1'}
+        {instance: instance2, name: 'view-region2', selector: ''}
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
+        {instance: instance1, name: 'view-region1', selector: ''}
       ]
 
       instance1.dispose()
@@ -277,6 +284,7 @@ define [
     it 'should dispose of regions when a view is disposed', ->
       view = class TestView extends View
         regions:
+          '': 'test0'
           '#test1': 'test1'
           '#test2': 'test2'
 
@@ -295,6 +303,7 @@ define [
         regions:
           '#test1': 'test3'
           '#test2': 'test4'
+          '': 'test5'
 
       instance1 = new Test1View()
       instance2 = new Test2View()
@@ -308,6 +317,7 @@ define [
     it 'should allow for views to be applied to regions', ->
       view1 = class Test1View extends View
         regions:
+          '': 'test0'
           '#test1': 'test1'
           '#test2': 'test2'
 
@@ -317,7 +327,9 @@ define [
 
       instance1 = new Test1View()
       instance2 = new Test2View {region: 'test2'}
+      instance3 = new Test2View {region: 'test0'}
       expect(instance2.container.selector).to.be '#test2'
+      expect(instance3.container).to.be instance1.$el
 
       instance1.dispose()
       instance2.dispose()
