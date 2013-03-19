@@ -237,7 +237,10 @@ module.exports = class Layout # This class does not extend View.
     throw new Error "No region registered under #{name}" unless region
 
     # Apply the region selector.
-    instance.container = region.instance.$el.find region.selector
+    instance.container = if region.selector is ''
+      region.instance.$el
+    else
+      region.instance.$ region.selector
 
   # Disposal
   # --------
