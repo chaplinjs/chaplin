@@ -19,8 +19,8 @@ The following chapters will discuss the core objects and classes of our applicat
 
 ### MVC
 * [Chaplin.Controller](./chaplin.controller.md) — a place for initializing models / collections and views.
-* [Chaplin.Model](./chaplin.model.md) — extension of `Backbone.Model` that adds
-* [Chaplin.Collection](./chaplin.collection.md) — extension of `Backbone.Collection` that adds disposal (cleanup).
+* [Chaplin.Model](./chaplin.model.md) — extension of `Backbone.Model` that adds disposal (memory clean-up) and better serializer.
+* [Chaplin.Collection](./chaplin.collection.md) — extension of `Backbone.Collection` that adds disposal.
 * [Chaplin.View](./chaplin.view.md) — extension of `Backbone.View` with better support for templates, regions, subviews and disposal.
 * [Chaplin.CollectionView](./chaplin.collection_view.md) — extension of `Chaplin.View` responsible for displaying collections. Creates `Chaplin.View` instance for every collection model.
 
