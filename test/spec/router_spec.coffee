@@ -293,12 +293,12 @@ define [
       it 'should allow for reversing a route instance to get its url', ->
         route = new Route 'params', 'null', 'null'
         url = route.reverse()
-        expect(url).to.be 'params'
+        expect(url).to.be '/params'
 
       it 'should allow for reversing a route instance with object to get its url', ->
         route = new Route 'params/:two', 'null', 'null'
         url = route.reverse two: 1151
-        expect(url).to.be 'params/1151'
+        expect(url).to.be '/params/1151'
 
         route = new Route 'params/:two/:one/*other/:another', 'null', 'null'
         url = route.reverse
@@ -306,16 +306,16 @@ define [
           one: 156
           other: 'someone/out/there'
           another: 'meh'
-        expect(url).to.be 'params/32/156/someone/out/there/meh'
+        expect(url).to.be '/params/32/156/someone/out/there/meh'
 
       it 'should allow for reversing a route instance with array to get its url', ->
         route = new Route 'params/:two', 'null', 'null'
         url = route.reverse [1151]
-        expect(url).to.be 'params/1151'
+        expect(url).to.be '/params/1151'
 
         route = new Route 'params/:two/:one/*other/:another', 'null', 'null'
         url = route.reverse [32, 156, 'someone/out/there', 'meh']
-        expect(url).to.be 'params/32/156/someone/out/there/meh'
+        expect(url).to.be '/params/32/156/someone/out/there/meh'
 
       it 'should reject reversals for regular expressions', ->
         route = new Route /params/, 'null', 'null'
@@ -344,7 +344,7 @@ define [
         router.match 'params/:two', 'null#null', name: 'about'
 
         url = router.reverse 'phonebook', one: 145
-        expect(url).to.be 'phone/145'
+        expect(url).to.be '/phone/145'
 
         url = router.reverse 'missing', one: 145
         expect(url).to.be false
@@ -357,7 +357,7 @@ define [
         params = one: 145
         spy = sinon.spy()
         mediator.publish '!router:reverse', 'phonebook', params, spy
-        expect(spy).was.calledWith 'phone/145'
+        expect(spy).was.calledWith '/phone/145'
 
         spy = sinon.spy()
         mediator.publish '!router:reverse', 'missing', params, spy
@@ -513,7 +513,7 @@ define [
         mediator.publish '!router:routeByName', 'phonebook',
           params, options, callbackSpy
 
-        expectedPath = "phone/#{params.id}"
+        expectedPath = "/phone/#{params.id}"
         expect(routeSpy).was.calledWith expectedPath, options
         expect(callbackSpy).was.calledWith true
 
@@ -524,7 +524,10 @@ define [
         expect(passedParams.id).to.be params.id
         expect(passedOptions).not.to.be options
         expect(passedOptions).to.eql(
-          create(options, options, path: expectedPath, changeURL: true)
+          create(options, options,
+            path: expectedPath[1..]
+            changeURL: true
+          )
         )
 
       it 'should pass false to the callback when no named route was found', ->

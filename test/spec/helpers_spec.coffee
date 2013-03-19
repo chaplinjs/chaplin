@@ -15,7 +15,7 @@ define [
         stubbedRouteHandler = (routeName, params, cb) ->
           expect(routeName).to.be 'foo'
           expect(params).to.eql [{id: 3, d: "data"}]
-          cb 'foo/bar'
+          cb '/foo/bar'
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
         url = helpers.reverse 'foo', id: 3, d: "data"
@@ -25,7 +25,7 @@ define [
         stubbedRouteHandler = (routeName, params, cb) ->
           expect(routeName).to.be 'home'
           expect(params).to.eql []
-          cb ''
+          cb '/'
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
         url = helpers.reverse 'home'
