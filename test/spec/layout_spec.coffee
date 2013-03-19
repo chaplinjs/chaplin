@@ -160,11 +160,19 @@ define [
 
     it 'openExternalToBlank=true should open external links in a new tab', ->
       old = window.open
+
       window.open = sinon.stub()
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: 'http://www.example.org/'
       expect(window.open).was.called()
+
+      window.open = sinon.stub()
+      layout.dispose()
+      layout = new Layout title: '', openExternalToBlank: true
+      expectWasNotRouted href: '/foo', rel: "external"
+      expect(window.open).was.called()
+
       window.open = old
 
     it 'skipRouting=false should route links with a noscript class', ->
