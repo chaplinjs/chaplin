@@ -5,7 +5,7 @@ define [
   'use strict'
 
   describe 'helpers', ->
-    describe 'url_for', ->
+    describe 'reverse', ->
       beforeEach ->
         mediator.unsubscribe()
       afterEach ->
@@ -39,7 +39,7 @@ define [
         try
           url = helpers.reverse 'foo', id: 3, d: "data"
         catch err
-          expect(err).to.be.an.instanceof Error
+          expect(err).to.be.an Error
 
       it 'should return null if router doesn\'t respond', ->
         url = helpers.reverse 'foo', id: 3, d: "data"
