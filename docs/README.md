@@ -12,22 +12,23 @@ The following chapters will discuss the core objects and classes of our applicat
 ## API docs
 
 ### Core
-* [Mediator](./chaplin.mediator.md)
-* [Dispatcher](./chaplin.dispatcher.md)
-* [Application](./chaplin.application.md)
+* [Chaplin.mediator](./chaplin.mediator.md) — global event pub / sub bus.
+* [Chaplin.Dispatcher](./chaplin.dispatcher.md) — router <-> controller broker.
+* [Chaplin.Layout](./chaplin.layout.md) — top-level application view.
+* [Chaplin.Application](./chaplin.application.md) — application boostrapper.
 
 ### MVC
-* [Controller](./chaplin.controller.md)
-* [Model](./chaplin.model.md)
-* [Collection](./chaplin.collection.md)
-* [Layout](./chaplin.layout.md)
-* [View](./chaplin.view.md)
-* [Collection View](./chaplin.collection_view.md)
+* [Chaplin.Controller](./chaplin.controller.md) — a place for initializing models / collections and views.
+* [Chaplin.Model](./chaplin.model.md) — extension of `Backbone.Model` that adds
+* [Chaplin.Collection](./chaplin.collection.md) — extension of `Backbone.Collection` that adds disposal (cleanup).
+* [Chaplin.View](./chaplin.view.md) — extension of `Backbone.View` with better support for templates, regions, subviews and disposal.
+* [Chaplin.CollectionView](./chaplin.collection_view.md) — extension of `Chaplin.View` responsible for displaying collections. Creates `Chaplin.View` instance for every collection model.
 
 ### Libs
-* [EventBroker](./chaplin.event_broker.md)
-* [SyncMachine](./chaplin.sync_machine.md)
-* [Router](./chaplin.router.md)
-* [Route](./chaplin.route.md)
-* [Support](./chaplin.support.md)
-* [Utils](./chaplin.utils.md)
+* [Chaplin.EventBroker](./chaplin.event_broker.md) — mediator Pub / Sub mix-in.
+* [Chaplin.SyncMachine](./chaplin.sync_machine.md) — finite state machine for models / collections.
+* [Chaplin.Router](./chaplin.router.md) — replacement for `Backbone.Router`.
+* [Chaplin.Route](./chaplin.route.md) — small abstraction used in `Chaplin.Router`.
+* [Chaplin.support](./chaplin.support.md) — feature detection.
+* [Chaplin.utils](./chaplin.utils.md) — generic utils.
+* [Chaplin.helpers](./chaplin.helpers.md) — Chaplin-specific helpers.
