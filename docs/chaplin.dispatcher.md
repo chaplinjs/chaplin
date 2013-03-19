@@ -16,10 +16,3 @@ The `Dispatcher` sits between the router and the controllers. It listens for a r
 * **options**:
     * **controllerPath**: the path to the folder for the controllers. *Default: '/controllers'*
     * **controllerSuffix**: the suffix used for controller files. *Default: '_controller'*
-
-## Usage
-A specific controller can be started programatically by publishing an app-wide `!startupController` event which will be handled by the `Dispatcher`:
-
-```coffeescript
-Chaplin.mediator.publish '!startupController', 'controller', 'action', params
-```
