@@ -5,7 +5,7 @@ define [
   'use strict'
 
   describe 'helpers', ->
-    describe 'url_for', ->
+    describe 'reverse', ->
       beforeEach ->
         mediator.unsubscribe()
       afterEach ->
@@ -15,7 +15,7 @@ define [
         stubbedRouteHandler = (routeName, params, cb) ->
           expect(routeName).to.be 'foo'
           expect(params).to.eql [{id: 3, d: "data"}]
-          cb 'foo/bar'
+          cb '/foo/bar'
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
         url = helpers.reverse 'foo', id: 3, d: "data"
@@ -25,7 +25,7 @@ define [
         stubbedRouteHandler = (routeName, params, cb) ->
           expect(routeName).to.be 'home'
           expect(params).to.eql []
-          cb ''
+          cb '/'
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
         url = helpers.reverse 'home'
@@ -39,7 +39,7 @@ define [
         try
           url = helpers.reverse 'foo', id: 3, d: "data"
         catch err
-          expect(err).to.be.an.instanceof Error
+          expect(err).to.be.an Error
 
       it 'should return null if router doesn\'t respond', ->
         url = helpers.reverse 'foo', id: 3, d: "data"

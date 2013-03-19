@@ -61,7 +61,7 @@ module.exports = class Route
         url = url.replace ///[:*]#{name}///g, value
 
     # If the url tests out good; return the url; else, false.
-    if @test url then url else false
+    if @test url then "/#{url}" else false
 
   createRegExp: ->
     if _.isRegExp @pattern

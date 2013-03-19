@@ -281,26 +281,20 @@ module.exports = (grunt) ->
       amd:
         files: [
           src: 'build/amd/chaplin.min.js'
+          dest: 'build/amd/chaplin.min.js.gz'
         ]
-
-        options:
-          archive: 'build/amd/chaplin.min.js.gz'
 
       commonjs:
         files: [
           src: 'build/commonjs/chaplin.min.js'
+          dest: 'build/commonjs/chaplin.min.js.gz'
         ]
-
-        options:
-          archive: 'build/commonjs/chaplin.min.js.gz'
 
       brunch:
         files: [
           src: 'build/brunch/chaplin.min.js'
+          dest: 'build/brunch/chaplin.min.js.gz'
         ]
-
-        options:
-          archive: 'build/brunch/chaplin.min.js.gz'
 
     # Watching for changes
     # --------------------
