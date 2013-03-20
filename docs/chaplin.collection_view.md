@@ -20,7 +20,7 @@ The `CollectionView` is responsible for displaying collections. For every item i
   instatiated objects via the options hash) can set their own value.
 
 <a id="renderItems"></a>
-###  RenderItems
+###  renderItems
 * **boolean (default true)**
 
   Should the view automatically render all items on instantiation?
