@@ -150,6 +150,33 @@ define [
       expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 
+    # With custom external checks
+    # ---------------------------
+
+    it 'custom isExternalLink receives link properties', ->
+      stub = sinon.stub().returns true
+      layout.dispose()
+      layout = new Layout title: '', isExternalLink: stub
+      expectWasNotRouted href: 'http://www.example.org:1234/foo?bar=1#baz', target: "_blank", rel: "external"
+
+      expect(stub).was.calledOnce()
+      link = stub.lastCall.args[0]
+      expect(link.target).to.be "_blank"
+      expect(link.rel).to.be "external"
+      expect(link.hash).to.be "#baz"
+      expect(link.pathname).to.be "/foo"
+      expect(link.host).to.be "www.example.org:1234"
+
+    it 'custom isExternalLink should not route if true', ->
+      layout.dispose()
+      layout = new Layout title: '', isExternalLink: -> true
+      expectWasNotRouted href: '/foo'
+
+    it 'custom isExternalLink should route if false', ->
+      layout.dispose()
+      layout = new Layout title: '', isExternalLink: -> false
+      expectWasRouted href: '/foo', rel: "external"
+
     # With custom routing options
     # ---------------------------
 

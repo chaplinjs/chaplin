@@ -45,6 +45,7 @@ module.exports = class Layout # This class does not extend View.
       skipRouting: '.noscript'
       # Per default, jump to the top of the page.
       scrollTo: [0, 0]
+      isExternalLink: @defaultIsExternalLink
 
     @regions = []
 
@@ -108,7 +109,7 @@ module.exports = class Layout # This class does not extend View.
     if @settings.routeLinks
       $(document).off 'click', @settings.routeLinks
 
-  isExternalLink: (link) ->
+  defaultIsExternalLink: (link) ->
     link.target is '_blank' or
     link.rel is 'external' or
     link.protocol not in ['http:', 'https:', 'file:'] or
@@ -140,14 +141,8 @@ module.exports = class Layout # This class does not extend View.
       type is 'string' and $el.is skipRouting
 
     # Handle external links.
-    link = {
-      target: $el.attr('target')
-      rel: $el.attr('rel')
-      protocol: el.protocol
-      hostname: el.hostname
-    }
-    internal = not (isAnchor and @isExternalLink link)
-    unless internal
+    external = isAnchor and @settings.isExternalLink el
+    if external
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
