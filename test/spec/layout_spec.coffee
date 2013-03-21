@@ -155,8 +155,7 @@ define [
 
     it 'custom isExternalLink receives link properties', ->
       stub = sinon.stub().returns true
-      layout.dispose()
-      layout = new Layout title: '', isExternalLink: stub
+      layout.isExternalLink = stub
       expectWasNotRouted href: 'http://www.example.org:1234/foo?bar=1#baz', target: "_blank", rel: "external"
 
       expect(stub).was.calledOnce()
@@ -168,13 +167,11 @@ define [
       expect(link.host).to.be "www.example.org:1234"
 
     it 'custom isExternalLink should not route if true', ->
-      layout.dispose()
-      layout = new Layout title: '', isExternalLink: -> true
+      layout.isExternalLink = -> true
       expectWasNotRouted href: '/foo'
 
     it 'custom isExternalLink should route if false', ->
-      layout.dispose()
-      layout = new Layout title: '', isExternalLink: -> false
+      layout.isExternalLink = -> false
       expectWasRouted href: '/foo', rel: "external"
 
     # With custom routing options
