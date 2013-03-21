@@ -29,12 +29,13 @@ mediator = {}
 mediator.subscribe   = Backbone.Events.on
 mediator.unsubscribe = Backbone.Events.off
 mediator.publish     = Backbone.Events.trigger
+mediator.once        = Backbone.Events.once
 
 # Initialize an empty callback list so we might seal the mediator later.
 mediator._callbacks = null
 
 # Make properties readonly.
-utils.readonly mediator, 'subscribe', 'unsubscribe', 'publish'
+utils.readonly mediator, 'subscribe', 'unsubscribe', 'publish', 'once'
 
 # Sealing the mediator
 # --------------------

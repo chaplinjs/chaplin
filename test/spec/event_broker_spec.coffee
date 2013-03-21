@@ -25,6 +25,21 @@ define [
 
       mediator.unsubscribe type, spy
 
+    it 'should subscribe once to events', ->
+      expect(eventBroker.subscribeOnce).to.be.a 'function'
+
+      # We could mock mediator.publish here and test if it was called,
+      # well, better testing the outcome.
+      type = 'eventBrokerTest'
+      spy = sinon.spy()
+      eventBroker.subscribeOnce type, spy
+
+      mediator.publish type, 1, 2, 3, 4
+      mediator.publish type, 5, 6, 7, 8
+      expect(spy).was.calledOnce()
+      expect(spy).was.calledWith 1, 2, 3, 4
+      expect(spy).was.calledOn eventBroker
+
     it 'should not subscribe the same handler twice', ->
       type = 'eventBrokerTest'
       spy = sinon.spy()
@@ -38,11 +53,25 @@ define [
 
       mediator.unsubscribe type, spy
 
+      spy = sinon.spy()
+      eventBroker.subscribeOnce type, spy
+      eventBroker.subscribeOnce type, spy
+
+      mediator.publish type, 1, 2, 3, 4
+      expect(spy).was.calledOnce()
+      expect(spy).was.calledWith 1, 2, 3, 4
+      expect(spy).was.calledOn eventBroker
+
     it 'should check the params when subscribing', ->
       expect(-> eventBroker.subscribeEvent()).to.throwError()
       expect(-> eventBroker.subscribeEvent(undefined, undefined)).to.throwError()
       expect(-> eventBroker.subscribeEvent(1234, ->)).to.throwError()
       expect(-> eventBroker.subscribeEvent('event', {})).to.throwError()
+
+      expect(-> eventBroker.subscribeOnce()).to.throwError()
+      expect(-> eventBroker.subscribeOnce(undefined, undefined)).to.throwError()
+      expect(-> eventBroker.subscribeOnce(1234, ->)).to.throwError()
+      expect(-> eventBroker.subscribeOnce('event', {})).to.throwError()
 
     it 'should unsubscribe from events', ->
       expect(eventBroker.unsubscribeEvent).to.be.a 'function'
@@ -50,6 +79,13 @@ define [
       type = 'eventBrokerTest'
       spy = sinon.spy()
       eventBroker.subscribeEvent type, spy
+      eventBroker.unsubscribeEvent type, spy
+
+      mediator.publish type
+      expect(spy).was.notCalled()
+
+      spy = sinon.spy()
+      eventBroker.subscribeOnce type, spy
       eventBroker.unsubscribeEvent type, spy
 
       mediator.publish type
