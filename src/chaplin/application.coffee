@@ -66,9 +66,6 @@ module.exports = class Application
     # Register any provided routes.
     routes? @router.match
 
-    # After registering the routes, start **Backbone.history**.
-    @router.startHistory()
-
   #### Disposal
   disposed: false
 
