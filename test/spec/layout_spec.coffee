@@ -150,6 +150,30 @@ define [
       expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 
+    # With custom external checks
+    # ---------------------------
+
+    it 'custom isExternalLink receives link properties', ->
+      stub = sinon.stub().returns true
+      layout.isExternalLink = stub
+      expectWasNotRouted href: 'http://www.example.org:1234/foo?bar=1#baz', target: "_blank", rel: "external"
+
+      expect(stub).was.calledOnce()
+      link = stub.lastCall.args[0]
+      expect(link.target).to.be "_blank"
+      expect(link.rel).to.be "external"
+      expect(link.hash).to.be "#baz"
+      expect(link.pathname).to.be "/foo"
+      expect(link.host).to.be "www.example.org:1234"
+
+    it 'custom isExternalLink should not route if true', ->
+      layout.isExternalLink = -> true
+      expectWasNotRouted href: '/foo'
+
+    it 'custom isExternalLink should route if false', ->
+      layout.isExternalLink = -> false
+      expectWasRouted href: '/foo', rel: "external"
+
     # With custom routing options
     # ---------------------------
 
@@ -160,11 +184,19 @@ define [
 
     it 'openExternalToBlank=true should open external links in a new tab', ->
       old = window.open
+
       window.open = sinon.stub()
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: 'http://www.example.org/'
       expect(window.open).was.called()
+
+      window.open = sinon.stub()
+      layout.dispose()
+      layout = new Layout title: '', openExternalToBlank: true
+      expectWasNotRouted href: '/foo', rel: "external"
+      expect(window.open).was.called()
+
       window.open = old
 
     it 'skipRouting=false should route links with a noscript class', ->
