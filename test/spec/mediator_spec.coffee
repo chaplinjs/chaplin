@@ -14,11 +14,12 @@ define [
       expect(mediator.subscribe).to.be.a 'function'
       expect(mediator.unsubscribe).to.be.a 'function'
       expect(mediator.publish).to.be.a 'function'
+      expect(mediator.once).to.be.a 'function'
 
     it 'should have readonly Pub/Sub methods', ->
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
-      methods = ['subscribe', 'unsubscribe', 'publish']
+      methods = ['subscribe', 'unsubscribe', 'publish', 'once']
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
