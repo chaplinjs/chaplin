@@ -108,6 +108,12 @@ module.exports = class Layout # This class does not extend View.
     if @settings.routeLinks
       $(document).off 'click', @settings.routeLinks
 
+  isExternalLink: (link) ->
+    link.target is '_blank' or
+    link.rel is 'external' or
+    link.protocol not in ['http:', 'https:', 'file:'] or
+    link.hostname not in [location.hostname, '']
+
   # Handle all clicks on A elements and try to route them internally.
   openLink: (event) =>
     return if utils.modifierKeyPressed(event)
@@ -127,15 +133,6 @@ module.exports = class Layout # This class does not extend View.
       # Exclude fragment links.
       href.charAt(0) is '#'
 
-    # Checks for A elements.
-    return if isAnchor and (
-      # Exclude links marked as external.
-      $el.attr('target') is '_blank' or
-      $el.attr('rel') is 'external' or
-      # Exclude links to non-HTTP ressources.
-      el.protocol not in ['http:', 'https:', 'file:']
-    )
-
     # Apply skipRouting option.
     skipRouting = @settings.skipRouting
     type = typeof skipRouting
@@ -143,8 +140,8 @@ module.exports = class Layout # This class does not extend View.
       type is 'string' and $el.is skipRouting
 
     # Handle external links.
-    internal = not isAnchor or el.hostname in [location.hostname, '']
-    unless internal
+    external = isAnchor and @isExternalLink el
+    if external
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
@@ -237,7 +234,10 @@ module.exports = class Layout # This class does not extend View.
     throw new Error "No region registered under #{name}" unless region
 
     # Apply the region selector.
-    instance.container = region.instance.$el.find region.selector
+    instance.container = if region.selector is ''
+      region.instance.$el
+    else
+      region.instance.$ region.selector
 
   # Disposal
   # --------

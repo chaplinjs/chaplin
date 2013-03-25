@@ -150,6 +150,30 @@ define [
       expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 
+    # With custom external checks
+    # ---------------------------
+
+    it 'custom isExternalLink receives link properties', ->
+      stub = sinon.stub().returns true
+      layout.isExternalLink = stub
+      expectWasNotRouted href: 'http://www.example.org:1234/foo?bar=1#baz', target: "_blank", rel: "external"
+
+      expect(stub).was.calledOnce()
+      link = stub.lastCall.args[0]
+      expect(link.target).to.be "_blank"
+      expect(link.rel).to.be "external"
+      expect(link.hash).to.be "#baz"
+      expect(link.pathname).to.be "/foo"
+      expect(link.host).to.be "www.example.org:1234"
+
+    it 'custom isExternalLink should not route if true', ->
+      layout.isExternalLink = -> true
+      expectWasNotRouted href: '/foo'
+
+    it 'custom isExternalLink should route if false', ->
+      layout.isExternalLink = -> false
+      expectWasRouted href: '/foo', rel: "external"
+
     # With custom routing options
     # ---------------------------
 
@@ -160,11 +184,19 @@ define [
 
     it 'openExternalToBlank=true should open external links in a new tab', ->
       old = window.open
+
       window.open = sinon.stub()
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: 'http://www.example.org/'
       expect(window.open).was.called()
+
+      window.open = sinon.stub()
+      layout.dispose()
+      layout = new Layout title: '', openExternalToBlank: true
+      expectWasNotRouted href: '/foo', rel: "external"
+      expect(window.open).was.called()
+
       window.open = old
 
     it 'skipRouting=false should route links with a noscript class', ->
@@ -244,31 +276,38 @@ define [
     it 'should allow for views to register regions', ->
       view1 = class Test1View extends View
         regions:
+          '': 'view-region1'
           '#test1': 'test1'
           '#test2': 'test2'
 
       view2 = class Test2View extends View
         regions:
+          '': 'view-region2'
           '#test1': 'test3'
           '#test2': 'test4'
 
       spy = sinon.spy(layout, 'registerRegion')
       instance1 = new Test1View()
+      expect(spy).was.calledWith instance1, 'view-region1', ''
       expect(spy).was.calledWith instance1, 'test1', '#test1'
       expect(spy).was.calledWith instance1, 'test2', '#test2'
       expect(layout.regions).to.eql [
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
+        {instance: instance1, name: 'view-region1', selector: ''}
       ]
 
       instance2 = new Test2View()
+      expect(spy).was.calledWith instance2, 'view-region2', ''
       expect(spy).was.calledWith instance2, 'test3', '#test1'
       expect(spy).was.calledWith instance2, 'test4', '#test2'
       expect(layout.regions).to.eql [
         {instance: instance2, name: 'test4', selector: '#test2'}
         {instance: instance2, name: 'test3', selector: '#test1'}
+        {instance: instance2, name: 'view-region2', selector: ''}
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
+        {instance: instance1, name: 'view-region1', selector: ''}
       ]
 
       instance1.dispose()
@@ -277,6 +316,7 @@ define [
     it 'should dispose of regions when a view is disposed', ->
       view = class TestView extends View
         regions:
+          '': 'test0'
           '#test1': 'test1'
           '#test2': 'test2'
 
@@ -295,6 +335,7 @@ define [
         regions:
           '#test1': 'test3'
           '#test2': 'test4'
+          '': 'test5'
 
       instance1 = new Test1View()
       instance2 = new Test2View()
@@ -308,6 +349,7 @@ define [
     it 'should allow for views to be applied to regions', ->
       view1 = class Test1View extends View
         regions:
+          '': 'test0'
           '#test1': 'test1'
           '#test2': 'test2'
 
@@ -317,7 +359,9 @@ define [
 
       instance1 = new Test1View()
       instance2 = new Test2View {region: 'test2'}
+      instance3 = new Test2View {region: 'test0'}
       expect(instance2.container.selector).to.be '#test2'
+      expect(instance3.container).to.be instance1.$el
 
       instance1.dispose()
       instance2.dispose()

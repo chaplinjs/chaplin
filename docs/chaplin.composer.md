@@ -107,7 +107,7 @@ true the view is destroyed and composed.
 
 By default, the compose method only allows for composing views.
 
-The following example shows anoter way to use the compose method to allow for
+The following example shows another way to use the compose method to allow for
 just about anything. The check method should return true when it wishes
 the composition to be disposed and the compose method to be called.
 The composer will track and ensure proper disposal of whatever is returned from

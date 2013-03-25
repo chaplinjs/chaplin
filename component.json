@@ -4,7 +4,7 @@
   "dependencies": {
     "mocha": "1.7.x",
     "expect": "0.2.x",
-    "require": "2.1.x",
+    "requirejs": "2.1.x",
     "jquery": "1.8.x",
     "underscore": "1.4.x",
     "backbone": "0.9.x"
@@ -20,7 +20,7 @@
     "backbone": {
       ".": "backbone.js"
     },
-    "require": {
+    "requirejs": {
       ".": "require.js"
     },
     "jquery": {
