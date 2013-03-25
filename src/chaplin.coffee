@@ -1,3 +1,5 @@
+# Main entry point into Chaplin module.
+# Load all components and expose them.
 module.exports =
   Application:    require 'chaplin/application'
   mediator:       require 'chaplin/mediator'
