@@ -42,6 +42,9 @@ module.exports = class Dispatcher
 
   # Handler for the global matchRoute event.
   matchRouteHandler: (route, params, options) ->
+    options.controller = route.controller
+    options.action = route.action
+    options.routeName = route.name if route.name
     @startupController route.controller, route.action, params, options
 
   # The standard flow is:

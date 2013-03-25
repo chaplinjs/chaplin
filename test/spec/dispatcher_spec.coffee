@@ -19,7 +19,7 @@ define [
     redirectToURLRoute =
       controller: 'test1', action: 'redirectToURL'
     redirectToControllerRoute =
-       controller: 'test1', action: 'redirectToController'
+      controller: 'test1', action: 'redirectToController'
 
     # Define test controllers
 
@@ -95,14 +95,14 @@ define [
       initialize = sinon.spy proto, 'initialize'
       action     = sinon.spy proto, 'show'
 
-      mediator.publish 'matchRoute', route1, params, options
+      mediator.publish 'matchRoute', route1, params, create options, route1
 
       loadTest1Controller ->
         for spy in [initialize, action]
           expect(spy).was.calledOnce()
           args = spy.firstCall.args
           expect(args[0]).to.eql params
-          expect(args[1]).to.eql stdOptions
+          expect(args[1]).to.eql create stdOptions, route1
 
         initialize.restore()
         action.restore()
@@ -289,9 +289,9 @@ define [
           expect(passedEvent.params).to.eql params
           expect(passedEvent.options).to.eql(
             if i is 0
-              stdOptions
+              create(stdOptions, route1)
             else
-              create(stdOptions, previousControllerName: 'test1')
+              create(stdOptions, route2, previousControllerName: 'test1')
           )
 
         mediator.unsubscribe 'startupController', startupController
@@ -303,7 +303,7 @@ define [
       mediator.subscribe '!router:changeURL', spy
 
       path = 'my-little-path'
-      options = {path}
+      options = create {path}, route1
       mediator.publish 'matchRoute', route1, params, options
 
       loadTest1Controller ->
@@ -320,7 +320,9 @@ define [
       spy = sinon.spy()
       mediator.subscribe '!router:changeURL', spy
 
-      options = path: 'my-little-path', changeURL: false
+      options =
+        path: 'my-little-path', changeURL: false,
+        controller: 'test1', action: 'show'
       mediator.publish 'matchRoute', route1, params, options
 
       loadTest1Controller ->
@@ -334,7 +336,9 @@ define [
       spy = sinon.spy()
       mediator.subscribe '!router:changeURL', spy
 
-      options = path: 'my-little-path', queryString: '?foo=bar'
+      options =
+        path: 'my-little-path', queryString: '?foo=bar',
+        controller: 'test1', action: 'show'
       mediator.publish 'matchRoute', route1, params, options
 
       loadTest1Controller ->
@@ -364,7 +368,7 @@ define [
         expect(action).was.calledOnce()
         args = action.firstCall.args
         expect(args[0]).to.eql params
-        expect(args[1]).to.eql create(stdOptions, {
+        expect(args[1]).to.eql create(stdOptions, redirectToURLRoute, {
           previousControllerName: 'test1'
         })
 
@@ -465,7 +469,7 @@ define [
           expect(args[1]).to.be 'before_actions'
           expect(args[2]).to.be 'show'
           expect(args[3]).to.eql params
-          expect(args[4]).to.eql stdOptions
+          expect(args[4]).to.eql create stdOptions, route
 
           executeAction.restore()
 
