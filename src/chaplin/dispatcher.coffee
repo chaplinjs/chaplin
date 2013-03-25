@@ -125,7 +125,7 @@ module.exports = class Dispatcher
       currentController.dispose params, controllerName
 
     # Add the previous controller name to the routing options.
-    options.previousControllerName = currentControllerName
+    options.previousController = currentControllerName
 
     # Call the controller action with params and options.
     controller[action] params, options
@@ -144,7 +144,7 @@ module.exports = class Dispatcher
 
     # We're done! Spread the word!
     @publishEvent 'startupController',
-      previousControllerName: @previousControllerName
+      previousController: @previousControllerName
       controller: @currentController
       controllerName: @currentControllerName
       params: @currentParams

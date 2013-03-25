@@ -75,7 +75,7 @@ define [
     addedOptions =
       changeURL: true
       forceStartup: false
-      previousControllerName: null
+      previousController: null
 
     # Helper for creating params/options to compare with
     create = ->
@@ -153,7 +153,7 @@ define [
             expectedOptions = create optionsStore[i], {
               changeURL: true
               forceStartup: false
-              previousControllerName: (if i is 0 then null else 'test1')
+              previousController: (if i is 0 then null else 'test1')
             }
             expect(args[1]).to.eql expectedOptions
 
@@ -185,7 +185,7 @@ define [
             expectedOptions = create optionsStore[i], {
               changeURL: true
               forceStartup: (if i is 0 then false else true)
-              previousControllerName: (if i is 0 then null else 'test1')
+              previousController: (if i is 0 then null else 'test1')
             }
             expect(args[1]).to.eql expectedOptions
 
@@ -220,7 +220,7 @@ define [
         expect(action).was.calledOnce()
         options = action.firstCall.args[1]
         expect(options).to.be.an 'object'
-        expect(options.previousControllerName).to.be 'test1'
+        expect(options.previousController).to.be 'test1'
 
         action.restore()
 
@@ -277,7 +277,7 @@ define [
           expect(args.length).to.be 1
           passedEvent = args[0]
           expect(passedEvent).to.be.an 'object'
-          expect(passedEvent.previousControllerName).to.be(
+          expect(passedEvent.previousController).to.be(
             if i is 0 then null else 'test1'
           )
           expect(passedEvent.controller).to.be.a(
@@ -291,7 +291,7 @@ define [
             if i is 0
               create(stdOptions, route1)
             else
-              create(stdOptions, route2, previousControllerName: 'test1')
+              create(stdOptions, route2, previousController: 'test1')
           )
 
         mediator.unsubscribe 'startupController', startupController
@@ -369,7 +369,7 @@ define [
         args = action.firstCall.args
         expect(args[0]).to.eql params
         expect(args[1]).to.eql create(stdOptions, redirectToURLRoute, {
-          previousControllerName: 'test1'
+          previousController: 'test1'
         })
 
         # Don’t expect that the new controller was called
@@ -662,7 +662,7 @@ define [
         deferred.resolve resolveArgument
 
         expectedOptions = create options, {
-          previousControllerName: null
+          previousController: null
         }
 
         expect(beforeAction).was.calledOnce()
