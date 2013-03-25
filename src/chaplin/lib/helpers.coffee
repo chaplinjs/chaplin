@@ -4,7 +4,7 @@ mediator = require 'chaplin/mediator'
 
 helpers =
   # Routing Helpers
-  # --------------
+  # ---------------
 
   # Returns the url for a named route and any params.
   reverse: (routeName, params...) ->

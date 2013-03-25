@@ -11,7 +11,6 @@ EventBroker = require 'chaplin/lib/event_broker'
 
 # The bootstrapper is the entry point for Chaplin apps.
 module.exports = class Application
-
   # Borrow the `extend` method from a dear friend.
   @extend = Backbone.Model.extend
 
@@ -21,7 +20,9 @@ module.exports = class Application
   # Site-wide title that is mapped to HTML `title` tag.
   title: ''
 
-  #### Core Object Instantiation
+  # Core Object Instantiation
+  # -------------------------
+
   # The application instantiates three **core modules**:
   dispatcher: null
   layout: null
@@ -69,11 +70,12 @@ module.exports = class Application
     # After registering the routes, start **Backbone.history**.
     @router.startHistory()
 
-  #### Disposal
+  # Disposal
+  # --------
   disposed: false
 
   dispose: ->
-    #Am I already disposed?
+    # Am I already disposed?
     return if @disposed
 
     properties = ['dispatcher', 'layout', 'router', 'composer']

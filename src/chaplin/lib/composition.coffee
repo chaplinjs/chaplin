@@ -11,7 +11,6 @@ EventBroker = require 'chaplin/lib/event_broker'
 # controller that is used internally to inflate simple
 # calls to !composer:compose and may be extended and used to have complete
 # control over the composition process.
-
 module.exports = class Composition
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend

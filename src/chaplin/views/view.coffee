@@ -9,7 +9,6 @@ EventBroker = require 'chaplin/lib/event_broker'
 $ = Backbone.$
 
 module.exports = class View extends Backbone.View
-
   # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 

@@ -42,38 +42,38 @@ module.exports = class Composer
   # Constructs a composition and composes into the active compositions.
   # This function has several forms as described below:
   #
-  # a) compose('name', Class[, options])
+  # 1. compose('name', Class[, options])
   #    Composes a class object. The options are passed to the class when
   #    an instance is contructed and are further used to test if the
   #    composition should be re-composed.
   #
-  # b) compose('name', function)
+  # 2. compose('name', function)
   #    Composes a function that executes in the context of the controller;
   #    do NOT bind the function context.
   #
-  # c) compose('name', options, function)
+  # 3. compose('name', options, function)
   #    Composes a function that executes in the context of the controller;
   #    do NOT bind the function context and is passed the options as a
   #    parameter. The options are further used to test if the composition
   #    should be recomposed.
   #
-  # d) compose('name', options)
+  # 4. compose('name', options)
   #    Gives control over the composition process; the compose method of
-  #    the options hash is executed in place of the function of form (c) and
+  #    the options hash is executed in place of the function of form (3) and
   #    the check method is called (if present) to determine re-composition (
-  #    otherwise this is the same as form [c]).
+  #    otherwise this is the same as form [3]).
   #
-  # e) compose('name', CompositionClass[, options])
+  # 5. compose('name', CompositionClass[, options])
   #    Gives complete control over the composition process.
   #
   compose: (name, second, third) ->
     # Normalize the arguments
-    # If the second parameter is a function we know it is (a) or (b).
+    # If the second parameter is a function we know it is (1) or (2).
     if typeof second is 'function'
-      # This is form (a) or (e) with the optional options hash if the third
+      # This is form (1) or (5) with the optional options hash if the third
       # is an obj or the second parameter's prototype has a dispose method
       if third or second::dispose
-        # If the class is a Composition class then it is form (e).
+        # If the class is a Composition class then it is form (5).
         if second.prototype instanceof Composition
           return @_compose name, composition: second, options: third
         else
@@ -89,14 +89,14 @@ module.exports = class Composer
             if disabledAutoRender and typeof @item.render is 'function'
               @item.render()
 
-      # This is form (b).
+      # This is form (2).
       return @_compose name, compose: second
 
-    # If the third parameter exists and is a function this is (c).
+    # If the third parameter exists and is a function this is (3).
     if typeof third is 'function'
       return @_compose name, compose: third, options: second
 
-    # This must be form (d).
+    # This must be form (4).
     return @_compose name, second
 
   _compose: (name, options) ->

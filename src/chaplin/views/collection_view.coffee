@@ -12,9 +12,8 @@ $ = Backbone.$
 # `initItemView`. `initItemView` gets an item model and should instantiate
 # and return a corresponding item view.
 module.exports = class CollectionView extends View
-
   # Configuration options
-  # ---------------------
+  # =====================
 
   # These options may be overwritten in derived classes.
 
@@ -23,12 +22,14 @@ module.exports = class CollectionView extends View
   itemView: null
 
   # Automatic rendering
+  # -------------------
 
   # Per default, render the view itself and all items on creation.
   autoRender: true
   renderItems: true
 
   # Animation
+  # ---------
 
   # When new items are added, their views are faded in.
   # Animation duration in milliseconds (set to 0 to disable fade in)
@@ -43,7 +44,8 @@ module.exports = class CollectionView extends View
   animationStartClass: 'animated-item-view'
   animationEndClass: 'animated-item-view-end'
 
-  # Selectors and Elements
+  # Selectors and elements
+  # ----------------------
 
   # A collection view may have a template and use one of its child elements
   # as the container of the item views. If you specify `listSelector`, the
@@ -71,6 +73,7 @@ module.exports = class CollectionView extends View
   itemSelector: null
 
   # Filtering
+  # ---------
 
   # The filter function, if any.
   filterer: null
@@ -81,6 +84,7 @@ module.exports = class CollectionView extends View
     view.$el.stop(true, true).toggle included
 
   # View lists
+  # ----------
 
   # Track a list of the visible views.
   visibleItems: null
