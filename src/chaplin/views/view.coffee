@@ -277,7 +277,7 @@ module.exports = class View extends Backbone.View
 
     # Remove the subview from the lists.
     index = _.indexOf subviews, view
-    subviews.splice index, 1 if index > -1
+    subviews.splice index, 1 if index isnt -1
     delete byName[name]
 
   # Rendering
