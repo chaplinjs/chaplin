@@ -43,7 +43,6 @@ define [
       window.setTimeout callback, 40
 
     class TestView extends View
-
       id: 'test-view'
 
       getTemplateFunction: ->
@@ -59,7 +58,6 @@ define [
         renderCalled = true
 
     class ConfiguredTestView extends TestView
-
       autoRender: true
       container: '#testbed'
       containerMethod: 'before'
@@ -118,6 +116,28 @@ define [
       expect(renderCalled).to.be true
       expect(view.el).to.be testbed.previousSibling
       expect(view.el.parentNode).to.be testbed.parentNode
+
+    it 'should not attach itself if autoAttach is false', ->
+      class NoAutoAttachView1 extends View
+        autoAttach: false
+        autoRender: true
+        container: testbed
+        getTemplateFunction: TestView::getTemplateFunction
+        attach: sinon.spy()
+
+      class NoAutoAttachView2 extends TestView
+        autoAttach: false
+        autoRender: true
+        container: testbed
+        attach: sinon.spy()
+
+      view1 = new NoAutoAttachView1
+      expect(view1.attach).was.notCalled()
+      expect(view1.el.parentNode).to.be null
+
+      view2 = new NoAutoAttachView2
+      expect(view2.attach).was.notCalled()
+      expect(view2.el.parentNode).to.be null
 
     it 'should fire an addedToDOM event attching itself to the DOM', ->
       view = new TestView container: testbed

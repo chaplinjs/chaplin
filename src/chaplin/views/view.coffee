@@ -78,23 +78,18 @@ module.exports = class View extends Backbone.View
       ]
 
     # Wrap `render` so `attach` is called afterwards.
-    if @render is View::render
-      @render = _(@render).bind this
-    else
-      # Enclose the original function.
-      render = @render
-      # Set a flag.
-      @renderIsWrapped = true
-      # Create the wrapper method.
-      @render = =>
-        # Stop if the instance was already disposed.
-        return false if @disposed
-        # Call the original method.
-        render.apply this, arguments
-        # Attach to DOM.
-        @attach arguments... if @autoAttach
-        # Return the view.
-        this
+    # Enclose the original function.
+    render = @render
+    # Create the wrapper method.
+    @render = =>
+      # Stop if the instance was already disposed.
+      return false if @disposed
+      # Call the original method.
+      render.apply this, arguments
+      # Attach to DOM.
+      @attach arguments... if @autoAttach
+      # Return the view.
+      this
 
     # Initialize subviews collections.
     @subviews = []
@@ -329,16 +324,13 @@ module.exports = class View extends Backbone.View
     return false if @disposed
 
     templateFunc = @getTemplateFunction()
-    if typeof templateFunc is 'function'
 
+    if typeof templateFunc is 'function'
       # Call the template function passing the template data.
       html = templateFunc @getTemplateData()
 
       # Replace HTML
       @$el.html html
-
-    # Call `attach` if `render` was not wrapped.
-    @attach() unless @renderIsWrapped
 
     # Return the view.
     this
