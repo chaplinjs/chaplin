@@ -255,7 +255,12 @@ module.exports = (grunt) ->
     # Test runner
     # -----------
     mocha:
-      index: 'test/index.html'
+      index:
+        src: ['test/index.html']
+        # options:
+        #   grep: 'autoAttach'
+        #   mocha:
+        #     grep: 'autoAttach'
 
     # Minify
     # ------
