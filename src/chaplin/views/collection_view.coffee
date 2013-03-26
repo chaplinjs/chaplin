@@ -232,8 +232,9 @@ module.exports = class CollectionView extends View
   # Filters only child item views from all current subviews.
   getItemViews: ->
     itemViews = {}
-    for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
-      itemViews[name.slice(9)] = view
+    if @subviewsByName
+      for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
+        itemViews[name.slice(9)] = view
     itemViews
 
   # Applies a filter to the collection view.
@@ -366,29 +367,34 @@ module.exports = class CollectionView extends View
     # Hide or mark the view if it’s filtered.
     @filterCallback view, included if @filterer
 
+    length = @collection.length
+    insertInMiddle = (0 < position < length)
+    isEnd = (length) -> length is 0 or position is length
+
     # Insert the view into the list.
     $list = @$list
 
-    # Get the children which originate from item views.
-    children = if @itemSelector
-      $list.children @itemSelector
-    else
-      $list.children()
+    if insertInMiddle or @itemSelector
+      # Get the children which originate from item views.
+      children = $list.children @itemSelector
+      childrenLength = children.length
 
-    # Check if it needs to be inserted.
-    unless children.get(position) is viewEl
-      length = children.length
-      if length is 0 or position is length
-        # Insert at the end.
-        $list.append viewEl
-      else
-        # Insert at the right position.
-        if position is 0
-          $next = children.eq position
-          $next.before viewEl
+      # Check if it needs to be inserted.
+      unless children.get(position) is viewEl
+        if isEnd childrenLength
+          # Insert at the end.
+          $list.append viewEl
         else
-          $previous = children.eq position - 1
-          $previous.after viewEl
+          # Insert at the right position.
+          if position is 0
+            $next = children.eq position
+            $next.before viewEl
+          else
+            $previous = children.eq position - 1
+            $previous.after viewEl
+    else
+      method = if isEnd length then 'append' else 'prepend'
+      $list[method] viewEl
 
     # Tell the view that it was added to its parent.
     view.trigger 'addedToParent'
