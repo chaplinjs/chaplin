@@ -96,10 +96,6 @@ module.exports = class View extends Backbone.View
         # Return the view.
         this
 
-    # Initialize subviews collections.
-    @subviews = []
-    @subviewsByName = {}
-
     # Call Backbone’s constructor.
     super
 
@@ -241,28 +237,34 @@ module.exports = class View extends Backbone.View
 
   # Getting or adding a subview.
   subview: (name, view) ->
+    # Initialize subviews collections if they don’t exist yet.
+    subviews = @subviews ?= []
+    byName = @subviewsByName ?= {}
+
     if name and view
       # Add the subview, ensure it’s unique.
       @removeSubview name
-      @subviews.push view
-      @subviewsByName[name] = view
+      subviews.push view
+      byName[name] = view
       view
     else if name
       # Get and return the subview by the given name.
-      @subviewsByName[name]
+      byName[name]
 
   # Removing a subview.
   removeSubview: (nameOrView) ->
     return unless nameOrView
+    subviews = @subviews ?= []
+    byName = @subviewsByName ?= {}
 
     if typeof nameOrView is 'string'
       # Name given, search for a subview by name.
       name = nameOrView
-      view = @subviewsByName[name]
+      view = byName[name]
     else
       # View instance given, search for the corresponding name.
       view = nameOrView
-      for otherName, otherView of @subviewsByName
+      for otherName, otherView of byName
         if view is otherView
           name = otherName
           break
@@ -274,9 +276,9 @@ module.exports = class View extends Backbone.View
     view.dispose()
 
     # Remove the subview from the lists.
-    index = _(@subviews).indexOf(view)
-    @subviews.splice index, 1 if index > -1
-    delete @subviewsByName[name]
+    index = _.indexOf subviews, view
+    subviews.splice index, 1 if index > -1
+    delete byName[name]
 
   # Rendering
   # ---------
@@ -363,14 +365,11 @@ module.exports = class View extends Backbone.View
   dispose: ->
     return if @disposed
 
-    throw new Error('Your `initialize` method must include a super call to
-      Chaplin `initialize`') unless @subviews?
-
     # Unregister all regions.
     @unregisterAllRegions()
 
     # Dispose subviews.
-    subview.dispose() for subview in @subviews
+    subview.dispose() for subview in @subviews if @subviews?
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
