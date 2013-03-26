@@ -117,17 +117,9 @@ dispose methods).
 ```coffeescript
   @compose 'something-strange',
     compose: ->
-      composition = {}
-      composition.model = new Model()
-      composition.model.id = 42
+      @model = new Model {id: 42}
+      @view = new View {@model}
+      @model.fetch()
 
-      composition.view = new View
-        model: composition.model
-
-      composition.model.fetch()
-      composition
-
-    check: (composition) ->
-      composition.model.id is 42 and
-      typeof composition.view is typeof View
+    check: -> @model.id is 42
 ```
