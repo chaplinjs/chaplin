@@ -255,7 +255,12 @@ module.exports = (grunt) ->
     # Test runner
     # -----------
     mocha:
-      index: 'test/index.html'
+      index:
+        src: ['test/index.html']
+        # options:
+        #   grep: 'autoAttach'
+        #   mocha:
+        #     grep: 'autoAttach'
 
     # Minify
     # ------
@@ -344,8 +349,6 @@ module.exports = (grunt) ->
     'coffee:compile'
     'copy:commonjs'
     'concat:commonjs'
-    'uglify:commonjs'
-    'compress:commonjs'
   ]
 
   grunt.registerTask 'build:amd', [
@@ -353,16 +356,28 @@ module.exports = (grunt) ->
     'urequire'
     'copy:amd'
     'concat:amd'
-    'uglify:amd'
-    'compress:amd'
   ]
 
   grunt.registerTask 'build:brunch', [
     'coffee:compile'
     'copy:commonjs'
     'concat:brunch'
+  ]
+
+  grunt.registerTask 'build:minified', [
+    'uglify:commonjs'
+    'compress:commonjs'
+    'uglify:amd'
+    'compress:amd'
     'uglify:brunch'
     'compress:brunch'
+  ]
+
+  grunt.registerTask 'build:all', [
+    'build:amd'
+    'build:commonjs'
+    'build:brunch'
+    'build:minified'
   ]
 
   grunt.registerTask 'build', [

@@ -55,7 +55,11 @@ define [
       expect(routesCalled).to.be true
       expect(passedMatch).to.be.a 'function'
 
-    it 'should start Backbone.history', ->
+    it 'should not start Backbone.history', ->
+      expect(Backbone.History.started).to.be false
+
+    it 'should start Backbone.history with startRouting()', ->
+      app.startRouting()
       expect(Backbone.History.started).to.be true
 
     it 'should dispose itself correctly', ->

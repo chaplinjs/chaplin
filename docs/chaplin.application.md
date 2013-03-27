@@ -19,7 +19,11 @@ module.exports = class Application extends Chaplin.Application
     # Initialize core components in the required order.
     @initDispatcher()
     @initLayout()
+    @initComposer()
     @initRouter routes
+    
+    # Initiate the routing
+    @startRouting()
 ```
 
 ### Properties
@@ -101,5 +105,4 @@ class Application extends Chaplin.Application
   initRouter: (routes, options) ->
     @router = new Router options
     routes? @router.match
-    @router.startHistory()
 ```

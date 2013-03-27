@@ -295,12 +295,12 @@ define [
       it 'should allow for reversing a route instance to get its url', ->
         route = new Route 'params', 'null', 'null'
         url = route.reverse()
-        expect(url).to.be '/params'
+        expect(url).to.be 'params'
 
       it 'should allow for reversing a route instance with object to get its url', ->
         route = new Route 'params/:two', 'null', 'null'
         url = route.reverse two: 1151
-        expect(url).to.be '/params/1151'
+        expect(url).to.be 'params/1151'
 
         route = new Route 'params/:two/:one/*other/:another', 'null', 'null'
         url = route.reverse
@@ -308,16 +308,16 @@ define [
           one: 156
           other: 'someone/out/there'
           another: 'meh'
-        expect(url).to.be '/params/32/156/someone/out/there/meh'
+        expect(url).to.be 'params/32/156/someone/out/there/meh'
 
       it 'should allow for reversing a route instance with array to get its url', ->
         route = new Route 'params/:two', 'null', 'null'
         url = route.reverse [1151]
-        expect(url).to.be '/params/1151'
+        expect(url).to.be 'params/1151'
 
         route = new Route 'params/:two/:one/*other/:another', 'null', 'null'
         url = route.reverse [32, 156, 'someone/out/there', 'meh']
-        expect(url).to.be '/params/32/156/someone/out/there/meh'
+        expect(url).to.be 'params/32/156/someone/out/there/meh'
 
       it 'should reject reversals for regular expressions', ->
         route = new Route /params/, 'null', 'null'
@@ -331,20 +331,18 @@ define [
         expect(-> route.reverse two: 2).to.throwError()
 
     describe 'Named Routes', ->
-
-      it 'should allow for registering routes with a name', ->
-        router.match 'index', 'null#null', name: 'home'
-        router.match 'params/:one', 'null#null', name: 'phonebook'
-        router.match 'params/:two', 'null#null', name: 'about'
-
-        names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
-        expect(names).to.eql ['home', 'phonebook', 'about']
-
-      it 'should allow for reversing a route by its name', ->
+      register = ->
         router.match 'index', 'null#null', name: 'home'
         router.match 'phone/:one', 'null#null', name: 'phonebook'
         router.match 'params/:two', 'null#null', name: 'about'
 
+      it 'should allow for registering routes with a name', ->
+        register()
+        names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
+        expect(names).to.eql ['home', 'phonebook', 'about']
+
+      it 'should allow for reversing a route by its name', ->
+        register()
         url = router.reverse 'phonebook', one: 145
         expect(url).to.be '/phone/145'
 
@@ -352,10 +350,7 @@ define [
         expect(url).to.be false
 
       it 'should allow for reversing a route by its name via event', ->
-        router.match 'index', 'null#null', name: 'home'
-        router.match 'phone/:one', 'null#null', name: 'phonebook'
-        router.match 'params/:two', 'null#null', name: 'about'
-
+        register()
         params = one: 145
         spy = sinon.spy()
         mediator.publish '!router:reverse', 'phonebook', params, spy
@@ -364,6 +359,19 @@ define [
         spy = sinon.spy()
         mediator.publish '!router:reverse', 'missing', params, spy
         expect(spy).was.calledWith false
+
+      it 'should prepend mount point', ->
+        router.dispose()
+        mediator.unsubscribe 'matchRoute', matchRoute
+
+        router = new Router randomOption: 'foo', pushState: false, root: '/subdir/'
+        mediator.subscribe 'matchRoute', matchRoute
+        register()
+
+        params = one: 145
+        spy = sinon.spy()
+        mediator.publish '!router:reverse', 'phonebook', params, spy
+        expect(spy).was.calledWith '/subdir/phone/145'
 
     describe 'Query string extraction', ->
 
