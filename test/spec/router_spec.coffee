@@ -362,10 +362,10 @@ define [
 
       it 'should prepend mount point', ->
         router.dispose()
-        mediator.unsubscribe 'matchRoute', matchRoute
+        mediator.unsubscribe 'router:match', routerMatch
 
         router = new Router randomOption: 'foo', pushState: false, root: '/subdir/'
-        mediator.subscribe 'matchRoute', matchRoute
+        mediator.subscribe 'router:match', routerMatch
         register()
 
         params = one: 145
