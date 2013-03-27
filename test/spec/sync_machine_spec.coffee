@@ -1,84 +1,83 @@
-define [
-  'backbone'
-  'underscore'
-  'chaplin/lib/sync_machine'
-], (Backbone, _, SyncMachine) ->
-  'use strict'
+'use strict'
 
-  describe 'SyncMachine', ->
-    machine = null
-    beforeEach ->
-      machine = {}
-      _(machine).extend Backbone.Events
-      _(machine).extend SyncMachine
+Backbone = require 'backbone'
+_ = require 'underscore'
+SyncMachine = require 'chaplin/lib/sync_machine'
 
-    it 'should change its state', ->
-      expect(machine.syncState()).to.be 'unsynced'
+describe 'SyncMachine', ->
+  machine = null
+  beforeEach ->
+    machine = {}
+    _(machine).extend Backbone.Events
+    _(machine).extend SyncMachine
 
-      machine.beginSync()
-      expect(machine.syncState()).to.be 'syncing'
+  it 'should change its state', ->
+    expect(machine.syncState()).to.be 'unsynced'
 
-      machine.finishSync()
-      expect(machine.syncState()).to.be 'synced'
+    machine.beginSync()
+    expect(machine.syncState()).to.be 'syncing'
 
-      machine.unsync()
-      expect(machine.syncState()).to.be 'unsynced'
+    machine.finishSync()
+    expect(machine.syncState()).to.be 'synced'
 
-    it 'should emit sync events', ->
-      stateChange = sinon.spy()
-      syncing = sinon.spy()
-      synced = sinon.spy()
-      unsynced = sinon.spy()
+    machine.unsync()
+    expect(machine.syncState()).to.be 'unsynced'
 
-      machine.on 'syncStateChange', stateChange
-      machine.on 'syncing', syncing
-      machine.on 'synced', synced
-      machine.on 'unsynced', unsynced
+  it 'should emit sync events', ->
+    stateChange = sinon.spy()
+    syncing = sinon.spy()
+    synced = sinon.spy()
+    unsynced = sinon.spy()
 
-      machine.beginSync()
-      expect(stateChange).was.calledOnce()
-      expect(stateChange).was.calledWith machine, 'syncing'
-      expect(syncing).was.calledOnce()
+    machine.on 'syncStateChange', stateChange
+    machine.on 'syncing', syncing
+    machine.on 'synced', synced
+    machine.on 'unsynced', unsynced
 
-      machine.finishSync()
-      expect(stateChange).was.calledTwice()
-      expect(stateChange).was.calledWith machine, 'synced'
-      expect(synced).was.calledOnce()
+    machine.beginSync()
+    expect(stateChange).was.calledOnce()
+    expect(stateChange).was.calledWith machine, 'syncing'
+    expect(syncing).was.calledOnce()
 
-    it 'should has shortcuts for checking sync state', ->
-      expect(machine.isUnsynced()).to.be true
-      expect(machine.isSyncing()).to.be false
-      expect(machine.isSynced()).to.be false
+    machine.finishSync()
+    expect(stateChange).was.calledTwice()
+    expect(stateChange).was.calledWith machine, 'synced'
+    expect(synced).was.calledOnce()
 
-      machine.beginSync()
-      expect(machine.isUnsynced()).to.be false
-      expect(machine.isSyncing()).to.be true
-      expect(machine.isSynced()).to.be false
+  it 'should has shortcuts for checking sync state', ->
+    expect(machine.isUnsynced()).to.be true
+    expect(machine.isSyncing()).to.be false
+    expect(machine.isSynced()).to.be false
 
-      machine.finishSync()
-      expect(machine.isUnsynced()).to.be false
-      expect(machine.isSyncing()).to.be false
-      expect(machine.isSynced()).to.be true
+    machine.beginSync()
+    expect(machine.isUnsynced()).to.be false
+    expect(machine.isSyncing()).to.be true
+    expect(machine.isSynced()).to.be false
 
-    it 'should be able to abort sync', ->
-      machine.beginSync()
-      machine.abortSync()
-      expect(machine.syncState()).to.be 'unsynced'
+    machine.finishSync()
+    expect(machine.isUnsynced()).to.be false
+    expect(machine.isSyncing()).to.be false
+    expect(machine.isSynced()).to.be true
 
-    it 'should has sync callbacks', ->
-      syncing = sinon.spy()
-      synced = sinon.spy()
-      unsynced = sinon.spy()
+  it 'should be able to abort sync', ->
+    machine.beginSync()
+    machine.abortSync()
+    expect(machine.syncState()).to.be 'unsynced'
 
-      machine.syncing syncing
-      machine.synced synced
-      machine.unsynced unsynced
+  it 'should has sync callbacks', ->
+    syncing = sinon.spy()
+    synced = sinon.spy()
+    unsynced = sinon.spy()
 
-      machine.beginSync()
-      expect(syncing).was.calledOnce()
+    machine.syncing syncing
+    machine.synced synced
+    machine.unsynced unsynced
 
-      machine.finishSync()
-      expect(synced).was.calledOnce()
+    machine.beginSync()
+    expect(syncing).was.calledOnce()
 
-      machine.unsync()
-      expect(unsynced).was.calledTwice()  # Including initial call.
+    machine.finishSync()
+    expect(synced).was.calledOnce()
+
+    machine.unsync()
+    expect(unsynced).was.calledTwice()  # Including initial call.

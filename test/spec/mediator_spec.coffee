@@ -1,61 +1,60 @@
-define [
-  'underscore'
-  'chaplin/lib/support'
-  'chaplin/mediator'
-  'chaplin/models/model'
-], (_, support, mediator, Model) ->
-  'use strict'
+'use strict'
 
-  describe 'mediator', ->
-    it 'should be a simple object', ->
-      expect(mediator).to.be.an 'object'
+_ = require 'underscore'
+support = require 'chaplin/lib/support'
+mediator = require 'chaplin/mediator'
+Model = require 'chaplin/models/model'
 
-    it 'should have Pub/Sub methods', ->
-      expect(mediator.subscribe).to.be.a 'function'
-      expect(mediator.unsubscribe).to.be.a 'function'
-      expect(mediator.publish).to.be.a 'function'
+describe 'mediator', ->
+  it 'should be a simple object', ->
+    expect(mediator).to.be.an 'object'
 
-    it 'should have readonly Pub/Sub methods', ->
-      return unless support.propertyDescriptors and
-        Object.getOwnPropertyDescriptor
-      methods = ['subscribe', 'unsubscribe', 'publish']
-      _(methods).forEach (property) ->
-        desc = Object.getOwnPropertyDescriptor(mediator, property)
-        expect(desc.enumerable).to.be true
-        expect(desc.writable).to.be false
-        expect(desc.configurable).to.be false
+  it 'should have Pub/Sub methods', ->
+    expect(mediator.subscribe).to.be.a 'function'
+    expect(mediator.unsubscribe).to.be.a 'function'
+    expect(mediator.publish).to.be.a 'function'
 
-    it 'should publish messages to subscribers', ->
-      spy = sinon.spy()
-      eventName = 'foo'
-      payload = 'payload'
+  it 'should have readonly Pub/Sub methods', ->
+    return unless support.propertyDescriptors and
+      Object.getOwnPropertyDescriptor
+    methods = ['subscribe', 'unsubscribe', 'publish']
+    _(methods).forEach (property) ->
+      desc = Object.getOwnPropertyDescriptor(mediator, property)
+      expect(desc.enumerable).to.be true
+      expect(desc.writable).to.be false
+      expect(desc.configurable).to.be false
 
-      mediator.subscribe eventName, spy
-      mediator.publish eventName, payload
+  it 'should publish messages to subscribers', ->
+    spy = sinon.spy()
+    eventName = 'foo'
+    payload = 'payload'
 
-      expect(spy).was.calledWith payload
-      mediator.unsubscribe eventName, spy
+    mediator.subscribe eventName, spy
+    mediator.publish eventName, payload
 
-    it 'should allow to unsubscribe to events', ->
-      spy = sinon.spy()
-      eventName = 'foo'
-      payload = 'payload'
+    expect(spy).was.calledWith payload
+    mediator.unsubscribe eventName, spy
 
-      mediator.subscribe eventName, spy
-      mediator.unsubscribe eventName, spy
-      mediator.publish eventName, payload
+  it 'should allow to unsubscribe to events', ->
+    spy = sinon.spy()
+    eventName = 'foo'
+    payload = 'payload'
 
-      expect(spy).was.neverCalledWith payload
+    mediator.subscribe eventName, spy
+    mediator.unsubscribe eventName, spy
+    mediator.publish eventName, payload
 
-    it 'should support sealing itself', ->
-      strict = do (-> 'use strict'; !this)
-      return unless strict
+    expect(spy).was.neverCalledWith payload
 
-      expect(mediator.seal).to.be.a 'function'
-      old = Object.seal
-      Object.seal = undefined
-      mediator.seal()
-      expect(-> mediator.a = 1; delete mediator.a).to.not.throwError()
-      Object.seal = old
-      mediator.seal()
-      expect(-> mediator.a = 1).to.throwError()
+  it 'should support sealing itself', ->
+    strict = do (-> 'use strict'; !this)
+    return unless strict
+
+    expect(mediator.seal).to.be.a 'function'
+    old = Object.seal
+    Object.seal = undefined
+    mediator.seal()
+    expect(-> mediator.a = 1; delete mediator.a).to.not.throwError()
+    Object.seal = old
+    mediator.seal()
+    expect(-> mediator.a = 1).to.throwError()

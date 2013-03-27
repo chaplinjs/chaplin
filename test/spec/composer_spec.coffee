@@ -1,244 +1,243 @@
-define [
-  'underscore'
-  'chaplin/mediator'
-  'chaplin/lib/event_broker'
-  'chaplin/lib/composition'
-  'chaplin/composer'
-  'chaplin/controllers/controller'
-  'chaplin/views/view'
-  'chaplin/models/model'
-], (_, mediator, EventBroker, Composition, Composer, Controller, View, Model) ->
-  'use strict'
+'use strict'
 
-  describe 'Composer', ->
-    #console.debug 'Composer spec'
+_ = require 'underscore'
+mediator = require 'chaplin/mediator'
+EventBroker = require 'chaplin/lib/event_broker'
+Composition = require 'chaplin/lib/composition'
+Composer = require 'chaplin/composer'
+Controller = require 'chaplin/controllers/controller'
+View = require 'chaplin/views/view'
+Model = require 'chaplin/models/model'
 
+describe 'Composer', ->
+  #console.debug 'Composer spec'
+
+  composer = null
+  dispatcher = null
+
+  class TestModel extends Model
+
+  class NullView extends View
+    getTemplateFunction: -> # Do nothing
+
+  class TestView1 extends NullView
+  class TestView2 extends NullView
+  class TestView3 extends NullView
+  class TestView4 extends NullView
+
+  beforeEach ->
+    # Instantiate
+    composer = new Composer
+
+  afterEach ->
+    # Dispose
+    composer.dispose()
     composer = null
-    dispatcher = null
-
-    class TestModel extends Model
 
-    class NullView extends View
-      getTemplateFunction: -> # Do nothing
-
-    class TestView1 extends NullView
-    class TestView2 extends NullView
-    class TestView3 extends NullView
-    class TestView4 extends NullView
+  # mixin
+  # -----
 
-    beforeEach ->
-      # Instantiate
-      composer = new Composer
+  it 'should mixin a EventBroker', ->
+    for own name, value of EventBroker
+      expect(composer[name]).to.be EventBroker[name]
 
-    afterEach ->
-      # Dispose
-      composer.dispose()
-      composer = null
+  # initialize
+  # ----------
 
-    # mixin
-    # -----
+  it 'should initialize', ->
+    expect(composer.initialize).to.be.a 'function'
+    composer.initialize()
+    expect(composer.compositions).to.eql {}
 
-    it 'should mixin a EventBroker', ->
-      for own name, value of EventBroker
-        expect(composer[name]).to.be EventBroker[name]
+  # composing with the short form
+  # -----------------------------
 
-    # initialize
-    # ----------
+  it 'should initialize a view when it is composed for the first time', ->
+    mediator.publish '!composer:compose', 'test1', TestView1
+    expect(_(composer.compositions).keys().length).to.be 1
+    expect(composer.compositions['test1'].item).to.be.a TestView1
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should initialize', ->
-      expect(composer.initialize).to.be.a 'function'
-      composer.initialize()
-      expect(composer.compositions).to.eql {}
+    mediator.publish '!composer:compose', 'test1', TestView1
+    mediator.publish '!composer:compose', 'test2', TestView2
+    expect(_(composer.compositions).keys().length).to.be 2
+    expect(composer.compositions['test2'].item).to.be.a TestView2
+    mediator.publish 'dispatcher:dispatch'
 
-    # composing with the short form
-    # -----------------------------
+  it 'should not initialize a view if it is already composed', ->
+    mediator.publish '!composer:compose', 'test1', TestView1
+    expect(_(composer.compositions).keys().length).to.be 1
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should initialize a view when it is composed for the first time', ->
-      mediator.publish '!composer:compose', 'test1', TestView1
-      expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['test1'].item).to.be.a TestView1
-      mediator.publish 'dispatcher:dispatch'
+    mediator.publish '!composer:compose', 'test1', TestView1
+    mediator.publish '!composer:compose', 'test2', TestView2
+    expect(_(composer.compositions).keys().length).to.be 2
+    mediator.publish 'dispatcher:dispatch'
 
-      mediator.publish '!composer:compose', 'test1', TestView1
-      mediator.publish '!composer:compose', 'test2', TestView2
-      expect(_(composer.compositions).keys().length).to.be 2
-      expect(composer.compositions['test2'].item).to.be.a TestView2
-      mediator.publish 'dispatcher:dispatch'
+    mediator.publish '!composer:compose', 'test1', TestView1
+    mediator.publish '!composer:compose', 'test2', TestView2
+    mediator.publish '!composer:compose', 'test1', TestView1
+    expect(_(composer.compositions).keys().length).to.be 2
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should not initialize a view if it is already composed', ->
-      mediator.publish '!composer:compose', 'test1', TestView1
-      expect(_(composer.compositions).keys().length).to.be 1
-      mediator.publish 'dispatcher:dispatch'
+  it 'should dispose a compose view if it is not re-composed', ->
+    mediator.publish '!composer:compose', 'test1', TestView1
+    expect(_(composer.compositions).keys().length).to.be 1
 
-      mediator.publish '!composer:compose', 'test1', TestView1
-      mediator.publish '!composer:compose', 'test2', TestView2
-      expect(_(composer.compositions).keys().length).to.be 2
-      mediator.publish 'dispatcher:dispatch'
+    mediator.publish 'dispatcher:dispatch'
+    mediator.publish '!composer:compose', 'test2', TestView2
+    mediator.publish 'dispatcher:dispatch'
 
-      mediator.publish '!composer:compose', 'test1', TestView1
-      mediator.publish '!composer:compose', 'test2', TestView2
-      mediator.publish '!composer:compose', 'test1', TestView1
-      expect(_(composer.compositions).keys().length).to.be 2
-      mediator.publish 'dispatcher:dispatch'
+    expect(_(composer.compositions).keys().length).to.be 1
+    expect(composer.compositions['test2'].item).to.be.a TestView2
 
-    it 'should dispose a compose view if it is not re-composed', ->
-      mediator.publish '!composer:compose', 'test1', TestView1
-      expect(_(composer.compositions).keys().length).to.be 1
+  # composing with the long form
+  # -----------------------------
 
-      mediator.publish 'dispatcher:dispatch'
-      mediator.publish '!composer:compose', 'test2', TestView2
-      mediator.publish 'dispatcher:dispatch'
+  it 'should invoke compose when a view should be composed', ->
+    mediator.publish '!composer:compose', 'weird',
+      compose: -> @view = new TestView1()
+      check: -> false
 
-      expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['test2'].item).to.be.a TestView2
+    expect(_(composer.compositions).keys().length).to.be 1
+    expect(composer.compositions['weird'].view).to.be.a TestView1
 
-    # composing with the long form
-    # -----------------------------
+    mediator.publish 'dispatcher:dispatch'
+    expect(_(composer.compositions).keys().length).to.be 1
 
-    it 'should invoke compose when a view should be composed', ->
-      mediator.publish '!composer:compose', 'weird',
-        compose: -> @view = new TestView1()
-        check: -> false
+    mediator.publish '!composer:compose', 'weird',
+      compose: -> @view = new TestView2()
 
-      expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['weird'].view).to.be.a TestView1
+    mediator.publish 'dispatcher:dispatch'
+    expect(_(composer.compositions).keys().length).to.be 1
+    expect(composer.compositions['weird'].view).to.be.a TestView2
 
-      mediator.publish 'dispatcher:dispatch'
-      expect(_(composer.compositions).keys().length).to.be 1
+  it 'should dispose the entire composition when necessary', ->
+    spy = sinon.spy()
 
-      mediator.publish '!composer:compose', 'weird',
-        compose: -> @view = new TestView2()
+    mediator.publish '!composer:compose', 'weird',
+      compose: ->
+        @dagger = new TestView1()
+        @dagger2 = new TestView1()
+      check: -> false
 
-      mediator.publish 'dispatcher:dispatch'
-      expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['weird'].view).to.be.a TestView2
+    expect(_(composer.compositions).keys().length).to.be 1
+    expect(composer.compositions['weird'].dagger).to.be.a TestView1
 
-    it 'should dispose the entire composition when necessary', ->
-      spy = sinon.spy()
+    mediator.publish 'dispatcher:dispatch'
+    expect(_(composer.compositions).keys().length).to.be 1
 
-      mediator.publish '!composer:compose', 'weird',
-        compose: ->
-          @dagger = new TestView1()
-          @dagger2 = new TestView1()
-        check: -> false
+    mediator.publish '!composer:compose', 'weird',
+      compose: -> @frozen = new TestView2()
+      check: -> false
 
-      expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['weird'].dagger).to.be.a TestView1
+    mediator.publish 'dispatcher:dispatch'
+    expect(_(composer.compositions).keys().length).to.be 1
+    expect(composer.compositions['weird'].frozen).to.be.a TestView2
 
-      mediator.publish 'dispatcher:dispatch'
-      expect(_(composer.compositions).keys().length).to.be 1
+    mediator.publish 'dispatcher:dispatch'
+    expect(_(composer.compositions).keys().length).to.be 0
 
-      mediator.publish '!composer:compose', 'weird',
-        compose: -> @frozen = new TestView2()
-        check: -> false
+  # various compose forms
+  # ---------------------
+  it 'should allow a function to be composed', ->
+    spy = sinon.spy()
 
-      mediator.publish 'dispatcher:dispatch'
-      expect(_(composer.compositions).keys().length).to.be 1
-      expect(composer.compositions['weird'].frozen).to.be.a TestView2
+    mediator.publish '!composer:compose', 'spy', spy
+    mediator.publish 'dispatcher:dispatch'
 
-      mediator.publish 'dispatcher:dispatch'
-      expect(_(composer.compositions).keys().length).to.be 0
+    expect(spy).was.called()
 
-    # various compose forms
-    # ---------------------
-    it 'should allow a function to be composed', ->
-      spy = sinon.spy()
+  it 'should allow a function to be composed with options', ->
+    spy = sinon.spy()
+    params = {foo: 123, bar: 123}
 
-      mediator.publish '!composer:compose', 'spy', spy
-      mediator.publish 'dispatcher:dispatch'
+    mediator.publish '!composer:compose', 'spy', params, spy
+    mediator.publish 'dispatcher:dispatch'
 
-      expect(spy).was.called()
+    expect(spy).was.calledWith(params)
 
-    it 'should allow a function to be composed with options', ->
-      spy = sinon.spy()
-      params = {foo: 123, bar: 123}
+  it 'should allow a options hash with a function to be composed with options', ->
+    spy = sinon.spy()
+    params = {foo: 123, bar: 123}
 
-      mediator.publish '!composer:compose', 'spy', params, spy
-      mediator.publish 'dispatcher:dispatch'
+    mediator.publish '!composer:compose', 'spy',
+      options: params
+      compose: spy
 
-      expect(spy).was.calledWith(params)
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should allow a options hash with a function to be composed with options', ->
-      spy = sinon.spy()
-      params = {foo: 123, bar: 123}
+    expect(spy).was.calledWith(params)
 
-      mediator.publish '!composer:compose', 'spy',
-        options: params
-        compose: spy
+  it 'should allow a model to be composed', ->
+    mediator.publish '!composer:compose', 'spy', Model
 
-      mediator.publish 'dispatcher:dispatch'
+    expect(composer.compositions['spy'].item).to.be.a Model
 
-      expect(spy).was.calledWith(params)
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should allow a model to be composed', ->
-      mediator.publish '!composer:compose', 'spy', Model
+  it 'should allow a composition to be composed', ->
+    spy = sinon.spy()
 
-      expect(composer.compositions['spy'].item).to.be.a Model
+    class CustomComposition extends Composition
+      compose: spy
 
-      mediator.publish 'dispatcher:dispatch'
+    mediator.publish '!composer:compose', 'spy', CustomComposition
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should allow a composition to be composed', ->
-      spy = sinon.spy()
+    expect(composer.compositions['spy'].item).to.be.a Composition
+    expect(composer.compositions['spy'].item).to.be.a CustomComposition
 
-      class CustomComposition extends Composition
-        compose: spy
+    expect(spy).was.called()
 
-      mediator.publish '!composer:compose', 'spy', CustomComposition
-      mediator.publish 'dispatcher:dispatch'
+  it 'should allow a composition to be composed with options', ->
+    spy = sinon.spy()
+    params = {foo: 123, bar: 123}
 
-      expect(composer.compositions['spy'].item).to.be.a Composition
-      expect(composer.compositions['spy'].item).to.be.a CustomComposition
+    class CustomComposition extends Composition
+      compose: spy
 
-      expect(spy).was.called()
+    mediator.publish '!composer:compose', 'spy', CustomComposition, params
+    mediator.publish 'dispatcher:dispatch'
 
-    it 'should allow a composition to be composed with options', ->
-      spy = sinon.spy()
-      params = {foo: 123, bar: 123}
+    expect(composer.compositions['spy'].item).to.be.a Composition
+    expect(composer.compositions['spy'].item).to.be.a CustomComposition
 
-      class CustomComposition extends Composition
-        compose: spy
+    expect(spy).was.called()
+    expect(spy).was.calledWith(params)
 
-      mediator.publish '!composer:compose', 'spy', CustomComposition, params
-      mediator.publish 'dispatcher:dispatch'
+  it 'should allow a composition to be retreived', ->
+    mediator.publish '!composer:compose', 'spy', Model
 
-      expect(composer.compositions['spy'].item).to.be.a Composition
-      expect(composer.compositions['spy'].item).to.be.a CustomComposition
+    item = null
+    mediator.publish '!composer:retrieve', 'spy', (composition) ->
+      item = composition
 
-      expect(spy).was.called()
-      expect(spy).was.calledWith(params)
+    expect(item).to.be composer.compositions['spy'].item
 
-    it 'should allow a composition to be retreived', ->
-      mediator.publish '!composer:compose', 'spy', Model
+    mediator.publish 'dispatcher:dispatch'
 
-      item = null
-      mediator.publish '!composer:retrieve', 'spy', (composition) ->
-        item = composition
+  # disposal
+  # --------
 
-      expect(item).to.be composer.compositions['spy'].item
+  it 'should dispose itself correctly', ->
+    expect(composer.dispose).to.be.a 'function'
+    composer.dispose()
 
-      mediator.publish 'dispatcher:dispatch'
+    for prop in ['compositions']
+      expect(_(composer).has prop).to.not.be.ok()
 
-    # disposal
-    # --------
+    expect(composer.disposed).to.be true
+    expect(Object.isFrozen(composer)).to.be true if Object.isFrozen
 
-    it 'should dispose itself correctly', ->
-      expect(composer.dispose).to.be.a 'function'
-      composer.dispose()
+  # extensible
+  # ----------
 
-      for prop in ['compositions']
-        expect(_(composer).has prop).to.not.be.ok()
+  it 'should be extendable', ->
+    expect(Composer.extend).to.be.a 'function'
 
-      expect(composer.disposed).to.be true
-      expect(Object.isFrozen(composer)).to.be true if Object.isFrozen
+    DerivedComposer = Composer.extend()
+    derivedComposer = new DerivedComposer()
+    expect(derivedComposer).to.be.a Composer
 
-    # extensible
-    # ----------
-
-    it 'should be extendable', ->
-      expect(Composer.extend).to.be.a 'function'
-
-      DerivedComposer = Composer.extend()
-      derivedComposer = new DerivedComposer()
-      expect(derivedComposer).to.be.a Composer
-
-      derivedComposer.dispose()
+    derivedComposer.dispose()

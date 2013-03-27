@@ -1,61 +1,60 @@
-define [
-  'underscore'
-  'chaplin/mediator'
-  'chaplin/lib/event_broker'
-  'chaplin/lib/composition'
-], (_, mediator, EventBroker, Composition) ->
-  'use strict'
+'use strict'
 
-  describe 'Composition', ->
+_ = require 'underscore'
+mediator = require 'chaplin/mediator'
+EventBroker = require 'chaplin/lib/event_broker'
+Composition = require 'chaplin/lib/composition'
 
+describe 'Composition', ->
+
+  composition = null
+
+  beforeEach ->
+    # Instantiate
+    composition = new Composition
+
+  afterEach ->
+    # Dispose
+    composition.dispose()
     composition = null
 
-    beforeEach ->
-      # Instantiate
-      composition = new Composition
+  # mixin
+  # -----
 
-    afterEach ->
-      # Dispose
-      composition.dispose()
-      composition = null
+  it 'should mixin a EventBroker', ->
+    for own name, value of EventBroker
+      expect(composition[name]).to.be EventBroker[name]
 
-    # mixin
-    # -----
+  # initialize
+  # ----------
 
-    it 'should mixin a EventBroker', ->
-      for own name, value of EventBroker
-        expect(composition[name]).to.be EventBroker[name]
+  it 'should initialize', ->
+    expect(composition.initialize).to.be.a 'function'
+    composition.initialize()
+    expect(composition.stale()).to.be false
+    expect(composition.item).to.be composition
 
-    # initialize
-    # ----------
+  # disposal
+  # --------
 
-    it 'should initialize', ->
-      expect(composition.initialize).to.be.a 'function'
-      composition.initialize()
-      expect(composition.stale()).to.be false
-      expect(composition.item).to.be composition
+  it 'should dispose itself correctly', ->
+    expect(composition.dispose).to.be.a 'function'
+    composition.dispose()
 
-    # disposal
-    # --------
+    for prop in ['compositions']
+      expect(_(composition).has prop).to.not.be.ok()
 
-    it 'should dispose itself correctly', ->
-      expect(composition.dispose).to.be.a 'function'
-      composition.dispose()
+    expect(composition.disposed).to.be true
+    expect(Object.isFrozen(composition)).to.be true if Object.isFrozen
 
-      for prop in ['compositions']
-        expect(_(composition).has prop).to.not.be.ok()
+  # extensible
+  # ----------
 
-      expect(composition.disposed).to.be true
-      expect(Object.isFrozen(composition)).to.be true if Object.isFrozen
+  it 'should be extendable', ->
+    expect(Composition.extend).to.be.a 'function'
 
-    # extensible
-    # ----------
+    Derivedcomposition = Composition.extend()
+    derivedcomposition = new Derivedcomposition()
+    expect(derivedcomposition).to.be.a Composition
 
-    it 'should be extendable', ->
-      expect(Composition.extend).to.be.a 'function'
-
-      Derivedcomposition = Composition.extend()
-      derivedcomposition = new Derivedcomposition()
-      expect(derivedcomposition).to.be.a Composition
-
-      derivedcomposition.dispose()
+    derivedcomposition.dispose()
