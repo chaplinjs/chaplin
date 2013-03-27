@@ -382,7 +382,6 @@ define [
         expect(d.currentController).to.be.a Test1Controller
         expect(d.currentRoute.action).to.be 'redirectToURL'
         expect(d.currentRoute.path).not.to.be "test/#{params.id}"
-        expect(d.currentParams.id).not.to.be params.id
 
         expect(dispatch).was.calledOnce()
 

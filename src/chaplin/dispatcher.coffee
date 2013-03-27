@@ -112,12 +112,12 @@ module.exports = class Dispatcher
     # Call the controller action with params and options.
     controller[route.action] params, route, options
 
-    # Stop if the action triggered a redirect.
-    return if controller.redirected
-
     # Save the new controller and its parameters.
     @currentController = controller
     @currentParams = params
+
+    # Stop if the action triggered a redirect.
+    return if controller.redirected
 
     # Adjust the URL.
     @adjustURL params, options
