@@ -430,7 +430,7 @@ module.exports = class CollectionView extends View
     visibilityChanged = false
 
     visibleItemsIndex = _(@visibleItems).indexOf item
-    includedInVisibleItems = visibleItemsIndex > -1
+    includedInVisibleItems = visibleItemsIndex isnt -1
 
     if includedInFilter and not includedInVisibleItems
       # Add item to the visible items list.
