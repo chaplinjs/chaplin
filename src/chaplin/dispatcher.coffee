@@ -112,22 +112,19 @@ module.exports = class Dispatcher
     # Call the controller action with params and options.
     controller[route.action] params, route, options
 
-    # Stop if the action triggered a redirect.
-    return if controller.redirected
-
     # Save the new controller and its parameters.
     @currentController = controller
     @currentParams = params
+
+    # Stop if the action triggered a redirect.
+    return if controller.redirected
 
     # Adjust the URL.
     @adjustURL params, options
 
     # We're done! Spread the word!
-    @publishEvent 'dispatcher:dispatch',
-      instance: @currentController
-      params: params
-      route: route
-      options: options
+    @publishEvent 'dispatcher:dispatch', @currentController,
+      params, route, options
 
   # Before actions with chained execution.
   executeBeforeActions: (controller, route, params, options) ->

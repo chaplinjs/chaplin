@@ -10,7 +10,7 @@ define [
 
   describe 'Layout', ->
     # Initialize shared variables
-    layout = testController = dispatchContext = router = null
+    layout = testController = router = null
 
     createLink = (attributes) ->
       attributes = if attributes then _.clone(attributes) else {}
@@ -54,13 +54,6 @@ define [
       testController.view = new View()
       testController.title = 'Test Controller Title'
 
-      # Payload for dispatch event
-      dispatchContext =
-        previousControllerName: 'null'
-        controller: testController
-        controllerName: 'test'
-        params: {}
-
     afterEach ->
       layout.dispose()
       testController.dispose()
@@ -72,7 +65,7 @@ define [
 
     it 'should show the view of the active controller', ->
       testController.view.$el.css 'display', 'none'
-      mediator.publish 'dispatcher:dispatch', dispatchContext
+      mediator.publish 'dispatcher:dispatch', testController
       $el = testController.view.$el
       expect($el.css('display')).to.be 'block'
 
