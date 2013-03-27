@@ -12,7 +12,7 @@ define [
     router = passedRoute = passedParams = passedOptions = null
 
     # Serialize pairs into query string (without leading question mark)
-    serializeQueryString = (pairs) ->
+    serializequery = (pairs) ->
       _(pairs).reduce((memo, val, prop) ->
         memo +
         (if memo is '' then '' else '&') +
@@ -374,9 +374,9 @@ define [
           foo: '123 456'
           'b a r': 'the _quick &brown föx= jumps over the lazy dáwg'
           'q&uu=x': 'the _quick &brown föx= jumps over the lazy dáwg'
-        queryString = serializeQueryString input
+        query = serializequery input
 
-        router.route 'query-string', {queryString}
+        router.route 'query-string', {query}
         expect(passedParams).to.eql input
 
       it 'should extract query string params along with named', ->
@@ -387,9 +387,9 @@ define [
           bar: 'query_456'
           qux: '789 query'
           one: 'whatever'
-        queryString = serializeQueryString input
+        query = serializequery input
 
-        router.route '/query-string/named', {queryString}
+        router.route '/query-string/named', {query}
         # Named params overwrite query string params
         expect(passedParams).to.eql create(input, one: 'named')
 
@@ -401,9 +401,9 @@ define [
           bar: 'query_456'
           qux: '789 query'
           one: 'whatever'
-        queryString = serializeQueryString input
+        query = serializequery input
 
-        router.route '/query-string/foo/bar/qux', {queryString}
+        router.route '/query-string/foo/bar/qux', {query}
         # Named params overwrite query string params
         expect(passedParams).to.eql create(input, one: 'foo/bar/qux')
 
@@ -412,11 +412,11 @@ define [
           foo: 'query123'
           bar: 'query_456'
           qux: '789 query'
-        queryString = serializeQueryString input
+        query = serializequery input
 
         # We need to know this implementation detail to stub it correctly
-        stub = sinon.stub(Route.prototype, 'getCurrentQueryString')
-          .returns(queryString)
+        stub = sinon.stub(Route.prototype, 'getCurrentQuery')
+          .returns(query)
 
         router.match 'query-string', 'null#null'
         router.route '/query-string'
@@ -431,12 +431,12 @@ define [
       it 'should pass routing options', ->
         router.match ':id', 'null#null'
         path = '/foo'
-        queryString = 'x=32&y=21'
+        query = 'x=32&y=21'
         options = foo: 123, bar: 456
-        router.route path, create {queryString}, options
+        router.route path, create {query}, options
         # It should be a different object
         expect(passedOptions).not.to.be options
-        expect(passedRoute.queryString).to.be queryString
+        expect(passedRoute.query).to.be query
         expect(passedOptions).to.eql(
           create(options, changeURL: true)
         )
