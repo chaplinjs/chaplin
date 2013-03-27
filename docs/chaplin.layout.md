@@ -45,7 +45,7 @@ Hide the active (old) view on the `beforeControllerDispose` event sent by the di
 
 ### showNewView(context)
 
-Show the new view on the `startupController` event sent by the dispatcher on route change.
+Show the new view on the `dispatcher:dispatch` event sent by the dispatcher on route change.
 
 
 <a name="adjustTitle"></a>
@@ -102,7 +102,7 @@ class MyApplication extends Chaplin.Application
 
 ### View loading
 
-There is nothing to do, the Layout is listening to the `beforeControllerDispose` and `startupController` and will trigger the function when a new route is called. If you are not happing with the site scrolling to the top of the page on each view load, you can set the `scrollTo` option when initializing `Chaplin.Layout` in your `Application`:
+There is nothing to do, the Layout is listening to the `beforeControllerDispose` and `dispatcher:dispatch` and will trigger the function when a new route is called. If you are not happing with the site scrolling to the top of the page on each view load, you can set the `scrollTo` option when initializing `Chaplin.Layout` in your `Application`:
 
 ```coffeescript
 class MyApplication extends Chaplin.Application

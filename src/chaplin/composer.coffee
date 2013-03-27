@@ -37,7 +37,7 @@ module.exports = class Composer
     # Subscribe to events.
     @subscribeEvent '!composer:compose', @compose
     @subscribeEvent '!composer:retrieve', @retrieve
-    @subscribeEvent 'startupController', @cleanup
+    @subscribeEvent 'dispatcher:dispatch', @cleanup
 
   # Constructs a composition and composes into the active compositions.
   # This function has several forms as described below:

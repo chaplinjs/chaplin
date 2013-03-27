@@ -34,7 +34,7 @@ match 'likes/:id', 'likes#show'
 ```
 
 This works much like the [Ruby on Rails counterpart][]. If a route matches,
-a `matchRoute` event is published passing a `params` hash which contains
+a `router:match` event is published passing a `params` hash which contains
 pattern matches (like `id` in the example above) and additional GET parameters
 parsed from the query string. This hands control over to the **Dispatcher**.
 
