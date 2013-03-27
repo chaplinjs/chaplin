@@ -291,7 +291,7 @@ define [
       expect(spy).was.calledWith instance1, 'view-region1', ''
       expect(spy).was.calledWith instance1, 'test1', '#test1'
       expect(spy).was.calledWith instance1, 'test2', '#test2'
-      expect(layout.regions).to.eql [
+      expect(layout._registeredRegions).to.eql [
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
         {instance: instance1, name: 'view-region1', selector: ''}
@@ -301,7 +301,7 @@ define [
       expect(spy).was.calledWith instance2, 'view-region2', ''
       expect(spy).was.calledWith instance2, 'test3', '#test1'
       expect(spy).was.calledWith instance2, 'test4', '#test2'
-      expect(layout.regions).to.eql [
+      expect(layout._registeredRegions).to.eql [
         {instance: instance2, name: 'test4', selector: '#test2'}
         {instance: instance2, name: 'test3', selector: '#test1'}
         {instance: instance2, name: 'view-region2', selector: ''}
@@ -313,6 +313,23 @@ define [
       instance1.dispose()
       instance2.dispose()
 
+    it 'should allow for itself to register regions', ->
+      Regional = Layout.extend
+        regions:
+          '': 'view-region1'
+          '#test1': 'test1'
+          '#test2': 'test2'
+
+      regional = new Regional
+
+      expect(regional._registeredRegions).to.eql [
+        {instance: regional, name: 'test2', selector: '#test2'}
+        {instance: regional, name: 'test1', selector: '#test1'}
+        {instance: regional, name: 'view-region1', selector: ''}
+      ]
+
+      regional.dispose()
+
     it 'should dispose of regions when a view is disposed', ->
       view = class TestView extends View
         regions:
@@ -322,7 +339,7 @@ define [
 
       instance = new TestView()
       instance.dispose()
-      expect(layout.regions).to.eql []
+      expect(layout._registeredRegions).to.eql []
 
     it 'should only dispose of regions a view registered when
         it is disposed', ->
@@ -340,7 +357,7 @@ define [
       instance1 = new Test1View()
       instance2 = new Test2View()
       instance2.dispose()
-      expect(layout.regions).to.eql [
+      expect(layout._registeredRegions).to.eql [
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
       ]

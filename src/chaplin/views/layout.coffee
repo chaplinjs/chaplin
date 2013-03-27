@@ -9,6 +9,7 @@ EventBroker = require 'chaplin/lib/event_broker'
 $ = Backbone.$
 
 module.exports = class Layout # This class does not extend View.
+
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
@@ -30,14 +31,27 @@ module.exports = class Layout # This class does not extend View.
   $el: $(document)
   cid: 'chaplin-layout'
 
-  # Region collection; used to assign canonocial names to selectors.
+  # Regions
+  # -------
+
+  # Region registration; see view documentation for more details.
   regions: null
+
+  # Collection of registered regions; all view regions are collected here.
+  _registeredRegions: null
 
   constructor: ->
     @initialize arguments...
 
+    # Set app wide event handlers.
+    @delegateEvents()
+
+    # Register all exposed regions.
+    @registerRegions this, @regions
+
   initialize: (options = {}) ->
     @title = options.title
+    @regions = options.regions if options.regions
     @settings = _(options).defaults
       titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
       openExternalToBlank: false
@@ -46,7 +60,7 @@ module.exports = class Layout # This class does not extend View.
       # Per default, jump to the top of the page.
       scrollTo: [0, 0]
 
-    @regions = []
+    @_registeredRegions = []
 
     @subscribeEvent 'beforeControllerDispose', @hideOldView
     @subscribeEvent 'dispatcher:dispatch', @showNewView
@@ -57,11 +71,7 @@ module.exports = class Layout # This class does not extend View.
     @subscribeEvent '!region:unregister', @unregisterRegionHandler
 
     # Set the app link routing.
-    if @settings.routeLinks
-      @startLinkRouting()
-
-    # Set app wide event handlers.
-    @delegateEvents()
+    @startLinkRouting() if @settings.routeLinks
 
   # Take (un)delegateEvents from Backbone
   # -------------------------------------
@@ -189,7 +199,7 @@ module.exports = class Layout # This class does not extend View.
     @unregisterRegion instance, name
 
     # Place this region registration into the regions array.
-    @regions.unshift {instance, name, selector}
+    @_registeredRegions.unshift {instance, name, selector}
 
   # Triggered by view; passed in the regions hash.
   # Simply register all regions exposed by it.
@@ -215,19 +225,19 @@ module.exports = class Layout # This class does not extend View.
   # Unregisters a specific named region from a view.
   unregisterRegion: (instance, name) ->
     cid = instance.cid
-    @regions = _(@regions).filter (region) ->
+    @_registeredRegions = _.filter @_registeredRegions, (region) ->
       region.instance.cid isnt cid or region.name isnt name
 
   # When views are disposed; remove all their registered regions.
   unregisterRegions: (instance) ->
-    @regions = _(@regions).filter (region) ->
+    @_registeredRegions = _.filter @_registeredRegions, (region) ->
       region.instance.cid isnt instance.cid
 
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.
   showRegion: (name, instance) ->
     # Find an appropriate region.
-    region = _.find @regions, (region) ->
+    region = _.find @_registeredRegions, (region) ->
       region.name is name and not region.instance.stale
 
     # Assert that we got a valid region.
