@@ -125,8 +125,8 @@ module.exports = class Dispatcher
     # We're done! Spread the word!
     @publishEvent 'startupController',
       instance: @currentController
-      route: route
       params: params
+      route: route
       options: options
 
   # Before actions with chained execution.
