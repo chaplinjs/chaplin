@@ -120,7 +120,7 @@ module.exports = class Dispatcher
     return if controller.redirected
 
     # Adjust the URL.
-    @adjustURL params, options
+    @adjustURL route, params, options
 
     # We're done! Spread the word!
     @publishEvent 'dispatcher:dispatch', @currentController,
@@ -180,17 +180,12 @@ module.exports = class Dispatcher
     next beforeActions.shift()
 
   # Change the URL to the new controller using the router.
-  adjustURL: (params, options) ->
-    return unless options.path?
-
-    url = options.path +
-      if options.queryString then "?#{options.queryString}" else ""
+  adjustURL: (route, params, options) ->
+    return unless route.path?
 
     # Tell the router to actually change the current URL.
+    url = route.path + if route.query then "?#{route.query}" else ""
     @publishEvent '!router:changeURL', url, options if options.changeURL
-
-    # Save the URL.
-    @url = url
 
   # Disposal
   # --------
