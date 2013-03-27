@@ -32,7 +32,7 @@ module.exports = class Dispatcher
       controllerSuffix: '_controller'
 
     # Listen to global events.
-    @subscribeEvent 'router:match', @startupController
+    @subscribeEvent 'router:match', @dispatch
 
   # Controller management.
   # Starting and disposing controllers.
@@ -46,7 +46,7 @@ module.exports = class Dispatcher
   #   3. Instantiate the new controller, call the controller action
   #   4. Show the new view
   #
-  startupController: (route, params, options) ->
+  dispatch: (route, params, options) ->
     # Clone params and options so the original objects remain untouched.
     params = if params then _.clone(params) else {}
     options = if options then _.clone(options) else {}
@@ -123,7 +123,7 @@ module.exports = class Dispatcher
     @adjustURL params, options
 
     # We're done! Spread the word!
-    @publishEvent 'startupController',
+    @publishEvent 'dispatcher:dispatch',
       instance: @currentController
       params: params
       route: route

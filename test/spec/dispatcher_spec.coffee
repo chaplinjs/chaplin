@@ -266,18 +266,18 @@ define [
 
         done()
 
-    it 'should publish startupController events', (done) ->
-      startupController = sinon.spy()
-      mediator.subscribe 'startupController', startupController
+    it 'should publish dispatch events', (done) ->
+      dispatch = sinon.spy()
+      mediator.subscribe 'dispatcher:dispatch', dispatch
 
       mediator.publish 'router:match', route1, params, options
       mediator.publish 'router:match', route2, params, options
 
       loadTest1Controller -> loadTest2Controller ->
-        expect(startupController).was.calledTwice()
+        expect(dispatch).was.calledTwice()
 
         for i in [0..1]
-          args = startupController.getCall(i).args
+          args = dispatch.getCall(i).args
           expect(args.length).to.be 1
           passedEvent = args[0]
           expect(passedEvent).to.be.an 'object'
@@ -298,7 +298,7 @@ define [
               create(stdOptions)
           )
 
-        mediator.unsubscribe 'startupController', startupController
+        mediator.unsubscribe 'dispatcher:dispatch', dispatch
 
         done()
 
@@ -356,8 +356,8 @@ define [
         done()
 
     it 'should support redirection to a URL', (done) ->
-      startupController = sinon.spy()
-      mediator.subscribe 'startupController', startupController
+      dispatch = sinon.spy()
+      mediator.subscribe 'dispatcher:dispatch', dispatch
 
       # Open a route to check if previous controller info is correct after
       # redirection
@@ -386,9 +386,9 @@ define [
         expect(d.currentRoute.path).not.to.be "test/#{params.id}"
         expect(d.currentParams.id).not.to.be params.id
 
-        expect(startupController).was.calledOnce()
+        expect(dispatch).was.calledOnce()
 
-        mediator.unsubscribe 'startupController', startupController
+        mediator.unsubscribe 'dispatcher:dispatch', dispatch
         action.restore()
 
         done()

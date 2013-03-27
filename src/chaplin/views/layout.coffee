@@ -49,7 +49,7 @@ module.exports = class Layout # This class does not extend View.
     @regions = []
 
     @subscribeEvent 'beforeControllerDispose', @hideOldView
-    @subscribeEvent 'startupController', @showNewView
+    @subscribeEvent 'dispatcher:dispatch', @showNewView
     @subscribeEvent '!adjustTitle', @adjustTitle
 
     @subscribeEvent '!region:show', @showRegion
@@ -82,13 +82,13 @@ module.exports = class Layout # This class does not extend View.
     view = controller.view
     view.$el.hide() if view
 
-  # Handler for the global startupController event.
+  # Handler for the global dispatcher:dispatch event.
   # Show the new view.
   showNewView: (context) ->
     view = context.controller.view
     view.$el.show() if view
 
-  # Handler for the global startupController event.
+  # Handler for the global dispatcher:dispatch event.
   # Change the document title to match the new controller.
   # Get the title from the title property of the current controller.
   adjustTitle: (subtitle = '') ->

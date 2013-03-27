@@ -57,37 +57,37 @@ define [
       mediator.publish '!composer:compose', 'test1', TestView1
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['test1'].item).to.be.a TestView1
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       mediator.publish '!composer:compose', 'test1', TestView1
       mediator.publish '!composer:compose', 'test2', TestView2
       expect(_(composer.compositions).keys().length).to.be 2
       expect(composer.compositions['test2'].item).to.be.a TestView2
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
     it 'should not initialize a view if it is already composed', ->
       mediator.publish '!composer:compose', 'test1', TestView1
       expect(_(composer.compositions).keys().length).to.be 1
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       mediator.publish '!composer:compose', 'test1', TestView1
       mediator.publish '!composer:compose', 'test2', TestView2
       expect(_(composer.compositions).keys().length).to.be 2
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       mediator.publish '!composer:compose', 'test1', TestView1
       mediator.publish '!composer:compose', 'test2', TestView2
       mediator.publish '!composer:compose', 'test1', TestView1
       expect(_(composer.compositions).keys().length).to.be 2
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
     it 'should dispose a compose view if it is not re-composed', ->
       mediator.publish '!composer:compose', 'test1', TestView1
       expect(_(composer.compositions).keys().length).to.be 1
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
       mediator.publish '!composer:compose', 'test2', TestView2
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['test2'].item).to.be.a TestView2
@@ -103,13 +103,13 @@ define [
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['weird'].view).to.be.a TestView1
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
       expect(_(composer.compositions).keys().length).to.be 1
 
       mediator.publish '!composer:compose', 'weird',
         compose: -> @view = new TestView2()
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['weird'].view).to.be.a TestView2
 
@@ -125,18 +125,18 @@ define [
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['weird'].dagger).to.be.a TestView1
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
       expect(_(composer.compositions).keys().length).to.be 1
 
       mediator.publish '!composer:compose', 'weird',
         compose: -> @frozen = new TestView2()
         check: -> false
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
       expect(_(composer.compositions).keys().length).to.be 1
       expect(composer.compositions['weird'].frozen).to.be.a TestView2
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
       expect(_(composer.compositions).keys().length).to.be 0
 
     # various compose forms
@@ -145,7 +145,7 @@ define [
       spy = sinon.spy()
 
       mediator.publish '!composer:compose', 'spy', spy
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       expect(spy).was.called()
 
@@ -154,7 +154,7 @@ define [
       params = {foo: 123, bar: 123}
 
       mediator.publish '!composer:compose', 'spy', params, spy
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       expect(spy).was.calledWith(params)
 
@@ -166,7 +166,7 @@ define [
         options: params
         compose: spy
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       expect(spy).was.calledWith(params)
 
@@ -175,7 +175,7 @@ define [
 
       expect(composer.compositions['spy'].item).to.be.a Model
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
     it 'should allow a composition to be composed', ->
       spy = sinon.spy()
@@ -184,7 +184,7 @@ define [
         compose: spy
 
       mediator.publish '!composer:compose', 'spy', CustomComposition
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       expect(composer.compositions['spy'].item).to.be.a Composition
       expect(composer.compositions['spy'].item).to.be.a CustomComposition
@@ -199,7 +199,7 @@ define [
         compose: spy
 
       mediator.publish '!composer:compose', 'spy', CustomComposition, params
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
       expect(composer.compositions['spy'].item).to.be.a Composition
       expect(composer.compositions['spy'].item).to.be.a CustomComposition
@@ -216,7 +216,7 @@ define [
 
       expect(item).to.be composer.compositions['spy'].item
 
-      mediator.publish 'startupController'
+      mediator.publish 'dispatcher:dispatch'
 
     # disposal
     # --------
