@@ -91,7 +91,7 @@ define [
 
       it 'should allow specifying controller and action in options', ->
         # Signature: url, 'controller#action', options
-        url = /url/
+        url = 'url'
         options = {}
         router.match url, 'c#a', options
         route = Backbone.history.handlers[0].route
@@ -100,7 +100,7 @@ define [
         expect(route.url).to.be options.url
 
         # Signature: url, { controller, action }
-        url = /url/
+        url = 'url'
         options = controller: 'c', action: 'a'
         router.match url, options
         route = Backbone.history.handlers[1].route
@@ -110,10 +110,10 @@ define [
 
         # Handle errors
         expect(->
-          router.match /url/, 'null#null', controller: 'c', action: 'a'
+          router.match 'url', 'null#null', controller: 'c', action: 'a'
         ).to.throwError()
         expect(->
-          router.match /url/, {}
+          router.match 'url', {}
         ).to.throwError()
 
     describe 'Routing', ->
@@ -197,35 +197,12 @@ define [
 
     describe 'Passing the Parameters', ->
 
-      it 'should accept a regular expression as pattern', ->
-        router.match /^(\w+)\/(\w+)\/(\w+)$/, 'null#null'
-        router.route '/raw/regular/expression'
-        expect(passedParams).to.be.an 'object'
-        expect(passedParams[0]).to.be 'raw'
-        expect(passedParams[1]).to.be 'regular'
-        expect(passedParams[2]).to.be 'expression'
-
-      it 'should accept a empty regular expression as catch-all', ->
-        router.match /(?:)/, 'null#null'
-        router.route "#{Math.random()}"
-        expect(passedRoute).to.be.an 'object'
-        expect(passedRoute.controller).to.be 'null'
-        expect(passedRoute.action).to.be 'null'
-
       it 'should extract named parameters', ->
         router.match 'params/:one/:p_two_123/three', 'null#null'
         router.route '/params/123-foo/456-bar/three'
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo'
         expect(passedParams.p_two_123).to.be '456-bar'
-
-      it 'should name parameters of a regular expression with `names` option array', ->
-        router.match /^params\/(\d+)\/(\w+)$/, 'null#null',
-          names: ['one', 'two']
-        router.route '/params/123/foo'
-        expect(passedParams).to.be.an 'object'
-        expect(passedParams.one).to.be '123'
-        expect(passedParams.two).to.be 'foo'
 
       it 'should extract non-ascii named parameters', ->
         router.match 'params/:one/:two/:three/:four', 'null#null'
@@ -290,6 +267,9 @@ define [
 
         mediator.unsubscribe 'router:match', spy
 
+      it 'should deny regular expression as pattern', ->
+        expect(-> router.match /url/, 'null#null').to.throwError()
+
     describe 'Route Reversal', ->
 
       it 'should allow for reversing a route instance to get its url', ->
@@ -318,11 +298,6 @@ define [
         route = new Route 'params/:two/:one/*other/:another', 'null', 'null'
         url = route.reverse [32, 156, 'someone/out/there', 'meh']
         expect(url).to.be 'params/32/156/someone/out/there/meh'
-
-      it 'should reject reversals for regular expressions', ->
-        route = new Route /params/, 'null', 'null'
-        url = route.reverse two: 1151
-        expect(url).to.be false
 
       it 'should reject reversals when there are not enough params', ->
         route = new Route 'params/:one/:two', 'null', 'null'

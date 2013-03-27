@@ -15,12 +15,13 @@ module.exports = class Route
   # Taken from Backbone.Router.
   escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
 
-  queryStringFieldSeparator = '&'
-  queryStringValueSeparator = '='
-
   # Create a route for a URL pattern and a controller action
   # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
   constructor: (@pattern, @controller, @action, options) ->
+    if _.isRegExp @pattern
+      throw new Error 'Route: RegExp routes are not supported.
+        Use strings with :names and `constraints` option of route'
+
     @options = if options then _.clone(options) else {}
 
     # Store the name on the route if given
@@ -38,9 +39,6 @@ module.exports = class Route
 
   reverse: (params) ->
     url = @pattern
-    # TODO: add support for regular expressions in reverser.
-    return false if _.isRegExp url
-
     if _.isArray params
       # Ensure we have enough parameters.
       return false if params.length < @paramNames.length
@@ -63,11 +61,6 @@ module.exports = class Route
     if @test url then url else false
 
   createRegExp: ->
-    if _.isRegExp @pattern
-      @regExp = @pattern
-      @paramNames = @options.names if _.isArray @options.names
-      return
-
     pattern = @pattern
       # Escape magic characters.
       .replace(escapeRegExp, '\\$&')
@@ -100,8 +93,7 @@ module.exports = class Route
     if constraints
       params = @extractParams path
       for own name, constraint of constraints
-        unless constraint.test(params[name])
-          return false
+        return false unless constraint.test(params[name])
 
     return true
 
@@ -159,10 +151,10 @@ module.exports = class Route
   extractQueryParams: (queryString) ->
     params = {}
     return params unless queryString
-    pairs = queryString.split queryStringFieldSeparator
+    pairs = queryString.split '&'
     for pair in pairs
       continue unless pair.length
-      [field, value] = pair.split queryStringValueSeparator
+      [field, value] = pair.split '='
       continue unless field.length
       field = decodeURIComponent field
       value = decodeURIComponent value
