@@ -326,15 +326,15 @@ define [
 
       it 'should reject reversals when there are not enough params', ->
         route = new Route 'params/:one/:two', 'null', 'null'
-        expect(-> route.reverse [1]).to.throwError()
-        expect(-> route.reverse one: 1).to.throwError()
-        expect(-> route.reverse two: 2).to.throwError()
+        expect(route.reverse [1]).to.eql false
+        expect(route.reverse one: 1).to.eql false
+        expect(route.reverse two: 2).to.eql false
 
-    describe 'Named Routes', ->
+    describe 'Router reversing', ->
       register = ->
-        router.match 'index', 'null#null', name: 'home'
-        router.match 'phone/:one', 'null#null', name: 'phonebook'
-        router.match 'params/:two', 'null#null', name: 'about'
+        router.match 'index', 'null#1', name: 'home'
+        router.match 'phone/:one', 'null#2', name: 'phonebook'
+        router.match 'params/:two', 'null#2', name: 'about'
 
       it 'should allow for registering routes with a name', ->
         register()
