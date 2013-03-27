@@ -40,11 +40,10 @@ module.exports = class Route
     url = @pattern
     # TODO: add support for regular expressions in reverser.
     return false if _.isRegExp url
-    notEnoughParams = 'Route#reverse: Not enough parameters to reverse'
 
     if _.isArray params
       # Ensure we have enough parameters.
-      throw new Error notEnoughParams if params.length < @paramNames.length
+      return false if params.length < @paramNames.length
 
       index = 0
       url = url.replace /[:*][^\/\?]+/g, (match) ->
@@ -57,7 +56,7 @@ module.exports = class Route
       # Iterate and attempt to replace params in pattern
       for name in @paramNames
         value = params[name]
-        throw new Error notEnoughParams if value is undefined
+        return false if value is undefined
         url = url.replace ///[:*]#{name}///g, value
 
     # If the url tests out good; return the url; else, false.
