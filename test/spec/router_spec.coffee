@@ -335,11 +335,12 @@ define [
         router.match 'index', 'null#1', name: 'home'
         router.match 'phone/:one', 'null#2', name: 'phonebook'
         router.match 'params/:two', 'null#2', name: 'about'
+        router.match 'fake/:three', 'fake#2', name: 'about'
 
       it 'should allow for registering routes with a name', ->
         register()
         names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
-        expect(names).to.eql ['home', 'phonebook', 'about']
+        expect(names).to.eql ['home', 'phonebook', 'about', 'about']
 
       it 'should allow for reversing a route by its name', ->
         register()
@@ -348,6 +349,21 @@ define [
 
         url = router.reverse 'missing', one: 145
         expect(url).to.be false
+
+      it 'should allow for reversing a route by its controller', ->
+        register()
+        url = router.reverse controller: 'null'
+        expect(url).to.be '/index'
+
+      it 'should allow for reversing a route by its controller and action', ->
+        register()
+        url = router.reverse {controller: 'null', action: '2'}, {two: 41}
+        expect(url).to.be '/params/41'
+
+      it 'should allow for reversing a route by its controller and name', ->
+        register()
+        url = router.reverse {name: 'about', controller: 'fake'}, {three: 41}
+        expect(url).to.be '/fake/41'
 
       it 'should allow for reversing a route by its name via event', ->
         register()

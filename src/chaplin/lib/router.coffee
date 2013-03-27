@@ -121,13 +121,24 @@ module.exports = class Router # This class does not extend Backbone.Router.
     else
       callback? false
 
-  # Find the URL for a given name using the registered routes and
-  # provided parameters. Returns the URL string or false.
-  reverse: (name, params) ->
+  # Find the URL for given criteria using the registered routes and
+  # provided parameters. The criteria may be just the name of a route
+  # or an object containing the name, controller, and/or action.
+  # Returns the URL string or false.
+  reverse: (criteria, params) ->
     root = @options.root
 
+    # Expand the criteria in case we just got handed a string.
+    criteria = name: criteria if typeof criteria is 'string'
+
     # First filter the route handlers to those that are of the same name.
-    for handler in Backbone.history.handlers when handler.route.name is name
+    for handler in Backbone.history.handlers
+      # Skip the reverse check if the provided criteria doesn't match
+      {name, action, controller} = handler.route
+      continue if criteria.name and criteria.name isnt name
+      continue if criteria.action and criteria.action isnt action
+      continue if criteria.controller and criteria.controller isnt controller
+
       # Attempt to reverse using the provided parameter hash.
       reversed = handler.route.reverse params
 
