@@ -123,11 +123,8 @@ module.exports = class Dispatcher
     @adjustURL params, options
 
     # We're done! Spread the word!
-    @publishEvent 'dispatcher:dispatch',
-      instance: @currentController
-      params: params
-      route: route
-      options: options
+    @publishEvent 'dispatcher:dispatch', @currentController,
+      params, route, options
 
   # Before actions with chained execution.
   executeBeforeActions: (controller, route, params, options) ->

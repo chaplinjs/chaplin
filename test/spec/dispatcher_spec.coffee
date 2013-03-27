@@ -278,20 +278,18 @@ define [
 
         for i in [0..1]
           args = dispatch.getCall(i).args
-          expect(args.length).to.be 1
-          passedEvent = args[0]
-          expect(passedEvent).to.be.an 'object'
-          expect(passedEvent.route.previous.controller).to.be(
+          expect(args.length).to.be 4
+          expect(args[2].previous.controller).to.be(
             if i is 0 then undefined else 'test1'
           )
-          expect(passedEvent.instance).to.be.a(
+          expect(args[0]).to.be.a(
             if i is 0 then Test1Controller else Test2Controller
           )
-          expect(passedEvent.route.controller).to.be(
+          expect(args[2].controller).to.be(
             if i is 0 then 'test1' else 'test2'
           )
-          expect(passedEvent.params).to.eql params
-          expect(passedEvent.options).to.eql(
+          expect(args[1]).to.eql params
+          expect(args[3]).to.eql(
             if i is 0
               create(stdOptions)
             else
