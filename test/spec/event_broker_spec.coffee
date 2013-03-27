@@ -1,106 +1,105 @@
-define [
-  'underscore'
-  'chaplin/mediator'
-  'chaplin/lib/event_broker'
-], (_, mediator, EventBroker) ->
-  'use strict'
+'use strict'
 
-  describe 'EventBroker', ->
-    # Create a simple object which mixes in the EventBroker
-    eventBroker = _.extend {}, EventBroker
+_ = require 'underscore'
+mediator = require 'chaplin/mediator'
+EventBroker = require 'chaplin/lib/event_broker'
 
-    it 'should subscribe to events', ->
-      expect(eventBroker.subscribeEvent).to.be.a 'function'
+describe 'EventBroker', ->
+  # Create a simple object which mixes in the EventBroker
+  eventBroker = _.extend {}, EventBroker
 
-      # We could mock mediator.publish here and test if it was called,
-      # well, better testing the outcome.
-      type = 'eventBrokerTest'
-      spy = sinon.spy()
-      eventBroker.subscribeEvent type, spy
+  it 'should subscribe to events', ->
+    expect(eventBroker.subscribeEvent).to.be.a 'function'
 
-      mediator.publish type, 1, 2, 3, 4
-      expect(spy).was.calledOnce()
-      expect(spy).was.calledWith 1, 2, 3, 4
-      expect(spy).was.calledOn eventBroker
+    # We could mock mediator.publish here and test if it was called,
+    # well, better testing the outcome.
+    type = 'eventBrokerTest'
+    spy = sinon.spy()
+    eventBroker.subscribeEvent type, spy
 
-      mediator.unsubscribe type, spy
+    mediator.publish type, 1, 2, 3, 4
+    expect(spy).was.calledOnce()
+    expect(spy).was.calledWith 1, 2, 3, 4
+    expect(spy).was.calledOn eventBroker
 
-    it 'should not subscribe the same handler twice', ->
-      type = 'eventBrokerTest'
-      spy = sinon.spy()
-      eventBroker.subscribeEvent type, spy
-      eventBroker.subscribeEvent type, spy
+    mediator.unsubscribe type, spy
 
-      mediator.publish type, 1, 2, 3, 4
-      expect(spy).was.calledOnce()
-      expect(spy).was.calledWith 1, 2, 3, 4
-      expect(spy).was.calledOn eventBroker
+  it 'should not subscribe the same handler twice', ->
+    type = 'eventBrokerTest'
+    spy = sinon.spy()
+    eventBroker.subscribeEvent type, spy
+    eventBroker.subscribeEvent type, spy
 
-      mediator.unsubscribe type, spy
+    mediator.publish type, 1, 2, 3, 4
+    expect(spy).was.calledOnce()
+    expect(spy).was.calledWith 1, 2, 3, 4
+    expect(spy).was.calledOn eventBroker
 
-    it 'should check the params when subscribing', ->
-      expect(-> eventBroker.subscribeEvent()).to.throwError()
-      expect(-> eventBroker.subscribeEvent(undefined, undefined)).to.throwError()
-      expect(-> eventBroker.subscribeEvent(1234, ->)).to.throwError()
-      expect(-> eventBroker.subscribeEvent('event', {})).to.throwError()
+    mediator.unsubscribe type, spy
 
-    it 'should unsubscribe from events', ->
-      expect(eventBroker.unsubscribeEvent).to.be.a 'function'
+  it 'should check the params when subscribing', ->
+    expect(-> eventBroker.subscribeEvent()).to.throwError()
+    expect(-> eventBroker.subscribeEvent(undefined, undefined)).to.throwError()
+    expect(-> eventBroker.subscribeEvent(1234, ->)).to.throwError()
+    expect(-> eventBroker.subscribeEvent('event', {})).to.throwError()
 
-      type = 'eventBrokerTest'
-      spy = sinon.spy()
-      eventBroker.subscribeEvent type, spy
-      eventBroker.unsubscribeEvent type, spy
+  it 'should unsubscribe from events', ->
+    expect(eventBroker.unsubscribeEvent).to.be.a 'function'
 
-      mediator.publish type
-      expect(spy).was.notCalled()
+    type = 'eventBrokerTest'
+    spy = sinon.spy()
+    eventBroker.subscribeEvent type, spy
+    eventBroker.unsubscribeEvent type, spy
 
-    it 'should check the params when unsubscribing', ->
-      expect(-> eventBroker.unsubscribeEvent()).to.throwError()
-      expect(-> eventBroker.unsubscribeEvent(undefined, undefined)).to.throwError()
-      expect(-> eventBroker.unsubscribeEvent(1234, ->)).to.throwError()
-      expect(-> eventBroker.unsubscribeEvent('event', {})).to.throwError()
+    mediator.publish type
+    expect(spy).was.notCalled()
 
-    it 'should unsubscribe from all events', ->
-      expect(eventBroker.unsubscribeAllEvents).to.be.a 'function'
+  it 'should check the params when unsubscribing', ->
+    expect(-> eventBroker.unsubscribeEvent()).to.throwError()
+    expect(-> eventBroker.unsubscribeEvent(undefined, undefined)).to.throwError()
+    expect(-> eventBroker.unsubscribeEvent(1234, ->)).to.throwError()
+    expect(-> eventBroker.unsubscribeEvent('event', {})).to.throwError()
 
-      spy = sinon.spy()
-      unrelatedHandler = sinon.spy()
-      context = {}
+  it 'should unsubscribe from all events', ->
+    expect(eventBroker.unsubscribeAllEvents).to.be.a 'function'
 
-      eventBroker.subscribeEvent 'one', spy
-      eventBroker.subscribeEvent 'two', spy
-      eventBroker.subscribeEvent 'three', spy
-      mediator.subscribe 'four', unrelatedHandler
-      mediator.subscribe 'four', unrelatedHandler, context
+    spy = sinon.spy()
+    unrelatedHandler = sinon.spy()
+    context = {}
 
-      eventBroker.unsubscribeAllEvents()
-      mediator.publish 'one'
-      mediator.publish 'two'
-      mediator.publish 'three'
-      mediator.publish 'four'
-      expect(spy).was.notCalled()
-      # Ensure other handlers remain untouched
-      expect(unrelatedHandler).was.calledTwice()
+    eventBroker.subscribeEvent 'one', spy
+    eventBroker.subscribeEvent 'two', spy
+    eventBroker.subscribeEvent 'three', spy
+    mediator.subscribe 'four', unrelatedHandler
+    mediator.subscribe 'four', unrelatedHandler, context
 
-      mediator.unsubscribe 'four', unrelatedHandler
+    eventBroker.unsubscribeAllEvents()
+    mediator.publish 'one'
+    mediator.publish 'two'
+    mediator.publish 'three'
+    mediator.publish 'four'
+    expect(spy).was.notCalled()
+    # Ensure other handlers remain untouched
+    expect(unrelatedHandler).was.calledTwice()
 
-    it 'should publish events', ->
-      expect(eventBroker.publishEvent).to.be.a 'function'
+    mediator.unsubscribe 'four', unrelatedHandler
 
-      type = 'eventBrokerTest'
-      spy = sinon.spy()
-      mediator.subscribe type, spy
+  it 'should publish events', ->
+    expect(eventBroker.publishEvent).to.be.a 'function'
 
-      eventBroker.publishEvent type, 1, 2, 3, 4
-      expect(spy).was.calledOnce()
-      expect(spy).was.calledWith 1, 2, 3, 4
+    type = 'eventBrokerTest'
+    spy = sinon.spy()
+    mediator.subscribe type, spy
 
-      mediator.unsubscribe type, spy
+    eventBroker.publishEvent type, 1, 2, 3, 4
+    expect(spy).was.calledOnce()
+    expect(spy).was.calledWith 1, 2, 3, 4
 
-    it 'should check the params when publishing events', ->
-      expect(-> eventBroker.publishEvent()).to.throwError()
-      expect(-> eventBroker.publishEvent(null)).to.throwError()
-      expect(-> eventBroker.publishEvent(undefined)).to.throwError()
-      expect(-> eventBroker.publishEvent(1234)).to.throwError()
-      expect(-> eventBroker.publishEvent({})).to.throwError()
+    mediator.unsubscribe type, spy
+
+  it 'should check the params when publishing events', ->
+    expect(-> eventBroker.publishEvent()).to.throwError()
+    expect(-> eventBroker.publishEvent(null)).to.throwError()
+    expect(-> eventBroker.publishEvent(undefined)).to.throwError()
+    expect(-> eventBroker.publishEvent(1234)).to.throwError()
+    expect(-> eventBroker.publishEvent({})).to.throwError()
