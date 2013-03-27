@@ -278,20 +278,18 @@ define [
 
         for i in [0..1]
           args = dispatch.getCall(i).args
-          expect(args.length).to.be 1
-          passedEvent = args[0]
-          expect(passedEvent).to.be.an 'object'
-          expect(passedEvent.route.previous.controller).to.be(
+          expect(args.length).to.be 4
+          expect(args[2].previous.controller).to.be(
             if i is 0 then undefined else 'test1'
           )
-          expect(passedEvent.instance).to.be.a(
+          expect(args[0]).to.be.a(
             if i is 0 then Test1Controller else Test2Controller
           )
-          expect(passedEvent.route.controller).to.be(
+          expect(args[2].controller).to.be(
             if i is 0 then 'test1' else 'test2'
           )
-          expect(passedEvent.params).to.eql params
-          expect(passedEvent.options).to.eql(
+          expect(args[1]).to.eql params
+          expect(args[3]).to.eql(
             if i is 0
               create(stdOptions)
             else
@@ -384,13 +382,21 @@ define [
         expect(d.currentController).to.be.a Test1Controller
         expect(d.currentRoute.action).to.be 'redirectToURL'
         expect(d.currentRoute.path).not.to.be "test/#{params.id}"
-        expect(d.currentParams.id).not.to.be params.id
 
         expect(dispatch).was.calledOnce()
 
         mediator.unsubscribe 'dispatcher:dispatch', dispatch
         action.restore()
 
+        done()
+
+    it 'should dispose when redirecting to a URL', (done) ->
+      dispose = sinon.spy Test1Controller.prototype, 'dispose'
+      mediator.publish 'router:match', route1, params, options
+      mediator.publish 'router:match', redirectToURLRoute, params, options
+      loadTest1Controller ->
+        expect(dispose).was.calledOnce()
+        dispose.restore()
         done()
 
     it 'should dispose itself correctly', (done) ->

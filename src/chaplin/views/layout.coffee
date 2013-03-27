@@ -84,8 +84,8 @@ module.exports = class Layout # This class does not extend View.
 
   # Handler for the global dispatcher:dispatch event.
   # Show the new view.
-  showNewView: (context) ->
-    view = context.controller.view
+  showNewView: (controller) ->
+    view = controller.view
     view.$el.show() if view
 
   # Handler for the global dispatcher:dispatch event.
