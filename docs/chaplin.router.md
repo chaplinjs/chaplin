@@ -1,5 +1,5 @@
 # [Chaplin.Router](src/chaplin/lib/router.coffee)
-The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `matchRoute` event is triggered.
+The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `router:match` event is triggered.
 
 The Chaplin `Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from Backbone’s `Router`. It’s a different implementation with several advantages over the standard router.
 
@@ -14,7 +14,7 @@ match '', 'home#index'
 match 'likes/:id', controller: 'controllers/likes', action: 'show'
 ```
 
-`match` works much like the Ruby on Rails counterpart. If a route matches, a `matchRoute` event is published passing the route instance and a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.
+`match` works much like the Ruby on Rails counterpart. If a route matches, a `router:match` event is published passing the route instance and a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.
 
 ## Methods of `Chaplin.Router`
 

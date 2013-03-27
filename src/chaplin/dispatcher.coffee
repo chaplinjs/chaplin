@@ -12,17 +12,15 @@ module.exports = class Dispatcher
   # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
-  # The previous controller name.
-  previousControllerName: null
+  # The previous route information.
+  # This object contains the controller name, action, path, and name (if any).
+  previousRoute: null
 
-  # The current controller, its name, main view and parameters.
-  currentControllerName: null
+  # The current controller, route information, and parameters.
+  # The current route object contains the same information as previous.
   currentController: null
-  currentAction: null
+  currentRoute: null
   currentParams: null
-
-  # The current URL.
-  url: null
 
   constructor: ->
     @initialize arguments...
@@ -34,15 +32,11 @@ module.exports = class Dispatcher
       controllerSuffix: '_controller'
 
     # Listen to global events.
-    @subscribeEvent 'matchRoute', @matchRouteHandler
+    @subscribeEvent 'router:match', @dispatch
 
   # Controller management.
   # Starting and disposing controllers.
   # ----------------------------------
-
-  # Handler for the global matchRoute event.
-  matchRouteHandler: (route, params, options) ->
-    @startupController route.controller, route.action, params, options
 
   # The standard flow is:
   #
@@ -52,42 +46,36 @@ module.exports = class Dispatcher
   #   3. Instantiate the new controller, call the controller action
   #   4. Show the new view
   #
-  startupController: (controllerName, action = 'index', params,
-      options) ->
+  dispatch: (route, params, options) ->
     # Clone params and options so the original objects remain untouched.
     params = if params then _.clone(params) else {}
     options = if options then _.clone(options) else {}
 
     # Whether to update the URL after controller startup.
     # Default to true unless explicitly set to false.
-    if options.changeURL isnt false
-      options.changeURL = true
+    options.changeURL = true unless options.changeURL is false
 
     # Whether to force the controller startup even
     # if current and new controllers and params match
     # Default to false unless explicitly set to true.
-    if options.forceStartup isnt true
-      options.forceStartup = false
+    options.forceStartup = false unless options.forceStartup is true
 
     # Stop if the desired controller/action is already active
     # with the same params.
     return if not options.forceStartup and
-      @currentControllerName is controllerName and
-      @currentAction is action and
-      # Deep parameters check is not nice but the simplest way for now.
-      (not @currentParams or _(params).isEqual(@currentParams))
+      @currentRoute?.controller is route.controller and
+      @currentRoute?.action is route.action and
+      _.isEqual @currentParams, params
 
     # Fetch the new controller, then go on.
-    @loadController controllerName, (ControllerConstructor) =>
-      @controllerLoaded controllerName, action, params, options,
-        ControllerConstructor
+    @loadController route.controller, (Controller) =>
+      @controllerLoaded route, params, options, Controller
 
   # Load the constructor for a given controller name.
   # The default implementation uses require() from a AMD module loader
   # like RequireJS to fetch the constructor.
-  loadController: (controllerName, handler) ->
-    fileName = utils.underscorize(controllerName) +
-      @settings.controllerSuffix
+  loadController: (name, handler) ->
+    fileName = utils.underscorize(name) + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
     if define?.amd
       require [moduleName], handler
@@ -95,80 +83,77 @@ module.exports = class Dispatcher
       handler require moduleName
 
   # Handler for the controller lazy-loading.
-  controllerLoaded: (controllerName, action, params, options,
-                     ControllerConstructor) ->
+  controllerLoaded: (route, params, options, Controller) ->
+    # Store the current route as the previous route.
+    @previousRoute = @currentRoute
+
+    # Setup the current route object.
+    @currentRoute = _.extend {}, route, previous: utils.beget @previousRoute
+
     # Initialize the new controller.
-    controller = new ControllerConstructor params, options
+    controller = new Controller params, @currentRoute, options
 
     # Execute before actions if necessary.
     methodName = if controller.beforeAction
       'executeBeforeActions'
     else
       'executeAction'
-    this[methodName](controller, controllerName, action, params, options)
+    this[methodName](controller, @currentRoute, params, options)
 
-  executeAction: (controller, controllerName, action, params, options) ->
-    # Shortcuts for the previous controller.
-    currentControllerName   = @currentControllerName or null
-    currentController       = @currentController     or null
-
-    @previousControllerName = currentControllerName
-
+  executeAction: (controller, route, params, options) ->
     # Dispose the previous controller.
-    if currentController
+    if @currentController
       # Notify the rest of the world beforehand.
-      @publishEvent 'beforeControllerDispose', currentController
-      # Passing the params and the new controller name.
-      currentController.dispose params, controllerName
+      @publishEvent 'beforeControllerDispose', @currentController
 
-    # Add the previous controller name to the routing options.
-    options.previousControllerName = currentControllerName
+      # Passing new parameters that the action method will receive.
+      @currentController.dispose params, route, options
 
     # Call the controller action with params and options.
-    controller[action] params, options
+    controller[route.action] params, route, options
 
     # Stop if the action triggered a redirect.
     return if controller.redirected
 
-    # Save the new controller.
-    @currentControllerName = controllerName
+    # Save the new controller and its parameters.
     @currentController = controller
-    @currentAction = action
     @currentParams = params
 
     # Adjust the URL.
     @adjustURL params, options
 
     # We're done! Spread the word!
-    @publishEvent 'startupController',
-      previousControllerName: @previousControllerName
-      controller: @currentController
-      controllerName: @currentControllerName
-      params: @currentParams
+    @publishEvent 'dispatcher:dispatch',
+      instance: @currentController
+      params: params
+      route: route
       options: options
 
   # Before actions with chained execution.
-  executeBeforeActions: (controller, controllerName, action, params,
-    options) ->
+  executeBeforeActions: (controller, route, params, options) ->
     beforeActions = []
-    args = arguments
 
     # Before actions can be extended by subclasses, so we need to check the
     # whole prototype chain for matching before actions. Before actions in
     # parent classes are executed before actions in child classes.
-    for acts in utils.getAllPropertyVersions controller, 'beforeAction'
+    for actions in utils.getAllPropertyVersions controller, 'beforeAction'
+
       # Iterate over the before actions in search for a matching
       # name with the arguments’ action name.
-      for name, beforeAction of acts
+      for name, action of actions
+
         # Do not add this object more than once.
-        if name is action or RegExp("^#{name}$").test(action)
-          if typeof beforeAction is 'string'
-            beforeAction = controller[beforeAction]
-          if typeof beforeAction isnt 'function'
+        if name is route.action or RegExp("^#{name}$").test route.action
+
+          if typeof action is 'string'
+            action = controller[action]
+
+          unless typeof action is 'function'
             throw new Error 'Controller#executeBeforeActions: ' +
-              "#{beforeAction} is not a valid beforeAction method for #{name}."
+              "#{action} is not a valid action method for #{name}."
+
           # Save the before action.
-          beforeActions.push beforeAction
+          beforeActions.push action
 
     # Save returned value and also immediately return in case the value is false.
     next = (method, previous = null) =>
@@ -177,10 +162,11 @@ module.exports = class Dispatcher
 
       # End of chain, finally start the action.
       unless method
-        @executeAction args...
+        @executeAction controller, route, params, options
         return
 
-      previous = method.call controller, params, options, previous
+      # Execute the next before action.
+      previous = method.call controller, params, route, options, previous
 
       # Detect a CommonJS promise in order to use pipelining below,
       # otherwise execute next method directly.

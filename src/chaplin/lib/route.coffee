@@ -112,20 +112,23 @@ module.exports = class Route
     options = if options then _.clone(options) else {}
 
     # If no query string was passed, use the current.
-    queryString = options.queryString ? @getCurrentQueryString()
+    query = options.query ? @getCurrentQuery()
 
     # Build params hash.
-    params = @buildParams path, queryString
+    params = @buildParams path, query
 
-    # Add a `path` routing option with the whole path match.
-    options.path = path
+    # Construct a route object to forward to the match event.
+    route = {path, @action, @controller, @name, query}
 
-    # Publish a global matchRoute event passing the route and the params.
+    # Remove the query string from routing options.
+    delete options.query
+
+    # Publish a global event passing the route and the params.
     # Original options hash forwarded to allow further forwarding to backbone.
-    @publishEvent 'matchRoute', this, params, options
+    @publishEvent 'router:match', route, params, options
 
   # Returns the query string for the current document.
-  getCurrentQueryString: ->
+  getCurrentQuery: ->
     location.search.substring 1
 
   # Create a proper Rails-like params hash, not an array like Backbone.
