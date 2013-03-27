@@ -1,9 +1,10 @@
-# [Chaplin.Application](src/chaplin/application.coffee)
+# [Chaplin.Application](../src/chaplin/application.coffee)
 
 The **Chaplin.Application** object is a bootstrapper and a point of extension
 for the core modules of **Chaplin**: the **[Dispatcher](#initdispatcheroptions)**, the **[Layout](#initlayoutoptions)**,
-and the **[Router](#initrouterroutes-options)**. The object is inteded to be extended by your
-application. The `initialize` method of your derived class must initialize
+the **[Router](#initrouterroutes-options)**, and the **[Composer](#initcomposeroptions)**.
+The object is inteded to be extended by your application. 
+The `initialize` method of your derived class must initialize
 the core modules by calling the `initDispatcher`, `initLayout`,
 and `initRouter` (`initRouter` should be invoked last).
 
@@ -18,9 +19,9 @@ module.exports = class Application extends Chaplin.Application
 
     # Initialize core components in the required order.
     @initDispatcher()
-    @initLayout()
-    @initComposer()
     @initRouter routes
+    @initComposer()
+    @initLayout()
     
     # Initiate the routing
     @startRouting()
@@ -28,7 +29,7 @@ module.exports = class Application extends Chaplin.Application
 
 ### Properties
 
-##### [title](src/chaplin/application.coffee#L23)
+##### title
 This is the top-level title that is defaulted into the options hash
 forwarded to the layout module. The default title template of the layout
 module will append this value to the subtitle passed to the `!adjustTitle`
@@ -46,7 +47,7 @@ mediator.publish '!adjustTitle', 'Apple'
 
 ### Methods
 
-##### [initDispatcher([options])](src/chaplin/application.coffee#L32)
+##### initDispatcher([options])
 Initializes the **dispatcher** module; forwards passed options to its
 contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.md)**
 for more information.
@@ -64,26 +65,7 @@ class Application extends Chaplin.Application
     @dispatcher = new Dispatcher options
 ```
 
-##### [initLayout([options])](src/chaplin/application.coffee#L35)
-Initializes the **layout** module; forwards passed options to its
-constructor. See **[Chaplin.Layout](./chaplin.layout.md)** for more
-information.
-
-To replace the layout with a derived class (possibly with various
-extensions), you'd override the `initLayout` method and construct the
-layout class as follows:
-
-```coffeescript
-# [...]
-_ = require 'underscore'
-Layout = require 'layout'
-class Application extends Chaplin.Application
-  # [...]
-  initLayout: (options) ->
-    @layout = new Layout _.defaults options, {@title}
-```
-
-##### [initRouter(routes, [options])](src/chaplin/application.coffee#L43)
+##### initRouter(routes, [options])
 Initializes the **router** module; forwards passed options to its
 constructor. This starts the routing off by checking the current URL against
 all defined routes and executes the matched handler. See **[Chaplin.Router](./chaplin.router.md)**
@@ -105,4 +87,47 @@ class Application extends Chaplin.Application
   initRouter: (routes, options) ->
     @router = new Router options
     routes? @router.match
+```
+
+##### startHistory()
+When all of the routes have been matched, call `startHistory()` to 
+begin monitoring routing events, and dispatching routes. Invoke this method
+after all of the components have been initialized as this will also
+match the current URL and dispatch the matched route.
+
+##### initComposer([options])
+Initializes the **composer** module; forwards passed options to its
+constructor. See **[Chaplin.Composer](./chaplin.composer.md)** for 
+more information.
+
+To replace the layout with a derived class (possibly with various
+extensions), you'd override the `initComposer` method and construct the
+composer class as follows:
+
+```coffeescript
+# [...]
+Composer = require 'composer'
+class Application extends Chaplin.Application
+  # [...]
+  initComposer: (options) ->
+    @composer = new Composer options
+```
+
+##### initLayout([options])
+Initializes the **layout** module; forwards passed options to its
+constructor. See **[Chaplin.Layout](./chaplin.layout.md)** for more
+information.
+
+To replace the layout with a derived class (possibly with various
+extensions), you'd override the `initLayout` method and construct the
+layout class as follows:
+
+```coffeescript
+# [...]
+_ = require 'underscore'
+Layout = require 'layout'
+class Application extends Chaplin.Application
+  # [...]
+  initLayout: (options) ->
+    @layout = new Layout _.defaults options, {@title}
 ```
