@@ -390,6 +390,15 @@ define [
 
         done()
 
+    it 'should dispose when redirecting to a URL', (done) ->
+      dispose = sinon.spy Test1Controller.prototype, 'dispose'
+      mediator.publish 'router:match', route1, params, options
+      mediator.publish 'router:match', redirectToURLRoute, params, options
+      loadTest1Controller ->
+        expect(dispose).was.calledOnce()
+        dispose.restore()
+        done()
+
     it 'should dispose itself correctly', (done) ->
       expect(dispatcher.dispose).to.be.a 'function'
       dispatcher.dispose()
