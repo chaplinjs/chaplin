@@ -117,12 +117,15 @@ module.exports = class Route
     # Build params hash.
     params = @buildParams path, queryString
 
-    # Add a `path` routing option with the whole path match.
-    options.path = path
+    # Construct a route object to forward to the match event.
+    route = {path, @action, @controller, @name, queryString}
 
-    # Publish a global matchRoute event passing the route and the params.
+    # Remove the query string from routing options.
+    delete options.queryString
+
+    # Publish a global event passing the route and the params.
     # Original options hash forwarded to allow further forwarding to backbone.
-    @publishEvent 'matchRoute', this, params, options
+    @publishEvent 'router:match', route, params, options
 
   # Returns the query string for the current document.
   getCurrentQueryString: ->
