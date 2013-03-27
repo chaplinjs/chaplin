@@ -1,22 +1,28 @@
-# Event Handling Overview
+# Event Handling
 
-![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
+For models and views, there are several wrapper methods for event handler registration. 
+In contrast to the direct methods, they will save memory because the handlers will 
+be removed correctly once the model or view is disposed. The methods will also be bound 
+to the caller for ease of registration.
 
-For models and views, there are several wrapper methods for event handler registration. In contrast to the direct methods, they will save memory because the handlers will be removed correctly once the model or view is disposed.
+## Mediator
 
-## Global Publish/Subscribe Events
+Global events use the `mediator` as an event channel. On most objects 
+in chaplin (including models, views, and controllers), there are shortcuts
+for manipulating global events. These methods are mixed into eventable objects by way of the [EventBroker][].
 
-In models and views, there is a shortcut for subscribing to global events:
+[EventBroker]: https://github.com/chaplinjs/chaplin/blob/master/docs/chaplin.event_broker.md
 
 ```coffeescript
-@subscribeEvent 'login', @doSomething
+@subscribeEvent 'dispatcher:dispatch', @dispatch
+@subscribeEvent '!router:route', -> console.log arguments...
 ```
 
-This method has the advantage of removing the subscription on model or view disposal.
+These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically 
+invoking `Chaplin.mediator.unsubscribe` in the `dispose` method of the eventable and providing some small
+type checking.
 
-The `subscribeEvent` method has a counterpart `unsubscribeEvent`. These mehods are defined in the `EventBroker` mixin, which also provides the `publishEvent` and `unsubscribeAllEvents` methods.
-
-## Model Events
+## Eventable
 
 In views, the standard `@model.on` way to register a handler for a model event should not be used. Use the memory-saving wrapper `listenTo` instead:
 
@@ -26,7 +32,7 @@ In views, the standard `@model.on` way to register a handler for a model event s
 
 In a model, it’s fine to use `on` directly as long as the handler is a method of the model itself.
 
-## User Input Events
+## User Input
 
 Most views handle user input by listening to DOM events. Backbone provides the `events` property to register event handlers declaratively. But this does not work nicely when views inherit from each other and a specific view needs to handle additional events.
 
@@ -45,3 +51,5 @@ In addition, `delegate` automatically binds the handler to the view object, so `
 @$el.off 'click', '.like-button'
 @$el.off 'click', '.close'
 ```
+
+![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
