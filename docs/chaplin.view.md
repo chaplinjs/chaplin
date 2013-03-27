@@ -287,6 +287,8 @@ Removes all regions registered by this view, automatically called on
 
 ## Subviews
 
+Subviews are usually used for limited scenarios when you want to split a view up into logical sections that are continuously re-rendered or form wizards, etc. but *only when dealing with the same model*.
+
 ### subview(name, [view])
 * **String name**,
 * **View view (when setting the subview)**
