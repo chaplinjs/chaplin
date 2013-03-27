@@ -175,6 +175,7 @@ module.exports = class View extends Backbone.View
     if events
       @_delegateEvents events
       return
+    return unless @events
     for classEvents in utils.getAllPropertyVersions this, 'events'
       if typeof classEvents is 'function'
         throw new TypeError 'View#delegateEvents: functions are not supported'
