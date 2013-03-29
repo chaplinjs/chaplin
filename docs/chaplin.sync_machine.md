@@ -36,28 +36,28 @@ Returns a boolean to determine if model or collection is currently syncing.
 
 ### unsync
 
-Sets the state machine's state to `unsynced` then triggers any events listening for the `unsynced` and `syncStateChanged` events.
+Sets the state machine's state to `unsynced` then triggers any events listening for the `unsynced` and `syncStateChange` events.
 
 
 <a name="beginSync"></a>
 
 ### beginSync
 
-Sets the state machine's state to `syncing` then triggers any events listening for the `syncing` and `syncStateChanged` events.
+Sets the state machine's state to `syncing` then triggers any events listening for the `syncing` and `syncStateChange` events.
 
 
 <a name="beginSync"></a>
 
 ### finishSync
 
-Sets the state machine's state to `synced` then triggers any events listening for the `synced` and `syncStateChanged` events.
+Sets the state machine's state to `synced` then triggers any events listening for the `synced` and `syncStateChange` events.
 
 
 <a name="abortSync"></a>
 
 ### abortSync
 
-Sets state machine's state back to the previous state if the state machine is in the `syncing` state. Then triggers any events listening for the previous state and `syncStateChanged` events.
+Sets state machine's state back to the previous state if the state machine is in the `syncing` state. Then triggers any events listening for the previous state and `syncStateChange` events.
 
 
 <a name="unsynced"></a>
