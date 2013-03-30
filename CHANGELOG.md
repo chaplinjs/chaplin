@@ -1,3 +1,36 @@
+# Chaplin 0.8.0 (30 March 2013)
+* Added `Chaplin.helpers` component. It contains Chaplin-related
+  functions. `Chaplin.utils` will contain generic functions.
+    * `helpers.reverse`
+* `Router#reverse` will now return full path
+* Improved `Chaplin.Application`:
+    * Separated router initialisation and start of listening for routing.
+      The first one as before resides in `Application#initRouter`.
+      `Application#startRouting`.
+* Improved `Chaplin.Controller`:
+    * All actions are now initialised with `params, route, options`
+      instead of `params, options`. New `route` argument contains
+      information about current route (`controller, action, name, path`)
+      and about previous (`route.previous`). `options` now
+    * When using redirection in actions, controller will automatically
+      dispose redirected controller.
+* Improved `Chaplin.Router`:
+    * `Router#reverse` will now prepend mount point.
+    * Removed RegExp routes. Use `constraints` route param and strings instead.
+* Improved `Chaplin.Layout`:
+    * Allowed registering regions.
+    * Added `Layout#isExternalLink` that is used when clicking on any event
+      and checks if current one is application-related.
+* Improved `Chaplin.View`:
+    * If `autoAttach` option is false, view will not be added to container.
+    * Empty-selector regions are now considered as bound to root view element.
+* Improved overall `View` and `CollectionView` performance for common cases.
+* Improved internal API:
+    * Renamed `matchRoute` global event to `router:match`
+    * Renamed `startupController` global event to `dispatcher:dispatch`
+    * Changed signatures of many `Dispatcher` methods, they now
+      pass `route` too.
+
 # Chaplin 0.7.0 (19 February 2013)
 * Added support of regions and regions composition with `Chaplin.Composer`.
   Composer grants the ability for views (and related data) to be
