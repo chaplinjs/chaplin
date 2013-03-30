@@ -131,13 +131,22 @@ define [
         container: testbed
         attach: sinon.spy()
 
+      check = (view) ->
+        parent = view.el.parentNode
+        # In IE8 stuff will have documentFragment as parentNode.
+        if parent
+          expect(parent.nodeType).to.be 11
+        else
+          expect(parent).to.be null
+
       view1 = new NoAutoAttachView1
+      window.view1 = view1
       expect(view1.attach).was.notCalled()
-      expect(view1.el.parentNode).to.be null
+      check view1
 
       view2 = new NoAutoAttachView2
       expect(view2.attach).was.notCalled()
-      expect(view2.el.parentNode).to.be null
+      check view2
 
     it 'should fire an addedToDOM event attching itself to the DOM', ->
       view = new TestView container: testbed

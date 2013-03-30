@@ -156,7 +156,7 @@ define [
       expect(link.target).to.be "_blank"
       expect(link.rel).to.be "external"
       expect(link.hash).to.be "#baz"
-      expect(link.pathname).to.be "/foo"
+      expect(link.pathname.replace(/^\//, '')).to.be "foo"
       expect(link.host).to.be "www.example.org:1234"
 
     it 'custom isExternalLink should not route if true', ->
