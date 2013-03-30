@@ -46,6 +46,9 @@ module.exports = class Route
 
     @createRegExp()
 
+    # You’re frozen when your heart’s not open.
+    Object.freeze? this
+
   reverse: (params) ->
     url = @pattern
     if _.isArray params
