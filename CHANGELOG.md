@@ -15,6 +15,8 @@
     * When using redirection in actions, controller will automatically
       dispose redirected controller.
 * Improved `Chaplin.Router`:
+    * All routes now have default names in format of
+      (controller + '#' + action).
     * `Router#reverse` will now prepend mount point.
     * Removed RegExp routes. Use `constraints` route param and strings instead.
 * Improved `Chaplin.Layout`:
