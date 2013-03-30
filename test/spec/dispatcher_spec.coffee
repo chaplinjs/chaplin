@@ -305,14 +305,15 @@ define [
       mediator.subscribe '!router:changeURL', spy
 
       path = 'my-little-path'
-      options = create {path}
-      mediator.publish 'router:match', route1, params, options
+      routeA = create route1, {path}
+      options = {}
+      mediator.publish 'router:match', routeA, params, options
 
       loadTest1Controller ->
         expect(spy).was.calledOnce()
         args = spy.firstCall.args
         expect(args[0]).to.be path
-        expect(args[1]).to.eql create(options, addedOptions)
+        expect(args[1]).to.eql addedOptions
 
         mediator.unsubscribe '!router:changeURL', spy
 
@@ -338,16 +339,17 @@ define [
       spy = sinon.spy()
       mediator.subscribe '!router:changeURL', spy
 
-      options =
-        path: 'my-little-path', queryString: '?foo=bar',
-        controller: 'test1', action: 'show'
-      mediator.publish 'router:match', route1, params, options
+      path = 'my-little-path'
+      query = 'foo=bar'
+
+      routeB = create route1, {path, query}
+      mediator.publish 'router:match', routeB, params, options
 
       loadTest1Controller ->
         expect(spy).was.calledOnce()
         args = spy.firstCall.args
-        expect(args[0]).to.be "#{options.path}?#{options.queryString}"
-        expect(args[1]).to.eql  create(options, addedOptions)
+        expect(args[0]).to.be "#{path}?#{query}"
+        expect(args[1]).to.eql addedOptions
 
         mediator.unsubscribe '!router:changeURL', spy
 
