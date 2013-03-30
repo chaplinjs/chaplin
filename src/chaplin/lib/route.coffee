@@ -30,7 +30,7 @@ module.exports = class Route
     @name = @options.name if @options.name?
 
     # Don’t allow ambiguity with controller#action.
-    if @name and /#/.test @name
+    if @name and @name.indexOf('#') isnt -1
       throw new Error 'Route: "#" cannot be used in name'
 
     # Set default route name.
