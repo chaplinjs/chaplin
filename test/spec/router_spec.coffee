@@ -270,6 +270,18 @@ define [
       it 'should deny regular expression as pattern', ->
         expect(-> router.match /url/, 'null#null').to.throwError()
 
+    describe 'Route Matching', ->
+
+      it 'should compare route value', ->
+        route = new Route 'params', 'hello', 'world'
+        expect(route.matches 'hello#world').to.be true
+        expect(route.matches controller: 'hello', action: 'world').to.be true
+        expect(route.matches name: 'hello#world').to.be true
+
+        expect(route.matches 'hello#worldz').to.be false
+        expect(route.matches controller: 'hello', action: 'worldz').to.be false
+        expect(route.matches name: 'hello#worldz').to.be false
+
     describe 'Route Reversal', ->
 
       it 'should allow for reversing a route instance to get its url', ->

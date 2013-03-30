@@ -49,6 +49,16 @@ module.exports = class Route
     # You’re frozen when your heart’s not open.
     Object.freeze? this
 
+  # Create a check predicate to determine if a route should be reversed.
+  matches: (criteria) ->
+    if typeof criteria is 'string'
+      criteria is @name
+    else
+      for name in ['name', 'action', 'controller']
+        property = criteria[name]
+        return false if property and property isnt this[name]
+      true
+
   reverse: (params) ->
     url = @pattern
     if _.isArray params

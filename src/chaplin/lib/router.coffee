@@ -129,19 +129,9 @@ module.exports = class Router # This class does not extend Backbone.Router.
   reverse: (criteria, params) ->
     root = @options.root
 
-    # Create a check predicate to determine if a route should be reversed.
-    check = if typeof criteria is 'string'
-      (route) ->
-        route.name is criteria
-    else
-      (route) ->
-        for name in ['name', 'action', 'controller']
-          property = criteria[name]
-          return false if property and property isnt route[name]
-        true
-
     # First filter the route handlers to those that are of the same name.
-    for handler in Backbone.history.handlers when check handler.route
+    handlers = Backbone.history.handlers
+    for handler in handlers when handler.route.matches criteria
       # Attempt to reverse using the provided parameter hash.
       reversed = handler.route.reverse params
 
