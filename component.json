@@ -7,7 +7,8 @@
     "requirejs": "2.1.x",
     "jquery": "1.9.x",
     "underscore": "1.4.x",
-    "backbone": "1.0.x"
+    "backbone": "1.0.x",
+    "benchmark": "git://github.com/bestiejs/benchmark.js.git"
   },
   "exportsOverride": {
     "mocha": {
