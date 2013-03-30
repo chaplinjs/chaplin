@@ -311,13 +311,19 @@ define [
         router.match 'phone/:one', 'null#2', name: 'phonebook'
         router.match 'params/:two', 'null#2', name: 'about'
         router.match 'fake/:three', 'fake#2', name: 'about'
+        router.match 'phone/:four', 'null#a'
 
       it 'should allow for registering routes with a name', ->
         register()
         names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
-        expect(names).to.eql ['home', 'phonebook', 'about', 'about']
+        expect(names).to.eql ['home', 'phonebook', 'about', 'about', 'null#a']
 
-      it 'should allow for reversing a route by its name', ->
+      it 'should allow for reversing a route by its default name', ->
+        register()
+        url = router.reverse 'null#a', {four: 41}
+        expect(url).to.be '/phone/41'
+
+      it 'should allow for reversing a route by its custom name', ->
         register()
         url = router.reverse 'phonebook', one: 145
         expect(url).to.be '/phone/145'

@@ -18,14 +18,23 @@ module.exports = class Route
   # Create a route for a URL pattern and a controller action
   # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
   constructor: (@pattern, @controller, @action, options) ->
+    # Disallow regexp routes.
     if _.isRegExp @pattern
-      throw new Error 'Route: RegExp routes are not supported.
+      throw new Error 'Route: RegExps are not supported.
         Use strings with :names and `constraints` option of route'
 
+    # Clone options.
     @options = if options then _.clone(options) else {}
 
     # Store the name on the route if given
     @name = @options.name if @options.name?
+
+    # Don’t allow ambiguity with controller#action.
+    if @name and /#/.test @name
+      throw new Error 'Route: "#" cannot be used in name'
+
+    # Set default route name.
+    @name ?= @controller + '#' + @action
 
     # Initialize list of :params which the route will use.
     @paramNames = []
@@ -36,6 +45,9 @@ module.exports = class Route
         'properties as action names'
 
     @createRegExp()
+
+    # You’re frozen when your heart’s not open.
+    Object.freeze? this
 
   reverse: (params) ->
     url = @pattern
