@@ -2,7 +2,6 @@
 * Added `Chaplin.helpers` component. It contains Chaplin-related
   functions. `Chaplin.utils` will contain generic functions.
     * `helpers.reverse`
-* `Router#reverse` will now return full path
 * Improved `Chaplin.Application`:
     * Separated router initialisation and start of listening for routing.
       The first one as before resides in `Application#initRouter`.
@@ -11,7 +10,8 @@
     * All actions are now initialised with `params, route, options`
       instead of `params, options`. New `route` argument contains
       information about current route (`controller, action, name, path`)
-      and about previous (`route.previous`). `options` now
+      and about previous (`route.previous`) and `options` just contain
+      options, passed to `Backbone.history.navigate`.
     * When using redirection in actions, controller will automatically
       dispose redirected controller.
 * Improved `Chaplin.Router`:
