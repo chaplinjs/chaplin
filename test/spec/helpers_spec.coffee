@@ -14,7 +14,7 @@ define [
       it 'should return the url for a named route', ->
         stubbedRouteHandler = (routeName, params, cb) ->
           expect(routeName).to.be 'foo'
-          expect(params).to.eql [{id: 3, d: "data"}]
+          expect(params).to.eql {id: 3, d: "data"}
           cb '/foo/bar'
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
@@ -24,7 +24,7 @@ define [
       it 'should return the url for a named route with empty path', ->
         stubbedRouteHandler = (routeName, params, cb) ->
           expect(routeName).to.be 'home'
-          expect(params).to.eql []
+          expect(params).to.be undefined
           cb '/'
         mediator.subscribe '!router:reverse', stubbedRouteHandler
 
@@ -41,6 +41,6 @@ define [
         catch err
           expect(err).to.be.an Error
 
-      it 'should return null if router doesn\'t respond', ->
+      it 'should return null if router does not respond', ->
         url = helpers.reverse 'foo', id: 3, d: "data"
         expect(url).to.be null
