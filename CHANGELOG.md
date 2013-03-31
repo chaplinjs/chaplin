@@ -1,11 +1,12 @@
-# Chaplin 0.8.0 (30 March 2013)
+# Chaplin 0.8.0 (31 March 2013)
 * Added `Chaplin.helpers` component. It contains Chaplin-related
   functions. `Chaplin.utils` will contain generic functions.
-    * `helpers.reverse`
+    * `helpers.reverse` allows to get route URL by its name and params.
 * Improved `Chaplin.Application`:
     * Separated router initialisation and start of listening for routing.
       The first one as before resides in `Application#initRouter`.
-      `Application#startRouting`.
+      `Application#startRouting`. You need to launch both.
+      This is breaking change and without it your app will not start routing.
 * Improved `Chaplin.Controller`:
     * All actions are now initialised with `params, route, options`
       instead of `params, options`. New `route` argument contains
