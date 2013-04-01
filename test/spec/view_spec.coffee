@@ -631,12 +631,26 @@ define [
         for prop in properties
           expect(view).not.to.have.own.property prop
 
-      it 'should dispose itself when the model or collection is disposed', ->
+      it 'should dispose itself when the model is disposed', ->
         model = new Model()
-        view = new TestView model: model
+        view = new TestView {model}
         model.dispose()
         expect(model.disposed).to.be true
         expect(view.disposed).to.be true
+
+      it 'should dispose itself when the collection is disposed', ->
+        collection = new Collection()
+        view = new TestView {collection}
+        collection.dispose()
+        expect(collection.disposed).to.be true
+        expect(view.disposed).to.be true
+
+      it 'should not dispose itself when the collection model is disposed', ->
+        collection = new Collection [{a: 1}, {a: 2}, {a: 3}]
+        view = new TestView {collection}
+        collection.at(0).dispose()
+        expect(collection.disposed).to.be false
+        expect(view.disposed).to.be false
 
       it 'should not render when disposed given render wasn’t overridden', ->
         # Vanilla View which doesn’t override render
