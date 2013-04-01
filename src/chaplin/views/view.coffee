@@ -101,7 +101,9 @@ module.exports = class View extends Backbone.View
     # Listen for disposal of the model or collection.
     # If the model is disposed, automatically dispose the associated view.
     @listenTo @model, 'dispose', @dispose if @model
-    @listenTo @collection, 'dispose', @dispose if @collection
+    if @collection
+      @listenTo @collection, 'dispose', (subject) =>
+        @dispose() if not subject or subject is @collection
 
     # Register all exposed regions.
     @publishEvent '!region:register', this if @regions?
