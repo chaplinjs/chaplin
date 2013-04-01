@@ -58,6 +58,11 @@ define [
       layout.dispose()
       testController.dispose()
 
+    it 'should have el, $el and $ props / methods', ->
+      expect(layout.el).to.be document
+      expect(layout.$el).to.be.a $
+      expect(layout.$('body')[0]).to.be document.body
+
     it 'should hide the view of an inactive controller', ->
       testController.view.$el.css 'display', 'block'
       mediator.publish 'beforeControllerDispose', testController

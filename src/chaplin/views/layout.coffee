@@ -77,6 +77,7 @@ module.exports = class Layout # This class does not extend View.
   # -------------------------------------
   delegateEvents: Backbone.View::delegateEvents
   undelegateEvents: Backbone.View::undelegateEvents
+  $: Backbone.View::$
 
   # Controller startup and disposal
   # -------------------------------
