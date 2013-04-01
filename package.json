@@ -1,6 +1,6 @@
 {
   "name": "chaplin",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "An Application Architecture Using Backbone.js",
   "repository": {
     "type": "git",

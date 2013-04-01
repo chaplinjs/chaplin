@@ -1,3 +1,12 @@
+# Chaplin 0.8.1 (1 April 2013)
+* Improved `Chaplin.Layout`:
+    * Added `Layout#$` method, which is the same as `View#$`.
+      This also fixes how regions behave in Layout.
+* Improved `Chaplin.View`:
+    * The check is now done when listening to collection `dispose`
+      event whether it really came from collection and not from its
+      model.
+
 # Chaplin 0.8.0 (31 March 2013)
 * Added `Chaplin.helpers` component. It contains Chaplin-related
   functions. `Chaplin.utils` will contain generic functions.
