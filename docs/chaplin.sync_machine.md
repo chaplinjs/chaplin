@@ -162,7 +162,7 @@ class Model extends Chaplin.Model
     options.success = (model, response) =>
       success? model, response
       @finishSync()
-    super
+    super options
 
 # Will render view when model data will arrive from server.
 class View extends Chaplin.View
