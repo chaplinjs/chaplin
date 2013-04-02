@@ -70,6 +70,6 @@ Extracts the parameters from the query string.
 
 ## Usage
 
-A new instance of `Chaplin.Route` is created for each route in the routes file of your application.  This occurs when the [match method](./router.md#matchpattern-target-options) of `Chaplin.Router` is called. The actual routes file should be in the root of your project along with your main application bootstrapper file.
+A new instance of `Chaplin.Route` is created for each route in the routes file of your application.  This occurs when the [match method](./chaplin.router.md#match-pattern-target-options-) of `Chaplin.Router` is called. The actual routes file should be in the root of your project along with your main application bootstrapper file.
 
-The routes file is basically a module that returns an anonymous function in which the [match method](./chaplin.router.md#matchpattern-target-options) is passed in as an argument.
+The routes file is basically a module that returns an anonymous function in which the [match method](./chaplin.router.md#match-pattern-target-options-) is passed in as an argument.
