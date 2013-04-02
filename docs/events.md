@@ -1,13 +1,13 @@
 # Event Handling
 
-For models and views, there are several wrapper methods for event handler registration. 
-In contrast to the direct methods, they will save memory because the handlers will 
-be removed correctly once the model or view is disposed. The methods will also be bound 
+For models and views, there are several wrapper methods for event handler registration.
+In contrast to the direct methods, they will save memory because the handlers will
+be removed correctly once the model or view is disposed. The methods will also be bound
 to the caller for ease of registration.
 
 ## Mediator
 
-Global events use the `mediator` as an event channel. On most objects 
+Global events use the `mediator` as an event channel. On most objects
 in chaplin (including models, views, and controllers), there are shortcuts
 for manipulating global events. These methods are mixed into eventable objects by way of the [EventBroker][].
 
@@ -18,7 +18,7 @@ for manipulating global events. These methods are mixed into eventable objects b
 @subscribeEvent '!router:route', -> console.log arguments...
 ```
 
-These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically 
+These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically
 invoking `Chaplin.mediator.unsubscribe` in the `dispose` method of the eventable and providing some small
 type checking.
 
@@ -51,5 +51,21 @@ In addition, `delegate` automatically binds the handler to the view object, so `
 @$el.off 'click', '.like-button'
 @$el.off 'click', '.close'
 ```
+
+## Events catalog
+
+Events that start with `!` immediately do something.
+
+* `beforeControllerDispose` — emitted before current controller is disposed.
+* `dispatcher:dispatch`
+* `!adjustTitle`
+* `!composer:retrieve`
+* `!composer:compose`
+* `!region:register`
+* `!region:unregister`
+* `!router:changeURL`
+* `!router:route`
+* `!router:routeByName`
+* `!router:match`
 
 ![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
