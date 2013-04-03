@@ -382,9 +382,9 @@ module.exports = class View extends Backbone.View
     # Remove element references, options,
     # model/collection references and subview lists.
     properties = [
-      'el', '$el',
-      'options', 'model', 'collection',
-      'subviews', 'subviewsByName',
+      'autoRender', 'autoAttach', 'container', 'containerMethod'
+      'el', '$el', 'options', 'model', 'collection',
+      'regions', 'region', 'subviews', 'subviewsByName', 'stale'
       '_callbacks'
     ]
     delete this[prop] for prop in properties
