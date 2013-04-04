@@ -153,9 +153,8 @@ module.exports = class View extends Backbone.View
     # Return the bound handler.
     bound
 
-  # Copy of original backbone method without `undelegateEvents` call.
+  # Copy of original Backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
-    # Call Backbone.delegateEvents on all superclasses events.
     for key, value of events
       handler = if typeof value is 'function' then value else this[value]
       throw new Error "Method '#{handler}' does not exist" unless handler
@@ -174,6 +173,7 @@ module.exports = class View extends Backbone.View
       @_delegateEvents events
       return
     return unless @events
+    # Call _delegateEvents for all superclasses’ `events`.
     for classEvents in utils.getAllPropertyVersions this, 'events'
       if typeof classEvents is 'function'
         throw new TypeError 'View#delegateEvents: functions are not supported'
