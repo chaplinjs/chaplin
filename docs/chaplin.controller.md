@@ -1,8 +1,9 @@
 # [Chaplin.Controller](src/chaplin/controllers/controller.coffee)
 
-A controller is the place where a model/collection and its associated views are instantiated. It's also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers which govern special views like a header, a navigation sidebar or a footer.
+A controller is the place where a model/collection and its associated views are instantiated. It’s also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers for central tasks, like for example a `SessionController`.
 
 ## Methods of `Chaplin.Controller`
+
 ### adjustTitle(subtitle)
 Adjusts document title to `subtitle - title`. Title template can be set when initializing `Dispatcher`.
 
@@ -22,7 +23,7 @@ Disposes all models and views on current `Controller` instance.
 
 ### Naming convention
 
-By default, all controllers must be placed into the `/controllers/` (the / stands for the root of the baseURL you have defined for your loader) folder and be suffixed with `_controller`. So for instance, the `LikeController` will be in the file `/controllers/like_controller.js`.
+By default, all controllers must be placed into the `/controllers/`  folder (the / stands for the root of the `baseURL` you have defined for your loader) and be suffixed with `_controller`. So for instance, the `LikesController` needs to be defined in the file `/controllers/likes_controller.js`.
 
 If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.md#initialize).
 
@@ -31,12 +32,12 @@ If you want to overwrite this behaviour, you can edit the `controller_path` and 
 
 By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on. These actions are called by the [Chaplin.Dispatcher](./chaplin.dispatcher.md) when a route matches.
 
-A controller is usually started following a route match.
+A controller is usually started following a route match. A route points to controller action, for example `likes#show`, which is the `show` action of the `LikesController`.
 
 
-### Before action filters
+### Before actions
 
-To execute code before the controller action is called, you can use the `beforeAction` object (e.g. to add some ACL checks).
+To execute code before the controller action is called, you can use the `beforeAction` object (e.g. to add access control checks).
 
 
 ### Example
@@ -68,19 +69,27 @@ define [
       @view = new FullLikeView model: @model
 ```
 
+### Creating models and views
 
-### Warning 1: Controller persistence
+A controller action should create a main view and save it as an instance property named `view`: `@view = new SomeView(…)`.
 
-Per default, a controller is instantiated afresh with every route match. That means models and views are disposed by default even if the new controller is the same as the old controller. To persist models and views, it is recommended to save them in a central store, not on the controller instances.
+Normal models and collection should also be saved as instance properties so Chaplin can reach them.
 
+### Controller disposal and object persistence
 
-### Warning 2: Application build
+Per default, a controller is instantiated afresh with every route match. That means models and views are disposed by default even if the new controller is the same as the old controller.
 
-When you go in production, you may want to package your javascript files togethers using a build tool like `r.js`.
+To persist models and views in a controlled way, it is recommended to use the [Chaplin.Composer](./chaplin.composer.md).
 
-Controllers are dynamically loaded from the `Chaplin.Dispatcher` using the `require()` method. Build tools (like r.js) ignore the files loaded in the code using the `require()` method and only consider the one in the `define()` one.
+Chaplin will automatically dispose all models and views that are properties of the controller instance. If you’re using the Composer to reuse models and views, please use local variables instead of controller properties. Otherwise Chaplin will dispose them.
 
-It means that build tools will ignore your controllers and won't include them in your package. You need to include them manually, for instance with r.js:
+### Including Controllers in the production build
+
+In your production environment, you may want to package your files together using a build tool like [r.js](http://requirejs.org/docs/optimization.html).
+
+Controllers are dynamically loaded from the `Chaplin.Dispatcher` using the `require()` method. Build tools like r.js can’t know about files that are lazy-loaded using `require()`. They only consider the static dependencies specified by `define()`.
+
+This means that build tools will ignore your controllers and won’t include them in your package. You need to include them manually, for instance with r.js:
 
 ```yaml
 paths:
