@@ -21,18 +21,18 @@ Disposes all models and views on current `Controller` instance.
 
 ## Usage
 
-### Naming convention
-
-By default, all controllers must be placed into the `/controllers/`  folder (the / stands for the root of the `baseURL` you have defined for your loader) and be suffixed with `_controller`. So for instance, the `LikesController` needs to be defined in the file `/controllers/likes_controller.js`.
-
-If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.md#initialize).
-
-
 ### Structure
 
 By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on. These actions are called by the [Chaplin.Dispatcher](./chaplin.dispatcher.md) when a route matches.
 
 A controller is usually started following a route match. A route points to controller action, for example `likes#show`, which is the `show` action of the `LikesController`.
+
+
+### Naming convention
+
+By default, all controllers must be placed into the `/controllers/`  folder (the / stands for the root of the `baseURL` you have defined for your loader) and be suffixed with `_controller`. So for instance, the `LikesController` needs to be defined in the file `/controllers/likes_controller.js`.
+
+If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.md#initialize).
 
 
 ### Before actions
