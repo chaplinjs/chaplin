@@ -23,6 +23,7 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 ### initialize(options)
 * **options (default: empty hash)**
     * `autoRender` see [autoRender](#autorender)
+    * `autoAttach` see [autoAttach](#autoattach)
     * `container` see [container](#container)
     * `containerMethod` see [containerMethod](#containermethod)
     * all standard [Backbone constructor
@@ -43,9 +44,10 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
   provides `getTemplateFunction` and `getTemplateData` for this purpose.
 
   Set [`autoRender`](#autorender) to true to enable rendering upon
-  View instantiation. Will automatically append to a [`container`](#container)
-  if one is set, although the method of appending can be overriden
-  by setting the [`containerMethod`](#containermethod) property
+  View instantiation. If [`autoAttach`](#autoattach) is enabled, this
+  will automatically append to the view to a [`container`](#container)
+  The method of appending can be overridden using the
+  [`containerMethod`](#containermethod) property
   (to `html`, `before`, `prepend`, etc).
 
 ### getTemplateFunction()
@@ -106,28 +108,37 @@ getTemplateData: ->
 
 ## attach
   Attach is called after the prototype chain has completed for View#render.
-  It attaches the View to its `container` element.
+  It attaches the View to its `container` element and fires an `addedToDOM` event
+  at the view on success.
 
 ## Options for auto-rendering and DOM appending
 
 ### autoRender
 * **Boolean, default: false**
 
-  Specifies whether the the View's `render` method should be called when
+  Specifies whether the View's `render` method should be called automatically when
   a view is instantiated.
+
+### autoAttach
+* **Boolean, default: true**
+
+  Specifies whether the View's `attach` method should be called automatically after
+  `render` was called.
 
 ### container
 * **jQuery object, selector string, or element, default: null**
 
-  A selector for the View's containg element into which the `$el`
-  will be rendered. The container must exist in the DOM.
+  A container element into which the view’s element will be rendered.
+  This may be an DOM element, a jQuery object or a selector string.
+  In the latter case the container must already exist in the DOM.
 
   Set this property in a derived class to specify the container element.
-  Normally this is a selector string but it might also be an element or
-  jQuery object. View is automatically inserted into the container when
-  it’s rendered (in the `attach` method). As an alternative you
-  might pass a `container` option to the constructor.
+  As an alternative you might pass a `container` option to the constructor.
 
+  When the `container` is set and [`autoAttach`](#autoattach) is true, the view
+  is automatically inserted into the container when it’s rendered
+  (using the [`attach`](#attach) method).
+  
   A container is often an empty element within a parent view.
 
 ### containerMethod
