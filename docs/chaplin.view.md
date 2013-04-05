@@ -286,33 +286,37 @@ Removes all regions registered by this view, automatically called on
 
 ## Subviews
 
-Subviews are usually used for limited scenarios when you want to split a view up into logical sections that are continuously re-rendered or form wizards, etc. but *only when dealing with the same model*.
+Subviews are usually used for limited scenarios when you want to split a view up into
+logical sections that are continuously re-rendered or form wizards, etc.
+but *only when dealing with the same model*.
 
 ### subview(name, [view])
 * **String name**,
 * **View view (when setting the subview)**
 
-  Add a subview to the View to be referenced by `name`. Calling with just the
+  Register a subview with the given `name`. Calling the method with just the
   `name` argument will return the subview associated with that `name`.
 
-  Subviews are not automatically rendered. This is often done in an
-  inheriting view (i.e. in [CollectionView](./chaplin.collection_view.md)
-  or your own PageView base class).
+  This just registers a subview so it can be disposed when its parent view is disposed.
+  Subviews are not automatically rendered and attached to the current view.
+  You can use the `autoRender` and `container` options to render and attach the view.
+  
+  If you register a subview with the same name twice, the previous subview will be disposed.
+  This ensures that there is only one subview under the given name.
 
 ### removeSubview(nameOrView)
-Remove the specified subview. Can be called with either the `name` associated with the subview, or a reference to the subview instance.
+
+Remove the specified subview and dispose it. Can be called with either the `name` associated with the subview, or a reference to the subview instance.
 
 ### Usage
 
 ```coffeescript
 class YourView extends View
-  renderSubviews: ->
-    @subview 'name', new View
-    @subview('name').render()
 
-  attach: ->
+  render: ->
     super
-    @renderSubviews()
+    infoboxView = new InfoBox autoRender: true, container: @el
+    @subview 'infobox', infoboxView
 ```
 
 # Publish/Subscribe
