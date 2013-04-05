@@ -20,12 +20,11 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 * Creating subviews
 * Disposal which cleans up all subviews, model bindings and Pub/Sub events
 
-<a id="initialize"></a>
 ### initialize(options)
 * **options (default: empty hash)**
-    * `autoRender` see [autoRender](#autoRender)
+    * `autoRender` see [autoRender](#autorender)
     * `container` see [container](#container)
-    * `containerMethod` see [containerMethod](#containerMethod)
+    * `containerMethod` see [containerMethod](#containermethod)
     * all standard [Backbone constructor
   options](http://backbonejs.org/#View-constructor) (`model`, `collection`,
   `el`, `id`, `className`, `tagName` and `attributes`)
@@ -37,20 +36,18 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
   Backbone's initialize method, Chaplin's initialize is required to
   create the instance's subviews and listen for model or collection disposal.
 
-<a id="rendering"></a>
 ## Rendering: getTemplateFunction, render, …
 
   Your application should provide a standard way of rendering DOM
   nodes by creating HTML from templates and template data. Chaplin
   provides `getTemplateFunction` and `getTemplateData` for this purpose.
 
-  Set [`autorender`](#autoRender) to true to enable rendering upon
+  Set [`autoRender`](#autorender) to true to enable rendering upon
   View instantiation. Will automatically append to a [`container`](#container)
   if one is set, although the method of appending can be overriden
-  by setting the [`containerMethod`](#containerMethod) property
+  by setting the [`containerMethod`](#containermethod) property
   (to `html`, `before`, `prepend`, etc).
 
-<a id="getTemplateFunction"></a>
 ### getTemplateFunction()
 * **function (throws error if not overriden)**
 
@@ -82,7 +79,6 @@ getTemplateFunction: ->
   precompile the template functions to improve application performance
 
 
-<a id="getTemplateData"></a>
 ### getTemplateData()
 * **function that returns Object (throws error if not overriden)**
 
@@ -103,28 +99,23 @@ getTemplateData: ->
 
   often overriden in a base model class to intelligently pick out attributes
 
-<a id="render"></a>
 ### render
   By default calls the `templateFunction` with the `templateData` and sets the html
   of the `$el`. Can be overriden in your base view if needed, though should be
   suitable for the majority of cases.
 
-<a id="attach"></a>
 ## attach
   Attach is called after the prototype chain has completed for View#render.
   It attaches the View to its `container` element.
 
-<a id="DOM-options"></a>
 ## Options for auto-rendering and DOM appending
 
-<a id="autoRender"></a>
 ### autoRender
 * **Boolean, default: false**
 
   Specifies whether the the View's `render` method should be called when
   a view is instantiated.
 
-<a id="container"></a>
 ### container
 * **jQuery object, selector string, or element, default: null**
 
@@ -139,7 +130,6 @@ getTemplateData: ->
 
   A container is often an empty element within a parent view.
 
-<a id="containerMethod"></a>
 ### containerMethod
 * **String, jQuery object method (default: 'append')**
 
@@ -148,7 +138,6 @@ getTemplateData: ->
 
 ## Event delegation
 
-<a id="listen"></a>
 ### listen
 * **Object**
 
@@ -171,7 +160,6 @@ getTemplateData: ->
       'eventName': -> alert 'Hello!'
   ```
 
-<a id="delegate"></a>
 ### delegate(eventType, [selector], handler)
 * **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
 * **String selector (optional, if not set will bind to the view's $el)**,
