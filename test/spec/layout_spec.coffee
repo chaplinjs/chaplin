@@ -90,16 +90,16 @@ define [
 
     it 'should correctly pass the query string', ->
       path = '/internal/link'
-      queryString = 'foo=bar&baz=qux'
+      query = 'foo=bar&baz=qux'
 
       stub = sinon.stub().yields true
       mediator.subscribe '!router:route', stub
-      linkAttributes = href: "#{path}?#{queryString}"
+      linkAttributes = href: "#{path}?#{query}"
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
       [passedPath, passedOptions, passedCallback] = stub.firstCall.args
       expect(passedPath).to.be path
-      expect(passedOptions).to.eql {queryString}
+      expect(passedOptions).to.eql {query}
       expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 

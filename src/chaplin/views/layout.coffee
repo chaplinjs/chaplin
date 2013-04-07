@@ -161,15 +161,15 @@ module.exports = class Layout # This class does not extend View.
 
     if isAnchor
       path = el.pathname
-      queryString = el.search.substring 1
+      query = el.search.substring 1
       # Append leading slash for IE8.
       path = "/#{path}" if path.charAt(0) isnt '/'
     else
-      [path, queryString] = href.split '?'
-      queryString ?= ''
+      [path, query] = href.split '?'
+      query ?= ''
 
     # Create routing options and callback.
-    options = {queryString}
+    options = {query}
     callback = (routed) ->
       # Prevent default handling if the URL could be routed.
       if routed
