@@ -125,7 +125,7 @@ module.exports = class Route
     options = if options then _.clone(options) else {}
 
     # If no query string was passed, use the current.
-    query = options.query ? @getCurrentQuery()
+    query = options.queryString ? @getCurrentQuery()
 
     # Build params hash.
     params = @buildParams path, query
@@ -134,7 +134,7 @@ module.exports = class Route
     route = {path, @action, @controller, @name, query}
 
     # Remove the query string from routing options.
-    delete options.query
+    delete options.queryString
 
     # Publish a global event passing the route and the params.
     # Original options hash forwarded to allow further forwarding to backbone.
