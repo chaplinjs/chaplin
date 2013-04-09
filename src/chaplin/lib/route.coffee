@@ -145,10 +145,10 @@ module.exports = class Route
     location.search.substring 1
 
   # Create a proper Rails-like params hash, not an array like Backbone.
-  buildParams: (path, queryString) ->
+  buildParams: (path, query) ->
     _.extend {},
       # Add params from query string.
-      @extractQueryParams(queryString),
+      @extractQueryParams(query),
       # Add named params from pattern matches.
       @extractParams(path),
       # Add additional params from options as they might
@@ -170,10 +170,10 @@ module.exports = class Route
     params
 
   # Extract parameters from the query string.
-  extractQueryParams: (queryString) ->
+  extractQueryParams: (query) ->
     params = {}
-    return params unless queryString
-    pairs = queryString.split '&'
+    return params unless query
+    pairs = query.split '&'
     for pair in pairs
       continue unless pair.length
       [field, value] = pair.split '='
