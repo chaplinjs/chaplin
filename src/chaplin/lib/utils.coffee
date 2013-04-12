@@ -71,11 +71,6 @@ utils =
   upcase: (str) ->
     str.charAt(0).toUpperCase() + str.substring(1)
 
-  # underScoreHelper -> under_score_helper.
-  underscorize: (string) ->
-    string.replace /[A-Z]/g, (char, index) ->
-      (if index isnt 0 then '_' else '') + char.toLowerCase()
-
   # Escapes a string to use in a regex.
   escapeRegExp: (str) ->
     return String(str or '').replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
