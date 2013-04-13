@@ -158,8 +158,8 @@ module.exports = class CollectionView extends View
   # -----------------
 
   # When an item is added, create a new view and insert it.
-  itemAdded: (item, collection, options = {}) =>
-    @insertView item, @renderItem(item), options.index
+  itemAdded: (item, collection, options) =>
+    @insertView item, @renderItem(item), options.at
 
   # When an item is removed, remove the corresponding view from DOM and caches.
   itemRemoved: (item) =>
@@ -338,14 +338,12 @@ module.exports = class CollectionView extends View
         'must be defined or the initItemView() must be overridden.'
 
   # Inserts a view into the list at the proper position.
-  insertView: (item, view, index = null, enableAnimation = true) ->
+  insertView: (item, view, position, enableAnimation = true) ->
     enableAnimation = false if @animationDuration is 0
 
-    # Get the insertion offset.
-    position = if typeof index is 'number'
-      index
-    else
-      @collection.indexOf item
+    # Get the insertion offset if not given.
+    unless typeof position is 'number'
+      position = @collection.indexOf item
 
     # Is the item included in the filter?
     included = if typeof @filterer is 'function'
