@@ -1,4 +1,4 @@
-# [Chaplin.Dispatcher](src/chaplin/dispatcher.coffee)
+# [Chaplin.Dispatcher](../src/chaplin/dispatcher.coffee)
 
 The `Dispatcher` sits between the router and the controllers. It listens for a routing event to occur and then:
 

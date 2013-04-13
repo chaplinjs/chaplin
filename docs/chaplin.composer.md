@@ -1,4 +1,4 @@
-# [Chaplin.Composer](src/chaplin/composer.coffee)
+# [Chaplin.Composer](../src/chaplin/composer.coffee)
 
 ## Overview
 

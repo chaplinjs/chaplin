@@ -1,4 +1,4 @@
-# [Chaplin.support](src/chaplin/lib/support.coffee)
+# [Chaplin.support](../src/chaplin/lib/support.coffee)
 
 Provides feature detection that is used internally to determine the code path
 so that ECMAScript 5 features can be used and not break compatibility with

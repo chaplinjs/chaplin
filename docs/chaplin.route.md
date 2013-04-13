@@ -1,4 +1,4 @@
-# [Chaplin.Route](src/chaplin/lib/route.coffee)
+# [Chaplin.Route](../src/chaplin/lib/route.coffee)
 
 The `Chaplin Route` is used by `Chaplin.Router` to generate regular expressions and extract pramaters from a given pattern.
 

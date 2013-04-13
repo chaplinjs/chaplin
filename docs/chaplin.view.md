@@ -1,4 +1,4 @@
-# [Chaplin.View](src/chaplin/views/view.coffee)
+# [Chaplin.View](../src/chaplin/views/view.coffee)
 
 Chaplin’s `View` class is a highly extended and adapted Backbone `View`. All views should inherit from this class to avoid repetition.
 
@@ -138,7 +138,7 @@ getTemplateData: ->
   When the `container` is set and [`autoAttach`](#autoattach) is true, the view
   is automatically inserted into the container when it’s rendered
   (using the [`attach`](#attach) method).
-  
+
   A container is often an empty element within a parent view.
 
 ### containerMethod
@@ -300,7 +300,7 @@ but *only when dealing with the same model*.
   This just registers a subview so it can be disposed when its parent view is disposed.
   Subviews are not automatically rendered and attached to the current view.
   You can use the `autoRender` and `container` options to render and attach the view.
-  
+
   If you register a subview with the same name twice, the previous subview will be disposed.
   This ensures that there is only one subview under the given name.
 

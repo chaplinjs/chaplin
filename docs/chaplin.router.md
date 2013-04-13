@@ -1,4 +1,4 @@
-# [Chaplin.Router](src/chaplin/lib/router.coffee)
+# [Chaplin.Router](../src/chaplin/lib/router.coffee)
 The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `router:match` event is triggered.
 
 The Chaplin `Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from Backbone’s `Router`. It’s a different implementation with several advantages over the standard router.
@@ -18,26 +18,14 @@ match 'likes/:id', controller: 'controllers/likes', action: 'show'
 
 ## Methods of `Chaplin.Router`
 
-### createHistory
-
+### createHistory()
 Creates the `Backbone.History` instance
 
-
-<a name="startHistory"></a>
-
-### startHistory
-
+### startHistory()
 Starts the `Backbone.History` instance.  This method should be called after all the routes have been registered.
 
-
-<a name="stopHistory"></a>
-
-### stopHistory
-
+### stopHistory()
 Stops the `Backbone.History` instance from observing URL changes.
-
-
-<a name="match"></a>
 
 ### match( [pattern], [target], [options={}] )
 
@@ -85,7 +73,6 @@ getUrl = (routeName, params...) ->
 getUrl 'like', id: 581  # => likes/581
 ```
 
-<a name="route"></a>
 
 ### route( [path] )
 
@@ -95,7 +82,6 @@ This looks quite like `Backbone.history.loadUrl`, but it accepts an absolute URL
 
 * **path**: an absolute URL with a leading slash
 
-<a name="routeHandler"></a>
 
 ### routeHandler( [path], [callback] )
 
@@ -105,7 +91,6 @@ When the
 * **path**: an absolute URL with a leading slash
 * **callback**: a callback which is called in any case after routing.
 
-<a name="changeURL"></a>
 
 ### changeURL( [url] )
 
@@ -114,7 +99,6 @@ Changes the current URL and adds a history entry.  Does not trigger any routes.
 * **url**: string that is going to be pushed as the pages url
 
 
-<a name="changeURLHandler"></a>
 
 ### changeURLHandler( [url] )
 
@@ -123,9 +107,8 @@ Handler for the globalized `!router:changeURL` event.  Calls `@changeURL`.
 * **url**: string that is going to be pushed as the pages url
 
 
-<a name="dispose"></a>
 
-### dispose
+### dispose()
 
 Stops the Backbone.history instance and removes it from the Router object.  Also unsubscribes any events attached to the Router.  Attempts to freeze the Router to prevent any changes to the Router. See [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
 

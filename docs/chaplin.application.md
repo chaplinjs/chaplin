@@ -3,7 +3,7 @@
 The **Chaplin.Application** object is a bootstrapper and a point of extension
 for the core modules of **Chaplin**: the **[Dispatcher](#initdispatcheroptions)**, the **[Layout](#initlayoutoptions)**,
 the **[Router](#initrouterroutes-options)**, and the **[Composer](#initcomposeroptions)**.
-The object is inteded to be extended by your application. 
+The object is inteded to be extended by your application.
 The `initialize` method of your derived class must initialize
 the core modules by calling the `initDispatcher`, `initLayout`,
 and `initRouter` (`initRouter` should be invoked last).
@@ -18,11 +18,11 @@ module.exports = class Application extends Chaplin.Application
     # No need to call super as the base class method is a no-op.
 
     # Initialize core components in the required order.
-    @initDispatcher()
     @initRouter routes
+    @initDispatcher()
     @initComposer()
     @initLayout()
-    
+
     # Initiate the routing
     @startRouting()
 ```
@@ -90,14 +90,14 @@ class Application extends Chaplin.Application
 ```
 
 ##### startHistory()
-When all of the routes have been matched, call `startHistory()` to 
+When all of the routes have been matched, call `startHistory()` to
 begin monitoring routing events, and dispatching routes. Invoke this method
 after all of the components have been initialized as this will also
 match the current URL and dispatch the matched route.
 
 ##### initComposer([options])
 Initializes the **composer** module; forwards passed options to its
-constructor. See **[Chaplin.Composer](./chaplin.composer.md)** for 
+constructor. See **[Chaplin.Composer](./chaplin.composer.md)** for
 more information.
 
 To replace the layout with a derived class (possibly with various

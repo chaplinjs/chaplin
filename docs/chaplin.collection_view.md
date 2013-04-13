@@ -1,4 +1,4 @@
-# [Chaplin.CollectionView](src/chaplin/views/collection_view.coffee)
+# [Chaplin.CollectionView](../src/chaplin/views/collection_view.coffee)
 
 The `CollectionView` is responsible for displaying collections. For every item in a collection, it instantiates a given item view and inserts it into the DOM. It reacts to collection change events (`add`, `remove` and `reset`) and provides basic filtering, caching of views, fallback content and loading indicators.
 

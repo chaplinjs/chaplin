@@ -52,18 +52,6 @@ utils.upcase 'larry bird' # 'Larry bird'
 utils.upcase 'AIR'        # 'AIR'
 ```
 
-## underscorize(string)
-* **String string**
-* **returns underscorized String**
-
-Convert a camelCased string to an entirely lowercased, underscore-
-separated string. Each capital leter is considered the beginning
-of a word.
-
-```coffeescript
-utils.underscorize 'underScoreHelper' # under_score_helper
-```
-
 ## modifierKeyPressed
 * **jQuery event**
 * **returns boolean**
