@@ -61,8 +61,3 @@ define [
         expect(utils.upcase 'stuff').to.be 'Stuff'
         expect(utils.upcase 'стафф').to.be 'Стафф'
         expect(utils.upcase '123456').to.be '123456'
-
-    describe 'underscorize', ->
-      it 'should convert camelCase to underscore_case', ->
-        expect(utils.underscorize 'userNameAndAge').to.be 'user_name_and_age'
-        expect(utils.underscorize 'User').to.be 'user'

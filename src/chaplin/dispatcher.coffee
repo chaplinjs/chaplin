@@ -75,7 +75,7 @@ module.exports = class Dispatcher
   # The default implementation uses require() from a AMD module loader
   # like RequireJS to fetch the constructor.
   loadController: (name, handler) ->
-    fileName = utils.underscorize(name) + @settings.controllerSuffix
+    fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
     if define?.amd
       require [moduleName], handler
