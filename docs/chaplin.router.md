@@ -18,8 +18,6 @@ match 'likes/:id', controller: 'controllers/likes', action: 'show'
 
 ## Methods of `Chaplin.Router`
 
-<a name="createHistory"></a>
-
 ### createHistory
 
 Creates the `Backbone.History` instance

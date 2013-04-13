@@ -9,8 +9,6 @@ The `Dispatcher` sits between the router and the controllers. It listens for a r
 
 ## Methods of `Chaplin.Dispatcher`
 
-<a name="initialize"></a>
-
 ### initialize( [options={}] )
 
 * **options**:

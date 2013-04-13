@@ -4,14 +4,10 @@ The `Chaplin Route` is used by `Chaplin.Router` to generate regular expressions 
 
 ## Methods of `Chaplin.Route`
 
-<a name="createRegExp"></a>
-
 ### createRegExp
 
 Creates the actual regular expression that Backbone.History#LoadUrl uses to determine if the current url is a match.
 
-
-<a name="addParamName"></a>
 
 ### addParamName([match], [paramName])
 
@@ -21,16 +17,12 @@ Determines if the pattern passed is a reserved named, if not than it is added to
 * **paramName**: the parameter with the colon stripped `user`
 
 
-<a name="test"></a>
-
 ### test([path])
 
 Tests if the route matches a path and applies any parameter constraints.  This is called by Backbone.History#Loadurl.
 
 * **path**: a relative path to check against
 
-
-<a name="handler"></a>
 
 ### handler([path], [options])
 
@@ -40,8 +32,6 @@ The handler is called by Backbone.History when the route is matched.  It is also
 * **options**: an optional object
 
 
-<a name="buildParams"></a>
-
 ### buildParams([path], [options])
 
 Creates a proper Rails-like params hash, not an array like Backbone `matches` and `additionalParams` arguments are optional.
@@ -50,16 +40,12 @@ Creates a proper Rails-like params hash, not an array like Backbone `matches` an
 * **options**: an optional object
 
 
-<a name="extractParams"></a>
-
 ### extractParams([path])
 
 Extracts the named parameters from the URL path.
 
 * **path**: the URL path
 
-
-<a name="extractQueryParams"></a>
 
 ### extractQueryParams([path])
 

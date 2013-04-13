@@ -5,28 +5,20 @@
 ## Methods of `Chaplin.Model`
 All `Backbone.Model` [methods](http://backbonejs.org/#Model).
 
-<a name="initDeferred"></a>
-
 ### initDeferred
 
 Creates a new [jQuery Deferred object](http://api.jquery.com/category/deferred-object/) instance.
-
-<a name="getAttributes"></a>
 
 ### getAttributes
 
 Gets the attributes from the view template and can be overwritten by decorators which cannot create a proper 'attributes' getter due to the absence of getters and setters in ECMAScript 3.
 
 
-<a name="serialize"></a>
-
 ### serialize([model])
 
 Maps models to their attributes recursively. Creates an object which delegates to the original attributes when a property needs to be overwritten.
 
 * **model**: A model which needs to be serialized
-
-<a name="dispose"></a>
 
 ### dispose
 

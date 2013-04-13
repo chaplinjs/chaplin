@@ -4,63 +4,45 @@ The  `Chaplin.SyncMachine` is a [finite-state machine](http://en.wikipedia.org/w
 
 ## Methods of `Chaplin.SyncMachine`
 
-<a name="syncState"></a>
-
 ### syncState
 
 Returns the current synchronization state of the machine.
 
-
-<a name="isUnsynced"></a>
 
 ### isUnsynced
 
 Returns a boolean to determine if model or collection is unsynced.
 
 
-<a name="isSynced"></a>
-
 ### isSynced
 
 Returns a boolean to determine if model or collection is synced.
 
-
-<a name="isSyncing"></a>
 
 ### isSyncing
 
 Returns a boolean to determine if model or collection is currently syncing.
 
 
-<a name="unsync"></a>
-
 ### unsync
 
 Sets the state machine's state to `unsynced` then triggers any events listening for the `unsynced` and `syncStateChange` events.
 
-
-<a name="beginSync"></a>
 
 ### beginSync
 
 Sets the state machine's state to `syncing` then triggers any events listening for the `syncing` and `syncStateChange` events.
 
 
-<a name="beginSync"></a>
-
 ### finishSync
 
 Sets the state machine's state to `synced` then triggers any events listening for the `synced` and `syncStateChange` events.
 
 
-<a name="abortSync"></a>
-
 ### abortSync
 
 Sets state machine's state back to the previous state if the state machine is in the `syncing` state. Then triggers any events listening for the previous state and `syncStateChange` events.
 
-
-<a name="unsynced"></a>
 
 ### unsynced([callback], [context=this])
 
@@ -70,8 +52,6 @@ Unsynced is a convenience method which will execute a callback in a specified co
 * **context**: the context in which the callback should execute in. Defaults to `this`.
 
 
-<a name="syncing"></a>
-
 ### syncing([callback], [context=this])
 
 Syncing is a convenience method which will execute a callback in a specified context whenever the state machine enters into the `syncing` state.
@@ -80,8 +60,6 @@ Syncing is a convenience method which will execute a callback in a specified con
 * **context**: the context in which the callback should execute in. Defaults to `this`.
 
 
-<a name="synced"></a>
-
 ### synced([callback], [context=this])
 
 Synced is a convenience method which will execute a callback in a specified context whenever the state machine enters into the `synced` state.
@@ -89,8 +67,6 @@ Synced is a convenience method which will execute a callback in a specified cont
 * **callback**: a function to be called when the `synced` event occurs
 * **context**: the context in which the callback should execute in. Defaults to `this`.
 
-
-<a name="syncStateChange"></a>
 
 ### syncStateChange([callback], [context=this])
 

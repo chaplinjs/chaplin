@@ -4,8 +4,6 @@
 
 ## Methods of `Chaplin.Layout`
 
-<a name="initialize"></a>
-
 ### initialize([options={}])
 
 * **options**:
@@ -20,42 +18,30 @@
     * **titleTemplate**: a function which returns the document title. Per default, it gets a object passed with the properties `title` and `subtitle`. *Default: _.template("<%= subtitle %> - <%= title %>")*
 
 
-<a name="delegateEvents"></a>
-
 ### delegateEvents([events])
 
 A wrapper for `Backbone.View.delegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-delegateEvents) for more details.
 
-
-<a name="undelegateEvents"></a>
 
 ### undelegateEvents()
 
 A wrapper for `Backbone.View.undelegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-undelegateEvents) for more details.
 
 
-<a name="hideOldView"></a>
-
 ### hideOldView(controller)
 
 Hide the active (old) view on the `beforeControllerDispose` event sent by the dispatcher on route change and scroll to the coordinates specified by the initialize `scrollTo` option.
 
-
-<a name="showNewView"></a>
 
 ### showNewView(context)
 
 Show the new view on the `dispatcher:dispatch` event sent by the dispatcher on route change.
 
 
-<a name="adjustTitle"></a>
-
 ### adjustTitle(context)
 
 Adjust the title of the page base on the `titleTemplate` option. The `title` variable is the one defined at the application level and the `subtitle` the one at the controller level.
 
-
-<a name="openLink"></a>
 
 ### openLink(event)
 

@@ -8,19 +8,13 @@ Note: If you want to give Pub/Sub functionality to a Class, also look at the [Ev
 
 ## Methods of `Chaplin.mediator`
 
-<a name="subscribe"></a>
-
 ### subscribe(event, handler, [context])
 
 A wrapper for `Backbone.Events.on`. See Backbone [documentation](http://backbonejs.org/#Events-on) for more details.
 
-<a name="unsubscribe"></a>
-
 ### unsubscribe([event], [handler], [context])
 
 A wrapper for `Backbone.Events.off`. See Backbone [documentation](http://backbonejs.org/#Events-off) for more details.
-
-<a name="publish"></a>
 
 ### publish(event, [*args])
 
