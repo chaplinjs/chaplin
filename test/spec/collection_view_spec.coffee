@@ -14,7 +14,7 @@ define [
     collection = null
     collectionView = null
 
-    # Test view classes
+    # Main test classes
     # -----------------
 
     # Item view class
@@ -35,64 +35,12 @@ define [
 
     # Main CollectionView testing class
     class TestCollectionView extends CollectionView
-      animationDuration: 0
-      itemView: ItemView
-      tagName: 'ul'
-
-    # Testing class for a custom initItemView method
-    class CustomViewCollectionView extends CollectionView
       tagName: 'ul'
       animationDuration: 0
-
-      initItemView: (model) ->
-        #console.debug 'TestCollectionView#initItemView', model
-        new ItemView {model}
-
-    # Testing class for insertino animation
-    class AnimatingCollectionView extends CollectionView
-
-      tagName: 'ul'
-
-      animationDuration: 1
-
       itemView: ItemView
 
-    # Testing class for CollectionViews with template,
-    # custom list, loading indicator and fallback elements
-    class TemplatedCollectionView extends TestCollectionView
-      fallbackSelector: '> .fallback'
-      listSelector: '> ol'
-      loadingSelector: '> .loading'
-
-      templateFunction: (templateData) ->
-        """
-        <h2>TemplatedCollectionView</h2>
-        <ol></ol>
-        <p class="loading">Loading…</p>
-        <p class="fallback">This list is empty.</p>
-        """
-
-      getTemplateFunction: ->
-        @templateFunction
-
-    # Testing class for a CollectionView with non-view children
-    class MixedCollectionView extends TestCollectionView
-      itemSelector: 'li'
-
-      templateFunction: (templateData) ->
-        """
-        <p>foo</p>
-        <div>bar</div>
-        <article>qux</article>
-        <ul>
-          <li>nested</li>
-        </ul>
-        """
-
-      getTemplateFunction: ->
-        @templateFunction
-
-    # Helper functions
+    # Helpers
+    # -------
 
     # Create 26 objects with IDs A-Z and a random title
     freshModels = ->
@@ -176,6 +124,14 @@ define [
         viewsMatchCollection()
 
       it 'should call a custom initItemView method', ->
+
+        class CustomViewCollectionView extends CollectionView
+          tagName: 'ul'
+          animationDuration: 0
+          initItemView: (model) ->
+            #console.debug 'TestCollectionView#initItemView', model
+            new ItemView {model}
+
         createCollection()
         initItemView = sinon.spy CustomViewCollectionView.prototype, 'initItemView'
         collectionView = new CustomViewCollectionView {collection}
@@ -433,6 +389,11 @@ define [
 
     describe 'Animation', ->
 
+      class AnimatingCollectionView extends CollectionView
+        tagName: 'ul'
+        animationDuration: 1
+        itemView: ItemView
+
       it 'should animate the opacity of new items', ->
         $css = sinon.stub jQuery.prototype, 'css', -> this
         $animate = sinon.stub jQuery.prototype, 'animate', -> this
@@ -496,6 +457,7 @@ define [
         $animate.restore()
 
       it 'should animate with CSS classes', (done) ->
+
         class AnimatingCollectionView extends CollectionView
           useCssAnimation: true
           itemView: ItemView
@@ -515,6 +477,7 @@ define [
         , 1
 
       it 'should animate with custom CSS classes', (done) ->
+
         class AnimatingCollectionView extends CollectionView
           useCssAnimation: true
           animationStartClass: 'a'
@@ -705,6 +668,21 @@ define [
 
     describe 'Templated CollectionView', ->
 
+      # Testing class for CollectionViews with template,
+      # custom list, loading indicator and fallback elements
+      class TemplatedCollectionView extends TestCollectionView
+        fallbackSelector: '> .fallback'
+        listSelector: '> ol'
+        loadingSelector: '> .loading'
+        getTemplateFunction: ->
+          ->
+            """
+            <h2>TemplatedCollectionView</h2>
+            <ol></ol>
+            <p class="loading">Loading…</p>
+            <p class="fallback">This list is empty.</p>
+            """
+
       beforeEach ->
         createCollection()
         # Mix in SyncMachine into Collection
@@ -739,6 +717,22 @@ define [
           expect(children.length).to.be collection.length
 
         it 'should respect the itemSelector property', ->
+
+          # A CollectionView class with non-view child elements
+          class MixedCollectionView extends TestCollectionView
+            itemSelector: 'li'
+            templateFunction: (templateData) ->
+              """
+              <p>foo</p>
+              <div>bar</div>
+              <article>qux</article>
+              <ul>
+              <li>nested</li>
+              </ul>
+              """
+            getTemplateFunction: ->
+              @templateFunction
+
           collectionView.dispose()
           collectionView = new MixedCollectionView {collection}
 
