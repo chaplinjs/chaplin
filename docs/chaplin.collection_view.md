@@ -178,10 +178,10 @@ specific logic is handled by this class.
 
 ```coffeescript
 class LikesView extends CollectionView
-  tagname: 'ul'
+  autoRender: true
   className: 'likes-list'
   itemView: LikeView
-  autoRender: true
+  tagName: 'ul'
 ```
 
 ### Examples
