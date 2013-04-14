@@ -62,10 +62,8 @@ module.exports = class Layout # This class does not extend View.
 
     @_registeredRegions = []
 
-    @subscribeEvent 'beforeControllerDispose', @hideOldView
-    @subscribeEvent 'dispatcher:dispatch', @showNewView
+    @subscribeEvent 'beforeControllerDispose', @scroll
     @subscribeEvent '!adjustTitle', @adjustTitle
-
     @subscribeEvent '!region:show', @showRegion
     @subscribeEvent '!region:register', @registerRegionHandler
     @subscribeEvent '!region:unregister', @unregisterRegionHandler
@@ -83,21 +81,11 @@ module.exports = class Layout # This class does not extend View.
   # -------------------------------
 
   # Handler for the global beforeControllerDispose event.
-  hideOldView: (controller) ->
+  scroll: (controller) ->
     # Reset the scroll position.
     scrollTo = @settings.scrollTo
     if scrollTo
       window.scrollTo scrollTo[0], scrollTo[1]
-
-    # Hide the current view.
-    view = controller.view
-    view.$el.hide() if view
-
-  # Handler for the global dispatcher:dispatch event.
-  # Show the new view.
-  showNewView: (controller) ->
-    view = controller.view
-    view.$el.show() if view
 
   # Handler for the global dispatcher:dispatch event.
   # Change the document title to match the new controller.

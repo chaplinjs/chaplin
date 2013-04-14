@@ -63,17 +63,6 @@ define [
       expect(layout.$el).to.be.a $
       expect(layout.$('body')[0]).to.be document.body
 
-    it 'should hide the view of an inactive controller', ->
-      testController.view.$el.css 'display', 'block'
-      mediator.publish 'beforeControllerDispose', testController
-      expect(testController.view.$el.css('display')).to.be 'none'
-
-    it 'should show the view of the active controller', ->
-      testController.view.$el.css 'display', 'none'
-      mediator.publish 'dispatcher:dispatch', testController
-      $el = testController.view.$el
-      expect($el.css('display')).to.be 'block'
-
     it 'should set the document title', (done) ->
       mediator.publish '!adjustTitle', testController.title
       setTimeout ->
