@@ -522,15 +522,11 @@ define [
         promise = deferred.promise()
 
         class AsyncBeforeActionController extends Controller
-          beforeAction: ->
-            promise
-
+          beforeAction: -> promise
           show: ->
 
         controller = new AsyncBeforeActionController()
-
         action = sinon.spy controller, 'show'
-
         testRoute = controller: 'async_before_action', action: 'show'
         dispatcher.executeBeforeAction controller, testRoute, params, options
 
@@ -540,3 +536,47 @@ define [
         deferred.resolve()
 
         expect(action).was.calledOnce()
+
+      it 'should stop async. dispatching when another controller is started', (done) ->
+        deferred = $.Deferred()
+        promise = deferred.promise()
+
+        firstRoute = controller: 'neverending', action: 'show'
+        secondRoute = controller: 'before_actions', action: 'index'
+
+        class NeverendingController extends Controller
+          beforeAction: -> promise
+          show: ->
+
+        # Define controller AMD module
+        neverendingModule = 'controllers/neverending_controller'
+        define neverendingModule, -> NeverendingController
+        loadNeverendingController = (callback) ->
+          require [neverendingModule], callback
+
+        # Spies
+        indexAction = sinon.spy BeforeActionsController.prototype, 'index'
+        proto = NeverendingController.prototype
+        beforeAction = sinon.spy proto, 'beforeAction'
+        showAction = sinon.spy proto, 'show'
+
+        # Start with the neverending controller
+        mediator.publish 'router:match', firstRoute, params, options
+
+        loadNeverendingController ->
+          # While waiting for the promise, start another controller
+          mediator.publish 'router:match', secondRoute, params, options
+
+          loadBeforeActionsController ->
+            expect(indexAction).was.called()
+
+            deferred.resolve()
+            expect(beforeAction).was.called()
+            expect(showAction).was.notCalled()
+
+            indexAction.restore()
+            beforeAction.restore()
+            showAction.restore()
+            require.undef neverendingModule
+
+            done()

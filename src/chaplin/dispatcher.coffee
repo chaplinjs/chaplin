@@ -121,7 +121,8 @@ module.exports = class Dispatcher
     before = controller.beforeAction
 
     executeAction = =>
-      return if controller.redirected
+      return controller.dispose() if controller.redirected or
+        @currentRoute and route isnt @currentRoute
       @executeAction controller, route, params, options
 
     return executeAction() unless before
@@ -131,9 +132,9 @@ module.exports = class Dispatcher
       throw new TypeError 'Controller#beforeAction: function expected. ' +
         'Old object-like form is not supported.'
 
-    deferred = before params, route, options
-    if deferred and typeof deferred.then is 'function'
-      deferred.then executeAction
+    promise = before params, route, options
+    if promise and promise.then
+      promise.then executeAction
     else
       executeAction()
 
