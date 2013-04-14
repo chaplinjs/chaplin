@@ -212,51 +212,6 @@ define [
       expect(args[1]).to.be.an 'object'
       expect(args[1].nodeName).to.be 'A'
 
-    # Events hash
-    # -----------
-
-    it 'should register event handlers on the document declaratively', ->
-      spy1 = sinon.spy()
-      spy2 = sinon.spy()
-      layout.dispose()
-      class TestLayout extends Layout
-        events:
-          'click #testbed': 'testClickHandler'
-          click: spy2
-        testClickHandler: spy1
-      layout = new TestLayout
-      el = $('#testbed')
-      el.click()
-      expect(spy1).was.called()
-      expect(spy2).was.called()
-      layout.dispose()
-      el.click()
-      expect(spy1.callCount).to.be 1
-      expect(spy2.callCount).to.be 1
-
-    it 'should register event handlers on the document programatically', ->
-      expect(layout.delegateEvents)
-        .to.be Backbone.View::delegateEvents
-      expect(layout.undelegateEvents)
-        .to.be Backbone.View::undelegateEvents
-      expect(layout.delegateEvents).to.be.a 'function'
-      expect(layout.undelegateEvents).to.be.a 'function'
-
-      spy1 = sinon.spy()
-      spy2 = sinon.spy()
-      layout.testClickHandler = spy1
-      layout.delegateEvents
-        'click #testbed': 'testClickHandler'
-        click: spy2
-      el = $('#testbed')
-      el.click()
-      expect(spy1).was.called()
-      expect(spy2).was.called()
-      layout.undelegateEvents()
-      el.click()
-      expect(spy1.callCount).to.be 1
-      expect(spy2.callCount).to.be 1
-
     # Regions
     # -------
 
@@ -273,12 +228,12 @@ define [
           '#test1': 'test3'
           '#test2': 'test4'
 
-      spy = sinon.spy(layout, 'registerRegion')
+      spy = sinon.spy(layout, 'registerGlobalRegion')
       instance1 = new Test1View()
       expect(spy).was.calledWith instance1, 'view-region1', ''
       expect(spy).was.calledWith instance1, 'test1', '#test1'
       expect(spy).was.calledWith instance1, 'test2', '#test2'
-      expect(layout._registeredRegions).to.eql [
+      expect(layout.globalRegions).to.eql [
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
         {instance: instance1, name: 'view-region1', selector: ''}
@@ -288,7 +243,7 @@ define [
       expect(spy).was.calledWith instance2, 'view-region2', ''
       expect(spy).was.calledWith instance2, 'test3', '#test1'
       expect(spy).was.calledWith instance2, 'test4', '#test2'
-      expect(layout._registeredRegions).to.eql [
+      expect(layout.globalRegions).to.eql [
         {instance: instance2, name: 'test4', selector: '#test2'}
         {instance: instance2, name: 'test3', selector: '#test1'}
         {instance: instance2, name: 'view-region2', selector: ''}
@@ -309,7 +264,7 @@ define [
 
       regional = new Regional
 
-      expect(regional._registeredRegions).to.eql [
+      expect(regional.globalRegions).to.eql [
         {instance: regional, name: 'test2', selector: '#test2'}
         {instance: regional, name: 'test1', selector: '#test1'}
         {instance: regional, name: 'view-region1', selector: ''}
@@ -326,7 +281,7 @@ define [
 
       instance = new TestView()
       instance.dispose()
-      expect(layout._registeredRegions).to.eql []
+      expect(layout.globalRegions).to.eql []
 
     it 'should only dispose of regions a view registered when
         it is disposed', ->
@@ -344,7 +299,7 @@ define [
       instance1 = new Test1View()
       instance2 = new Test2View()
       instance2.dispose()
-      expect(layout._registeredRegions).to.eql [
+      expect(layout.globalRegions).to.eql [
         {instance: instance1, name: 'test2', selector: '#test2'}
         {instance: instance1, name: 'test1', selector: '#test1'}
       ]
