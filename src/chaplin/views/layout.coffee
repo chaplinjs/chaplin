@@ -4,52 +4,39 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
+View = require 'chaplin/views/view'
 
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
 
-module.exports = class Layout # This class does not extend View.
-
-  # Borrow the static extend method from Backbone.
-  @extend = Backbone.Model.extend
-
-  # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
-
+module.exports = class Layout extends View
   # The site title used in the document title.
   # This should be set in your app-specific Application class
   # and passed as an option.
   title: ''
 
-  # An hash to register events, like in Backbone.View
-  # It is only meant for events that are app-wide
-  # independent from any view.
-  events: {}
-
   # Register @el, @$el and @cid for delegating events.
   el: document
   $el: $(document)
-  cid: 'chaplin-layout'
+
+  # Override default view behavior, we don’t want document.body to be removed.
+  keepElement: true
 
   # Regions
   # -------
 
-  # Region registration; see view documentation for more details.
-  regions: null
-
   # Collection of registered regions; all view regions are collected here.
-  _registeredRegions: null
+  globalRegions: null
 
-  constructor: ->
-    @initialize arguments...
+  listen:
+    'beforeControllerDispose mediator': 'scroll'
+    '!adjustTitle mediator': 'adjustTitle'
+    '!region:show mediator': 'showRegion'
+    '!region:register mediator': 'registerRegionHandler'
+    '!region:unregister mediator': 'unregisterRegionHandler'
 
-    # Set app wide event handlers.
-    @delegateEvents()
-
-    # Register all exposed regions.
-    @registerRegions this, @regions
-
-  initialize: (options = {}) ->
+  constructor: (options = {}) ->
+    @globalRegions = []
     @title = options.title
     @regions = options.regions if options.regions
     @settings = _(options).defaults
@@ -59,45 +46,22 @@ module.exports = class Layout # This class does not extend View.
       skipRouting: '.noscript'
       # Per default, jump to the top of the page.
       scrollTo: [0, 0]
+    @route = @settings.routeLinks
 
-    @_registeredRegions = []
-
-    @subscribeEvent 'beforeControllerDispose', @hideOldView
-    @subscribeEvent 'dispatcher:dispatch', @showNewView
-    @subscribeEvent '!adjustTitle', @adjustTitle
-
-    @subscribeEvent '!region:show', @showRegion
-    @subscribeEvent '!region:register', @registerRegionHandler
-    @subscribeEvent '!region:unregister', @unregisterRegionHandler
+    super
 
     # Set the app link routing.
     @startLinkRouting() if @settings.routeLinks
-
-  # Take (un)delegateEvents from Backbone
-  # -------------------------------------
-  delegateEvents: Backbone.View::delegateEvents
-  undelegateEvents: Backbone.View::undelegateEvents
-  $: Backbone.View::$
 
   # Controller startup and disposal
   # -------------------------------
 
   # Handler for the global beforeControllerDispose event.
-  hideOldView: (controller) ->
+  scroll: (controller) ->
     # Reset the scroll position.
     scrollTo = @settings.scrollTo
     if scrollTo
       window.scrollTo scrollTo[0], scrollTo[1]
-
-    # Hide the current view.
-    view = controller.view
-    view.$el.hide() if view
-
-  # Handler for the global dispatcher:dispatch event.
-  # Show the new view.
-  showNewView: (controller) ->
-    view = controller.view
-    view.$el.show() if view
 
   # Handler for the global dispatcher:dispatch event.
   # Change the document title to match the new controller.
@@ -112,12 +76,10 @@ module.exports = class Layout # This class does not extend View.
   # -----------------------------------
 
   startLinkRouting: ->
-    if @settings.routeLinks
-      $(document).on 'click', @settings.routeLinks, @openLink
+    @$el.on 'click', @route, @openLink if @route
 
   stopLinkRouting: ->
-    if @settings.routeLinks
-      $(document).off 'click', @settings.routeLinks
+    @$el.off 'click', @route if @route
 
   isExternalLink: (link) ->
     link.target is '_blank' or
@@ -189,29 +151,29 @@ module.exports = class Layout # This class does not extend View.
   # Register a single view region or all regions exposed.
   registerRegionHandler: (instance, name, selector) ->
     if name?
-      @registerRegion instance, name, selector
+      @registerGlobalRegion instance, name, selector
     else
-      @registerRegions instance
+      @registerGlobalRegions instance
 
   # Registering one region bound to a view.
-  registerRegion: (instance, name, selector) ->
+  registerGlobalRegion: (instance, name, selector) ->
     # Remove the region if there was already one registered perhaps by
     # a base class.
-    @unregisterRegion instance, name
+    @unregisterGlobalRegion instance, name
 
     # Place this region registration into the regions array.
-    @_registeredRegions.unshift {instance, name, selector}
+    @globalRegions.unshift {instance, name, selector}
 
   # Triggered by view; passed in the regions hash.
   # Simply register all regions exposed by it.
-  registerRegions: (instance) ->
+  registerGlobalRegions: (instance) ->
     # Regions can be be extended by subclasses, so we need to check the
     # whole prototype chain for matching regions. Regions registered by the
     # more-derived class overwrites the region registered by the less-derived
     # class.
     for version in utils.getAllPropertyVersions instance, 'regions'
       for selector, name of version
-        @registerRegion instance, name, selector
+        @registerGlobalRegion instance, name, selector
     # Return nothing.
     return
 
@@ -219,26 +181,26 @@ module.exports = class Layout # This class does not extend View.
   # Unregisters single named region or all view regions.
   unregisterRegionHandler: (instance, name) ->
     if name?
-      @unregisterRegion instance, name
+      @unregisterGlobalRegion instance, name
     else
-      @unregisterRegions instance
+      @unregisterGlobalRegions instance
 
   # Unregisters a specific named region from a view.
-  unregisterRegion: (instance, name) ->
+  unregisterGlobalRegion: (instance, name) ->
     cid = instance.cid
-    @_registeredRegions = _.filter @_registeredRegions, (region) ->
+    @globalRegions = _.filter @globalRegions, (region) ->
       region.instance.cid isnt cid or region.name isnt name
 
   # When views are disposed; remove all their registered regions.
-  unregisterRegions: (instance) ->
-    @_registeredRegions = _.filter @_registeredRegions, (region) ->
+  unregisterGlobalRegions: (instance) ->
+    @globalRegions = _.filter @globalRegions, (region) ->
       region.instance.cid isnt instance.cid
 
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.
   showRegion: (name, instance) ->
     # Find an appropriate region.
-    region = _.find @_registeredRegions, (region) ->
+    region = _.find @globalRegions, (region) ->
       region.name is name and not region.instance.stale
 
     # Assert that we got a valid region.
@@ -253,20 +215,13 @@ module.exports = class Layout # This class does not extend View.
   # Disposal
   # --------
 
-  disposed: false
-
   dispose: ->
     return if @disposed
 
-    delete @regions
-
+    # Stop routing links.
     @stopLinkRouting()
-    @unsubscribeAllEvents()
-    @undelegateEvents()
 
-    delete @title
+    # Remove all regions and document title setting.
+    delete this[prop] for prop in ['globalRegions', 'title', 'route']
 
-    @disposed = true
-
-    # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    super
