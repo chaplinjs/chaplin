@@ -541,6 +541,49 @@ define [
           expect(spy).was.calledOnce()
           done()
 
+      # Events hash
+      # -----------
+
+      it 'should register event handlers on the document declaratively', ->
+        spy1 = sinon.spy()
+        spy2 = sinon.spy()
+        class PreservedView extends TestView
+          autoRender: true
+          keepElement: true
+          events:
+            'click p': 'testClickHandler'
+            click: spy2
+          testClickHandler: spy1
+        view = new PreservedView
+        el = view.$('p')
+        el.click()
+        expect(spy1).was.called()
+        expect(spy2).was.called()
+        view.dispose()
+        el.click()
+        expect(spy1.callCount).to.be 1
+        expect(spy2.callCount).to.be 1
+
+      it 'should register event handlers on the document programatically', ->
+        spy1 = sinon.spy()
+        spy2 = sinon.spy()
+        class PreservedView extends TestView
+          autoRender: true
+          keepElement: true
+        view = new PreservedView
+        view.testClickHandler = spy1
+        view.delegateEvents
+          'click p': 'testClickHandler'
+          click: spy2
+        el = view.$('p')
+        el.click()
+        expect(spy1).was.called()
+        expect(spy2).was.called()
+        view.undelegateEvents()
+        el.click()
+        expect(spy1.callCount).to.be 1
+        expect(spy2.callCount).to.be 1
+
     it 'should pass model attributes to the template function', ->
       setModel()
 
@@ -592,13 +635,13 @@ define [
         expect(subview.dispose).was.called()
 
       it 'should unsubscribe from Pub/Sub events', ->
-        pubSubSpy = sinon.spy()
-        view.subscribeEvent 'foo', pubSubSpy
+        spy = sinon.spy()
+        view.subscribeEvent 'foo', spy
 
         view.dispose()
 
         mediator.publish 'foo'
-        expect(pubSubSpy).was.notCalled()
+        expect(spy).was.notCalled()
 
       it 'should unsubscribe from model events', ->
         setModel()
@@ -611,13 +654,13 @@ define [
         expect(spy).was.notCalled()
 
       it 'should remove all event handlers from itself', ->
-        viewBindSpy = sinon.spy()
-        view.on 'foo', viewBindSpy
+        spy = sinon.spy()
+        view.on 'foo', spy
 
         view.dispose()
 
         view.trigger 'foo'
-        expect(viewBindSpy).was.notCalled()
+        expect(spy).was.notCalled()
 
       it 'should remove instance properties', ->
         view.dispose()
