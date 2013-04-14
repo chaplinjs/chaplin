@@ -84,22 +84,12 @@ module.exports = class Dispatcher
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
-    # Store the current route as the previous route.
     @previousRoute = @currentRoute
-
-    # Setup the current route object.
     @currentRoute = _.extend {}, route, previous: utils.beget @previousRoute
-
-    # Initialize the new controller.
     controller = new Controller params, @currentRoute, options
+    @executeBeforeAction controller, @currentRoute, params, options
 
-    # Execute before actions if necessary.
-    methodName = if controller.beforeAction
-      'executeBeforeActions'
-    else
-      'executeAction'
-    this[methodName](controller, @currentRoute, params, options)
-
+  # Executes controller action.
   executeAction: (controller, route, params, options) ->
     # Dispose the previous controller.
     if @currentController
@@ -126,58 +116,27 @@ module.exports = class Dispatcher
     @publishEvent 'dispatcher:dispatch', @currentController,
       params, route, options
 
-  # Before actions with chained execution.
-  executeBeforeActions: (controller, route, params, options) ->
-    beforeActions = []
+  # Executes before action filterer.
+  executeBeforeAction: (controller, route, params, options) ->
+    before = controller.beforeAction
 
-    # Before actions can be extended by subclasses, so we need to check the
-    # whole prototype chain for matching before actions. Before actions in
-    # parent classes are executed before actions in child classes.
-    for actions in utils.getAllPropertyVersions controller, 'beforeAction'
+    executeAction = =>
+      return controller.dispose() if controller.redirected or
+        @currentRoute and route isnt @currentRoute
+      @executeAction controller, route, params, options
 
-      # Iterate over the before actions in search for a matching
-      # name with the arguments’ action name.
-      for name, action of actions
+    return executeAction() unless before
 
-        # Do not add this object more than once.
-        if name is route.action or RegExp("^#{name}$").test route.action
+    # Throw deprecation warning.
+    if typeof before isnt 'function'
+      throw new TypeError 'Controller#beforeAction: function expected. ' +
+        'Old object-like form is not supported.'
 
-          if typeof action is 'string'
-            action = controller[action]
-
-          unless typeof action is 'function'
-            throw new Error 'Controller#executeBeforeActions: ' +
-              "#{action} is not a valid action method for #{name}."
-
-          # Save the before action.
-          beforeActions.push action
-
-    # Save returned value and also immediately return in case the value is false.
-    next = (method, previous = null) =>
-      # Stop if the action triggered a redirect.
-      return if controller.redirected
-
-      # End of chain, finally start the action.
-      unless method
-        @executeAction controller, route, params, options
-        return
-
-      # Execute the next before action.
-      previous = method.call controller, params, route, options, previous
-
-      # Detect a CommonJS promise in order to use pipelining below,
-      # otherwise execute next method directly.
-      if previous and typeof previous.then is 'function'
-        previous.then (data) =>
-          # Execute as long as the currentController is
-          # the callee for this promise.
-          if not @currentController or controller is @currentController
-            next beforeActions.shift(), data
-      else
-        next beforeActions.shift(), previous
-
-    # Start beforeAction execution chain.
-    next beforeActions.shift()
+    promise = before params, route, options
+    if promise and promise.then
+      promise.then executeAction
+    else
+      executeAction()
 
   # Change the URL to the new controller using the router.
   adjustURL: (route, params, options) ->
