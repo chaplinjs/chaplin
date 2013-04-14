@@ -19,7 +19,7 @@ Unless stated otherwise, follow the [CoffeeScript style guide](https://github.co
 * Explicit is better than implicit. When in doubt, use several statements and use additional variables instead of putting everything in a huge expression statement.
 * Check if the CoffeeScript code makes sense when compiled to JavaScript. The JavaScript code should be readable, brief and clear. Avoid CoffeeScript features that create overly complex and obscure Javascript code.
 
-## CoffeeScript woes
+## CoffeeScript list operations
 
 What can be done with pure CoffeeScript should be done by CoffeeScript, not Underscore or jQuery.
 
@@ -83,7 +83,64 @@ Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowi
 - Use the `of` operator to check for properties that might be inherited
 - Use `_.has` for `hasOwnProperty` checks
 
-## Chaining function calls
+## Function calls
+
+In general, don’t use parentheses when calling functions and methods with arguments:
+
+```
+func()
+func arg1
+func arg1, arg2, option1: 'foo', option2: 'bar'
+```
+
+When the arguments do not fit into one line, use parentheses to make the function call clear:
+
+```
+foo(
+  longLongLongLongExpression1,
+  longLongLongLongExpression2,
+  longLongLongLongExpression3
+)
+```
+
+Better avoid these problems by using more variables:
+
+```
+arg1 = longLongLongLongExpression
+arg2 = longLongLongLongExpression
+arg3 = longLongLongLongExpression
+foo arg1, arg2, arg3
+```
+
+If there is an object literal as last argument which spans multiple lines,
+use explicit curly braces:
+
+```
+func arg1, arg3, {
+  prop1: 'val1'
+  prop2:
+}
+```
+
+When there are several object literals as arguments, use curly braces to
+make this obvious:
+
+```
+func { first: 'object' }, { second: 'object' }
+```
+
+### Nesting function calls
+
+Omit parentheses only on the first level, use them on the subsequent levels:
+
+```
+foo bar quux # Don’t
+foo bar(quux()) # Do
+```
+
+In general, don’t put too much logic on one line of code so heavy nesting isn’t needed.
+
+### Chaining function calls
 
 Use this style of chaining function calls:
 
