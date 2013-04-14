@@ -17,13 +17,12 @@ Unless stated otherwise, follow the [CoffeeScript style guide](https://github.co
 
 * Write simple and verbose code instead of complex and dense. Don’t minify the code manually, don’t use ugly tricks to reduce the resulting code size.
 * Explicit is better than implicit. When in doubt, use several statements and use additional variables instead of putting everything in a huge expression statement.
+* What can be done with pure CoffeeScript should be done by CoffeeScript, not Underscore or jQuery.
 * Check if the CoffeeScript code makes sense when compiled to JavaScript. The JavaScript code should be readable, brief and clear. Avoid CoffeeScript features that create overly complex and obscure Javascript code.
 
 ## CoffeeScript list operations
 
-What can be done with pure CoffeeScript should be done by CoffeeScript, not Underscore or jQuery.
-
-Exception: Don’t use CoffeeScript if the compiled JavaScript code is extremely verbose or inefficient. For list comprehension and map operations, CoffeeScript creates an immediately-invoked function which leads to horrible verbose and inefficient code. Also, the CoffeeScript isn’t always readable.
+Don’t use CoffeeScript if the compiled JavaScript code is extremely verbose or inefficient. For list comprehension and map operations, CoffeeScript creates an immediately-invoked function which leads to horrible verbose and inefficient code. Also, the CoffeeScript isn’t always readable.
 
 Avoid:
 
