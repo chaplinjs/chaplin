@@ -117,8 +117,7 @@ use explicit curly braces:
 ```
 func arg1, arg3, {
   prop1: 'val1'
-  prop2:
-}
+  prop2: 'val2'
 ```
 
 When there are several object literals as arguments, use curly braces to
