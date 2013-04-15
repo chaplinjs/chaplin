@@ -135,7 +135,8 @@ module.exports = class Dispatcher
       throw new TypeError 'Controller#beforeAction: function expected. ' +
         'Old object-like form is not supported.'
 
-    promise = before params, route, options
+    # Execute action in controller context.
+    promise = controller.beforeAction params, route, options
     if promise and promise.then
       promise.then executeAction
     else
