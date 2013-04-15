@@ -15,9 +15,8 @@ module.exports = class Layout extends View
   # and passed as an option.
   title: ''
 
-  # Register @el, @$el and @cid for delegating events.
-  el: document
-  $el: $(document)
+  # Bind to document body by default.
+  el: document.body
 
   # Override default view behavior, we don’t want document.body to be removed.
   keepElement: true

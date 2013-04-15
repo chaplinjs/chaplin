@@ -59,9 +59,8 @@ define [
       testController.dispose()
 
     it 'should have el, $el and $ props / methods', ->
-      expect(layout.el).to.be document
+      expect(layout.el).to.be document.body
       expect(layout.$el).to.be.a $
-      expect(layout.$('body')[0]).to.be document.body
 
     it 'should set the document title', (done) ->
       mediator.publish '!adjustTitle', testController.title
