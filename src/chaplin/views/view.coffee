@@ -12,6 +12,9 @@ module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
+  # Specifies if current element should be kept in DOM after disposal.
+  keepElement: false
+
   # Automatic rendering
   # -------------------
 
@@ -375,9 +378,15 @@ module.exports = class View extends Backbone.View
     # Remove all event handlers on this module.
     @off()
 
-    # Remove the topmost element from DOM. This also removes all event
-    # handlers from the element and all its children.
-    @$el.remove()
+    # Check if view should be removed from DOM.
+    if @keepElement
+      # Unsubscribe from all DOM events.
+      @undelegateEvents()
+      @undelegate()
+    else
+      # Remove the topmost element from DOM. This also removes all event
+      # handlers from the element and all its children.
+      @$el.remove()
 
     # Remove element references, options,
     # model/collection references and subview lists.
