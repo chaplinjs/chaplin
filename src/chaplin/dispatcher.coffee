@@ -85,7 +85,7 @@ module.exports = class Dispatcher
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
     @previousRoute = @currentRoute
-    @currentRoute = _.extend {}, route, previous: utils.beget @previousRoute
+    @currentRoute = _.extend {}, route, {previous: utils.beget(@previousRoute)}
     controller = new Controller params, @currentRoute, options
     @executeBeforeAction controller, @currentRoute, params, options
 
@@ -121,18 +121,22 @@ module.exports = class Dispatcher
     before = controller.beforeAction
 
     executeAction = =>
-      return controller.dispose() if controller.redirected or
-        @currentRoute and route isnt @currentRoute
+      if controller.redirected or @currentRoute and route isnt @currentRoute
+        controller.dispose()
+        return
       @executeAction controller, route, params, options
 
-    return executeAction() unless before
+    unless before
+      executeAction()
+      return
 
     # Throw deprecation warning.
     if typeof before isnt 'function'
       throw new TypeError 'Controller#beforeAction: function expected. ' +
         'Old object-like form is not supported.'
 
-    promise = before params, route, options
+    # Execute action in controller context.
+    promise = controller.beforeAction params, route, options
     if promise and promise.then
       promise.then executeAction
     else
