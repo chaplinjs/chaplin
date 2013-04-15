@@ -451,9 +451,9 @@ define [
         publishMatch beforeActionRoute, params, options
 
         loadController ->
-          expect(beforeAction).was.called()
-          expect(action).was.called()
+          expect(beforeAction).was.calledOnce()
           expect(beforeAction.firstCall.thisValue).to.be.a BeforeActionController
+          expect(action).was.calledOnce()
           expect(beforeAction.calledBefore(action)).to.be true
 
           beforeAction.restore()
@@ -553,8 +553,8 @@ define [
           publishMatch route, params, options
 
           loadController ->
-            expect(beforeAction).was.called()
-            expect(action).was.called()
+            expect(beforeAction).was.calledOnce()
+            expect(action).was.calledOnce()
 
             beforeAction.restore()
             action.restore()
@@ -592,14 +592,14 @@ define [
         publishMatch firstRoute, params, options
 
         loadNeverendingController ->
-          expect(beforeAction).was.called()
+          expect(beforeAction).was.calledOnce()
           expect(firstAction).was.notCalled()
 
           # While the promise is pending, start another controller
           publishMatch secondRoute, params, options
 
           loadTest2Controller ->
-            expect(secondAction).was.called()
+            expect(secondAction).was.calledOnce()
 
             # Test what happens when the Promise is resolved later
             deferred.resolve()
