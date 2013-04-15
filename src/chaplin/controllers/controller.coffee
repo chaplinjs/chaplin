@@ -24,6 +24,9 @@ module.exports = class Controller
   initialize: ->
     # Empty per default.
 
+  beforeAction: ->
+    # Empty per default.
+
   # Change document title.
   adjustTitle: (subtitle) ->
     @publishEvent '!adjustTitle', subtitle
