@@ -105,6 +105,7 @@ define [
       loadTest1Controller ->
         for spy in [initialize, action]
           expect(spy).was.calledOnce()
+          expect(spy.firstCall.thisValue).to.be.a Test1Controller
           [passedParams, passedRoute, passedOptions] = spy.firstCall.args
           expect(passedParams).to.eql params
           expect(passedRoute).to.eql create(route1, previous: {})
@@ -452,6 +453,7 @@ define [
         loadController ->
           expect(beforeAction).was.called()
           expect(action).was.called()
+          expect(beforeAction.firstCall.thisValue).to.be.a BeforeActionController
           expect(beforeAction.calledBefore(action)).to.be true
 
           beforeAction.restore()
