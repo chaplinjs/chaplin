@@ -362,15 +362,6 @@ define [
       expect(items[1]).to.be.an 'object'
       expect(items[1].bar).to.be 'bar'
 
-    it 'should add the Deferred state to the template data', ->
-      setModel()
-      model.initDeferred()
-      templateData = view.getTemplateData()
-      expect(templateData.resolved).to.be false
-      model.resolve()
-      templateData = view.getTemplateData()
-      expect(templateData.resolved).to.be true
-
     it 'should add the SyncMachine state to the template data', ->
       setModel()
       _.extend model, SyncMachine

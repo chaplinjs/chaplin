@@ -20,13 +20,6 @@ define [
       for own name, value of EventBroker
         expect(model[name]).to.be EventBroker[name]
 
-    it 'should initialize a Deferred', ->
-      expect(model.initDeferred).to.be.a 'function'
-      model.initDeferred()
-      for method in ['done', 'fail', 'progress', 'state', 'promise']
-        expect(typeof model[method]).to.be 'function'
-      expect(model.state()).to.be 'pending'
-
     it 'should return the attributes per default', ->
       expect(model.getAttributes()).to.be model.attributes
 
@@ -189,16 +182,6 @@ define [
 
         model2.trigger 'foo'
         expect(spy).was.notCalled()
-
-      it 'should reject the Deferred on disposal', ->
-        model.initDeferred()
-        failSpy = sinon.spy()
-        model.fail failSpy
-
-        model.dispose()
-
-        expect(model.state()).to.be 'rejected'
-        expect(failSpy).was.called()
 
       it 'should remove instance properties', ->
         model.dispose()
