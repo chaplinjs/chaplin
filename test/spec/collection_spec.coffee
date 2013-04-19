@@ -25,13 +25,6 @@ define [
       for own name, value of EventBroker
         expect(collection[name]).to.be EventBroker[name]
 
-    it 'should initialize a Deferred', ->
-      expect(collection.initDeferred).to.be.a 'function'
-      collection.initDeferred()
-      for method in ['done', 'fail', 'progress', 'state', 'promise']
-        expect(typeof collection[method]).to.be 'function'
-      expect(collection.state()).to.be 'pending'
-
     it 'should serialize the models', ->
       model1 = new Model id: 1, foo: 'foo'
       model2 = new Backbone.Model id: 2, bar: 'bar'
@@ -100,16 +93,6 @@ define [
 
         model.trigger 'foo'
         expect(spy).was.notCalled()
-
-      it 'should reject the Deferred on disposal', ->
-        collection.initDeferred()
-        failSpy = sinon.spy()
-        collection.fail failSpy
-
-        collection.dispose()
-
-        expect(collection.state()).to.be 'rejected'
-        expect(failSpy).was.called()
 
       it 'should remove instance properties', ->
         collection.dispose()

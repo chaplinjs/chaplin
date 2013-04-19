@@ -296,11 +296,6 @@ module.exports = class View extends Backbone.View
 
     source = @model or @collection
     if source
-      # If the model/collection is a Deferred, add a `resolved` flag,
-      # but only if it’s not present yet.
-      if typeof source.state is 'function' and not ('resolved' of data)
-        data.resolved = source.state() is 'resolved'
-
       # If the model/collection is a SyncMachine, add a `synced` flag,
       # but only if it’s not present yet.
       if typeof source.isSynced is 'function' and not ('synced' of data)
