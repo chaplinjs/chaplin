@@ -381,13 +381,12 @@ define [
       templateData = view.getTemplateData()
       expect(templateData.synced).to.be true
 
-    it 'should not cover existing synced and resolved properties', ->
+    it 'should not cover existing SyncMachine properties', ->
       setModel()
-      model.initDeferred()
       _.extend model, SyncMachine
-      model.set resolved: 'foo', synced: 'bar'
+      model.set syncState: 'foo', synced: 'bar'
       templateData = view.getTemplateData()
-      expect(templateData.resolved).to.be 'foo'
+      expect(templateData.syncState).to.be 'foo'
       expect(templateData.synced).to.be 'bar'
 
     describe 'Events', ->
