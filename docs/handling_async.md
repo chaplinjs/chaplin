@@ -10,7 +10,7 @@ Model-view-binding, Backbone’s key feature, is still a building block in Chapl
 
 Models, collections and third-party scripts typically have a loaded state. But they're often not ready for use initially because they rely upon asynchronous input such as waiting for data to be fetched from the server or a successful user login.
 
-For this purpose, [jQuery Deferreds](http://api.jquery.com/category/deferred-object/) (or [standalone-deferreds](https://github.com/Mumakil/Standalone-Deferred) if you're using Zepto) can be mixed into application objects. They allow registering of load handlers using the [done](http://api.jquery.com/deferred.done/) method. The handlers will be called once the Deferred is resolved.
+For this purpose, [jQuery Deferreds](http://api.jquery.com/category/deferred-object/) (or [standalone-deferreds](https://github.com/Mumakil/Standalone-Deferred) if you're using Zepto) could be utilized. They allow registering of load handlers using the [done](http://api.jquery.com/deferred.done/) method. The handlers will be called once the Deferred is resolved.
 
 Deferreds are a versatile pattern which can be used on different levels in an application, but they're rather simple because they only have three states (pending, resolved, rejected) and two transitions (resolve, reject). For more complex synchronization tasks, Chaplin offers the `SyncMachine` which is a state machine.
 

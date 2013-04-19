@@ -59,10 +59,6 @@ module.exports = class Model extends Backbone.Model
   # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
-  # Mixin a Deferred.
-  initDeferred: ->
-    _(this).extend $.Deferred()
-
   # This method is used to get the attributes for the view template
   # and might be overwritten by decorators which cannot create a
   # proper `attributes` getter due to ECMAScript 3 limits.
@@ -95,10 +91,6 @@ module.exports = class Model extends Backbone.Model
 
     # Remove all event handlers on this module.
     @off()
-
-    # If the model is a Deferred, reject it
-    # This does nothing if it was resolved before.
-    @reject?()
 
     # Remove the collection reference, internal attribute hashes
     # and event handlers.
