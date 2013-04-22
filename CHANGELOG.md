@@ -1,3 +1,35 @@
+# Chaplin 0.9.0 (unreleased)
+* Removed deferred mix-in (`initDeferred`) support from
+  models, collections and views.
+* Improved `Chaplin.Controller` and `Chaplin.Dispatcher`:
+    * Made `Controller#beforeAction` function.
+      Old object form is not supported anymore.
+      You need to use `super` like in any other method,
+      `beforeAction`s won’t be merged without it.
+      Asyncronous `beforeAction`s with promises are still supported.
+    * Controllers are now disposed automatically after redirection
+      or asynchronous before actions.
+* Improved `Chaplin.Router`:
+    * Fixed bug with preserving query string in URL.
+    * Removed underscorizing of loaded by default controller names.
+      `deleted_users#show` won’t longer be same as `deletedUsers#show`.
+* Improved `Chaplin.View`:
+    * Added `keepInElement` property (false by default).
+      When truthy, view’s DOM element won’t be removed after disposal.
+    * Added `Backbone.View#remove` call in `dispose` method.
+* Improved `Chaplin.CollectionView`:
+    * Added Backbone 1.0 `Collection#set` support.
+* Improved `Chaplin.Layout`:
+    * Added inheritance from `Chaplin.View`.
+    * Renamed some methods for compat with `Chaplin.View`:
+        * `_registeredRegions` to `globalRegions`
+        * `registerRegion` to `registerGlobalRegion`
+        * `registerRegion` to `registerGlobalRegions`
+        * `unregisterRegion` to `unregisterGlobalRegions`
+        * `unregisterRegions` to `unregisterGlobalRegions`
+    * Changed default `Layout` element from `document` to `body`.
+    * Removed explicit `view.$el.show()` / `hide()` for managed views.
+
 # Chaplin 0.8.1 (1 April 2013)
 * Improved `Chaplin.Layout`:
     * Added `Layout#$` method, which is the same as `View#$`.
