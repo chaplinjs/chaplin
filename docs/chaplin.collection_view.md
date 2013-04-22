@@ -146,7 +146,7 @@ filterCallback: (view, included) ->
 
   Render and insert all items in collection, triggering `visibilityChange` event
 
-### renderItem(item)
+### renderItem(model)
 * **Model item**
 
   Instantiate and render the view for an item using the `viewsByCid`
@@ -168,7 +168,7 @@ filterCallback: (view, included) ->
   Inserts a view into the list at the proper position, runs the `@filterer`
   function.
 
-### removeViewForItem(item)
+### removeViewForItem(model)
 * **Model item**
 
   Remove the view for an item, triggering a `visibilityChange` event
