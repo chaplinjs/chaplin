@@ -25,7 +25,7 @@
         * `_registeredRegions` to `globalRegions`
         * `registerRegion` to `registerGlobalRegion`
         * `registerRegion` to `registerGlobalRegions`
-        * `unregisterRegion` to `unregisterGlobalRegions`
+        * `unregisterRegion` to `unregisterGlobalRegion`
         * `unregisterRegions` to `unregisterGlobalRegions`
     * Changed default `Layout` element from `document` to `body`.
     * Removed explicit `view.$el.show()` / `hide()` for managed views.
