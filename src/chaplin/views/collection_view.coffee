@@ -228,7 +228,7 @@ module.exports = class CollectionView extends View
   # Filters only child item views from all current subviews.
   getItemViews: ->
     itemViews = {}
-    if @subviewsByName
+    if @subviews.length > 0
       for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
         itemViews[name.slice(9)] = view
     itemViews

@@ -94,6 +94,10 @@ module.exports = class View extends Backbone.View
       # Return the view.
       this
 
+    # Initialize subviews collections.
+    @subviews = []
+    @subviewsByName = {}
+
     # Call Backbone’s constructor.
     super
 
@@ -239,8 +243,8 @@ module.exports = class View extends Backbone.View
   # Getting or adding a subview.
   subview: (name, view) ->
     # Initialize subviews collections if they don’t exist yet.
-    subviews = @subviews ?= []
-    byName = @subviewsByName ?= {}
+    subviews = @subviews
+    byName = @subviewsByName
 
     if name and view
       # Add the subview, ensure it’s unique.
@@ -255,8 +259,8 @@ module.exports = class View extends Backbone.View
   # Removing a subview.
   removeSubview: (nameOrView) ->
     return unless nameOrView
-    subviews = @subviews ?= []
-    byName = @subviewsByName ?= {}
+    subviews = @subviews
+    byName = @subviewsByName
 
     if typeof nameOrView is 'string'
       # Name given, search for a subview by name.
@@ -362,7 +366,7 @@ module.exports = class View extends Backbone.View
     @unregisterAllRegions()
 
     # Dispose subviews.
-    subview.dispose() for subview in @subviews if @subviews?
+    subview.dispose() for subview in @subviews if @subviews.length > 0
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
