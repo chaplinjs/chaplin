@@ -184,8 +184,28 @@ module.exports = class View extends Backbone.View
     return
 
   # Remove all handlers registered with @delegate.
-  undelegate: ->
-    @$el.unbind ".delegate#{@cid}"
+  undelegate: (eventName, second, third) ->
+    if eventName
+      if typeof eventName isnt 'string'
+        throw new TypeError 'View#undelegate: first argument must be a string'
+
+      if arguments.length is 2
+        if typeof second is 'string'
+          selector = second
+        else
+          handler = second
+      else if arguments.length is 3
+        selector = second
+        if typeof selector isnt 'string'
+          throw new TypeError 'View#undelegate: ' +
+            'second argument must be a string'
+        handler = third
+
+      list = _.map eventName.split(' '), (event) => "#{event}.delegate#{@cid}"
+      events = list.join(' ')
+      @$el.off events, (selector or null)
+    else
+      @$el.off ".delegate#{@cid}"
 
   # Handle declarative event bindings from `listen`
   delegateListeners: ->
