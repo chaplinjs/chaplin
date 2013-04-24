@@ -614,6 +614,11 @@ define [
 
         expect($('#disposed-view').length).to.be 0
 
+      it 'should call Backbone.View#remove', ->
+        sinon.spy view, 'remove'
+        view.dispose()
+        expect(view.remove).was.called()
+
       it 'should dispose subviews', ->
         subview = new View()
         sinon.spy(subview, 'dispose')
