@@ -57,15 +57,15 @@ In addition, `delegate` automatically binds the handler to the view object, so `
 Events that start with `!` immediately do something.
 
 * `beforeControllerDispose` — emitted before current controller is disposed.
-* `dispatcher:dispatch`
-* `!adjustTitle`
-* `!composer:retrieve`
-* `!composer:compose`
-* `!region:register`
-* `!region:unregister`
-* `!router:changeURL`
-* `!router:route`
-* `!router:routeByName`
-* `!router:match`
+* `dispatcher:dispatch` — emitted after controller action has been started.
+* `!adjustTitle` — adjusts window title.
+* `!composer:retrieve` — gets composition.
+* `!composer:compose` — creates new composition
+* `!region:register` — registers new region.
+* `!region:unregister` — unregisters existing region
+* `!router:changeURL` — adjusts document URL without any side effects
+* `!router:route` — changes URL with all consequences
+* `!router:routeByName` — changes URL by route name
+* `!router:match` — tries to match URL with routes
 
 ![Dance](http://s3.amazonaws.com/imgly_production/3362020/original.jpg)
