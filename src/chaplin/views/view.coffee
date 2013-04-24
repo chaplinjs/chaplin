@@ -367,9 +367,6 @@ module.exports = class View extends Backbone.View
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
 
-    # Unbind all referenced handlers.
-    @stopListening()
-
     # Remove all event handlers on this module.
     @off()
 
@@ -378,10 +375,12 @@ module.exports = class View extends Backbone.View
       # Unsubscribe from all DOM events.
       @undelegateEvents()
       @undelegate()
+      # Unbind all referenced handlers.
+      @stopListening()
     else
       # Remove the topmost element from DOM. This also removes all event
       # handlers from the element and all its children.
-      @$el.remove()
+      @remove()
 
     # Remove element references, options,
     # model/collection references and subview lists.
