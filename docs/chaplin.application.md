@@ -27,6 +27,26 @@ module.exports = class Application extends Chaplin.Application
     @startRouting()
 ```
 
+```javascript
+var Chaplin = require('chaplin');
+var routes = require('routes');
+
+var Application = Chaplin.Application.extend({
+  initialize: function() {
+    // Initialize core components in the required order.
+    this.initRouter(routes);
+    this.initDispatcher();
+    this.initComposer();
+    this.initLayout();
+
+    // Actually start routing.
+    this.startRouting();
+  }
+});
+
+module.exports = Application;
+```
+
 ### Properties
 
 ##### title
@@ -43,6 +63,16 @@ class Application extends Chaplin.Application
 
 mediator.publish '!adjustTitle', 'Apple'
 # Document title is now "Apple ­— Fruit".
+```
+
+```javascript
+// [...]
+var Application = Chaplin.Application.extend({
+  // [...]
+  title: 'Fruit'
+});
+mediator.publish('!adjustTitle', 'Apple');
+// Document title is now "Apple ­— Fruit".
 ```
 
 ### Methods

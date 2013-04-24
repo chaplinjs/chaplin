@@ -18,6 +18,11 @@ for manipulating global events. These methods are mixed into eventable objects b
 @subscribeEvent '!router:route', -> console.log arguments...
 ```
 
+```javascript
+this.subscribeEvent('dispatcher:dispatch', this.dispatch);
+this.subscribeEvent('!router:route', console.log.bind(console));
+```
+
 These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically
 invoking `Chaplin.mediator.unsubscribe` in the `dispose` method of the eventable and providing some small
 type checking.
@@ -28,6 +33,10 @@ In views, the standard `@model.on` way to register a handler for a model event s
 
 ```coffeescript
 @listenTo @model, 'add', @doSomething
+```
+
+```javascript
+this.listenTo(this.model, 'add', this.doSomething);
 ```
 
 In a model, it’s fine to use `on` directly as long as the handler is a method of the model itself.
@@ -43,6 +52,11 @@ Chaplin’s `View` class provides the `delegate` method as a shortcut for `@$el.
 @delegate 'click', '.close-button', @skip
 ```
 
+```javascript
+this.delegate('click', '.like-button', this.like);
+this.delegate('click', '.close-button', this.skip);
+```
+
 `delegate` registers the handler at the topmost DOM element of the view (`@el`) and catches events from nested elements using event bubbling. You can specify an optional selector to target nested elements.
 
 In addition, `delegate` automatically binds the handler to the view object, so `@`/`this` points to the view. This means `delegate` creates a wrapper function which acts as the handler. As a consequence, it’s currently impossible to unbind a specific handler. Please use `@$el.off` directly to unbind all handlers of an event type for a selector:
@@ -50,6 +64,11 @@ In addition, `delegate` automatically binds the handler to the view object, so `
 ```coffeescript
 @$el.off 'click', '.like-button'
 @$el.off 'click', '.close'
+```
+
+```javascript
+this.$el.off('click', '.like-button');
+this.$el.off('click', '.close');
 ```
 
 ## Events catalog

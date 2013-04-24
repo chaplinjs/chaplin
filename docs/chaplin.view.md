@@ -93,9 +93,20 @@ getTemplateData: ->
 ...
 
 getTemplateData: ->
-  title: 'Winnetou'
-  author: 'Karl May'
+  title: 'Winnetou', author: 'Karl May'
 
+```
+
+```javascript
+getTemplateData: function() {
+  return this.model.attributes;
+}
+
+...
+
+getTemplateData: function() {
+  return {title: 'Winnetou', author: 'Karl May'};
+}
 ```
 
   often overriden in a base model class to intelligently pick out attributes
@@ -155,20 +166,37 @@ getTemplateData: ->
   listeners. Just like [Backbone.View#events](http://backbonejs.org/#View),
   but for models / collections / mediator etc.
 
-  ```coffeescript
-  class SomeView extends View
-    listen:
-      # Listen to view events with @on.
-      'eventName': 'methodName'
-      # Same as @listenTo @model, 'change:foo', this[methodName].
-      'change:foo model': 'methodName'
-      # Same as @listenTo @collection, 'reset', this[methodName].
-      'reset collection': 'methodName'
-      # Same as @subscribeEvent 'pubSubEvent', this[methodName].
-      'pubSubEvent mediator': 'methodName'
-      # The value can also be a function.
-      'eventName': -> alert 'Hello!'
-  ```
+```coffeescript
+class SomeView extends View
+  listen:
+    # Listen to view events with @on.
+    'eventName': 'methodName'
+    # Same as @listenTo @model, 'change:foo', this[methodName].
+    'change:foo model': 'methodName'
+    # Same as @listenTo @collection, 'reset', this[methodName].
+    'reset collection': 'methodName'
+    # Same as @subscribeEvent 'pubSubEvent', this[methodName].
+    'pubSubEvent mediator': 'methodName'
+    # The value can also be a function.
+    'eventName': -> alert 'Hello!'
+```
+
+```javascript
+var SomeView = View.extend({
+  listen: {
+    // Listen to view events with @on.
+    'eventName': 'methodName',
+    // Same as @listenTo @model, 'change:foo', this[methodName].
+    'change:foo model': 'methodName',
+    // Same as @listenTo @collection, 'reset', this[methodName].
+    'reset collection': 'methodName',
+    // Same as @subscribeEvent 'pubSubEvent', this[methodName].
+    'pubSubEvent mediator': 'methodName',
+    // The value can also be a function.
+    'eventName': function() {alert('Hello!')}
+  }
+});
+```
 
 ### delegate(eventType, [selector], handler)
 * **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
@@ -180,14 +208,24 @@ Chaplin provides the `delegate` method for this purpose. `delegate`
 is a wrapper for jQuery's `@$el.on` method, and has the same
 method signature.
 
-```coffeescript
-# For events affecting the whole view:
-# delegate(eventType, handler)
-@delegate('click', @clicked)
+For events, affecting the whole view the signature is `delegate(eventType, handler)`:
 
-# For events only affecting an element or colletion of elements in the view, pass a selector:
-# delegate(eventType, selector, handler)
+```coffeescript
+@delegate('click', @clicked)
+```
+
+```javascript
+this.delegate('click', this.clicked);
+```
+
+For events only affecting an element or colletion of elements in the view, pass a selector too `delegate(eventType, selector, handler)`:
+
+```coffeescript
 @delegate('click', 'button.confirm', @confirm)
+```
+
+```javascript
+this.delegate('click', 'button.confirm', this.confirm);
 ```
 
 ## Regions
