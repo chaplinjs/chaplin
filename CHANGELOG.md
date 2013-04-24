@@ -29,6 +29,8 @@
         * `unregisterRegions` to `unregisterGlobalRegions`
     * Changed default `Layout` element from `document` to `body`.
     * Removed explicit `view.$el.show()` / `hide()` for managed views.
+* Improved `Chaplin.utils`:
+    * Removed `underscorize`.
 
 # Chaplin 0.8.1 (1 April 2013)
 * Improved `Chaplin.Layout`:
