@@ -10,7 +10,6 @@ In addition to Backbone’s `events` hash and the `delegateEvents` method, Chapl
 
 Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model, ...)` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `on`, you have to deregister the handler manually to clear the reference from the model to the view.
 
-
 ## Features and purpose
 
 * Rendering model data using templates in a conventional way

@@ -7,7 +7,7 @@
 ### initialize([options={}])
 
 * **options**:
-    * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*
+    * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*. If `false`y, chaplin won’t route links at all.
     * **skipRouting**: if you want to skip the internal routing in some situation. Can take the following value:
         * selector: check if the activated link matches the selector.
         * function: check the return value. Return `true` to continue routing, return `false` to stop routing. The path and the elements are passed as parameters. Example: `function(href, el) { return href == 'bla'; }`

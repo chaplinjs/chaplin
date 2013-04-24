@@ -5,8 +5,8 @@ for the core modules of **Chaplin**: the **[Dispatcher](#initdispatcheroptions)*
 the **[Router](#initrouterroutes-options)**, and the **[Composer](#initcomposeroptions)**.
 The object is inteded to be extended by your application.
 The `initialize` method of your derived class must initialize
-the core modules by calling the `initDispatcher`, `initLayout`,
-and `initRouter` (`initRouter` should be invoked last).
+the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`,
+and then launching navigation with `startRouting`
 
 ```coffeescript
 Chaplin = require 'chaplin'
@@ -23,7 +23,7 @@ module.exports = class Application extends Chaplin.Application
     @initComposer()
     @initLayout()
 
-    # Initiate the routing
+    # Actually start routing.
     @startRouting()
 ```
 
@@ -89,8 +89,8 @@ class Application extends Chaplin.Application
     routes? @router.match
 ```
 
-##### startHistory()
-When all of the routes have been matched, call `startHistory()` to
+##### startRouting()
+When all of the routes have been matched, call `startRouting()` to
 begin monitoring routing events, and dispatching routes. Invoke this method
 after all of the components have been initialized as this will also
 match the current URL and dispatch the matched route.
