@@ -7,9 +7,9 @@ mediator = require 'chaplin/mediator'
 # when disposing the object.
 #
 # Mixin this object to add the subscriber capability to any object:
-# _(object).extend EventBroker
+# _.extend object, EventBroker
 # Or to a prototype of a class:
-# _(@prototype).extend EventBroker
+# _.extend @prototype, EventBroker
 #
 # Since Backbone 0.9.2 this abstraction just serves the purpose
 # that a handler cannot be registered twice for the same event.

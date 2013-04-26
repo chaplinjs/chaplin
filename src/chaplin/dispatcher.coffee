@@ -10,7 +10,7 @@ module.exports = class Dispatcher
   @extend = Backbone.Model.extend
 
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # The previous route information.
   # This object contains the controller name, action, path, and name (if any).
@@ -27,7 +27,7 @@ module.exports = class Dispatcher
 
   initialize: (options = {}) ->
     # Merge the options.
-    @settings = _(options).defaults
+    @settings = _.defaults options,
       controllerPath: 'controllers/'
       controllerSuffix: '_controller'
 
