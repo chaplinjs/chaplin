@@ -15,7 +15,7 @@ module.exports = class Application
   @extend = Backbone.Model.extend
 
   # Mixin an `EventBroker` for **publish/subscribe** functionality.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Site-wide title that is mapped to HTML `title` tag.
   title: ''

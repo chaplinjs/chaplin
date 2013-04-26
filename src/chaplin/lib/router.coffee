@@ -14,10 +14,10 @@ module.exports = class Router # This class does not extend Backbone.Router.
   @extend = Backbone.Model.extend
 
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   constructor: (@options = {}) ->
-    _(@options).defaults
+    _.defaults @options,
       pushState: true
       root: '/'
 
@@ -81,7 +81,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
     options = if options then _.clone(options) else {}
 
     # Update the URL programmatically after routing.
-    _(options).defaults changeURL: true
+    _.defaults options, changeURL: true
 
     # Remove leading subdir and hash or slash.
     path = path.replace @removeRoot, ''

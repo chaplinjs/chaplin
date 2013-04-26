@@ -10,7 +10,7 @@ utils = require 'chaplin/lib/utils'
 # in order to add some functionality.
 module.exports = class Collection extends Backbone.Collection
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Use the Chaplin model per default, not Backbone.Model.
   model: Model

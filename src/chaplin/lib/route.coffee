@@ -10,7 +10,7 @@ module.exports = class Route
   @extend = Backbone.Model.extend
 
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Taken from Backbone.Router.
   escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
@@ -40,7 +40,7 @@ module.exports = class Route
     @paramNames = []
 
     # Check if the action is a reserved name
-    if _(Controller.prototype).has @action
+    if _.has Controller.prototype, @action
       throw new Error 'Route: You should not use existing controller ' +
         'properties as action names'
 
