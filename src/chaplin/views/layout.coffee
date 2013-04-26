@@ -15,9 +15,6 @@ module.exports = class Layout extends View
   # and passed as an option.
   title: ''
 
-  # Bind to document body by default.
-  el: document.body
-
   # Override default view behavior, we don’t want document.body to be removed.
   keepElement: true
 
@@ -35,6 +32,9 @@ module.exports = class Layout extends View
     '!region:unregister mediator': 'unregisterRegionHandler'
 
   constructor: (options = {}) ->
+    # Bind to document body by default.
+    options.el ?= document.body
+
     @globalRegions = []
     @title = options.title
     @regions = options.regions if options.regions
