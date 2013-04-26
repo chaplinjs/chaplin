@@ -45,7 +45,6 @@ module.exports = class Layout extends View
       skipRouting: '.noscript'
       # Per default, jump to the top of the page.
       scrollTo: [0, 0]
-    @route = @settings.routeLinks
 
     super
 
@@ -58,9 +57,9 @@ module.exports = class Layout extends View
   # Handler for the global beforeControllerDispose event.
   scroll: (controller) ->
     # Reset the scroll position.
-    scrollTo = @settings.scrollTo
-    if scrollTo
-      window.scrollTo scrollTo[0], scrollTo[1]
+    position = @settings.scrollTo
+    if position
+      window.scrollTo position[0], position[1]
 
   # Handler for the global dispatcher:dispatch event.
   # Change the document title to match the new controller.
@@ -75,10 +74,12 @@ module.exports = class Layout extends View
   # -----------------------------------
 
   startLinkRouting: ->
-    @$el.on 'click', @route, @openLink if @route
+    route = @settings.routeLinks
+    @$el.on 'click', route, @openLink if route
 
   stopLinkRouting: ->
-    @$el.off 'click', @route if @route
+    route = @settings.routeLinks
+    @$el.off 'click', route if route
 
   isExternalLink: (link) ->
     link.target is '_blank' or
