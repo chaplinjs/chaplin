@@ -9,8 +9,8 @@ module.exports = class Controller
   @extend = Backbone.Model.extend
 
   # Mixin Backbone events and EventBroker.
-  _(@prototype).extend Backbone.Events
-  _(@prototype).extend EventBroker
+  _.extend @prototype, Backbone.Events
+  _.extend @prototype, EventBroker
 
   view: null
 

@@ -43,7 +43,7 @@ serializeAttributes = (model, attributes, modelStack) ->
 # in the context of a given tree.
 serializeModelAttributes = (model, currentModel, modelStack) ->
   # Nullify circular references.
-  return null if model is currentModel or _(modelStack).has model.cid
+  return null if model is currentModel or _.has modelStack, model.cid
   # Serialize recursively.
   attributes = if typeof model.getAttributes is 'function'
     # Chaplin models.
@@ -57,7 +57,7 @@ serializeModelAttributes = (model, currentModel, modelStack) ->
 # Abstraction that adds some useful functionality to backbone model.
 module.exports = class Model extends Backbone.Model
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # This method is used to get the attributes for the view template
   # and might be overwritten by decorators which cannot create a

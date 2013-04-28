@@ -16,8 +16,8 @@ module.exports = class Composition
   @extend = Backbone.Model.extend
 
   # Mixin Backbone events and EventBroker.
-  _(@prototype).extend Backbone.Events
-  _(@prototype).extend EventBroker
+  _.extend @prototype, Backbone.Events
+  _.extend @prototype, EventBroker
 
   # The item that is composed; this is by default a reference to this.
   item: null
@@ -52,7 +52,7 @@ module.exports = class Composition
 
     # Sets the stale property for every item in the composition that has it.
     @_stale = value
-    for name, item of this when item and item isnt this and _(item).has 'stale'
+    for name, item of this when item and item isnt this and _.has item, 'stale'
       item.stale = value
 
     # Return nothing.

@@ -10,7 +10,7 @@ $ = Backbone.$
 
 module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Specifies if current element should be kept in DOM after disposal.
   keepElement: false
@@ -76,7 +76,7 @@ module.exports = class View extends Backbone.View
   constructor: (options) ->
     # Copy some options to instance properties.
     if options
-      _(this).extend _.pick options, [
+      _.extend this, _.pick options, [
         'autoAttach', 'autoRender', 'container', 'containerMethod', 'region'
       ]
 

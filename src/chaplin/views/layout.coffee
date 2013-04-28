@@ -38,7 +38,7 @@ module.exports = class Layout extends View
     @globalRegions = []
     @title = options.title
     @regions = options.regions if options.regions
-    @settings = _(options).defaults
+    @settings = _.defaults options,
       titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
       openExternalToBlank: false
       routeLinks: 'a, .go-to'

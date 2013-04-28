@@ -9,10 +9,10 @@
 # from the standard Chaplin.View.
 #
 # Mixin this object to add the delayer capability to any object:
-# _(object).extend Delayer
+# _.extend object, Delayer
 #
 # Or to a prototype of a class:
-# _(@prototype).extend Delayer
+# _.extend @prototype, Delayer
 #
 # In the dispose method, call `clearDelayed` to remove all pending
 # timeouts and running intervals:
