@@ -366,7 +366,7 @@ module.exports = class View extends Backbone.View
     @unregisterAllRegions()
 
     # Dispose subviews.
-    subview.dispose() for subview in @subviews if @subviews.length > 0
+    subview.dispose() for subview in @subviews
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
