@@ -58,7 +58,7 @@ module will append this value to the subtitle passed to the `!adjustTitle`
 event to construct the document title.
 
 ```coffeescript
-// CoffeeScript
+# CoffeeScript
 # [...]
 class Application extends Chaplin.Application
   # [...]

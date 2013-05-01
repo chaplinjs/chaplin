@@ -10,8 +10,15 @@ In Backbone there are no controllers. Backbone’s `Router` maps routes to its *
 By convention, all application routes should be declared in a separate file, the `routes` module. This is a simple JavaScript module which calls the `match` method of the `Router` several times. For example:
 
 ```coffeescript
+# CoffeeScript
 match '', 'home#index'
 match 'likes/:id', controller: 'controllers/likes', action: 'show'
+```
+
+```javascript
+// JavaScript
+match('', 'home#index');
+match('likes/:id', {controller: 'controllers/likes', action: 'show'});
 ```
 
 `match` works much like the Ruby on Rails counterpart. If a route matches, a `router:match` event is published passing the route instance and a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.
@@ -45,7 +52,13 @@ You can also drop `target` and use `options.{action,controller}` for more explic
 In the third parameter, fixed parameters may be passed. They will be added to the `params` hash which will be passed to the controller action. They cannot be overwritten by parameters from the URL. For example:
 
 ```coffeescript
-match 'likes/:id', 'likes#show', params: { foo: 'bar' }
+# CoffeeScript
+match 'likes/:id', 'likes#show', params: {foo: 'bar'}
+```
+
+```javascript
+// JavaScript
+match('likes/:id', 'likes#show', {params: {foo: 'bar'}});
 ```
 
 In this example, the `LikesController` will receive a `params` hash which has a `foo` property.
@@ -53,26 +66,30 @@ In this example, the `LikesController` will receive a `params` hash which has a 
 The third parameter may also impose additional constraints on named placeholders. Pass an object in the `constraints` property. Add a property for each placeholder you would like to put constraints on. Pass a regular expression as the value. For example:
 
 ```coffeescript
-match 'likes/:id', 'likes#show', constraints: { id: /^\d+$/ }
+# CoffeeScript
+match 'likes/:id', 'likes#show', constraints: {id: /^\d+$/}
+```
+
+```javascript
+// JavaScript
+match('likes/:id', 'likes#show', {constraints: {id: /^\d+$/}});
 ```
 
 The regular expression if the ID consists of digits only. This route will match the URL `/likes/5636`
 
-Last, but not least, you can have named routes with `name` option. You can extract their urls by using `!router:reverse` global event.
+Last, but not least, you can have named routes with `name` option. You can extract their urls by using `Chaplin.helpers.reverse` helper. By default, `name` option is equal to `controllerName#action`, e.g. `likes#show`.
 
 ```coffeescript
+# CoffeeScript
 match 'likes/:id', 'likes#show', name: 'like'
-
-# Then.
-getUrl = (routeName, params...) ->
-  url = null
-  mediator.publish '!router:reverse', routeName, params, (result) ->
-    url = result
-  "/#{url}"
-
-getUrl 'like', id: 581  # => likes/581
+Chaplin.helpers.reverse 'like', id: 581  # => likes/581
 ```
 
+```javascript
+// JavaScript
+match('likes/:id', 'likes#show', name: 'like'});
+Chaplin.helpers.reverse('like', {id: 581});  // => likes/581
+```
 
 ### route( [path] )
 
@@ -125,6 +142,7 @@ Stops the Backbone.history instance and removes it from the Router object.  Also
 The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
 
 ```coffeescript
+# CoffeeScript
 define [
   'chaplin',
   'routes'
@@ -132,11 +150,30 @@ define [
   'use strict'
 
   class MyApplication extends Chaplin.Application
-
     title: 'The title for your application'
 
     initialize: ->
       super
-
       @initRouter routes
+```
+
+```javascript
+// JavaScript
+define([
+  'chaplin',
+  'routes'
+], function(Chaplin, routes) {
+  'use strict';
+
+  var MyApplication = Chaplin.Application.extend({
+    title: 'The title for your application',
+
+    initialize: function() {
+      Chaplin.Application.prototype.initialize.apply(this, arguments);
+      this.initRouter(routes);
+    }
+  });
+
+  return MyApplication;
+});
 ```
