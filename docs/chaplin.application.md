@@ -9,6 +9,7 @@ the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`,
 and then launching navigation with `startRouting`
 
 ```coffeescript
+# CoffeeScript
 Chaplin = require 'chaplin'
 routes = require 'routes'
 
@@ -28,6 +29,7 @@ module.exports = class Application extends Chaplin.Application
 ```
 
 ```javascript
+// JavaScript
 var Chaplin = require('chaplin');
 var routes = require('routes');
 
@@ -56,6 +58,7 @@ module will append this value to the subtitle passed to the `!adjustTitle`
 event to construct the document title.
 
 ```coffeescript
+// CoffeeScript
 # [...]
 class Application extends Chaplin.Application
   # [...]
@@ -66,6 +69,7 @@ mediator.publish '!adjustTitle', 'Apple'
 ```
 
 ```javascript
+// JavaScript
 // [...]
 var Application = Chaplin.Application.extend({
   // [...]
@@ -87,12 +91,25 @@ extensions), you'd override the `initDispatcher` method and construct the
 dispatcher class as follows:
 
 ```coffeescript
+# CoffeeScript
 # [...]
 Dispatcher = require 'dispatcher'
 class Application extends Chaplin.Application
   # [...]
   initDispatcher: (options) ->
     @dispatcher = new Dispatcher options
+```
+
+```javascript
+// JavaScript
+// [...]
+var Dispatcher = require('dispatcher');
+var Application = Chaplin.Application.extend({
+  // [...]
+  initDispatcher: function(options) {
+    this.dispatcher = new Dispatcher(options);
+  }
+});
 ```
 
 ##### initRouter(routes, [options])
@@ -110,14 +127,31 @@ extensions), you'd override the `initRouter` method and construct the
 router class as follows (ensuring to start the routing process as well):
 
 ```coffeescript
+# CoffeeScript
 # [...]
 Router = require 'router'
 class Application extends Chaplin.Application
   # [...]
   initRouter: (routes, options) ->
     @router = new Router options
+
+    # Register any provided routes.
     routes? @router.match
 ```
+
+```javascript
+// JavaScript
+// [...]
+var Router = require('router');
+var Application = Chaplin.Application.extend({
+  // [...]
+  initRouter: function(routes, options) {
+    this.router = new Router(options);
+
+    // Register any provided routes.
+    if (routes != null) routes(this.router.match);
+  }
+});
 
 ##### startRouting()
 When all of the routes have been matched, call `startRouting()` to
@@ -135,12 +169,25 @@ extensions), you'd override the `initComposer` method and construct the
 composer class as follows:
 
 ```coffeescript
+# CoffeeScript
 # [...]
 Composer = require 'composer'
 class Application extends Chaplin.Application
   # [...]
   initComposer: (options) ->
     @composer = new Composer options
+```
+
+```javascript
+// JavaScript
+// [...]
+var Composer = require('composer');
+var Application = Chaplin.Application.extend({
+  // [...]
+  initComposer: function(options) {
+    this.composer = new Composer(options);
+  }
+});
 ```
 
 ##### initLayout([options])
@@ -153,6 +200,7 @@ extensions), you'd override the `initLayout` method and construct the
 layout class as follows:
 
 ```coffeescript
+# CoffeeScript
 # [...]
 _ = require 'underscore'
 Layout = require 'layout'
@@ -160,4 +208,17 @@ class Application extends Chaplin.Application
   # [...]
   initLayout: (options) ->
     @layout = new Layout _.defaults options, {@title}
+```
+
+```javascript
+// JavaScript
+# [...]
+var _ = require('underscore');
+var Layout = require('layout');
+var Application = Chaplin.Application.extend({
+  // [...]
+  initLayout: function(options) {
+    this.layout = new Layout(_.defaults(options, {title: this.title}));
+  }
+});
 ```

@@ -30,10 +30,12 @@ By convention, routes should be declared in a separate module (typically
 `routes.coffee`). For example:
 
 ```coffeescript
+# CoffeeScript
 match 'likes/:id', 'likes#show'
 ```
 
 ```javascript
+// JavaScript
 match('likes/:id', 'likes#show');
 ```
 

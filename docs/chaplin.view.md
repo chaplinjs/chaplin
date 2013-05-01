@@ -66,11 +66,14 @@ or if using templates in the DOM
 ```
 
 if using Handlebars
+
 ```coffeescript
 getTemplateFunction: ->
   Handlebars.compile @template
 ```
+
 or if using underscore templates
+
 ```coffeescript
 getTemplateFunction: ->
   _.template @template
