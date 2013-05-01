@@ -1,4 +1,5 @@
 # Chaplin 0.9.0 (unreleased)
+* Added full lodash compatibility.
 * Removed deferred mix-in (`initDeferred`) support from
   models, collections and views.
 * Improved `Chaplin.Controller` and `Chaplin.Dispatcher`:
@@ -16,7 +17,8 @@
 * Improved `Chaplin.View`:
     * Added `keepInElement` property (false by default).
       When truthy, view’s DOM element won’t be removed after disposal.
-    * Added `Backbone.View#remove` call in `dispose` method.
+    * `View#dispose` now also calls `View#remove` method.
+    * Subviews are now always an array.
 * Improved `Chaplin.CollectionView`:
     * Added Backbone 1.0 `Collection#set` support.
 * Improved `Chaplin.Layout`:
@@ -29,6 +31,7 @@
         * `unregisterRegions` to `unregisterGlobalRegions`
     * Changed default `Layout` element from `document` to `body`.
     * Removed explicit `view.$el.show()` / `hide()` for managed views.
+    * Removed `route` property. Use `settings.routeLinks` instead.
 * Improved `Chaplin.utils`:
     * Removed `underscorize`.
 
