@@ -152,6 +152,7 @@ var Application = Chaplin.Application.extend({
     if (routes != null) routes(this.router.match);
   }
 });
+```
 
 ##### startRouting()
 When all of the routes have been matched, call `startRouting()` to
@@ -212,7 +213,7 @@ class Application extends Chaplin.Application
 
 ```javascript
 // JavaScript
-# [...]
+// [...]
 var _ = require('underscore');
 var Layout = require('layout');
 var Application = Chaplin.Application.extend({

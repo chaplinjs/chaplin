@@ -202,7 +202,7 @@ model.fetch()
 ```
 
 ```javascript
-# JavaScript
+// JavaScript
 var Model = Chaplin.Model.extend({
   initialize: function() {
     Chaplin.Model.prototype.initialize.apply(this, arguments);
@@ -211,13 +211,15 @@ var Model = Chaplin.Model.extend({
 
   fetch: function(options) {
     if (options == null) options = {};
-    this.beginSync()
-    var success = options.success
+    this.beginSync();
+    var success = options.success;
+
     options.success = (function(model, response) {
       success? model, response
       if (typeof success === 'function') success(model, response);
       this.finishSync();
     }).bind(this)
+
     Chaplin.Model.prototype.fetch.call(this, options);
   }
 });

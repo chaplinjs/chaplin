@@ -84,7 +84,7 @@ define([
       this.redirectUnlessLoggedIn();
     },
 
-    # Initialize method is empty here.
+    // Initialize method is empty here.
     index: function(params) {
       this.collection = new Likes();
       this.view = new LikesView({collection: this.collection});

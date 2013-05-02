@@ -85,7 +85,7 @@ class MyApplication extends Chaplin.Application
 // JavaScript
 var MyApplication = Chaplin.Application.extend({
   initialize: function() {
-    # ...
+    // ...
     this.initLayout({openExternalLinksInNewWindow: true});
   }
 });
@@ -99,7 +99,7 @@ class Layout extends Chaplin.Layout
   isExternalLink: (href) -> # some test on the href variable
 ```
 
-```coffeescript
+```javascript
 // JavaScript
 var Layout = Chaplin.Layout.extend({
   isExternalLink: function(href) {} # some test on the href variable
