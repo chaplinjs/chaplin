@@ -365,9 +365,6 @@ module.exports = class View extends Backbone.View
     # Unregister all regions.
     @unregisterAllRegions()
 
-    # Dispose subviews.
-    subview.dispose() for subview in @subviews
-
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
 
@@ -385,6 +382,9 @@ module.exports = class View extends Backbone.View
       # Remove the topmost element from DOM. This also removes all event
       # handlers from the element and all its children.
       @remove()
+
+    # Dispose subviews.
+    subview.dispose() for subview in @subviews
 
     # Remove element references, options,
     # model/collection references and subview lists.
