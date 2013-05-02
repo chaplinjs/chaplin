@@ -14,8 +14,15 @@ for manipulating global events. These methods are mixed into eventable objects b
 [EventBroker]: https://github.com/chaplinjs/chaplin/blob/master/docs/chaplin.event_broker.md
 
 ```coffeescript
+# CoffeeScript
 @subscribeEvent 'dispatcher:dispatch', @dispatch
 @subscribeEvent '!router:route', -> console.log arguments...
+```
+
+```javascript
+// JavaScript
+this.subscribeEvent('dispatcher:dispatch', this.dispatch);
+this.subscribeEvent('!router:route', console.log.bind(console));
 ```
 
 These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically
@@ -27,7 +34,13 @@ type checking.
 In views, the standard `@model.on` way to register a handler for a model event should not be used. Use the memory-saving wrapper `listenTo` instead:
 
 ```coffeescript
+# CoffeeScript
 @listenTo @model, 'add', @doSomething
+```
+
+```javascript
+// JavaScript
+this.listenTo(this.model, 'add', this.doSomething);
 ```
 
 In a model, it’s fine to use `on` directly as long as the handler is a method of the model itself.
@@ -39,8 +52,15 @@ Most views handle user input by listening to DOM events. Backbone provides the `
 Chaplin’s `View` class provides the `delegate` method as a shortcut for `@$el.on`. It has the same signature as the jQuery 1.7 `on` method. Some examples:
 
 ```coffeescript
+# CoffeeScript
 @delegate 'click', '.like-button', @like
 @delegate 'click', '.close-button', @skip
+```
+
+```javascript
+// JavaScript
+this.delegate('click', '.like-button', this.like);
+this.delegate('click', '.close-button', this.skip);
 ```
 
 `delegate` registers the handler at the topmost DOM element of the view (`@el`) and catches events from nested elements using event bubbling. You can specify an optional selector to target nested elements.
@@ -48,8 +68,15 @@ Chaplin’s `View` class provides the `delegate` method as a shortcut for `@$el.
 In addition, `delegate` automatically binds the handler to the view object, so `@`/`this` points to the view. This means `delegate` creates a wrapper function which acts as the handler. As a consequence, it’s currently impossible to unbind a specific handler. Please use `@$el.off` directly to unbind all handlers of an event type for a selector:
 
 ```coffeescript
+# CoffeeScript
 @$el.off 'click', '.like-button'
 @$el.off 'click', '.close'
+```
+
+```javascript
+// JavaScript
+this.$el.off('click', '.like-button');
+this.$el.off('click', '.close');
 ```
 
 ## Events catalog

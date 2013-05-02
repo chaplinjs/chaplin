@@ -104,6 +104,7 @@ The `CollectionView` is responsible for displaying collections. For every item i
   set all items will be included.
 
 ```coffeescript
+# CoffeeScript
 filterer: (item, index) ->
   item.get 'color' is 'red'
 
@@ -112,6 +113,18 @@ filterer: (item, index) ->
 filterer: (item, index) ->
   index < 20 if @limit? else true
 
+```
+
+```javascript
+// JavaScript
+filterer: function(item, index) {
+  return item.get('color') === 'red';
+}
+...
+
+filterer: function(item, index) {
+  return (this.limit != null) ? index < 20 : true;
+}
 ```
 
 ### filterCallback(view, included)
@@ -123,6 +136,7 @@ filterer: (item, index) ->
   Default is to hide excluded views
 
 ```coffeescript
+# CoffeeScript
 filterCallback: (view, included) ->
   view.$el.toggleClass('active', included)
 
@@ -131,6 +145,20 @@ filterCallback: (view, included) ->
 filterCallback: (view, included) ->
   opts = if included then 'long-title, large-thumbnail' else 'short-title, small-thumbnail'
   view.showExtendedOptions(opts)
+```
+
+```javascript
+// JavaScript
+filterCallback: function(view, included) {
+  view.$el.toggleClass('active', included);
+}
+
+...
+
+filterCallback: function(view, included) {
+  var opts = (included) ? 'long-title, large-thumbnail' : 'short-title, small-thumbnail';
+  view.showExtendedOptions(opts);
+}
 ```
 
 ### addCollectionListeners()
@@ -190,11 +218,22 @@ should still take place in `initialize`, but the majority of Collection-
 specific logic is handled by this class.
 
 ```coffeescript
+# CoffeeScript
 class LikesView extends CollectionView
   autoRender: true
   className: 'likes-list'
   itemView: LikeView
   tagName: 'ul'
+```
+
+```javascript
+// JavaScript
+var LikesView = CollectionView.extend({
+  autoRender: true,
+  className: 'likes-list',
+  itemView: LikeView,
+  tagName: 'ul'
+});
 ```
 
 ### Examples
