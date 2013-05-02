@@ -69,25 +69,25 @@ SyncStateChange is a convenience method which will execute a callback in a speci
 The `Chaplin.SyncMachine` is a dependency of `Chaplin.Model` and `Chaplin.Collection` and should be used for complex synchronization of models and collections.  An example of this would be using a 3rd party.
 
 ```coffeescript
+# CoffeeScript
 define [
   'chaplin'
   'models/post' # Post model
 ], (Chaplin.Collection, Post) ->
 
   class Posts extends Chaplin.Collection
+    # Initialize the SyncMachine
+    _.extend @prototype, Chaplin.SyncMachine
 
     model: Post
 
     initialize: ->
       super
 
-      # Initialize the SyncMachine
-      _(this).extend Chaplin.SyncMachine
-
       # Will be called on every state change
       @syncStateChange announce
 
-      fetch()
+      @fetch()
 
     # Custom fetch method which warrents
     # the sync machine
@@ -115,11 +115,65 @@ define [
       console.debug 'state changed'
 ```
 
+```javascript
+// JavaScript
+define([
+  'chaplin',
+  'models/post' // Post model
+], function(Chaplin.Collection, Post) {
+
+  var Posts = Chaplin.Collection.extend({
+    model: Post,
+
+    initialize: function() {
+      Chaplin.Collection.prototype.initialize.apply(this, arguments);
+
+      // Initialize the SyncMachine
+      _.extend(this, Chaplin.SyncMachine);
+
+      // Will be called on every state change
+      this.syncStateChange(this.announce.bind(this));
+
+      this.fetch();
+    },
+
+    // Custom fetch method which warrents
+    // the sync machine
+    fetch: function() {
+      // Set the machine into `syncing` state
+      this.beginSync()
+
+      // Do something interesting like calling
+      // a 3rd party service
+      $.get('http://some-service.com/posts', this.processPosts.bind(this))
+    },
+
+    processPosts: function(response) {
+      // Exit if for some reason this collection was
+      // disposed prior to the response
+      if (this.disposed) return;
+
+      // Update the collection
+      this.reset((response && response.data) ? response.data : []);
+
+      // Set the machine into `synced` state
+      this.finishSync();
+    },
+
+    announce: function() {
+      console.debug('state changed');
+    }
+  });
+
+  return Posts;
+```
+
 Another example of using `SyncMachine` with `Model`:
 
 ```coffeescript
+# CoffeeScript
 class Model extends Chaplin.Model
-  _(@prototype).extend Chaplin.SyncMachine
+  _.extend @prototype, Chaplin.SyncMachine
 
   fetch: (options = {}) ->
     @beginSync()
@@ -145,4 +199,46 @@ class View extends Chaplin.View
 model = new Model
 view = new View {model}
 model.fetch()
+```
+
+```javascript
+# JavaScript
+var Model = Chaplin.Model.extend({
+  initialize: function() {
+    Chaplin.Model.prototype.initialize.apply(this, arguments);
+    _.extend(this, Chaplin.SyncMachine);
+  },
+
+  fetch: function(options) {
+    if (options == null) options = {};
+    this.beginSync()
+    var success = options.success
+    options.success = (function(model, response) {
+      success? model, response
+      if (typeof success === 'function') success(model, response);
+      this.finishSync();
+    }).bind(this)
+    Chaplin.Model.prototype.fetch.call(this, options);
+  }
+});
+
+// Will render view when model data will arrive from server.
+var View = Chaplin.View.extend({
+  rendered: false,
+  initialize: function() {
+    Chaplin.View.prototype.initialize.apply(this, arguments);
+    // Render.
+    this.model.synced((function() {
+      if (!this.rendered) {
+        this.render();
+        this.rendered = true;
+      }
+    }).bind(this));
+  }
+});
+...
+
+var model = new Model;
+var view = new View({model: model});
+model.fetch();
 ```

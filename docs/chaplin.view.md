@@ -58,20 +58,30 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
   A common implementation will take a passed in `template` string and return
   a compiled template function (e.g. a Handlebars or Underscore template function).
 ```coffeescript
+# CoffeeScript
+# CoffeeScript
 @template = require 'templates/comment_view'
 ```
+
 or if using templates in the DOM
+
 ```coffeescript
+# CoffeeScript
 @template = $('#comment_view_template').html()
 ```
 
 if using Handlebars
+
 ```coffeescript
+# CoffeeScript
 getTemplateFunction: ->
   Handlebars.compile @template
 ```
+
 or if using underscore templates
+
 ```coffeescript
+# CoffeeScript
 getTemplateFunction: ->
   _.template @template
 ```
@@ -87,15 +97,27 @@ getTemplateFunction: ->
   be overriden by inheriting classes (often from model data).
 
 ```coffeescript
+# CoffeeScript
 getTemplateData: ->
   @model.attributes
 
 ...
 
 getTemplateData: ->
-  title: 'Winnetou'
-  author: 'Karl May'
+  title: 'Winnetou', author: 'Karl May'
 
+```
+
+```javascript
+getTemplateData: function() {
+  return this.model.attributes;
+}
+
+...
+
+getTemplateData: function() {
+  return {title: 'Winnetou', author: 'Karl May'};
+}
 ```
 
   often overriden in a base model class to intelligently pick out attributes
@@ -155,20 +177,38 @@ getTemplateData: ->
   listeners. Just like [Backbone.View#events](http://backbonejs.org/#View),
   but for models / collections / mediator etc.
 
-  ```coffeescript
-  class SomeView extends View
-    listen:
-      # Listen to view events with @on.
-      'eventName': 'methodName'
-      # Same as @listenTo @model, 'change:foo', this[methodName].
-      'change:foo model': 'methodName'
-      # Same as @listenTo @collection, 'reset', this[methodName].
-      'reset collection': 'methodName'
-      # Same as @subscribeEvent 'pubSubEvent', this[methodName].
-      'pubSubEvent mediator': 'methodName'
-      # The value can also be a function.
-      'eventName': -> alert 'Hello!'
-  ```
+```coffeescript
+# CoffeeScript
+class SomeView extends View
+  listen:
+    # Listen to view events with @on.
+    'eventName': 'methodName'
+    # Same as @listenTo @model, 'change:foo', this[methodName].
+    'change:foo model': 'methodName'
+    # Same as @listenTo @collection, 'reset', this[methodName].
+    'reset collection': 'methodName'
+    # Same as @subscribeEvent 'pubSubEvent', this[methodName].
+    'pubSubEvent mediator': 'methodName'
+    # The value can also be a function.
+    'eventName': -> alert 'Hello!'
+```
+
+```javascript
+var SomeView = View.extend({
+  listen: {
+    // Listen to view events with @on.
+    'eventName': 'methodName',
+    // Same as @listenTo @model, 'change:foo', this[methodName].
+    'change:foo model': 'methodName',
+    // Same as @listenTo @collection, 'reset', this[methodName].
+    'reset collection': 'methodName',
+    // Same as @subscribeEvent 'pubSubEvent', this[methodName].
+    'pubSubEvent mediator': 'methodName',
+    // The value can also be a function.
+    'eventName': function() {alert('Hello!')}
+  }
+});
+```
 
 ### delegate(eventType, [selector], handler)
 * **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
@@ -180,14 +220,26 @@ Chaplin provides the `delegate` method for this purpose. `delegate`
 is a wrapper for jQuery's `@$el.on` method, and has the same
 method signature.
 
-```coffeescript
-# For events affecting the whole view:
-# delegate(eventType, handler)
-@delegate('click', @clicked)
+For events, affecting the whole view the signature is `delegate(eventType, handler)`:
 
-# For events only affecting an element or colletion of elements in the view, pass a selector:
-# delegate(eventType, selector, handler)
+```coffeescript
+# CoffeeScript
+@delegate('click', @clicked)
+```
+
+```javascript
+this.delegate('click', this.clicked);
+```
+
+For events only affecting an element or colletion of elements in the view, pass a selector too `delegate(eventType, selector, handler)`:
+
+```coffeescript
+# CoffeeScript
 @delegate('click', 'button.confirm', @confirm)
+```
+
+```javascript
+this.delegate('click', 'button.confirm', this.confirm);
 ```
 
 ## Regions
@@ -211,6 +263,7 @@ declared region `sidebar`.
 This one sets the region directly on the prototype:
 
 ```coffeescript
+# CoffeeScript
 # myview.coffee
 class MyView extends Chaplin.View
   region: 'sidebar'
@@ -223,6 +276,7 @@ class MyView extends Chaplin.View
 And this one passes in the value of region to the view constructor:
 
 ```coffeescript
+# CoffeeScript
 # myview.coffee
 class MyView extends Chaplin.View
 
@@ -243,6 +297,7 @@ The following snippet will register the named regions `sidebar` and `body` and
 bind them to their respective selectors.
 
 ```coffeescript
+# CoffeeScript
 # myview.coffee
 class MyView extends Chaplin.View
   regions:
@@ -264,6 +319,7 @@ hash. Meant to be called in the `initialize` method as the following code
 snippet (which is identical to the previous one using the `regions` hash).
 
 ```coffeescript
+# CoffeeScript
 class MyView extends Chaplin.View
   initialize: ->
     super
@@ -310,6 +366,7 @@ Remove the specified subview and dispose it. Can be called with either the `name
 ### Usage
 
 ```coffeescript
+# CoffeeScript
 class YourView extends View
 
   render: ->

@@ -25,23 +25,47 @@ A wrapper for `Backbone.Events.trigger`. See Backbone [documentation](http://bac
 Any module that need to publish or subscrib to messages to/from other modules must require `Chaplin` as a dependency.
 
 ```coffeescript
+# CoffeeScript
 define ['chaplin', 'otherdependency'], (Chaplin, OtherDependency) ->
+```
+
+```javascript
+// JavaScript
+define(['chaplin', 'otherdependency'], function(Chaplin, OtherDependency) {})
 ```
 
 For example, if you have a session_controller that logs the user in, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
 
 ```coffeescript
+# CoffeeScript
 Chaplin.mediator.publish 'login', user
+```
+
+```javascript
+// JavaScript
+Chaplin.mediator.publish('login', user);
 ```
 
 Any module that is interested to know about the user login will subscribe to it by doing:
 
 ```coffeescript
+# CoffeeScript
 Chaplin.mediator.subscribe 'login', @doSomething
+```
+
+```javascript
+// JavaScript
+Chaplin.mediator.subscribe('login', this.doSomething);
 ```
 
 Finally, if this module needs to stop listening on the login event, it can just unsubscribe by doing:
 
 ```coffeescript
+# CoffeeScript
 Chaplin.mediator.unsubscribe 'login', @doSomething
+```
+
+```javascript
+// JavaScript
+Chaplin.mediator.unsubscribe('login', this.doSomething);
 ```

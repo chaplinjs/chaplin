@@ -29,8 +29,14 @@ of such a change however.
 By convention, routes should be declared in a separate module (typically
 `routes.coffee`). For example:
 
-```coffee
+```coffeescript
+# CoffeeScript
 match 'likes/:id', 'likes#show'
+```
+
+```javascript
+// JavaScript
+match('likes/:id', 'likes#show');
 ```
 
 This works much like the [Ruby on Rails counterpart][]. If a route matches,
