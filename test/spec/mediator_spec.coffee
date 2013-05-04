@@ -19,7 +19,7 @@ define [
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
       methods = ['subscribe', 'unsubscribe', 'publish']
-      _(methods).forEach (property) ->
+      _.forEach methods, (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
         expect(desc.writable).to.be false

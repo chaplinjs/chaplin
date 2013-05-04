@@ -13,7 +13,7 @@ define [
 
     # Serialize pairs into query string (without leading question mark)
     serializequery = (pairs) ->
-      _(pairs).reduce((memo, val, prop) ->
+      _.reduce(pairs, (memo, val, prop) ->
         memo +
         (if memo is '' then '' else '&') +
         encodeURIComponent(prop) + '=' + encodeURIComponent(val)
