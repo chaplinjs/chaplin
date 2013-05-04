@@ -1,4 +1,4 @@
-# Chaplin 0.9.0 (unreleased)
+# Chaplin 0.9.0 (4 May 2013)
 * Added full lodash compatibility.
 * Removed deferred mix-in (`initDeferred`) support from
   models, collections and views.
