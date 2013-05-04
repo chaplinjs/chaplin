@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # [Chaplin.CollectionView](../src/chaplin/views/collection_view.coffee)
 
 The `CollectionView` is responsible for displaying collections. For every item in a collection, it instantiates a given item view and inserts it into the DOM. It reacts to collection change events (`add`, `remove` and `reset`) and provides basic filtering, caching of views, fallback content and loading indicators.
@@ -96,36 +100,32 @@ The `CollectionView` is responsible for displaying collections. For every item i
 
 ### filterer(item, index)
 * **Model item**
-* **int index of ***item*** in collection**
+* **int index of item in collection**
 * **returns boolean: is item included?**
 
   A iterator function that determines which items are shown. Can be passed
   in during instantiation via `options`. The function is optional; if not
   set all items will be included.
 
-```coffeescript
-# CoffeeScript
-filterer: (item, index) ->
-  item.get 'color' is 'red'
+#### Example
 
-...
-
-filterer: (item, index) ->
-  index < 20 if @limit? else true
-
-```
-
-```javascript
-// JavaScript
-filterer: function(item, index) {
-  return item.get('color') === 'red';
-}
-...
-
-filterer: function(item, index) {
-  return (this.limit != null) ? index < 20 : true;
-}
-```
+* ```coffeescript
+    filterer: (item, index) ->
+      item.get 'color' is 'red'
+    
+    ...
+    
+    filterer: (item, index) ->
+      index < 20 if @limit? else true
+* ```javascript
+    filterer: function(item, index) {
+      return item.get('color') === 'red';
+    }
+    ...
+    
+    filterer: function(item, index) {
+      return (this.limit != null) ? index < 20 : true;
+    }
 
 ### filterCallback(view, included)
 * **View view**
@@ -135,31 +135,28 @@ filterer: function(item, index) {
 
   Default is to hide excluded views
 
-```coffeescript
-# CoffeeScript
-filterCallback: (view, included) ->
-  view.$el.toggleClass('active', included)
+#### Example
 
-...
-
-filterCallback: (view, included) ->
-  opts = if included then 'long-title, large-thumbnail' else 'short-title, small-thumbnail'
-  view.showExtendedOptions(opts)
-```
-
-```javascript
-// JavaScript
-filterCallback: function(view, included) {
-  view.$el.toggleClass('active', included);
-}
-
-...
-
-filterCallback: function(view, included) {
-  var opts = (included) ? 'long-title, large-thumbnail' : 'short-title, small-thumbnail';
-  view.showExtendedOptions(opts);
-}
-```
+* ```coffeescript
+    filterCallback: (view, included) ->
+      view.$el.toggleClass('active', included)
+    
+    ...
+    
+    filterCallback: (view, included) ->
+      opts = if included then 'long-title, large-thumbnail' else 'short-title, small-thumbnail'
+      view.showExtendedOptions(opts)
+* ```javascript
+    filterCallback: function(view, included) {
+      view.$el.toggleClass('active', included);
+    }
+    
+    ...
+    
+    filterCallback: function(view, included) {
+      var opts = (included) ? 'long-title, large-thumbnail' : 'short-title, small-thumbnail';
+      view.showExtendedOptions(opts);
+    }
 
 ### addCollectionListeners()
 
@@ -217,26 +214,24 @@ property. Standard View conventions like adding `@listenTo` handlers
 should still take place in `initialize`, but the majority of Collection-
 specific logic is handled by this class.
 
-```coffeescript
-# CoffeeScript
-class LikesView extends CollectionView
-  autoRender: true
-  className: 'likes-list'
-  itemView: LikeView
-  tagName: 'ul'
-```
+#### Example
 
-```javascript
-// JavaScript
-var LikesView = CollectionView.extend({
-  autoRender: true,
-  className: 'likes-list',
-  itemView: LikeView,
-  tagName: 'ul'
-});
-```
+* ```coffeescript
+    class LikesView extends CollectionView
+      autoRender: true
+      className: 'likes-list'
+      itemView: LikeView
+      tagName: 'ul'
 
-### Examples
+* ```javascript
+    var LikesView = CollectionView.extend({
+      autoRender: true,
+      className: 'likes-list',
+      itemView: LikeView,
+      tagName: 'ul'
+    });
+
+### Real World Examples
 
 * [Ost.io PostsView](https://github.com/paulmillr/ostio/blob/master/app/views/post/posts-view.coffee)
 * [Facebook LikesView](https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/likes_view.coffee)

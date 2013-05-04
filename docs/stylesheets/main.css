@@ -1,0 +1,25 @@
+html {
+  text-align: center;
+}
+body {
+  width: 50%;
+  min-width: 690px;
+  margin: 0 auto;
+  text-align: left;
+}
+header {
+  padding: 10px;
+  min-height: auto;
+}
+header h1 {
+  font-size: 14pt;
+  text-align: left;
+}
+form.language {
+  float: right;
+  color: white;
+}
+#content {
+  clear: both;
+  padding: 1em 0;
+}

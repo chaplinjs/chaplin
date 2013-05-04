@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/application.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/pygments.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="javascripts/main.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <header>
+    <form action="" class="language">
+      <label>Language
+        <select name="language">
+          <option>CoffeeScript</option>
+          <option>JavaScript</option>
+        </select>
+      </label>
+    </form>
+    <h1>Chaplin Documentation</h1>
+  </header>
+  <div id="content">
+    {{ content }}
+  </div>
+</body>
+</html>
