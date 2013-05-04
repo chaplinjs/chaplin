@@ -56,7 +56,7 @@ method: ->
     …
 ```
 
-Add an return statement to avoid this.
+Add a return statement to avoid this.
 
 ```
 method: ->
@@ -67,13 +67,13 @@ method: ->
 
 ## Type checking
 
-Avoid using Underscore’s type checking functions. They aren’t needed in most of the cases. Use the simplest way which is appropriate:
+Avoid using Underscore’s type checking functions. They aren’t needed in most cases. Use the simplest way which is appropriate:
 
 Use duck typing instead of requiring a specific type where applicable.
 
-When expecting objects (non-primitives), just check for truthyness. This is fast and easy to read. If the value is a truthy primitive, the code will fail when trying to use undefined properties.
+When expecting objects (non-primitives), just check for truthiness. This is fast and easy to read. If the value is a truthy primitive, the code will fail when trying to use undefined properties.
 
-Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowing all other types (truthy or falsy). But use the operator sparingly, avoid chains like `foo?.bar?.quux` because they compile to unreadable and inefficient JavaScript code. For example, use `if foo and foo.bar` instead of `if foo?.bar` if truthyness is okay.
+Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowing all other types (truthy or falsy). But use the operator sparingly, avoid chains like `foo?.bar?.quux` because they compile to unreadable and inefficient JavaScript code. For example, use `if foo and foo.bar` instead of `if foo?.bar` if truthiness is okay.
 
 - Check for `string.length`, `number > 0` etc.
 - Use `typeof` to detect `function`, `string`, `number` (if type detection is necessary)
@@ -118,6 +118,7 @@ use explicit curly braces:
 func arg1, arg3, {
   prop1: 'val1'
   prop2: 'val2'
+}
 ```
 
 When there are several object literals as arguments, use curly braces to
@@ -133,7 +134,7 @@ Omit parentheses only on the first level, use them on the subsequent levels:
 
 ```
 foo bar quux # Don’t
-foo bar(quux()) # Do
+foo bar(quux) # Do
 ```
 
 In general, don’t put too much logic on one line of code so heavy nesting isn’t needed.
@@ -161,14 +162,14 @@ Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob
 
 # Releasing Chaplin
 
-A reminder to maintainers what should be done before release.
+A reminder to maintainers what should be done before every release.
 
 1. Update `package.json`, `component.json` and `CHANGELOG.md`, commit with “Release VERSION.”,
 git-tag last commit with new version.
 2. Update downloads and our site.
 3. Tweet about new version. Template:
 
-    Chaplin 0.7.0 released! This is the biggest release since release. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/0.6.0...0.7.0
+    Chaplin $RELEASE released! This is the biggest release since $PREV_RELEASE. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/$PREV_RELEASE...$RELEASE
 
 4. Update
 [brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin),
