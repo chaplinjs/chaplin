@@ -10,13 +10,16 @@ View = require 'chaplin/views/view'
 $ = Backbone.$
 
 module.exports = class Layout extends View
+  # Bind to document body by default.
+  el: 'body'
+
+  # Override default view behavior, we don’t want document.body to be removed.
+  keepElement: true
+
   # The site title used in the document title.
   # This should be set in your app-specific Application class
   # and passed as an option.
   title: ''
-
-  # Override default view behavior, we don’t want document.body to be removed.
-  keepElement: true
 
   # Regions
   # -------
@@ -32,9 +35,6 @@ module.exports = class Layout extends View
     '!region:unregister mediator': 'unregisterRegionHandler'
 
   constructor: (options = {}) ->
-    # Bind to document body by default.
-    options.el ?= document.body
-
     @globalRegions = []
     @title = options.title
     @regions = options.regions if options.regions
