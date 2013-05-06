@@ -116,9 +116,12 @@ module.exports = class Route
     # Apply the parameter constraints.
     constraints = @options.constraints
     if constraints
-      params = @extractParams path
-      for own name, constraint of constraints
-        return false unless constraint.test(params[name])
+      if _.isFunction constraints
+        return false unless constraints()
+      else
+        params = @extractParams path
+        for own name, constraint of constraints
+          return false unless constraint.test(params[name])
 
     return true
 
