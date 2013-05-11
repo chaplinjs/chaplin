@@ -109,23 +109,26 @@ The `CollectionView` is responsible for displaying collections. For every item i
 
 #### Example
 
-* ```coffeescript
-    filterer: (item, index) ->
-      item.get 'color' is 'red'
-    
-    ...
-    
-    filterer: (item, index) ->
-      index < 20 if @limit? else true
-* ```javascript
-    filterer: function(item, index) {
-      return item.get('color') === 'red';
-    }
-    ...
-    
-    filterer: function(item, index) {
-      return (this.limit != null) ? index < 20 : true;
-    }
+```coffeescript
+filterer: (item, index) ->
+  item.get 'color' is 'red'
+
+...
+
+filterer: (item, index) ->
+  index < 20 if @limit? else true
+```
+
+```javascript
+filterer: function(item, index) {
+  return item.get('color') === 'red';
+}
+...
+
+filterer: function(item, index) {
+  return (this.limit != null) ? index < 20 : true;
+}
+```
 
 ### filterCallback(view, included)
 * **View view**
@@ -137,26 +140,29 @@ The `CollectionView` is responsible for displaying collections. For every item i
 
 #### Example
 
-* ```coffeescript
-    filterCallback: (view, included) ->
-      view.$el.toggleClass('active', included)
-    
-    ...
-    
-    filterCallback: (view, included) ->
-      opts = if included then 'long-title, large-thumbnail' else 'short-title, small-thumbnail'
-      view.showExtendedOptions(opts)
-* ```javascript
-    filterCallback: function(view, included) {
-      view.$el.toggleClass('active', included);
-    }
-    
-    ...
-    
-    filterCallback: function(view, included) {
-      var opts = (included) ? 'long-title, large-thumbnail' : 'short-title, small-thumbnail';
-      view.showExtendedOptions(opts);
-    }
+```coffeescript
+filterCallback: (view, included) ->
+  view.$el.toggleClass('active', included)
+
+...
+
+filterCallback: (view, included) ->
+  opts = if included then 'long-title, large-thumbnail' else 'short-title, small-thumbnail'
+  view.showExtendedOptions(opts)
+```
+
+```javascript
+filterCallback: function(view, included) {
+  view.$el.toggleClass('active', included);
+}
+
+...
+
+filterCallback: function(view, included) {
+  var opts = (included) ? 'long-title, large-thumbnail' : 'short-title, small-thumbnail';
+  view.showExtendedOptions(opts);
+}
+```
 
 ### addCollectionListeners()
 
@@ -216,20 +222,22 @@ specific logic is handled by this class.
 
 #### Example
 
-* ```coffeescript
-    class LikesView extends CollectionView
-      autoRender: true
-      className: 'likes-list'
-      itemView: LikeView
-      tagName: 'ul'
+```coffeescript
+class LikesView extends CollectionView
+  autoRender: true
+  className: 'likes-list'
+  itemView: LikeView
+  tagName: 'ul'
+```
 
-* ```javascript
-    var LikesView = CollectionView.extend({
-      autoRender: true,
-      className: 'likes-list',
-      itemView: LikeView,
-      tagName: 'ul'
-    });
+```javascript
+var LikesView = CollectionView.extend({
+  autoRender: true,
+  className: 'likes-list',
+  itemView: LikeView,
+  tagName: 'ul'
+});
+```
 
 ### Real World Examples
 

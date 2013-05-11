@@ -18,8 +18,8 @@ CD = (function () {
     // Show code examples for given language
     show: function (language) {
       var language = language.toLowerCase();
-      $('ul:has(.highlight)').addClass('code-example')
-        .children().hide()
+      $('.highlight')
+        .hide()
         .filter(':has(.' + language + ')').show();
     }
   };
