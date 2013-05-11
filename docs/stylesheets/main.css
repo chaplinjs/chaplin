@@ -15,6 +15,9 @@ header h1 {
   font-size: 14pt;
   text-align: left;
 }
+header h1 a {
+  color: white;
+}
 form.language {
   float: right;
   color: white;

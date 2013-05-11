@@ -25,10 +25,10 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 
 ### initialize(options)
 * **options (default: empty hash)**
-    * `autoRender` see [autoRender](#autorender)
-    * `autoAttach` see [autoAttach](#autoattach)
-    * `container` see [container](#container)
-    * `containerMethod` see [containerMethod](#containermethod)
+    * `autoRender` see [autoRender](#toc_8)
+    * `autoAttach` see [autoAttach](#toc_9)
+    * `container` see [container](#toc_10)
+    * `containerMethod` see [containerMethod](#toc_11)
     * all standard [Backbone constructor
   options](http://backbonejs.org/#View-constructor) (`model`, `collection`,
   `el`, `id`, `className`, `tagName` and `attributes`)
@@ -46,11 +46,11 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
   nodes by creating HTML from templates and template data. Chaplin
   provides `getTemplateFunction` and `getTemplateData` for this purpose.
 
-  Set [`autoRender`](#autorender) to true to enable rendering upon
-  View instantiation. If [`autoAttach`](#autoattach) is enabled, this
-  will automatically append to the view to a [`container`](#container)
+  Set [`autoRender`](#toc_8) to true to enable rendering upon
+  View instantiation. If [`autoAttach`](#toc_9) is enabled, this
+  will automatically append to the view to a [`container`](#toc_10)
   The method of appending can be overridden using the
-  [`containerMethod`](#containermethod) property
+  [`containerMethod`](#toc_11) property
   (to `html`, `before`, `prepend`, etc).
 
 ### getTemplateFunction()
@@ -155,9 +155,9 @@ getTemplateData: function() {
   Set this property in a derived class to specify the container element.
   As an alternative you might pass a `container` option to the constructor.
 
-  When the `container` is set and [`autoAttach`](#autoattach) is true, the view
+  When the `container` is set and [`autoAttach`](#toc_9) is true, the view
   is automatically inserted into the container when it’s rendered
-  (using the [`attach`](#attach) method).
+  (using the [`attach`](#toc_6) method).
 
   A container is often an empty element within a parent view.
 
@@ -368,9 +368,9 @@ class YourView extends View
 
 # Publish/Subscribe
 
-The View includes the [EventBroker](./chaplin.event_broker.md) mixin to provide Publish/Subscribe capabilities using the [mediator](./chaplin.mediator.md)
+The View includes the [EventBroker](./chaplin.event_broker.html) mixin to provide Publish/Subscribe capabilities using the [mediator](./chaplin.mediator.html)
 
-## [Methods](./chaplin.event_broker.md#methods-of-chaplineventbroker) of `Chaplin.EventBroker`
+## [Methods](./chaplin.event_broker.html#toc_0) of `Chaplin.EventBroker`
 
 ### publishEvent(event, arguments...)
 Publish the global `event` with `arguments`.

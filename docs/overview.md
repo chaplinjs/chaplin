@@ -19,11 +19,11 @@ these limitations by providing a light-weight but flexible structure which
 leverages well-proven design patterns and best practises.
 
 ## Framework
-### [Application](./chaplin.application.md)
+### [Application](./chaplin.application.html)
 The bootstrapper of the application; an extension point for key
 parts of the architecture.
 
-### [Router](./chaplin.router.md)
+### [Router](./chaplin.router.html)
 Facilitates mapping URLs to controller actions based on a
 user-defined configuration file. It is responsible for observing and acting
 upon URL changes. It does no direct action apart from notifiying the dispatcher
@@ -47,15 +47,15 @@ pattern matches (like `id` in the example above) and additional GET parameters
 parsed from the query string. This hands control over to the **Dispatcher**.
 
 [Ruby on Rails counterpart]: http://guides.rubyonrails.org/routing.html
-[Router]: ./chaplin.router.md
+[Router]: ./chaplin.router.html
 
-### [Dispatcher](./chaplin.dispatcher.md)
+### [Dispatcher](./chaplin.dispatcher.html)
 Between the router and the controllers, there is the **Dispatcher** listening
 for routing events. On such events, it loads the target controller, creates an
 instance of it and calls the target action. The action is actually a method
 of the controller. The previously active controller is automatically disposed.
 
-### [Layout](./chaplin.layout.md)
+### [Layout](./chaplin.layout.html)
 The `Layout` is the top-level application view. When a new controller is
 activated, the `Layout` is responsible for changing the main view to the
 view of the new controller.
@@ -67,7 +67,7 @@ controller module.
 Furthermore, top-level DOM events on `document` or `body`, should be
 registered here.
 
-### [mediator](./chaplin.mediator.md)
+### [mediator](./chaplin.mediator.html)
 The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe)
 design pattern. It should be used for most of the inter-module communication
 in Chaplin applications. Modules can emit events using `this.publishEvent`
@@ -76,7 +76,7 @@ using `this.subscribeEvent`. The mediator can also be used to easily share data
 between several modules, like a user model or other
 persistent and globally accessible data.
 
-### [Controller](./chaplin.controller.md)
+### [Controller](./chaplin.controller.html)
 A controller is the place where a model and associated views are instantiated.
 Typically, a controller represents one screen of the application. There can be
 one current controller which provides the main view and represents the
@@ -86,19 +86,19 @@ By convention, there is a controller for each application module. A controller
 may provide several action methods like `index`, `show`, `edit` and so on.
 These actions are called by the `Dispatcher` when a route matches.
 
-### [Model](./chaplin.model.md)
+### [Model](./chaplin.model.html)
 Holds reference to the data and contains any logic neccessary to retrieve the
 data from its source and optionally send it back.
 
-### [Collection](./chaplin.collection.md)
+### [Collection](./chaplin.collection.html)
 A collection of models. Contains logic to provide client-side filtering and
 sorting of them.
 
-### [View](./chaplin.view.md)
+### [View](./chaplin.view.html)
 Provides the logic that drives the user interface such as responding to DOM
 events and mapping data from the model to a template.
 
-### [Collection View](./chaplin.collection_view.md)
+### [Collection View](./chaplin.collection_view.html)
 Maps to a collection to generate a list of item views that are bound to
 the models in the collection.
 
@@ -128,7 +128,7 @@ from the server which is then rendered by the view. By convention,
 the models, collection and views are saved as properties on
 the controller instance.
 
-## [Memory Management](./disposal.md)
+## [Memory Management](./disposal.html)
 A core concern of the Chaplin architecture is proper memory management. While
 there isn’t a broad discussion about garbage collection in JavaScript
 applications, it’s an important topic. In event-driven systems, registering

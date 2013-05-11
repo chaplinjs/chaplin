@@ -7,11 +7,11 @@ The following chapters will discuss the core objects and classes of our applicat
 
 ## General and principles
 
-* [Overview](./overview.md)
-* [Getting started](./getting_started.md)
-* [Event Handling Overview](./events.md)
-* [Disposal](./disposal.md)
-* [Handling Asynchronous Dependencies](./handling_async.md)
+* [Overview](./overview.html)
+* [Getting started](./getting_started.html)
+* [Event Handling Overview](./events.html)
+* [Disposal](./disposal.html)
+* [Handling Asynchronous Dependencies](./handling_async.html)
 
 ## API docs
 {% include modules.md %}

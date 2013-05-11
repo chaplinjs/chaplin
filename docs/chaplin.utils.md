@@ -8,7 +8,7 @@ Chaplin's utils provide common functions for use throughout the project.
 
 These functions are generic and not related to any chaplin components.
 Useful functions for messing with Chaplin are available in
-[Chaplin.helpers](chaplin.helpers.md)
+[Chaplin.helpers](chaplin.helpers.html)
 
 ## beget(object)
 * **returns beget function**

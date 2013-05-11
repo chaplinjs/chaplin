@@ -4,7 +4,7 @@ title: Chaplin.EventBroker
 module_path: src/chaplin/lib/event_broker.coffee
 ---
 
-The EventBroker offer an interface to interact with [Chaplin.mediator](./chaplin.mediator.md).
+The EventBroker offer an interface to interact with [Chaplin.mediator](./chaplin.mediator.html).
 
 ## Methods of `Chaplin.EventBroker`
 

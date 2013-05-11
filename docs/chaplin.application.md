@@ -5,8 +5,8 @@ module_path: src/chaplin/application.coffee
 ---
 
 The **Chaplin.Application** object is a bootstrapper and a point of extension
-for the core modules of **Chaplin**: the **[Dispatcher](#initdispatcheroptions)**, the **[Layout](#initlayoutoptions)**,
-the **[Router](#initrouterroutes-options)**, and the **[Composer](#initcomposeroptions)**.
+for the core modules of **Chaplin**: the **[Dispatcher](#toc_3)**, the
+**[Layout](#toc_7)**, the **[Router](#toc_4)**, and the **[Composer](#toc_6)**.
 The object is inteded to be extended by your application.
 The `initialize` method of your derived class must initialize
 the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`,
@@ -83,7 +83,7 @@ mediator.publish('!adjustTitle', 'Apple');
 
 ##### initDispatcher([options])
 Initializes the **dispatcher** module; forwards passed options to its
-contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.md)**
+contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.html)**
 for more information.
 
 To replace the dispatcher with a derived class (possibly with various
@@ -113,7 +113,7 @@ var Application = Chaplin.Application.extend({
 ##### initRouter(routes, [options])
 Initializes the **router** module; forwards passed options to its
 constructor. This starts the routing off by checking the current URL against
-all defined routes and executes the matched handler. See **[Chaplin.Router](./chaplin.router.md)**
+all defined routes and executes the matched handler. See **[Chaplin.Router](./chaplin.router.html)**
 for more information.
 
 * **routes**
@@ -158,7 +158,7 @@ match the current URL and dispatch the matched route.
 
 ##### initComposer([options])
 Initializes the **composer** module; forwards passed options to its
-constructor. See **[Chaplin.Composer](./chaplin.composer.md)** for
+constructor. See **[Chaplin.Composer](./chaplin.composer.html)** for
 more information.
 
 To replace the layout with a derived class (possibly with various
@@ -187,7 +187,7 @@ var Application = Chaplin.Application.extend({
 
 ##### initLayout([options])
 Initializes the **layout** module; forwards passed options to its
-constructor. See **[Chaplin.Layout](./chaplin.layout.md)** for more
+constructor. See **[Chaplin.Layout](./chaplin.layout.html)** for more
 information.
 
 To replace the layout with a derived class (possibly with various

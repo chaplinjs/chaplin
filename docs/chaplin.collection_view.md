@@ -83,10 +83,10 @@ The `CollectionView` is responsible for displaying collections. For every item i
 
 ### initialize([options={}])
 * **options**
-    * **renderItems** see [renderItems](#renderItems)
-    * **itemView** see [itemView](#itemView)
-    * **filterer** automatically calls [filter](#filter) if set
-    * all [View](./chaplin.view.md#initialize) and standard
+    * **renderItems** see [renderItems](#toc_3)
+    * **itemView** see [itemView](#toc_1)
+    * **filterer** automatically calls [filter](#toc_14) if set
+    * all [View](./chaplin.view.html#toc_1) and standard
     [Backbone.View](http://backbonejs.org/#View-constructor) options
 
 ### filter([filterer, [filterCallback]])
