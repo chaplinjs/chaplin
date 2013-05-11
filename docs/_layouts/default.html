@@ -9,7 +9,9 @@ version: 0.9.0
   <title>
     {% if page.title %} {{ page.title }} &middot; {% endif %} Chaplin Documentation
   </title>
-  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/application.css">
+  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/fonts.css">
+  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/base.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/pygments.css">
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
@@ -19,19 +21,36 @@ version: 0.9.0
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
 </head>
-<body>
+<body class="container-fluid">
+  <div class="row-fluid">
+  <div class="span3">
   <header>
-    <form action="" class="language">
-      <label>Language
-        <select name="language">
-          <option>CoffeeScript</option>
-          <option>JavaScript</option>
-        </select>
-      </label>
-    </form>
     <h1><a href="/">Chaplin Documentation</a></h1>
   </header>
-  <div id="content">
+  <nav id="sidebar">
+    <h2>Modules</h2>
+    <form action="" class="language">
+      <fieldset>
+        <legend>Examples in:</legend>
+        <ul class="languages">
+        <li class="coffeescript">
+          <label>
+            <input type="radio" name="language" value="coffeescript" checked> CoffeeScript
+          </label>
+        </li>
+        <li class="javascript">
+          <label>
+            <input type="radio" name="language" value="javascript"> JavaScript
+          </label>
+        </li>
+        </ul>
+      </fieldset>
+    </form>
+    {% capture sidebar %}{% include modules.md %}{% endcapture %}
+    {{ sidebar | markdownify }}
+  </nav>
+  </div>
+  <div id="content" class="span9">
     {% if page.title %}
     <h1>
       {% if page.module_path %}
@@ -42,6 +61,7 @@ version: 0.9.0
     </h1>
     {% endif %}
     {{ content }}
+  </div>
   </div>
 </body>
 </html>

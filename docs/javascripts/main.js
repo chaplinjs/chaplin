@@ -5,7 +5,7 @@ if (!window.localStorage) { window.localStorage = { getItem: function (sKey) { i
 // Encapsulates handling of preferred language (CoffeeScript or
 // JavaScript)
 CD = (function () {
-  var language = localStorage.getItem('language') || 'CoffeeScript';
+  var language = localStorage.getItem('language') || 'coffeescript';
   return {
     // Get/set preferred language
     language: function (value) {
@@ -19,7 +19,13 @@ CD = (function () {
     show: function (language) {
       var language = language.toLowerCase();
       var other = language === "coffeescript" ? "javascript" : "coffeescript";
+      // Update UI
+      $('form.language li').removeClass('active').find(':radio[value=' + language + ']')
+        .prop('checked', true)
+        .closest('li').addClass('active');
+      // Add class for inline code
       $('body').removeClass('show-' + other).addClass('show-' + language);
+      // Toggle code blocks
       $('.highlight')
         .hide()
         .filter(':has(.' + language + ')').show();
@@ -29,12 +35,11 @@ CD = (function () {
 
 $(document).ready(function () {
   // Set up handling of language toggling
-  $('select[name=language]')
-    .change(function () {
-      var language = $('select[name=language] option:selected').val();
+  $(':radio[name=language]')
+    .click(function () {
+      var language = $('form.language input:checked').val();
       CD.show(CD.language(language));
-    })
-    .val(CD.language());
+    });
   // Show code examples according to user prefs
   CD.show(CD.language());
 });
