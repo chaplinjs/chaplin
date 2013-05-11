@@ -1,4 +1,8 @@
-# Overview
+---
+layout: default
+title: Overview
+---
+
 **Chaplin** empowers you to **quick**ly develop **single-page**, **scalable**
 web applications; and allows you to focus on designing and developing
 the underlying functionality in your web application.
@@ -30,12 +34,10 @@ By convention, routes should be declared in a separate module (typically
 `routes.coffee`). For example:
 
 ```coffeescript
-# CoffeeScript
 match 'likes/:id', 'likes#show'
 ```
 
 ```javascript
-// JavaScript
 match('likes/:id', 'likes#show');
 ```
 

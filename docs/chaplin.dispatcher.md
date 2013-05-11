@@ -1,4 +1,8 @@
-# [Chaplin.Dispatcher](../src/chaplin/dispatcher.coffee)
+---
+layout: default
+title: Chaplin.Dispatcher
+module_path: src/chaplin/dispatcher.coffee
+---
 
 The `Dispatcher` sits between the router and the controllers. It listens for a routing event to occur and then:
 

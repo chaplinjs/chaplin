@@ -1,4 +1,7 @@
-# Getting started
+---
+layout: default
+title: Getting started
+---
 
 ## Download the boilerplate
 

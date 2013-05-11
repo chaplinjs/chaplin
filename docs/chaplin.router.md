@@ -1,4 +1,9 @@
-# [Chaplin.Router](../src/chaplin/lib/router.coffee)
+---
+layout: default
+title: Chaplin.Router
+module_path: src/chaplin/lib/router.coffee
+---
+
 The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `router:match` event is triggered.
 
 The Chaplin `Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from Backbone’s `Router`. It’s a different implementation with several advantages over the standard router.
@@ -10,13 +15,11 @@ In Backbone there are no controllers. Backbone’s `Router` maps routes to its *
 By convention, all application routes should be declared in a separate file, the `routes` module. This is a simple JavaScript module which calls the `match` method of the `Router` several times. For example:
 
 ```coffeescript
-# CoffeeScript
 match '', 'home#index'
 match 'likes/:id', controller: 'controllers/likes', action: 'show'
 ```
 
 ```javascript
-// JavaScript
 match('', 'home#index');
 match('likes/:id', {controller: 'controllers/likes', action: 'show'});
 ```
@@ -52,12 +55,10 @@ You can also drop `target` and use `options.{action,controller}` for more explic
 In the third parameter, fixed parameters may be passed. They will be added to the `params` hash which will be passed to the controller action. They cannot be overwritten by parameters from the URL. For example:
 
 ```coffeescript
-# CoffeeScript
 match 'likes/:id', 'likes#show', params: {foo: 'bar'}
 ```
 
 ```javascript
-// JavaScript
 match('likes/:id', 'likes#show', {params: {foo: 'bar'}});
 ```
 
@@ -66,12 +67,10 @@ In this example, the `LikesController` will receive a `params` hash which has a 
 The third parameter may also impose additional constraints on named placeholders. Pass an object in the `constraints` property. Add a property for each placeholder you would like to put constraints on. Pass a regular expression as the value. For example:
 
 ```coffeescript
-# CoffeeScript
 match 'likes/:id', 'likes#show', constraints: {id: /^\d+$/}
 ```
 
 ```javascript
-// JavaScript
 match('likes/:id', 'likes#show', {constraints: {id: /^\d+$/}});
 ```
 
@@ -80,13 +79,11 @@ The regular expression if the ID consists of digits only. This route will match 
 Last, but not least, you can have named routes with `name` option. You can extract their urls by using `Chaplin.helpers.reverse` helper. By default, `name` option is equal to `controllerName#action`, e.g. `likes#show`.
 
 ```coffeescript
-# CoffeeScript
 match 'likes/:id', 'likes#show', name: 'like'
 Chaplin.helpers.reverse 'like', id: 581  # => likes/581
 ```
 
 ```javascript
-// JavaScript
 match('likes/:id', 'likes#show', name: 'like'});
 Chaplin.helpers.reverse('like', {id: 581});  // => likes/581
 ```
@@ -142,7 +139,6 @@ Stops the Backbone.history instance and removes it from the Router object.  Also
 The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.md) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
 
 ```coffeescript
-# CoffeeScript
 define [
   'chaplin',
   'routes'
@@ -158,7 +154,6 @@ define [
 ```
 
 ```javascript
-// JavaScript
 define([
   'chaplin',
   'routes'

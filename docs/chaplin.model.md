@@ -1,4 +1,8 @@
-# [Chaplin.Model](../src/chaplin/models/model.coffee)
+---
+layout: default
+title: Chaplin.Model
+module_path: src/chaplin/models/model.coffee
+---
 
 `Chaplin.Model` extends the standard `Backbone.Model`. It adds disposal for cleaning up and the Pub/Sub pattern via the `Chaplin.EventBroker` mixin.
 

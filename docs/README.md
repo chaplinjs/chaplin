@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Chaplin Documentation
+title: The Architecture in Detail
 ---
-# The Architecture in Detail
+
 The following chapters will discuss the core objects and classes of our application structure.
 
 ## General and principles

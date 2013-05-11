@@ -1,4 +1,8 @@
-# [Chaplin.Collection](../src/chaplin/models/collection.coffee)
+---
+layout: default
+title: Chaplin.Collection
+module_path: src/chaplin/models/collection.coffee
+---
 
 `Chaplin.Collection` extends the standard `Backbone.Collection`. It adds disposal for cleaning up and the Pub/Sub pattern via the `Chaplin.EventBroker` mixin.
 

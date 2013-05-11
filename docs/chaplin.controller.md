@@ -1,4 +1,8 @@
-# [Chaplin.Controller](../src/chaplin/controllers/controller.coffee)
+---
+layout: default
+title: Chaplin.Controller
+module_path: src/chaplin/controllers/controller.coffee
+---
 
 A controller is the place where a model/collection and its associated views are instantiated. It’s also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers for central tasks, like for example a `SessionController`.
 
@@ -43,7 +47,6 @@ To execute code before the controller action is called, you can use the `beforeA
 ### Example
 
 ```coffeescript
-# CoffeeScript
 define [
   'controllers/controller',
   'models/likes',          # the collection
@@ -69,7 +72,6 @@ define [
 ```
 
 ```javascript
-// JavaScript
 define([
   'controllers/controller',
   'models/likes',          // the collection

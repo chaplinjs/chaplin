@@ -1,4 +1,8 @@
-# [Chaplin.Layout](../src/chaplin/views/layout.coffee)
+---
+layout: default
+title: Chaplin.Layout
+module_path: src/chaplin/views/layout.coffee
+---
 
 `Chaplin.Layout` is the top-level application 'view'. It doesn't inherit from `Chaplin.View` but borrows some of its functionalities. It is tied to the `document` dom element and register app-wide events, such as internal links. And mainly, When a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.
 
@@ -59,13 +63,11 @@ To register app-wide events, you can define them in the `events` hash. It works 
 If you want to route links internally, you can use the `events` hash with the `openLink` function like so:
 
 ```coffeescript
-# CoffeeScript
 events:
   'click a': 'openLink'
 ```
 
 ```javascript
-// JavaScript
 events: {
   'click a': 'openLink'
 }
@@ -74,7 +76,6 @@ events: {
 To open all external links (different hostname) in a new window, you can set `openExternalLinksInNewWindow` to true when initializing `Chaplin.Layout` in your `Application`:
 
 ```coffeescript
-# CoffeeScript
 class MyApplication extends Chaplin.Application
   initialize: ->
     # ...
@@ -82,7 +83,6 @@ class MyApplication extends Chaplin.Application
 ```
 
 ```javascript
-// JavaScript
 var MyApplication = Chaplin.Application.extend({
   initialize: function() {
     // ...
@@ -94,13 +94,11 @@ var MyApplication = Chaplin.Application.extend({
 To add a custom check whether or not a link should be open internally, you can override the `isExternalLink` method:
 
 ```coffeescript
-# CoffeeScript
 class Layout extends Chaplin.Layout
   isExternalLink: (href) -> # some test on the href variable
 ```
 
 ```javascript
-// JavaScript
 var Layout = Chaplin.Layout.extend({
   isExternalLink: function(href) {} # some test on the href variable
 });
@@ -111,7 +109,6 @@ var Layout = Chaplin.Layout.extend({
 There is nothing to do, the Layout is listening to the `beforeControllerDispose` and `dispatcher:dispatch` and will trigger the function when a new route is called. If you are not happing with the site scrolling to the top of the page on each view load, you can set the `scrollTo` option when initializing `Chaplin.Layout` in your `Application`:
 
 ```coffeescript
-# CoffeeScript
 class MyApplication extends Chaplin.Application
 
   initialize: ->
@@ -123,7 +120,6 @@ class MyApplication extends Chaplin.Application
 ```
 
 ```javascript
-// JavaScript
 var MyApplication = Chaplin.Application.extend({
   initialize: function() {
     // ...

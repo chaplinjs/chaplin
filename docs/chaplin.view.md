@@ -1,4 +1,8 @@
-# [Chaplin.View](../src/chaplin/views/view.coffee)
+---
+layout: default
+title: Chaplin.View
+module_path: src/chaplin/views/view.coffee
+---
 
 Chaplin’s `View` class is a highly extended and adapted Backbone `View`. All views should inherit from this class to avoid repetition.
 
@@ -57,23 +61,20 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 
   A common implementation will take a passed in `template` string and return
   a compiled template function (e.g. a Handlebars or Underscore template function).
+
 ```coffeescript
-# CoffeeScript
-# CoffeeScript
 @template = require 'templates/comment_view'
 ```
 
 or if using templates in the DOM
 
 ```coffeescript
-# CoffeeScript
 @template = $('#comment_view_template').html()
 ```
 
 if using Handlebars
 
 ```coffeescript
-# CoffeeScript
 getTemplateFunction: ->
   Handlebars.compile @template
 ```
@@ -81,7 +82,6 @@ getTemplateFunction: ->
 or if using underscore templates
 
 ```coffeescript
-# CoffeeScript
 getTemplateFunction: ->
   _.template @template
 ```
@@ -97,7 +97,6 @@ getTemplateFunction: ->
   be overriden by inheriting classes (often from model data).
 
 ```coffeescript
-# CoffeeScript
 getTemplateData: ->
   @model.attributes
 
@@ -178,7 +177,6 @@ getTemplateData: function() {
   but for models / collections / mediator etc.
 
 ```coffeescript
-# CoffeeScript
 class SomeView extends View
   listen:
     # Listen to view events with @on.
@@ -223,7 +221,6 @@ method signature.
 For events, affecting the whole view the signature is `delegate(eventType, handler)`:
 
 ```coffeescript
-# CoffeeScript
 @delegate('click', @clicked)
 ```
 
@@ -234,7 +231,6 @@ this.delegate('click', this.clicked);
 For events only affecting an element or colletion of elements in the view, pass a selector too `delegate(eventType, selector, handler)`:
 
 ```coffeescript
-# CoffeeScript
 @delegate('click', 'button.confirm', @confirm)
 ```
 
@@ -263,7 +259,6 @@ declared region `sidebar`.
 This one sets the region directly on the prototype:
 
 ```coffeescript
-# CoffeeScript
 # myview.coffee
 class MyView extends Chaplin.View
   region: 'sidebar'
@@ -276,7 +271,6 @@ class MyView extends Chaplin.View
 And this one passes in the value of region to the view constructor:
 
 ```coffeescript
-# CoffeeScript
 # myview.coffee
 class MyView extends Chaplin.View
 
@@ -297,7 +291,6 @@ The following snippet will register the named regions `sidebar` and `body` and
 bind them to their respective selectors.
 
 ```coffeescript
-# CoffeeScript
 # myview.coffee
 class MyView extends Chaplin.View
   regions:
@@ -319,7 +312,6 @@ hash. Meant to be called in the `initialize` method as the following code
 snippet (which is identical to the previous one using the `regions` hash).
 
 ```coffeescript
-# CoffeeScript
 class MyView extends Chaplin.View
   initialize: ->
     super
@@ -366,7 +358,6 @@ Remove the specified subview and dispose it. Can be called with either the `name
 ### Usage
 
 ```coffeescript
-# CoffeeScript
 class YourView extends View
 
   render: ->

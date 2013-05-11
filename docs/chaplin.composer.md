@@ -1,4 +1,8 @@
-# [Chaplin.Composer](../src/chaplin/composer.coffee)
+---
+layout: default
+title: Chaplin.Composer
+module_path: src/chaplin/composer.coffee
+---
 
 ## Overview
 
@@ -20,7 +24,6 @@ However, the main application needs both header and footer controllers.
 Here is this use case demonstrated in coffeescript pseudocode:
 
 ```coffeescript
-# CoffeeScript
 # routes.coffee
 (match) ->
   match 'login', 'login#show'
@@ -73,7 +76,6 @@ class AboutMeController extends SiteController
 ```
 
 ```javascript
-// JavaScript
 // routes.js
 function(match) {
   match('login', 'login#show');
@@ -173,7 +175,6 @@ the compose method (be it a view or an object with properties that have
 dispose methods).
 
 ```coffeescript
-# CoffeeScript
   @compose 'something-strange',
     compose: ->
       @model = new Model {id: 42}
@@ -184,7 +185,6 @@ dispose methods).
 ```
 
 ```javascript
-// JavaScript
   this.compose('something-strange', {
     compose: function() {
       this.model = new Model({id: 42});

@@ -1,3 +1,7 @@
+---
+source_base: https://github.com/chaplinjs/chaplin/blob/
+version: 0.9.0
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,9 +29,18 @@
         </select>
       </label>
     </form>
-    <h1>Chaplin Documentation</h1>
+    <h1><a href="/">Chaplin Documentation</a></h1>
   </header>
   <div id="content">
+    {% if page.title %}
+    <h1>
+      {% if page.module_path %}
+        <a href="{{ page.source_base }}{{ page.version }}/{{ page.module_path }}">{{ page.title }}</a>
+      {% else %}
+        {{ page.title }}
+      {% endif %}
+    </h1>
+    {% endif %}
     {{ content }}
   </div>
 </body>

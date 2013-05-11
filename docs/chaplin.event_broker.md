@@ -1,4 +1,8 @@
-# [Chaplin.EventBroker](../src/chaplin/lib/event_broker.coffee)
+---
+layout: default
+title: Chaplin.EventBroker
+module_path: src/chaplin/lib/event_broker.coffee
+---
 
 The EventBroker offer an interface to interact with [Chaplin.mediator](./chaplin.mediator.md).
 
