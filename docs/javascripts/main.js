@@ -18,6 +18,8 @@ CD = (function () {
     // Show code examples for given language
     show: function (language) {
       var language = language.toLowerCase();
+      var other = language === "coffeescript" ? "javascript" : "coffeescript";
+      $('body').removeClass('show-' + other).addClass('show-' + language);
       $('.highlight')
         .hide()
         .filter(':has(.' + language + ')').show();

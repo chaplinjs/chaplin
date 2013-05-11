@@ -21,4 +21,4 @@ Announces to all associated collections and views that the model is being dispos
 ## Usage
 Please do not register their methods directly as Pub/Sub listeners, use `subscribeEvent` instead. This forces the handler context so the handler might be removed again on model/collection disposal. It’s crucial to remove all references to model/collection methods to allow them to be garbage collected.
 
-It is also good to have `SyncMachine` mixed to models for handling asynchronous data fetching. Mixing can be done by simple `_.extend`: `_.extend @prototype, Chaplin.SyncMachine` (coffee) or `_.extend(this.prototype, Chaplin.SyncMachine);` (js). See [SyncMachine docs](./chaplin.sync_machine.html) for code.
+It is also good to have `SyncMachine` mixed to models for handling asynchronous data fetching. Mixing can be done by simple `_.extend`: <span class="coffeescript">`_.extend @prototype, Chaplin.SyncMachine`</span> <span class="javascript">`_.extend(this.prototype, Chaplin.SyncMachine);`</span>. See [SyncMachine docs](./chaplin.sync_machine.html) for code.

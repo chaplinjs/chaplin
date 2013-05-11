@@ -1,3 +1,4 @@
+/* LAYOUT */
 html {
   text-align: center;
 }
@@ -18,11 +19,24 @@ header h1 {
 header h1 a {
   color: white;
 }
+#content {
+  clear: both;
+  padding: 1em 0;
+}
+/* LANGUAGE SWITCHER */
 form.language {
   float: right;
   color: white;
 }
-#content {
-  clear: both;
-  padding: 1em 0;
+.show-coffeescript .coffeescript {
+  display: inline;
+}
+.show-coffeescript .javascript {
+  display: none;
+}
+.show-javascript .coffeescript {
+  display: none;
+}
+.show-javascript .javascript {
+  display: inline;
 }

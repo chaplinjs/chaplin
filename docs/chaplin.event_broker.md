@@ -22,4 +22,7 @@ Unsubcribe all handlers for all events.
 
 ## Usage
 
-To give a Class the Pub/Sub pattern, you just need to make it extend the Chaplin.EventBroker: `_.extend @prototype, EventBroker` (coffee) or `_.extend(this.prototype, EventBroker)` (js).
+To give a Class the Pub/Sub pattern, you just need to make it extend the
+Chaplin.EventBroker: <span class="coffeescript">`_.extend @prototype,
+EventBroker`</span> <span class="javascript">`_.extend(this.prototype,
+EventBroker)`</span>.
