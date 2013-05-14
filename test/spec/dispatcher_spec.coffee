@@ -400,7 +400,7 @@ define [
     it 'should dispose when redirecting to a URL from controller action', (done) ->
       class RedirectingController extends Controller
         show: ->
-          dispatcher.controllerLoaded route1, null, {changeUrl: true}, Test1Controller
+          dispatcher.controllerLoaded route1, null, {changeURL: true}, Test1Controller
 
       dispose = sinon.spy RedirectingController.prototype, 'dispose'
 
