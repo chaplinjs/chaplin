@@ -397,11 +397,20 @@ define [
 
         done()
 
-    it 'should dispose when redirecting to a URL', (done) ->
-      dispose = sinon.spy Test1Controller.prototype, 'dispose'
-      publishMatch route1, params, options
-      publishMatch redirectToURLRoute, params, options
-      loadTest1Controller ->
+    it 'should dispose when redirecting to a URL from controller action', (done) ->
+      class RedirectingController extends Controller
+        show: ->
+          dispatcher.controllerLoaded route1, null, {changeUrl: true}, Test1Controller
+
+      dispose = sinon.spy RedirectingController.prototype, 'dispose'
+
+      controllerName = 'redirecting_controller'
+      loadRedirectingController = makeLoadController controllerName,
+        RedirectingController
+
+      route = {controller: controllerName, action: 'show', path}
+      publishMatch route, params, options
+      loadRedirectingController ->
         expect(dispose).was.calledOnce()
         dispose.restore()
         done()
