@@ -354,6 +354,14 @@ module.exports = class View extends Backbone.View
       # Trigger an event.
       @trigger 'addedToDOM'
 
+  detach: ->
+    parent = @el.parentNode
+    if parent
+      parent.removeChild @el
+      true
+    else
+      false
+
   # Disposal
   # --------
 
@@ -371,17 +379,15 @@ module.exports = class View extends Backbone.View
     # Remove all event handlers on this module.
     @off()
 
-    # Check if view should be removed from DOM.
-    if @keepElement
-      # Unsubscribe from all DOM events.
-      @undelegateEvents()
-      @undelegate()
-      # Unbind all referenced handlers.
-      @stopListening()
-    else
-      # Remove the topmost element from DOM. This also removes all event
-      # handlers from the element and all its children.
-      @remove()
+    # Unbind all referenced handlers.
+    @stopListening()
+
+    # Remove the topmost element from DOM.
+    @detach() unless @keepElement
+
+    # Unsubscribe from all DOM events.
+    @undelegateEvents()
+    @undelegate()
 
     # Dispose subviews.
     subview.dispose() for subview in @subviews

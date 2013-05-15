@@ -148,6 +148,12 @@ define [
       expect(view2.attach).was.notCalled()
       check view2
 
+    it 'should detach itself from DOM', ->
+      view = new TestView container: testbed
+      view.render()
+      view.detach()
+      expect($('#testbed').children().length).to.be 0
+
     it 'should fire an addedToDOM event attching itself to the DOM', ->
       view = new TestView container: testbed
       spy = sinon.spy()
