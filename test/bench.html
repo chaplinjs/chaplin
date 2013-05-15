@@ -26,72 +26,81 @@
         urlArgs: 'bust=' + (new Date()).getTime()
       });
 
-      require(['chaplin'], function(Chaplin) {
-        var log = function() {
-          this.forEach(function(item) {
-            console.log(item.name, Math.round(item.hz));
-          });
-        };
-
-        var bench = function(cases) {
-          var suite = new Benchmark.Suite;
-          Object.keys(cases).forEach(function(name) {
-            var fn = cases[name];
-            suite.add(name, fn);
-          });
-          suite
-            .on('error', function(e) {
-              console.error('Error!', e);
-            })
-            .on('complete', log)
-            .run({async: true});
-        };
-
-        // (new Benchmark.Suite)
-        //   .add('default', function() {
-        //     var models = _.range(65, 465).map(function(code) {
-        //       return {
-        //         id: String.fromCharCode(code),
-        //         title: String(Math.random())
-        //       };
-        //     });
-
-        //     var ItemView = Chaplin.View.extend({
-        //       tagName: 'li',
-        //       attributes: function() {
-        //         return {id: this.model.id, cid: this.model.cid};
-        //       },
-        //       templateFunction: function(data) {
-        //         return data.title;
-        //       },
-        //       getTemplateFunction: function() {
-        //         return this.templateFunction;
-        //       }
-        //     });
-
-        //     var CV = Chaplin.CollectionView.extend({itemView: ItemView});
-        //     var collection = new Chaplin.Collection();
-        //     var view = new CV({collection: collection});
-        //     collection.reset(models);
-        //   })
-        //   .on('complete', log)
-        //   .run({async: true});
-
-        var router = new Chaplin.Router;
-        router.match('index', 'null#1', {name: 'home'});
-        router.match('phone/:one', 'null#2', {name: 'phonebook'});
-        router.match('params/:two', 'null#3', {name: 'about'});
-        router.match('fake/:three', 'fake#2', {name: 'about'});
-        router.match('phone/:four', 'null#a');
-
-        bench({
-          object: function() {
-            Chaplin.helpers.reverse('null#a', {four: 1});
-          },
-          list: function() {
-            Chaplin.helpers.reverse('null#a', [1]);
-          }
+      var log = function() {
+        this.forEach(function(item) {
+          console.log(item.name, Math.round(item.hz), 'calls per second');
         });
+      };
+
+      var bench = function(cases) {
+        var suite = new Benchmark.Suite;
+        Object.keys(cases).forEach(function(name) {
+          var fn = cases[name];
+          suite.add(name, fn);
+        });
+        suite
+          .on('error', function(e) {
+            console.error('Error!', e);
+          })
+          .on('complete', log)
+          .run({async: true});
+      };
+
+      require(['chaplin'], function(Chaplin) {
+        var benchCV = function(count) {
+          var models = _.range(65, count + 65).map(function(code) {
+            return {
+              id: String.fromCharCode(code),
+              title: String(Math.random())
+            };
+          });
+
+          var ItemView = Chaplin.View.extend({
+            tagName: 'li',
+            attributes: function() {
+              return {id: this.model.id, cid: this.model.cid};
+            },
+            templateFunction: function(data) {
+              return data.title;
+            },
+            getTemplateFunction: function() {
+              return this.templateFunction;
+            }
+          });
+
+          var CV = Chaplin.CollectionView.extend({itemView: ItemView});
+          var collection = new Chaplin.Collection();
+          var view = new CV({collection: collection});
+          collection.reset(models);
+          return view;
+        };
+
+        var benchRoute = function() {
+          var router = new Chaplin.Router;
+          router.match('index', 'null#1', {name: 'home'});
+          router.match('phone/:one', 'null#2', {name: 'phonebook'});
+          router.match('params/:two', 'null#3', {name: 'about'});
+          router.match('fake/:three', 'fake#2', {name: 'about'});
+          router.match('phone/:four', 'null#a');
+
+          bench({
+            object: function() {
+              Chaplin.helpers.reverse('null#a', {four: 1});
+            },
+            list: function() {
+              Chaplin.helpers.reverse('null#a', [1]);
+            }
+          });
+        };
+
+        var benchCollectionView = function() {
+          var cv = benchCV(400);
+          console.profile('cv400');
+          cv.dispose();
+          console.profileEnd('cv400');
+        };
+
+        benchCollectionView();
       });
     </script>
   </head>
