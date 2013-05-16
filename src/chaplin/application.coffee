@@ -29,7 +29,35 @@ module.exports = class Application
   router: null
   composer: null
 
-  initialize: ->
+  initialize: (options = {}) ->
+    # Initialize core components.
+    # ---------------------------
+
+    # Register all routes.
+    # You might pass Router/History options as the second parameter.
+    # Chaplin enables pushState per default and Backbone uses / as
+    # the root per default. You might change that in the options
+    # if necessary:
+    # @initRouter routes, pushState: false, root: '/subdir/'
+    @initRouter options.routes, options
+
+    # Dispatcher listens for routing events and initialises controllers.
+    @initDispatcher options
+
+    # Layout listens for click events & delegates internal links to router.
+    @initLayout options
+
+    # Composer grants the ability for views and stuff to be persisted.
+    @initComposer options
+
+    # Mediator is a global message broker which implements pub / sub pattern.
+    @initMediator()
+
+    # Actually start routing.
+    @startRouting()
+
+    # Freeze the application instance to prevent further changes.
+    Object.freeze? this
 
   # **Chaplin.Dispatcher** sits between the router and controllers to listen
   # for routing events. When they occur, Chaplin.Dispatcher loads the target
