@@ -81,6 +81,15 @@ module.exports = class Application
   initComposer: (options = {}) ->
     @composer = new Composer options
 
+  # **Chaplin.mediator** is a singleton that serves as the sole communication
+  # channel for all parts of the application. It should be sealed so that its
+  # misuse as a kitchen sink is prohibited. If you do want to give modules
+  # access to some shared resource, however, add it here before sealing the
+  # mediator.
+
+  initMediator: ->
+    Chaplin.mediator.seal()
+
   # **Chaplin.Router** is responsible for observing URL changes. The router
   # is a replacement for Backbone.Router and *does not inherit from it*
   # directly. It's a different implementation with several advantages over
