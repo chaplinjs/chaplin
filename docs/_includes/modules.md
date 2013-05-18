@@ -1,21 +1,21 @@
 ### Core
-* [Chaplin.mediator](./chaplin.mediator.html) — global event pub / sub bus.
-* [Chaplin.Dispatcher](./chaplin.dispatcher.html) — router <-> controller broker.
-* [Chaplin.Layout](./chaplin.layout.html) — top-level application view.
-* [Chaplin.Application](./chaplin.application.html) — application boostrapper.
+* <a href="./chaplin.mediator.html" title="Global event bus">Chaplin.mediator</a>
+* <a href="./chaplin.dispatcher.html" title="Broker between router and controller">Chaplin.Dispatcher</a>
+* <a href="./chaplin.layout.html" title="Top-level application view">Chaplin.Layout</a>
+* <a href="./chaplin.application.html" title="Application boostrapper">Chaplin.Application</a>
 
 ### MVC
-* [Chaplin.Controller](./chaplin.controller.html) — a place for initializing models / collections and views.
-* [Chaplin.Model](./chaplin.model.html) — extension of `Backbone.Model` that adds disposal (memory clean-up) and better serializer.
-* [Chaplin.Collection](./chaplin.collection.html) — extension of `Backbone.Collection` that adds disposal.
-* [Chaplin.View](./chaplin.view.html) — extension of `Backbone.View` with better support for templates, regions, subviews and disposal.
-* [Chaplin.CollectionView](./chaplin.collection_view.html) — extension of `Chaplin.View` responsible for displaying collections. Creates `Chaplin.View` instance for every collection model.
+* <a href="./chaplin.controller.html" title="For initializing models, collections and views">Chaplin.Controller</a>
+* <a href="./chaplin.model.html" title="Chaplin&rsquo;s extension of `Backbone.Model`">Chaplin.Model</a>
+* <a href="./chaplin.collection.html" title="Chaplin&rsquo;s extension of `Backbone.Collection`">Chaplin.Collection</a>
+* <a href="./chaplin.view.html" title="Chaplin&rsquo;s extension of `Backbone.View`">Chaplin.View</a>
+* <a href="./chaplin.collection_view.html" title="An extension of `Chaplin.View` for displaying collections">Chaplin.CollectionView</a>
 
 ### Libs
-* [Chaplin.EventBroker](./chaplin.event_broker.html) — mediator Pub / Sub mix-in.
-* [Chaplin.SyncMachine](./chaplin.sync_machine.html) — finite state machine for models / collections.
-* [Chaplin.Router](./chaplin.router.html) — replacement for `Backbone.Router`.
-* [Chaplin.Route](./chaplin.route.html) — small abstraction used in `Chaplin.Router`.
-* [Chaplin.support](./chaplin.support.html) — feature detection.
-* [Chaplin.utils](./chaplin.utils.html) — generic utils.
-* [Chaplin.helpers](./chaplin.helpers.html) — Chaplin-specific helpers.
+* <a href="./chaplin.event_broker.html" title="Mixin for communication with the mediator">Chaplin.EventBroker</a>
+* <a href="./chaplin.sync_machine.html" title="Mixin for handling sync state">Chaplin.SyncMachine</a>
+* <a href="./chaplin.router.html" title="Replacement for `Backbone.Router`">Chaplin.Router</a>
+* <a href="./chaplin.route.html" title="Route abstraction used in `Chaplin.Router`">Chaplin.Route</a>
+* <a href="./chaplin.support.html" title="Detection of browser features">Chaplin.support</a>
+* <a href="./chaplin.utils.html" title="Generic utility functions">Chaplin.utils</a>
+* <a href="./chaplin.helpers.html" title="Helpers with Chaplin integration">Chaplin.helpers</a>

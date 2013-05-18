@@ -20,6 +20,9 @@ header h1 a {
 #sidebar {
   padding: 1em;
 }
+#sidebar ul {
+  line-height: 1.25;
+}
 #content {
   padding: 1em 0;
 }
