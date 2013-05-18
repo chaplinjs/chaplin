@@ -1,3 +1,6 @@
+# Chaplin 0.9.1 (18 May 2013)
+* Fix controller disposal after redirect.
+
 # Chaplin 0.9.0 (4 May 2013)
 * Added full lodash compatibility.
 * Removed deferred mix-in (`initDeferred`) support from
