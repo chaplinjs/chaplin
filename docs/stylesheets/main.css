@@ -61,6 +61,10 @@ form.language li {
   cursor: pointer;
   color: #BBB;
 }
+form.language li:active {
+  top: 1px;
+  left: 1px;
+}
 form.language li.coffeescript {
   width: 49%;
   margin-right: 1%;
