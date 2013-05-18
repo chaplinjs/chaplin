@@ -3,16 +3,11 @@ layout: default
 title: Event Handling
 ---
 
-For models and views, there are several wrapper methods for event handler registration.
-In contrast to the direct methods, they will save memory because the handlers will
-be removed correctly once the model or view is disposed. The methods will also be bound
-to the caller for ease of registration.
+For models and views, there are several wrapper methods for event handler registration.  In contrast to the direct methods, they will save memory because the handlers will be removed correctly once the model or view is disposed. The methods will also be bound to the caller for ease of registration.
 
 ## Mediator
 
-Global events use the `mediator` as an event channel. On most objects
-in chaplin (including models, views, and controllers), there are shortcuts
-for manipulating global events. These methods are mixed into eventable objects by way of the [EventBroker][].
+Global events use the `mediator` as an event channel. On most objects in chaplin (including models, views, and controllers), there are shortcuts for manipulating global events. These methods are mixed into eventable objects by way of the [EventBroker][].
 
 [EventBroker]: chaplin.event_broker.html
 
@@ -26,9 +21,7 @@ this.subscribeEvent('dispatcher:dispatch', this.dispatch);
 this.subscribeEvent('!router:route', console.log.bind(console));
 ```
 
-These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically
-invoking `Chaplin.mediator.unsubscribe` in the `dispose` method of the eventable and providing some small
-type checking.
+These are aliased to `Chaplin.mediator.*` with the additional benefit of automatically invoking `Chaplin.mediator.unsubscribe` in the `dispose` method of the eventable and providing some small type checking.
 
 ## Eventable
 

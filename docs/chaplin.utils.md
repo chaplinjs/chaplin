@@ -6,23 +6,17 @@ module_path: src/chaplin/lib/utils.coffee
 
 Chaplin's utils provide common functions for use throughout the project.
 
-These functions are generic and not related to any chaplin components.
-Useful functions for messing with Chaplin are available in
-[Chaplin.helpers](chaplin.helpers.html)
+These functions are generic and not related to any chaplin components. Useful functions for messing with Chaplin are available in [Chaplin.helpers](chaplin.helpers.html).
 
 <h3 class="module-member" id="beget">beget(object)</h3>
 * **returns beget function**
 
-A standard Javascript helper function that creates an object which
-delegates to another object. (see Douglas Crockford's *Javascript:
-The Good Parts* for more details). Uses [Object.create](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/create)
-when available, and falls back to a polyfill if not present.
+A standard Javascript helper function that creates an object which delegates to another object. (see Douglas Crockford's *Javascript: The Good Parts* for more details). Uses [Object.create](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/create) when available, and falls back to a polyfill if not present.
 
 <h3 class="module-member" id="readonly">readonly(object, [*properties])</h3>
 * **returns true if successful, false if unsupported**
 
-Makes properties of **object** read-only so they cannot be overwritten
-if the current environment supports it.
+Makes properties of **object** read-only so they cannot be overwritten if the current environment supports it.
 
 <h3 class="module-member" id="getPrototypeChain">getPrototypeChain(object)</h3>
 * **Object object**
@@ -76,7 +70,4 @@ utils.upcase('AIR');        // 'AIR'
 * **jQuery event**
 * **returns boolean**
 
-Looks at an event object to determine if the **shift**, **alt**,
-**ctrl**, or **meta** keys were pressed. Useful in link click
-handling (i.e. if you need ctrl-click or shift-click to open the
-link in a new window)
+Looks at an event object to determine if the **shift**, **alt**, **ctrl**, or **meta** keys were pressed. Useful in link click handling (i.e. if you need ctrl-click or shift-click to open the link in a new window)
