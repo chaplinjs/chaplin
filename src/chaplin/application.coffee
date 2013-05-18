@@ -88,7 +88,7 @@ module.exports = class Application
   # mediator.
 
   initMediator: ->
-    Chaplin.mediator.seal()
+    mediator.seal()
 
   # **Chaplin.Router** is responsible for observing URL changes. The router
   # is a replacement for Backbone.Router and *does not inherit from it*
