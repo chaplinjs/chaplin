@@ -11,9 +11,9 @@ The `Dispatcher` sits between the router and the controllers. It listens for a r
 * Instantiates the new controller
 * Calls the target action
 
-## Methods of `Chaplin.Dispatcher`
+<h2 id="methods">Methods</h2>
 
-### initialize( [options={}] )
+<h3 class="module-member" id="initialize">initialize([options={}])</h3>
 
 * **options**:
     * **controllerPath**: the path to the folder for the controllers. *Default: '/controllers'*

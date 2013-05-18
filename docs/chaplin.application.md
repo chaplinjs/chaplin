@@ -5,10 +5,10 @@ module_path: src/chaplin/application.coffee
 ---
 
 The **Chaplin.Application** object is a bootstrapper and a point of extension
-for the core modules of **Chaplin**: the **[Dispatcher](#toc_3)**, the
-**[Layout](#toc_7)**, the **[Router](#toc_4)**, and the **[Composer](#toc_6)**.
-The object is inteded to be extended by your application.
-The `initialize` method of your derived class must initialize
+for the core modules of **Chaplin**: the **[Dispatcher](#initDispatcher)**, the
+**[Layout](#initLayout)**, the **[Router](#initRouter)**, and the
+**[Composer](#initComposer)**. The object is inteded to be extended by your
+application.  The `initialize` method of your derived class must initialize
 the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`,
 and then launching navigation with `startRouting`
 
@@ -51,9 +51,9 @@ var Application = Chaplin.Application.extend({
 module.exports = Application;
 ```
 
-### Properties
+<h2 id="properties">Properties</h2>
 
-##### title
+<h3 class="module-member" id="title">title</h3>
 This is the top-level title that is defaulted into the options hash
 forwarded to the layout module. The default title template of the layout
 module will append this value to the subtitle passed to the `!adjustTitle`
@@ -79,9 +79,9 @@ mediator.publish('!adjustTitle', 'Apple');
 // Document title is now "Apple ­— Fruit".
 ```
 
-### Methods
+<h2 id="methods">Methods</h2>
 
-##### initDispatcher([options])
+<h3 class="module-member" id="initDispatcher">initDispatcher([options])</h3>
 Initializes the **dispatcher** module; forwards passed options to its
 contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.html)**
 for more information.
@@ -110,7 +110,7 @@ var Application = Chaplin.Application.extend({
 });
 ```
 
-##### initRouter(routes, [options])
+<h3 class="module-member" id="initRouter">initRouter(routes, [options])</h3>
 Initializes the **router** module; forwards passed options to its
 constructor. This starts the routing off by checking the current URL against
 all defined routes and executes the matched handler. See **[Chaplin.Router](./chaplin.router.html)**
@@ -150,13 +150,13 @@ var Application = Chaplin.Application.extend({
 });
 ```
 
-##### startRouting()
+<h3 class="module-member" id="startRouting">startRouting()</h3>
 When all of the routes have been matched, call `startRouting()` to
 begin monitoring routing events, and dispatching routes. Invoke this method
 after all of the components have been initialized as this will also
 match the current URL and dispatch the matched route.
 
-##### initComposer([options])
+<h3 class="module-member" id="initComposer">initComposer([options])</h3>
 Initializes the **composer** module; forwards passed options to its
 constructor. See **[Chaplin.Composer](./chaplin.composer.html)** for
 more information.
@@ -185,7 +185,7 @@ var Application = Chaplin.Application.extend({
 });
 ```
 
-##### initLayout([options])
+<h3 class="module-member" id="initLayout">initLayout([options])</h3>
 Initializes the **layout** module; forwards passed options to its
 constructor. See **[Chaplin.Layout](./chaplin.layout.html)** for more
 information.

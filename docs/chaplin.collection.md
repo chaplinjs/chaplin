@@ -6,13 +6,13 @@ module_path: src/chaplin/models/collection.coffee
 
 `Chaplin.Collection` extends the standard `Backbone.Collection`. It adds disposal for cleaning up and the Pub/Sub pattern via the `Chaplin.EventBroker` mixin.
 
-## Methods of `Chaplin.Collection`
+<h2 id="methods">Methods</h2>
 All `Backbone.Collection` [methods](http://backbonejs.org/#Collection).
 
-### serialize()
+<h3 class="module-member" id="serialize">serialize()</h3>
 Memory-saving serializing of models. Maps models to their attributes recursively. Creates an object which delegates to the original attributes when a property needs to be overwritten.
 
-### dispose()
+<h3 class="module-member" id="dispose">dispose()</h3>
 Announces to all associated views that the model is being disposed. Unbinds all the global event handlers and also removes all the event handlers on the Model module. Removes internal attribute hashes and event handlers. Attempts to [freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze) the Collection to prevent any changes to the Collection.
 
 ## Usage

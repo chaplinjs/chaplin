@@ -6,62 +6,62 @@ module_path: src/chaplin/lib/sync_machine.coffee
 
 The  `Chaplin.SyncMachine` is a [finite-state machine](http://en.wikipedia.org/wiki/Finite-state_machine) for synchronization of models/collections. There are three states in which a model or collection can be in; unsynced, syncing, and synced. When a state transition (unsynced, syncing, synced, and syncStateChange) occurs Backbone events are called on the model or collection.
 
-## Methods of `Chaplin.SyncMachine`
+<h2 id="methods">Methods</h2>
 
-### syncState
+<h3 class="module-member" id="syncState">syncState</h3>
 
 Returns the current synchronization state of the machine.
 
-### isUnsynced
+<h3 class="module-member" id="isUnsynced">isUnsynced</h3>
 
 Returns a boolean to determine if model or collection is unsynced.
 
-### isSynced
+<h3 class="module-member" id="isSynced">isSynced</h3>
 
 Returns a boolean to determine if model or collection is synced.
 
-### isSyncing
+<h3 class="module-member" id="isSyncing">isSyncing</h3>
 
 Returns a boolean to determine if model or collection is currently syncing.
 
-### unsync
+<h3 class="module-member" id="unsync">unsync</h3>
 
 Sets the state machine's state to `unsynced` then triggers any events listening for the `unsynced` and `syncStateChange` events.
 
-### beginSync
+<h3 class="module-member" id="beginSync">beginSync</h3>
 
 Sets the state machine's state to `syncing` then triggers any events listening for the `syncing` and `syncStateChange` events.
 
-### finishSync
+<h3 class="module-member" id="finishSync">finishSync</h3>
 
 Sets the state machine's state to `synced` then triggers any events listening for the `synced` and `syncStateChange` events.
 
-### abortSync
+<h3 class="module-member" id="abortSync">abortSync</h3>
 
 Sets state machine's state back to the previous state if the state machine is in the `syncing` state. Then triggers any events listening for the previous state and `syncStateChange` events.
 
-### unsynced([callback], [context=this])
+<h3 class="module-member" id="unsynced">unsynced([callback], [context=this])</h3>
 
 Unsynced is a convenience method which will execute a callback in a specified context whenever the state machine enters into the `unsynced` state.
 
 * **callback**: a function to be called when the `unsynced` event occurs
 * **context**: the context in which the callback should execute in. Defaults to `this`.
 
-### syncing([callback], [context=this])
+<h3 class="module-member" id="syncing">syncing([callback], [context=this])</h3>
 
 Syncing is a convenience method which will execute a callback in a specified context whenever the state machine enters into the `syncing` state.
 
 * **callback**: a function to be called when the `syncing` event occurs
 * **context**: the context in which the callback should execute in. Defaults to `this`.
 
-### synced([callback], [context=this])
+<h3 class="module-member" id="synced">synced([callback], [context=this])</h3>
 
 Synced is a convenience method which will execute a callback in a specified context whenever the state machine enters into the `synced` state.
 
 * **callback**: a function to be called when the `synced` event occurs
 * **context**: the context in which the callback should execute in. Defaults to `this`.
 
-### syncStateChange([callback], [context=this])
+<h3 class="module-member" id="syncStateChange">syncStateChange([callback], [context=this])</h3>
 
 SyncStateChange is a convenience method which will execute a callback in a specified context whenever the state machine changes state.
 

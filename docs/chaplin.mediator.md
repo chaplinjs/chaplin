@@ -11,17 +11,17 @@ To inform other modules that something happened, a module doesn’t send message
 **Note:** If you want to give Pub/Sub functionality to a Class, also look at the [EventBroker](./chaplin.event_broker.html).
 
 
-## Methods of `Chaplin.mediator`
+<h2 id="methods">Methods</h2>
 
-### subscribe(event, handler, [context])
+<h3 class="module-member" id="subscribe">subscribe(event, handler, [context])</h3>
 
 A wrapper for `Backbone.Events.on`. See Backbone [documentation](http://backbonejs.org/#Events-on) for more details.
 
-### unsubscribe([event], [handler], [context])
+<h3 class="module-member" id="unsubscribe">unsubscribe([event], [handler], [context])</h3>
 
 A wrapper for `Backbone.Events.off`. See Backbone [documentation](http://backbonejs.org/#Events-off) for more details.
 
-### publish(event, [*args])
+<h3 class="module-member" id="publish">publish(event, [*args])</h3>
 
 A wrapper for `Backbone.Events.trigger`. See Backbone [documentation](http://backbonejs.org/#Events-trigger) for more details.
 

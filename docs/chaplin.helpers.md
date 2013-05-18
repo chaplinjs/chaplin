@@ -6,7 +6,7 @@ module_path: src/chaplin/lib/helpers.coffee
 
 Helpers that use Chaplin components (global event bus etc).
 
-## reverse(routeName[, ...params])
+<h3 class="module-member" id="reverse">reverse(routeName[,...params])</h3>
 Returns the url for a named route and any params.
 
 For example, if you had declared this route

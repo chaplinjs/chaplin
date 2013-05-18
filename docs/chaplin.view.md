@@ -23,12 +23,14 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 * Creating subviews
 * Disposal which cleans up all subviews, model bindings and Pub/Sub events
 
-### initialize(options)
+<h2 id="methods">Methods</h2>
+
+<h3 class="module-member" id="initialize">initialize(options)</h3>
 * **options (default: empty hash)**
-    * `autoRender` see [autoRender](#toc_8)
-    * `autoAttach` see [autoAttach](#toc_9)
-    * `container` see [container](#toc_10)
-    * `containerMethod` see [containerMethod](#toc_11)
+    * `autoRender` see [autoRender](#autoRender)
+    * `autoAttach` see [autoAttach](#autoAttach)
+    * `container` see [container](#container)
+    * `containerMethod` see [containerMethod](#containerMethod)
     * all standard [Backbone constructor
   options](http://backbonejs.org/#View-constructor) (`model`, `collection`,
   `el`, `id`, `className`, `tagName` and `attributes`)
@@ -46,14 +48,14 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
   nodes by creating HTML from templates and template data. Chaplin
   provides `getTemplateFunction` and `getTemplateData` for this purpose.
 
-  Set [`autoRender`](#toc_8) to true to enable rendering upon
-  View instantiation. If [`autoAttach`](#toc_9) is enabled, this
-  will automatically append to the view to a [`container`](#toc_10)
+  Set [`autoRender`](#autoRender) to true to enable rendering upon
+  View instantiation. If [`autoAttach`](#autoAttach) is enabled, this
+  will automatically append to the view to a [`container`](#container)
   The method of appending can be overridden using the
-  [`containerMethod`](#toc_11) property
+  [`containerMethod`](#containerMethod) property
   (to `html`, `before`, `prepend`, etc).
 
-### getTemplateFunction()
+<h3 class="module-member" id="getTemplateFunction">getTemplateFunction()</h3>
 * **function (throws error if not overriden)**
 
   Core method that returns the compiled template function. Usually
@@ -90,7 +92,7 @@ getTemplateFunction: ->
   precompile the template functions to improve application performance
 
 
-### getTemplateData()
+<h3 class="module-member" id="getTemplateData">getTemplateData()</h3>
 * **function that returns Object (throws error if not overriden)**
 
   Empty method which returns the prepared model data for the template. Should
@@ -121,31 +123,31 @@ getTemplateData: function() {
 
   often overriden in a base model class to intelligently pick out attributes
 
-### render
+<h3 class="module-member" id="render">render</h3>
   By default calls the `templateFunction` with the `templateData` and sets the html
   of the `$el`. Can be overriden in your base view if needed, though should be
   suitable for the majority of cases.
 
-## attach
+<h3 class="module-member" id="attach">attach</h3>
   Attach is called after the prototype chain has completed for View#render.
   It attaches the View to its `container` element and fires an `addedToDOM` event
   at the view on success.
 
 ## Options for auto-rendering and DOM appending
 
-### autoRender
+<h3 class="module-member" id="autoRender">autoRender</h3>
 * **Boolean, default: false**
 
   Specifies whether the View's `render` method should be called automatically when
   a view is instantiated.
 
-### autoAttach
+<h3 class="module-member" id="autoAttach">autoAttach</h3>
 * **Boolean, default: true**
 
   Specifies whether the View's `attach` method should be called automatically after
   `render` was called.
 
-### container
+<h3 class="module-member" id="container">container</h3>
 * **jQuery object, selector string, or element, default: null**
 
   A container element into which the view’s element will be rendered.
@@ -155,13 +157,13 @@ getTemplateData: function() {
   Set this property in a derived class to specify the container element.
   As an alternative you might pass a `container` option to the constructor.
 
-  When the `container` is set and [`autoAttach`](#toc_9) is true, the view
+  When the `container` is set and [`autoAttach`](#autoAttach) is true, the view
   is automatically inserted into the container when it’s rendered
-  (using the [`attach`](#toc_6) method).
+  (using the [`attach`](#attach) method).
 
   A container is often an empty element within a parent view.
 
-### containerMethod
+<h3 class="module-member" id="containerMethod">containerMethod</h3>
 * **String, jQuery object method (default: 'append')**
 
   Method which is used for adding the view to the DOM via the `container`
@@ -169,7 +171,7 @@ getTemplateData: function() {
 
 ## Event delegation
 
-### listen
+<h3 class="module-member" id="listen">listen</h3>
 * **Object**
 
   Property that contains declarative event bindings to non-DOM
@@ -208,7 +210,7 @@ var SomeView = View.extend({
 });
 ```
 
-### delegate(eventType, [selector], handler)
+<h3 class="module-member" id="delegate">delegate(eventType, [selector], handler)</h3>
 * **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
 * **String selector (optional, if not set will bind to the view's $el)**,
 * **function handler (automatically bound to `this`)**
@@ -247,7 +249,7 @@ contained `#page .container > .sidebar`. This decouples views from those that
 nests them. It allows for layouts to be drastically changed without changing
 the template.
 
-### region
+<h3 class="module-member" id="region">region</h3>
 
 This is the region that the view will be bound to. This property is not
 meant to be set on the prototype -- it is meant to be passed in as part
@@ -282,7 +284,7 @@ class MyView extends Chaplin.View
 However the latter case allows the controller (through whatever logic) decide
 where to place the view.
 
-### regions
+<h3 class="module-member" id="regions">regions</h3>
 
 Region registration hash that works much like the declarative events hash
 present in Backbone.
@@ -303,7 +305,7 @@ gathered and registered as well. When two views in an inheritance tree
 both register a region of the same name, the selector of the most-derived view
 is used.
 
-### registerRegion(selector, name)
+<h3 class="module-member" id="registerRegion">registerRegion(selector, name)</h3>
 * **String selector**,
 * **String name**
 
@@ -319,13 +321,13 @@ class MyView extends Chaplin.View
     @registerRegion '#page .container > .content', 'body'
 ```
 
-### unregisterRegion(name)
+<h3 class="module-member" id="unregisterRegion">unregisterRegion(name)</h3>
 * **String name**
 
 Removes the named region as if it was not registered. Does nothing if
 there is no region named `name`.
 
-### unregisterAllRegions()
+<h3 class="module-member" id="unregisterAllRegions">unregisterAllRegions()</h3>
 
 Removes all regions registered by this view, automatically called on
 `View#dispose`.
@@ -337,7 +339,7 @@ Subviews are usually used for limited scenarios when you want to split a view up
 logical sections that are continuously re-rendered or form wizards, etc.
 but *only when dealing with the same model*.
 
-### subview(name, [view])
+<h3 class="module-member" id="subview">subview(name, [view])</h3>
 * **String name**,
 * **View view (when setting the subview)**
 
@@ -351,11 +353,11 @@ but *only when dealing with the same model*.
   If you register a subview with the same name twice, the previous subview will be disposed.
   This ensures that there is only one subview under the given name.
 
-### removeSubview(nameOrView)
+<h3 class="module-member" id="removeSubview">removeSubview(nameOrView)</h3>
 
 Remove the specified subview and dispose it. Can be called with either the `name` associated with the subview, or a reference to the subview instance.
 
-### Usage
+#### Usage
 
 ```coffeescript
 class YourView extends View
@@ -370,16 +372,16 @@ class YourView extends View
 
 The View includes the [EventBroker](./chaplin.event_broker.html) mixin to provide Publish/Subscribe capabilities using the [mediator](./chaplin.mediator.html)
 
-## [Methods](./chaplin.event_broker.html#toc_0) of `Chaplin.EventBroker`
+## [Methods](./chaplin.event_broker.html#methods) of `Chaplin.EventBroker`
 
-### publishEvent(event, arguments...)
+<h3 class="module-member" id="publishEvent">publishEvent(event, arguments...)</h3>
 Publish the global `event` with `arguments`.
 
-### subscribeEvent(event, handler)
+<h3 class="module-member" id="subscribeEvent">subscribeEvent(event, handler)</h3>
 Unsubcribe the `handler` to the `event` (if it exists) before subscribing it. It is like `Chaplin.mediator.subscribe` except it cannot subscribe twice.
 
-### unsubscribeEvent(event, handler)
+<h3 class="module-member" id="unsubscribeEvent">unsubscribeEvent(event, handler)</h3>
 Unsubcribe the `handler` to the `event`. It is like `Chaplin.mediator.unsubscribe`.
 
-### unsubscribeAllEvents()
+<h3 class="module-member" id="unsubscribeAllEvents">unsubscribeAllEvents()</h3>
 Unsubcribe all handlers for all events.

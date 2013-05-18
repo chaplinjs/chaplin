@@ -6,9 +6,9 @@ module_path: src/chaplin/views/layout.coffee
 
 `Chaplin.Layout` is the top-level application 'view'. It doesn't inherit from `Chaplin.View` but borrows some of its functionalities. It is tied to the `document` dom element and register app-wide events, such as internal links. And mainly, When a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.
 
-## Methods of `Chaplin.Layout`
+<h2 id="methods">Methods</h2>
 
-### initialize([options={}])
+<h3 class="module-member" id="initialize">initialize([options={}])</h3>
 
 * **options**:
     * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*. If `false`y, chaplin won’t route links at all.
@@ -22,32 +22,32 @@ module_path: src/chaplin/views/layout.coffee
     * **titleTemplate**: a function which returns the document title. Per default, it gets a object passed with the properties `title` and `subtitle`. *Default: _.template("<%= subtitle %> - <%= title %>")*
 
 
-### delegateEvents([events])
+<h3 class="module-member" id="delegateEvents">delegateEvents([events])</h3>
 
 A wrapper for `Backbone.View.delegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-delegateEvents) for more details.
 
 
-### undelegateEvents()
+<h3 class="module-member" id="undelegateEvents">undelegateEvents()</h3>
 
 A wrapper for `Backbone.View.undelegateEvents`. See Backbone [documentation](http://backbonejs.org/#View-undelegateEvents) for more details.
 
 
-### hideOldView(controller)
+<h3 class="module-member" id="hideOldView">hideOldView(controller)</h3>
 
 Hide the active (old) view on the `beforeControllerDispose` event sent by the dispatcher on route change and scroll to the coordinates specified by the initialize `scrollTo` option.
 
 
-### showNewView(context)
+<h3 class="module-member" id="showNewView">showNewView(context)</h3>
 
 Show the new view on the `dispatcher:dispatch` event sent by the dispatcher on route change.
 
 
-### adjustTitle(context)
+<h3 class="module-member" id="adjustTitle">adjustTitle(context)</h3>
 
 Adjust the title of the page base on the `titleTemplate` option. The `title` variable is the one defined at the application level and the `subtitle` the one at the controller level.
 
 
-### openLink(event)
+<h3 class="module-member" id="openLink">openLink(event)</h3>
 
 Open the `href` or `data-href` URL of a DOM element. When `openLink` is called it checks if the `href` is valid and runs the `skipRouting` function if set by the user. If the href valid, it checks if it is an external link and depending on the `openExternalToBlank` option, opens it in a new window. Finally, if it is an internal link, it starts routing the URL.
 

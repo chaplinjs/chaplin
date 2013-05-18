@@ -6,18 +6,18 @@ module_path: src/chaplin/lib/event_broker.coffee
 
 The EventBroker offer an interface to interact with [Chaplin.mediator](./chaplin.mediator.html).
 
-## Methods of `Chaplin.EventBroker`
+<h2 id="methods">Methods</h2>
 
-### publishEvent(event, arguments...)
+<h3 class="module-member" id="publishEvent">publishEvent(event, arguments...)</h3>
 Publish the global `event` with `arguments`.
 
-### subscribeEvent(event, handler)
+<h3 class="module-member" id="subscribeEvent">subscribeEvent(event, handler)</h3>
 Unsubcribe the `handler` to the `event` (if it exists) before subscribing it. It is like `Chaplin.mediator.subscribe` except it cannot subscribe twice.
 
-### unsubscribeEvent(event, handler)
+<h3 class="module-member" id="unsubscribeEvent">unsubscribeEvent(event, handler)</h3>
 Unsubcribe the `handler` to the `event`. It is like `Chaplin.mediator.unsubscribe`.
 
-### unsubscribeAllEvents()
+<h3 class="module-member" id="unsubscribeAllEvents">unsubscribeAllEvents()</h3>
 Unsubcribe all handlers for all events.
 
 ## Usage

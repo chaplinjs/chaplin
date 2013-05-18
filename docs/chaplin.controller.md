@@ -6,20 +6,20 @@ module_path: src/chaplin/controllers/controller.coffee
 
 A controller is the place where a model/collection and its associated views are instantiated. It’s also in charge of model and view disposal when another controller takes over. There can be one current controller which provides the main view and represents the current URL. In addition, there can be several persistent controllers for central tasks, like for example a `SessionController`.
 
-## Methods of `Chaplin.Controller`
+<h2 id="methods">Methods</h2>
 
-### adjustTitle(subtitle)
+<h3 class="module-member" id="adjustTitle">adjustTitle(subtitle)</h3>
 Adjusts document title to `subtitle - title`. Title template can be set when initializing `Dispatcher`.
 
-### redirectTo(url, options)
+<h3 class="module-member" id="redirectTo">redirectTo(url, options)</h3>
 
 Navigates to `url` in app.
 
-### redirectToRoute(name, params, options)
+<h3 class="module-member" id="redirectToRoute">redirectToRoute(name, params, options)</h3>
 
 Navigates to named route, like `@redirectToRoute 'likes#show', id: 502`.
 
-### dispose()
+<h3 class="module-member" id="dispose">dispose()</h3>
 
 Disposes all models and views on current `Controller` instance.
 
@@ -36,7 +36,7 @@ A controller is usually started following a route match. A route points to contr
 
 By default, all controllers must be placed into the `/controllers/`  folder (the / stands for the root of the `baseURL` you have defined for your loader) and be suffixed with `_controller`. So for instance, the `LikesController` needs to be defined in the file `/controllers/likes_controller.js`.
 
-If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.html#toc_1).
+If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.html#initialize).
 
 
 ### Before actions
