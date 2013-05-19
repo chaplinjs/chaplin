@@ -116,10 +116,13 @@ module.exports = class Application
     # Am I already disposed?
     return if @disposed
 
+    # Check if object is already frozen.
+    frozen = Object.isFrozen? this
+
     properties = ['dispatcher', 'layout', 'router', 'composer']
     for prop in properties when this[prop]?
       this[prop].dispose()
-      delete this[prop]
+      delete this[prop] unless frozen
 
     @disposed = true
 
