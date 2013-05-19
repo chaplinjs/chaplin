@@ -303,6 +303,7 @@ class MyView extends Chaplin.View
   regions:
     '#page .container > .sidebar': 'sidebar'
     '#page .container > .content': 'body'
+    '': 'myview'
 ```
 
 When the view is initialzied the regions hashes of all base classes are
@@ -325,6 +326,7 @@ class MyView extends Chaplin.View
     super
     @registerRegion '#page .container > .sidebar', 'sidebar'
     @registerRegion '#page .container > .content', 'body'
+    @registerRegion '', 'myview'
 ```
 
 ### unregisterRegion(name)
