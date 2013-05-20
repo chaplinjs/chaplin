@@ -77,7 +77,12 @@ module.exports = class View extends Backbone.View
     # Copy some options to instance properties.
     if options
       _.extend this, _.pick options, [
-        'autoAttach', 'autoRender', 'container', 'containerMethod', 'region'
+        'autoAttach'
+        'autoRender'
+        'container'
+        'containerMethod'
+        'region'
+        'regions'
       ]
 
     # Wrap `render` so `attach` is called afterwards.
