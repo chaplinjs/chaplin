@@ -57,10 +57,14 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 
   A common implementation will take a passed in `template` string and return
   a compiled template function (e.g. a Handlebars or Underscore template function).
+
 ```coffeescript
 # CoffeeScript
-# CoffeeScript
 @template = require 'templates/comment_view'
+```
+```javascript
+// JavaScript
+this.template = require('templates/comment_view');
 ```
 
 or if using templates in the DOM
@@ -68,6 +72,10 @@ or if using templates in the DOM
 ```coffeescript
 # CoffeeScript
 @template = $('#comment_view_template').html()
+```
+```javascript
+// JavaScript
+this.template = $('#comment_view_template').html();
 ```
 
 if using Handlebars
@@ -77,6 +85,12 @@ if using Handlebars
 getTemplateFunction: ->
   Handlebars.compile @template
 ```
+```javascript
+// JavaScript
+getTemplateFunction: function() {
+  return Handlebars.compile(this.template);
+}
+```
 
 or if using underscore templates
 
@@ -84,6 +98,12 @@ or if using underscore templates
 # CoffeeScript
 getTemplateFunction: ->
   _.template @template
+```
+```javascript
+// JavaScript
+getTemplateFunction: function() {
+  return _.template(this.template);
+}
 ```
 
   Packages like [Brunch With Chaplin](https://github.com/paulmillr/brunch-with-chaplin)
@@ -194,6 +214,7 @@ class SomeView extends View
 ```
 
 ```javascript
+// JavaScript
 var SomeView = View.extend({
   listen: {
     // Listen to view events with @on.
@@ -228,6 +249,7 @@ For events, affecting the whole view the signature is `delegate(eventType, handl
 ```
 
 ```javascript
+// JavaScript
 this.delegate('click', this.clicked);
 ```
 
@@ -239,6 +261,7 @@ For events only affecting an element or colletion of elements in the view, pass 
 ```
 
 ```javascript
+// JavaScript
 this.delegate('click', 'button.confirm', this.confirm);
 ```
 
@@ -272,6 +295,17 @@ class MyView extends Chaplin.View
 # [...] inside action method
 @view = new MyView()
 ```
+```javascript
+// JavaScript
+// myview.js
+var MyView = Chaplin.View.extend({
+  region: 'sidebar'
+});
+
+// my_controller.js
+// [...] inside action method
+this.view = new MyView();
+```
 
 And this one passes in the value of region to the view constructor:
 
@@ -284,6 +318,15 @@ class MyView extends Chaplin.View
 # [...] inside action method
 @view = new MyView {region: 'sidebar'}
 ```
+```javascript
+// JavaScript
+// myview.js
+var MyView = Chaplin.View.extend({});
+
+// my_controller.js
+// [...] inside action method
+this.view = new MyView({region: 'sidebar'});
+```
 
 However the latter case allows the controller (through whatever logic) decide
 where to place the view.
@@ -294,7 +337,7 @@ Region registration hash that works much like the declarative events hash
 present in Backbone.
 
 The following snippet will register the named regions `sidebar` and `body` and
-bind them to their respective selectors.
+bind them to their respective selectors directly on the prototype:
 
 ```coffeescript
 # CoffeeScript
@@ -304,6 +347,48 @@ class MyView extends Chaplin.View
     '#page .container > .sidebar': 'sidebar'
     '#page .container > .content': 'body'
     '': 'myview'
+```
+```javascript
+// JavaScript
+// myview.js
+var MyView = Chaplin.View({
+  regions: {
+    '#page .container > .sidebar': 'sidebar',
+    '#page .container > .content': 'body',
+    '': 'myview'
+  }
+});
+```
+
+And this one passes in the values of regions to the view constructor:
+
+```coffeescript
+# CoffeeScript
+# myview.coffee
+class MyView extends Chaplin.View
+
+# my_controller.coffee
+# [...] inside action method
+@view = new MyView
+  regions:
+    '#page .container > .sidebar': 'sidebar'
+    '#page .container > .content': 'body'
+    '': 'myview'
+```
+```javascript
+// JavaScript
+// myview.js
+var MyView = Chaplin.View({});
+
+// my_controller.js
+// [...] inside action method
+this.view = new MyView({
+  regions: {
+    '#page .container > .sidebar': 'sidebar',
+    '#page .container > .content': 'body',
+    '': 'myview'
+  }
+});
 ```
 
 When the view is initialzied the regions hashes of all base classes are
@@ -327,6 +412,17 @@ class MyView extends Chaplin.View
     @registerRegion '#page .container > .sidebar', 'sidebar'
     @registerRegion '#page .container > .content', 'body'
     @registerRegion '', 'myview'
+```
+```javascript
+# JavaScript
+var MyView = Chaplin.View.extend({
+  initialize: function() {
+    Chaplin.View.prototype.initialize.apply(this, arguments);
+    this.registerRegion('#page .container > .sidebar', 'sidebar');
+    this.registerRegion('#page .container > .content', 'body');
+    this.registerRegion('', 'myview');
+  }
+});
 ```
 
 ### unregisterRegion(name)
@@ -375,6 +471,16 @@ class YourView extends View
     super
     infoboxView = new InfoBox autoRender: true, container: @el
     @subview 'infobox', infoboxView
+```
+```javascript
+# JavaScript
+var YourView = View.extend({
+  render: function() {
+    View.prototype.render.apply(this, arguments);
+    var infoboxView = new InfoBox({autoRender: true, container: this.el});
+    this.subview('infobox', infoboxView);
+  }
+});
 ```
 
 # Publish/Subscribe
