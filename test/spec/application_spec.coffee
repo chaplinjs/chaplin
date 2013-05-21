@@ -11,7 +11,13 @@ define [
   'use strict'
 
   describe 'Application', ->
-    app = new Application()
+    app = null
+
+    beforeEach ->
+      app = new Application()
+
+    afterEach ->
+      app.dispose()
 
     it 'should be a simple object', ->
       expect(app).to.be.an 'object'
@@ -54,11 +60,10 @@ define [
       expect(app.router).to.be.a Router
       expect(routesCalled).to.be true
       expect(passedMatch).to.be.a 'function'
-
-    it 'should not start Backbone.history', ->
       expect(Backbone.History.started).to.be false
 
     it 'should start Backbone.history with startRouting()', ->
+      app.initRouter (->), root: '/', pushState: false
       app.startRouting()
       expect(Backbone.History.started).to.be true
 
@@ -67,7 +72,7 @@ define [
       app.dispose()
 
       for prop in ['dispatcher', 'layout', 'router', 'composer']
-        expect(app).not.to.have.own.property prop
+        expect(app[prop]).to.be null
 
       expect(app.disposed).to.be true
       if Object.isFrozen
