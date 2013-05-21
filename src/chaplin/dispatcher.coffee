@@ -98,11 +98,11 @@ module.exports = class Dispatcher
 
       # Passing new parameters that the action method will receive.
       @currentController.dispose params, route, options
-    
+
     # Save the new controller and its parameters.
     @currentController = controller
     @currentParams = params
-    
+
     # Call the controller action with params and options.
     controller[route.action] params, route, options
 
@@ -160,6 +160,10 @@ module.exports = class Dispatcher
 
     @unsubscribeAllEvents()
 
+    # Nothing is permanent in this wicked world
+    @publishEvent 'dispose', this
+
+    # Finished.
     @disposed = true
 
     # You’re frozen when your heart’s not open.

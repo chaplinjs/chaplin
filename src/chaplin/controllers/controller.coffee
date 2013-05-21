@@ -83,6 +83,9 @@ module.exports = class Controller
     # Unbind all referenced handlers.
     @stopListening()
 
+    # Nothing is permanent in this wicked world
+    @publishEvent 'dispose', this
+
     # Finished.
     @disposed = true
 

@@ -84,6 +84,10 @@ module.exports = class Application
       this[prop].dispose()
       delete this[prop]
 
+    # Nothing is permanent in this wicked world
+    @publishEvent 'dispose', this
+
+    # Finished.
     @disposed = true
 
     # You're frozen when your heart's not open.
