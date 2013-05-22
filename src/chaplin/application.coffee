@@ -29,7 +29,13 @@ module.exports = class Application
   router: null
   composer: null
 
+  constructor: (options = {}) ->
+    @initialize options
+
   initialize: (options = {}) ->
+    if Object.isFrozen? this
+      throw new Error 'Application#initialize: App was already initialized'
+
     # Initialize core components.
     # ---------------------------
 
