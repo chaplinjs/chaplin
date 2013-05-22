@@ -272,6 +272,15 @@ define [
 
     describe 'Route Matching', ->
 
+      it 'should not initialize when route name has "#"', ->
+        expect(->
+          new Route 'params', 'null', 'null', name: 'null#null'
+        ).to.throwError()
+      it 'should not initialize when using existing controller attr', ->
+        expect(->
+          new Route 'params', 'null', 'beforeAction'
+        ).to.throwError()
+
       it 'should compare route value', ->
         route = new Route 'params', 'hello', 'world'
         expect(route.matches 'hello#world').to.be true
