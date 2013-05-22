@@ -166,7 +166,10 @@ module.exports = class Composer
     # Remove properties
     delete @compositions
 
-    # Finished
+    # Nothing is permanent in this wicked world
+    @publishEvent 'dispose', this
+
+    # Finished.
     @disposed = true
 
     # You’re frozen when your heart’s not open

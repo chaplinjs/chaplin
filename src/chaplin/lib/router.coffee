@@ -184,6 +184,9 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
     @unsubscribeAllEvents()
 
+    # Nothing is permanent in this wicked world
+    @publishEvent 'dispose', this
+
     # Finished.
     @disposed = true
 

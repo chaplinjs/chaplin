@@ -52,6 +52,9 @@ module.exports = class Collection extends Backbone.Collection
     ]
     delete this[prop] for prop in properties
 
+    # Nothing is permanent in this wicked world
+    @publishEvent 'dispose', this
+
     # Finished.
     @disposed = true
 
