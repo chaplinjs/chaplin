@@ -1,10 +1,13 @@
+# Chaplin 0.9.1 (18 May 2013)
+* Fix controller disposal after redirect.
+
 # Chaplin 0.9.0 (4 May 2013)
 * Added full lodash compatibility.
 * Removed deferred mix-in (`initDeferred`) support from
   models, collections and views.
 * Improved `Chaplin.Controller` and `Chaplin.Dispatcher`:
-    * Made `Controller#beforeAction` function.
-      Old object form is not supported anymore.
+    * Made `Controller#beforeAction` a function.
+      The old object form is not supported anymore.
       You need to use `super` like in any other method,
       `beforeAction`s won’t be merged without it.
       Asyncronous `beforeAction`s with promises are still supported.
@@ -13,11 +16,12 @@
 * Improved `Chaplin.Router`:
     * Fixed bug with preserving query string in URL.
     * Removed underscorizing of loaded by default controller names.
-      `deleted_users#show` won’t longer be same as `deletedUsers#show`.
+      `deleted_users#show` won’t longer be rewritten to `deletedUsers#show`.
+      The controller name in the route is directly used as module name.
 * Improved `Chaplin.View`:
     * Added `keepInElement` property (false by default).
-      When truthy, view’s DOM element won’t be removed after disposal.
-    * `View#dispose` now also calls `View#remove` method.
+      When truthy, the view’s DOM element won’t be removed after disposal.
+    * `View#dispose` now calls Backbone’s `View#remove` method.
     * Subviews are now always an array.
 * Improved `Chaplin.CollectionView`:
     * Added Backbone 1.0 `Collection#set` support.

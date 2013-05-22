@@ -2,6 +2,8 @@
 For non-technical issues (questions etc.),
 use [ost.io](http://ost.io/chaplinjs/chaplin) forum or our mailing list.
 
+See releasing guide at the end.
+
 If you submit changes to coffeescript code, make sure it conforms with the style guide.
 
 ## Chaplin code style guide
@@ -166,13 +168,20 @@ A reminder to maintainers what should be done before every release.
 
 1. Update `package.json`, `component.json` and `CHANGELOG.md`, commit with “Release VERSION.”,
 git-tag last commit with new version.
-2. Update downloads and our site.
-3. Tweet about new version. Template:
+2. Generate new versions: `grunt build && grunt build:minified`.
+3. Update downloads: `cp -r ../chaplin/build/* . && rm {amd,brunch}/*.gz && rm commonjs`,
+   update downloads `component.json`, commit and tag new version.
+4. Update chaplinjs.org.
+5. Tweet about new version. Template:
 
-    Chaplin $RELEASE released! This is the biggest release since $PREV_RELEASE. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/$PREV_RELEASE...$RELEASE
+    Chaplin $RELEASE released! $CHANGES. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/$PREV_RELEASE...$RELEASE
 
-4. Update
+6. Update
 [brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin),
 [chaplin-boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) and
 [chaplin-boilerplate-plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
 with new chaplin versions.
+7. Update examples:
+[Ost.io](https://github.com/paulmillr/ostio),
+[composer-example](https://github.com/chaplinjs/composer-example),
+[todomvc](https://github.com/addyosmani/todomvc).
