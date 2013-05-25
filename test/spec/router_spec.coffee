@@ -13,7 +13,7 @@ define [
 
     # Serialize pairs into query string (without leading question mark)
     serializequery = (pairs) ->
-      _(pairs).reduce((memo, val, prop) ->
+      _.reduce(pairs, (memo, val, prop) ->
         memo +
         (if memo is '' then '' else '&') +
         encodeURIComponent(prop) + '=' + encodeURIComponent(val)
@@ -259,8 +259,7 @@ define [
           constraints:
             id: /^\d+$/
 
-        router.route '/constraints/123-foo'
-        expect(spy).was.notCalled()
+        expect(-> router.route '/constraints/123-foo').to.throwError()
 
         router.route '/constraints/123'
         expect(spy).was.called()
@@ -271,6 +270,15 @@ define [
         expect(-> router.match /url/, 'null#null').to.throwError()
 
     describe 'Route Matching', ->
+
+      it 'should not initialize when route name has "#"', ->
+        expect(->
+          new Route 'params', 'null', 'null', name: 'null#null'
+        ).to.throwError()
+      it 'should not initialize when using existing controller attr', ->
+        expect(->
+          new Route 'params', 'null', 'beforeAction'
+        ).to.throwError()
 
       it 'should compare route value', ->
         route = new Route 'params', 'hello', 'world'
@@ -340,8 +348,7 @@ define [
         url = router.reverse 'phonebook', one: 145
         expect(url).to.be '/phone/145'
 
-        url = router.reverse 'missing', one: 145
-        expect(url).to.be false
+        expect(-> router.reverse 'missing', one: 145).to.throwError()
 
       it 'should allow for reversing a route by its controller', ->
         register()
@@ -366,8 +373,9 @@ define [
         expect(spy).was.calledWith '/phone/145'
 
         spy = sinon.spy()
-        mediator.publish '!router:reverse', 'missing', params, spy
-        expect(spy).was.calledWith false
+        expect(->
+          mediator.publish '!router:reverse', 'missing', params, spy
+        ).to.throwError()
 
       it 'should prepend mount point', ->
         router.dispose()
@@ -480,8 +488,9 @@ define [
         )
 
         callback = sinon.spy()
-        mediator.publish '!router:route', 'different-path', options, callback
-        expect(callback).was.calledWith false
+        expect(->
+          mediator.publish '!router:route', 'different-path', options, callback
+        ).to.throwError()
 
         routeSpy.restore()
 
@@ -557,9 +566,10 @@ define [
         callbackSpy = sinon.spy()
         params = {}
         options = {}
-        mediator.publish '!router:routeByName', 'phonebook',
-          params, options, callbackSpy
-        expect(callbackSpy).was.calledWith false
+        expect(->
+          mediator.publish '!router:routeByName', 'phonebook',
+            params, options, callbackSpy
+        ).to.throwError()
 
     describe 'Changing the URL', ->
 

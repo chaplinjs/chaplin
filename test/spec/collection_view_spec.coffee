@@ -113,8 +113,8 @@ define [
     beforeEach ->
 
     afterEach ->
-      collectionView.dispose()
-      collection.dispose()
+      collectionView?.dispose()
+      collection?.dispose()
       collectionView = collection = null
 
     describe 'Basic item rendering', ->
@@ -860,6 +860,13 @@ define [
           # Filled + synced = not visible
           addOne()
           expectInvisible()
+
+      describe 'Invalid behavior', ->
+        it 'should throw an error of there is no initItemView', ->
+          createCollection()
+          expect(->
+            collectionView = new CollectionView {collection}
+          ).to.throwError()
 
       describe 'Disposal', ->
 

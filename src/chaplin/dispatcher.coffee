@@ -98,13 +98,13 @@ module.exports = class Dispatcher
 
       # Passing new parameters that the action method will receive.
       @currentController.dispose params, route, options
-
-    # Call the controller action with params and options.
-    controller[route.action] params, route, options
-
+    
     # Save the new controller and its parameters.
     @currentController = controller
     @currentParams = params
+    
+    # Call the controller action with params and options.
+    controller[route.action] params, route, options
 
     # Stop if the action triggered a redirect.
     return if controller.redirected

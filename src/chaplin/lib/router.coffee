@@ -91,7 +91,40 @@ module.exports = class Router # This class does not extend Backbone.Router.
       if handler.route.test(path)
         handler.callback path, options
         return true
-    false
+
+    if options.silent
+      false
+    else
+      throw new Error 'Router#route: request was not routed'
+
+  # Find the URL for given criteria using the registered routes and
+  # provided parameters. The criteria may be just the name of a route
+  # or an object containing the name, controller, and/or action.
+  # Warning: this is usually **hot** code in terms of performance.
+  # Returns the URL string or false.
+  reverse: (criteria, params, silent) ->
+    root = @options.root
+
+    if params? and typeof params isnt 'object'
+      throw new TypeError 'Router#reverse: params must be an array or an ' +
+        'object'
+
+    # First filter the route handlers to those that are of the same name.
+    handlers = Backbone.history.handlers
+    for handler in handlers when handler.route.matches criteria
+      # Attempt to reverse using the provided parameter hash.
+      reversed = handler.route.reverse params
+
+      # Return the url if we got a valid one; else we continue on.
+      if reversed isnt false
+        url = if root then root + reversed else reversed
+        return url
+
+    # We didn't get anything.
+    if silent
+      false
+    else
+      throw new Error 'Router#reverse: invalid route specified'
 
   # Handler for the global !router:route event.
   routeHandler: (path, options, callback) ->
@@ -114,34 +147,9 @@ module.exports = class Router # This class does not extend Backbone.Router.
       callback = options
       options = {}
 
-    path = @reverse name, params
-    if typeof path is 'string'
-      routed = @route path, options
-      callback? routed
-    else
-      callback? false
-
-  # Find the URL for given criteria using the registered routes and
-  # provided parameters. The criteria may be just the name of a route
-  # or an object containing the name, controller, and/or action.
-  # Warning: this is usually **hot** code in terms of performance.
-  # Returns the URL string or false.
-  reverse: (criteria, params) ->
-    root = @options.root
-
-    # First filter the route handlers to those that are of the same name.
-    handlers = Backbone.history.handlers
-    for handler in handlers when handler.route.matches criteria
-      # Attempt to reverse using the provided parameter hash.
-      reversed = handler.route.reverse params
-
-      # Return the url if we got a valid one; else we continue on.
-      if reversed isnt false
-        url = if root then root + reversed else reversed
-        return url
-
-    # We didn't get anything.
-    false
+    path = @reverse name, params, options?.silent
+    routed = @route path, options
+    callback? routed
 
   # Handler for the global !router:reverse event.
   reverseHandler: (name, params, callback) ->

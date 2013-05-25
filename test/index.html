@@ -41,6 +41,7 @@
       // Wonderful hack to send a message to grunt from inside a mocha test.
       var sendMessage = function() {
         var args = [].slice.call(arguments);
+        // Remove if when generating test coverage.
         if (window.mochaPhantomJS) {
            alert(JSON.stringify(args));
         }

@@ -58,7 +58,7 @@ SiteController = require 'controllers/site_controller'
 class IndexController extends SiteController
   show: ->
     # Instantiate this simple index view at the body region
-    @view = new Index, region: 'body'
+    @view = new Index region: 'body'
 
 
 # controllers/about_me_controller.coffee
@@ -67,7 +67,7 @@ SiteController = require 'controllers/site_controller'
 class AboutMeController extends SiteController
   show: ->
     # Instantiate this simple about me view at the body region
-    @view = new AboutMe, region: 'body'
+    @view = new AboutMe region: 'body'
 ```
 
 ```javascript

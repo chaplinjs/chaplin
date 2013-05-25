@@ -87,32 +87,6 @@ define [
 
       mediator.unsubscribe '!router:routeByName', routerRoute
 
-    it 'should throw an error when redirected to a non-route', ->
-      routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
-
-      controller.redirectTo 'redirect-target/123'
-
-      callback = routerRoute.firstCall.args[2]
-      expect(callback).to.be.a 'function'
-      expect(-> callback(true)).not.to.throwError()
-      expect(-> callback(false)).to.throwError()
-
-      mediator.unsubscribe '!router:route', routerRoute
-
-    it 'should throw an error when redirected to an unknown named route', ->
-      routerRoute = sinon.spy()
-      mediator.subscribe '!router:routeByName', routerRoute
-
-      controller.redirectToRoute 'params'
-
-      callback = routerRoute.firstCall.args[3]
-      expect(callback).to.be.a 'function'
-      expect(-> callback(true)).not.to.throwError()
-      expect(-> callback(false)).to.throwError()
-
-      mediator.unsubscribe '!router:routeByName', routerRoute
-
     it 'should adjust page title', ->
       spy = sinon.spy()
       mediator.subscribe '!adjustTitle', spy

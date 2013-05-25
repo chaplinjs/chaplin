@@ -53,11 +53,17 @@ Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model,
 ```coffeescript
 @template = require 'templates/comment_view'
 ```
+```javascript
+this.template = require('templates/comment_view');
+```
 
 or if using templates in the DOM
 
 ```coffeescript
 @template = $('#comment_view_template').html()
+```
+```javascript
+this.template = $('#comment_view_template').html();
 ```
 
 if using Handlebars
@@ -66,12 +72,22 @@ if using Handlebars
 getTemplateFunction: ->
   Handlebars.compile @template
 ```
+```javascript
+getTemplateFunction: function() {
+  return Handlebars.compile(this.template);
+}
+```
 
 or if using underscore templates
 
 ```coffeescript
 getTemplateFunction: ->
   _.template @template
+```
+```javascript
+getTemplateFunction: function() {
+  return _.template(this.template);
+}
 ```
 
   Packages like [Brunch With Chaplin](https://github.com/paulmillr/brunch-with-chaplin) precompile the template functions to improve application performance
@@ -228,6 +244,16 @@ class MyView extends Chaplin.View
 # [...] inside action method
 @view = new MyView()
 ```
+```javascript
+// myview.js
+var MyView = Chaplin.View.extend({
+  region: 'sidebar'
+});
+
+// my_controller.js
+// [...] inside action method
+this.view = new MyView();
+```
 
 And this one passes in the value of region to the view constructor:
 
@@ -239,6 +265,14 @@ class MyView extends Chaplin.View
 # [...] inside action method
 @view = new MyView {region: 'sidebar'}
 ```
+```javascript
+// myview.js
+var MyView = Chaplin.View.extend({});
+
+// my_controller.js
+// [...] inside action method
+this.view = new MyView({region: 'sidebar'});
+```
 
 However the latter case allows the controller (through whatever logic) decide where to place the view.
 
@@ -246,7 +280,7 @@ However the latter case allows the controller (through whatever logic) decide wh
 
 Region registration hash that works much like the declarative events hash present in Backbone.
 
-The following snippet will register the named regions `sidebar` and `body` and bind them to their respective selectors.
+The following snippet will register the named regions `sidebar` and `body` and bind them to their respective selectors directly on the prototype:
 
 ```coffeescript
 # myview.coffee
@@ -254,6 +288,46 @@ class MyView extends Chaplin.View
   regions:
     '#page .container > .sidebar': 'sidebar'
     '#page .container > .content': 'body'
+    '': 'myview'
+```
+```javascript
+// myview.js
+var MyView = Chaplin.View({
+  regions: {
+    '#page .container > .sidebar': 'sidebar',
+    '#page .container > .content': 'body',
+    '': 'myview'
+  }
+});
+```
+
+And this one passes in the values of regions to the view constructor:
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+
+# my_controller.coffee
+# [...] inside action method
+@view = new MyView
+  regions:
+    '#page .container > .sidebar': 'sidebar'
+    '#page .container > .content': 'body'
+    '': 'myview'
+```
+```javascript
+// myview.js
+var MyView = Chaplin.View({});
+
+// my_controller.js
+// [...] inside action method
+this.view = new MyView({
+  regions: {
+    '#page .container > .sidebar': 'sidebar',
+    '#page .container > .content': 'body',
+    '': 'myview'
+  }
+});
 ```
 
 When the view is initialzied the regions hashes of all base classes are gathered and registered as well. When two views in an inheritance tree both register a region of the same name, the selector of the most-derived view is used.
@@ -270,6 +344,17 @@ class MyView extends Chaplin.View
     super
     @registerRegion '#page .container > .sidebar', 'sidebar'
     @registerRegion '#page .container > .content', 'body'
+    @registerRegion '', 'myview'
+```
+```javascript
+var MyView = Chaplin.View.extend({
+  initialize: function() {
+    Chaplin.View.prototype.initialize.apply(this, arguments);
+    this.registerRegion('#page .container > .sidebar', 'sidebar');
+    this.registerRegion('#page .container > .content', 'body');
+    this.registerRegion('', 'myview');
+  }
+});
 ```
 
 <h3 class="module-member" id="unregisterRegion">unregisterRegion(name)</h3>
@@ -309,6 +394,15 @@ class YourView extends View
     super
     infoboxView = new InfoBox autoRender: true, container: @el
     @subview 'infobox', infoboxView
+```
+```javascript
+var YourView = View.extend({
+  render: function() {
+    View.prototype.render.apply(this, arguments);
+    var infoboxView = new InfoBox({autoRender: true, container: this.el});
+    this.subview('infobox', infoboxView);
+  }
+});
 ```
 
 # Publish/Subscribe

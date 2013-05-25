@@ -397,11 +397,20 @@ define [
 
         done()
 
-    it 'should dispose when redirecting to a URL', (done) ->
-      dispose = sinon.spy Test1Controller.prototype, 'dispose'
-      publishMatch route1, params, options
-      publishMatch redirectToURLRoute, params, options
-      loadTest1Controller ->
+    it 'should dispose when redirecting to a URL from controller action', (done) ->
+      class RedirectingController extends Controller
+        show: ->
+          dispatcher.controllerLoaded route1, null, {changeURL: true}, Test1Controller
+
+      dispose = sinon.spy RedirectingController.prototype, 'dispose'
+
+      controllerName = 'redirecting_controller'
+      loadRedirectingController = makeLoadController controllerName,
+        RedirectingController
+
+      route = {controller: controllerName, action: 'show', path}
+      publishMatch route, params, options
+      loadRedirectingController ->
         expect(dispose).was.calledOnce()
         dispose.restore()
         done()
@@ -435,6 +444,10 @@ define [
 
     describe 'Before actions', ->
 
+      class NoBeforeController extends Controller
+        beforeAction: null
+        show: sinon.spy()
+
       class BeforeActionController extends Controller
         beforeAction: ->
         show: ->
@@ -459,6 +472,15 @@ define [
           beforeAction.restore()
           action.restore()
 
+          done()
+
+      it 'should proceed if there is no before action', (done) ->
+        controllerName = 'no_before_action'
+        loadController = makeLoadController controllerName, NoBeforeController
+        route = {controller: controllerName, action: 'show', path}
+        publishMatch route, params, options
+        loadController ->
+          expect(NoBeforeController::show).was.calledOnce()
           done()
 
       it 'should throw an error if a before action method isn’t a function', ->
