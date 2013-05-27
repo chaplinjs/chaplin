@@ -28,12 +28,14 @@ module.exports = class Application
   layout: null
   router: null
   composer: null
+  initialized: false
 
   constructor: (options = {}) ->
     @initialize options
 
   initialize: (options = {}) ->
-    if Object.isFrozen? this
+    # Check if app is already initialized.
+    if @initialized
       throw new Error 'Application#initialize: App was already initialized'
 
     # Initialize core components.
@@ -61,6 +63,9 @@ module.exports = class Application
 
     # Actually start routing.
     @startRouting()
+
+    # Mark app as initialized.
+    @initialized = true
 
     # Freeze the application instance to prevent further changes.
     Object.freeze? this
