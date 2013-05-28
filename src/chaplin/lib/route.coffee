@@ -10,7 +10,7 @@ module.exports = class Route
   @extend = Backbone.Model.extend
 
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Taken from Backbone.Router.
   escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
@@ -40,7 +40,7 @@ module.exports = class Route
     @paramNames = []
 
     # Check if the action is a reserved name
-    if _(Controller.prototype).has @action
+    if _.has Controller.prototype, @action
       throw new Error 'Route: You should not use existing controller ' +
         'properties as action names'
 
@@ -49,7 +49,7 @@ module.exports = class Route
     # You’re frozen when your heart’s not open.
     Object.freeze? this
 
-  # Create a check predicate to determine if a route should be reversed.
+  # Tests if route params are equal to criteria.
   matches: (criteria) ->
     if typeof criteria is 'string'
       criteria is @name
@@ -59,6 +59,7 @@ module.exports = class Route
         return false if property and property isnt this[name]
       true
 
+  # Generates route URL from params.
   reverse: (params) ->
     url = @pattern
     if _.isArray params
@@ -82,6 +83,8 @@ module.exports = class Route
     # If the url tests out good; return the url; else, false.
     if @test url then url else false
 
+  # Creates the actual regular expression that Backbone.History#loadUrl
+  # uses to determine if the current url is a match.
   createRegExp: ->
     pattern = @pattern
       # Escape magic characters.

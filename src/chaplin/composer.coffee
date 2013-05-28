@@ -22,7 +22,7 @@ module.exports = class Composer
   @extend = Backbone.Model.extend
 
   # Mixin an EventBroker
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # The collection of composed compositions
   compositions: null

@@ -9,8 +9,8 @@ module.exports = class Controller
   @extend = Backbone.Model.extend
 
   # Mixin Backbone events and EventBroker.
-  _(@prototype).extend Backbone.Events
-  _(@prototype).extend EventBroker
+  _.extend @prototype, Backbone.Events
+  _.extend @prototype, EventBroker
 
   view: null
 
@@ -51,18 +51,14 @@ module.exports = class Controller
   # -----------
 
   # Redirect to URL.
-  redirectTo: (url, options = {}) ->
+  redirectTo: (url, options) ->
     @redirected = true
-    @publishEvent '!router:route', url, options, (routed) ->
-      unless routed
-        throw new Error 'Controller#redirectTo: no route matched'
+    @publishEvent '!router:route', url, options
 
   # Redirect to named route.
   redirectToRoute: (name, params, options) ->
     @redirected = true
-    @publishEvent '!router:routeByName', name, params, options, (routed) ->
-      unless routed
-        throw new Error 'Controller#redirectToRoute: no route matched'
+    @publishEvent '!router:routeByName', name, params, options
 
   # Disposal
   # --------

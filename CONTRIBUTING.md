@@ -2,6 +2,8 @@
 For non-technical issues (questions etc.),
 use [ost.io](http://ost.io/chaplinjs/chaplin) forum or our mailing list.
 
+See releasing guide at the end.
+
 If you submit changes to coffeescript code, make sure it conforms with the style guide.
 
 ## Chaplin code style guide
@@ -56,7 +58,7 @@ method: ->
     …
 ```
 
-Add an return statement to avoid this.
+Add a return statement to avoid this.
 
 ```
 method: ->
@@ -67,13 +69,13 @@ method: ->
 
 ## Type checking
 
-Avoid using Underscore’s type checking functions. They aren’t needed in most of the cases. Use the simplest way which is appropriate:
+Avoid using Underscore’s type checking functions. They aren’t needed in most cases. Use the simplest way which is appropriate:
 
 Use duck typing instead of requiring a specific type where applicable.
 
-When expecting objects (non-primitives), just check for truthyness. This is fast and easy to read. If the value is a truthy primitive, the code will fail when trying to use undefined properties.
+When expecting objects (non-primitives), just check for truthiness. This is fast and easy to read. If the value is a truthy primitive, the code will fail when trying to use undefined properties.
 
-Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowing all other types (truthy or falsy). But use the operator sparingly, avoid chains like `foo?.bar?.quux` because they compile to unreadable and inefficient JavaScript code. For example, use `if foo and foo.bar` instead of `if foo?.bar` if truthyness is okay.
+Use the CoffeeScript `?` operator to exclude `null` and `undefined` while allowing all other types (truthy or falsy). But use the operator sparingly, avoid chains like `foo?.bar?.quux` because they compile to unreadable and inefficient JavaScript code. For example, use `if foo and foo.bar` instead of `if foo?.bar` if truthiness is okay.
 
 - Check for `string.length`, `number > 0` etc.
 - Use `typeof` to detect `function`, `string`, `number` (if type detection is necessary)
@@ -118,6 +120,7 @@ use explicit curly braces:
 func arg1, arg3, {
   prop1: 'val1'
   prop2: 'val2'
+}
 ```
 
 When there are several object literals as arguments, use curly braces to
@@ -133,7 +136,7 @@ Omit parentheses only on the first level, use them on the subsequent levels:
 
 ```
 foo bar quux # Don’t
-foo bar(quux()) # Do
+foo bar(quux) # Do
 ```
 
 In general, don’t put too much logic on one line of code so heavy nesting isn’t needed.
@@ -161,17 +164,24 @@ Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob
 
 # Releasing Chaplin
 
-A reminder to maintainers what should be done before release.
+A reminder to maintainers what should be done before every release.
 
 1. Update `package.json`, `component.json` and `CHANGELOG.md`, commit with “Release VERSION.”,
 git-tag last commit with new version.
-2. Update downloads and our site.
-3. Tweet about new version. Template:
+2. Generate new versions: `grunt build && grunt build:minified`.
+3. Update downloads: `cp -r ../chaplin/build/* . && rm {amd,brunch}/*.gz && rm commonjs`,
+   update downloads `component.json`, commit and tag new version.
+4. Update chaplinjs.org.
+5. Tweet about new version. Template:
 
-    Chaplin 0.7.0 released! This is the biggest release since release. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/0.6.0...0.7.0
+    Chaplin $RELEASE released! $CHANGES. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/$PREV_RELEASE...$RELEASE
 
-4. Update
+6. Update
 [brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin),
 [chaplin-boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) and
 [chaplin-boilerplate-plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
 with new chaplin versions.
+7. Update examples:
+[Ost.io](https://github.com/paulmillr/ostio),
+[composer-example](https://github.com/chaplinjs/composer-example),
+[todomvc](https://github.com/addyosmani/todomvc).

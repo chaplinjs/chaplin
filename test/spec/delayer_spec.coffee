@@ -7,7 +7,7 @@ define [
   describe 'Delayer', ->
     # Set up an object which mixes in Delayer
     delayer = {}
-    _(delayer).extend Delayer
+    _.extend delayer, Delayer
 
     it 'should be a simple object', ->
       expect(Delayer).to.be.an 'object'

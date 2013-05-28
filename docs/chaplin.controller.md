@@ -13,7 +13,7 @@ Navigates to `url` in app.
 
 ### redirectToRoute(name, params, options)
 
-Navigates to named route, like `@redirectToRoute 'like', id: 502`.
+Navigates to named route, like `@redirectToRoute 'likes#show', id: 502`.
 
 ### dispose()
 
@@ -43,35 +43,65 @@ To execute code before the controller action is called, you can use the `beforeA
 ### Example
 
 ```coffeescript
+# CoffeeScript
 define [
   'controllers/controller',
   'models/likes',          # the collection
   'models/like',           # the model
-  'views/likes_view',      # the collection view
-  'views/full_like_view'   # the view
+  'views/likes-view',      # the collection view
+  'views/full-like-view'   # the view
 ], (Controller, Likes, Like, LikesView, FullLikeView) ->
-
   'use strict'
 
   class LikesController extends Controller
-
-    beforeAction:
-      show: (params) ->
+    beforeAction: (params, route) ->
+      if route.action is 'show'
         @redirectUnlessLoggedIn()
 
     # Initialize method is empty here.
     index: (params) ->
       @collection = new Likes()
-      @view = new LikesView collection: @collection
+      @view = new LikesView {@collection}
 
     show: (params) ->
       @model = new Like id: params.id
-      @view = new FullLikeView model: @model
+      @view = new FullLikeView {@model}
+```
+
+```javascript
+// JavaScript
+define([
+  'controllers/controller',
+  'models/likes',          // the collection
+  'models/like',           // the model
+  'views/likes-view',      // the collection view
+  'views/full-like-view'   // the view
+], function(Controller, Likes, Like, LikesView, FullLikeView) {
+  'use strict'
+
+  var LikesController = Controller.extend({
+    beforeAction: function() {
+      this.redirectUnlessLoggedIn();
+    },
+
+    // Initialize method is empty here.
+    index: function(params) {
+      this.collection = new Likes();
+      this.view = new LikesView({collection: this.collection});
+    },
+
+    show: function(params) {
+      this.model = new Like({id: params.id});
+      this.view = new FullLikeView({model: this.model});
+    }
+  });
+  return LikesController;
+});
 ```
 
 ### Creating models and views
 
-A controller action should create a main view and save it as an instance property named `view`: `@view = new SomeView(…)`.
+A controller action should create a main view and save it as an instance property named `view`: `this.view = new SomeView(…)`.
 
 Normal models and collection should also be saved as instance properties so Chaplin can reach them.
 

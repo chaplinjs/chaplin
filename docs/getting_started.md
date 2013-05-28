@@ -1,6 +1,6 @@
 # Getting started
 
-# Download the boilerplate
+## Download the boilerplate
 
 The easiest way to start a Chaplin application is to download the boilerplate. It contains a recent build of Chaplin as well as all JavaScript libraries Chaplin depends upon:
 
@@ -17,12 +17,10 @@ The boilerplate comes in three flavours:
 * [Plain JavaScript code](https://github.com/chaplinjs/chaplin-boilerplate-plain), if you develop your application in normal JavaScript
 * [Brunch skeleton](https://github.com/paulmillr/brunch-with-chaplin), if you prefer using [Brunch](http://brunch.io) and synchronous common.js modules.
 
-# Hello World!
+## Hello World!
 
 The boilerplate contains the necessary files which inherit from the core Chaplin class.
 
-...
-
-# Integrating Chaplin into Rails 3
+## Integrating Chaplin into Rails 3
 
 Use `requirejs-rails` gem.

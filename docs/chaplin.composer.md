@@ -20,6 +20,7 @@ However, the main application needs both header and footer controllers.
 Here is this use case demonstrated in coffeescript pseudocode:
 
 ```coffeescript
+# CoffeeScript
 # routes.coffee
 (match) ->
   match 'login', 'login#show'
@@ -40,18 +41,17 @@ Site = require 'views/site'
 Header = require 'views/header'
 Footer = require 'views/footer'
 class SiteController extends Chaplin.Controller
-  beforeAction:
-    '.*': ->
-      # Compose the Site view, which is a simple 3-row stacked layout that
-      # provides the header, footer, and body regions
-      @compose 'site', Site
+  beforeAction: ->
+    # Compose the Site view, which is a simple 3-row stacked layout that
+    # provides the header, footer, and body regions
+    @compose 'site', Site
 
-      # Compose the Header view, which binds itself to whatever container
-      # is exposed in Site under the header region
-      @compose 'header', Header, region: 'header'
+    # Compose the Header view, which binds itself to whatever container
+    # is exposed in Site under the header region
+    @compose 'header', Header, region: 'header'
 
-      # Likewise for the footer region
-      @compose 'footer', Footer, region: 'footer'
+    # Likewise for the footer region
+    @compose 'footer', Footer, region: 'footer'
 
 
 # controllers/index_controller.coffee
@@ -59,8 +59,8 @@ Index = require 'views/index'
 SiteController = require 'controllers/site_controller'
 class IndexController extends SiteController
   show: ->
-      # Instantiate this simple index view at the body region
-      @view = new Index, region: 'body'
+    # Instantiate this simple index view at the body region
+    @view = new Index region: 'body'
 
 
 # controllers/about_me_controller.coffee
@@ -68,29 +68,87 @@ AboutMe = require 'views/aboutme'
 SiteController = require 'controllers/site_controller'
 class AboutMeController extends SiteController
   show: ->
-      # Instantiate this simple about me view at the body region
-      @view = new AboutMe, region: 'body'
+    # Instantiate this simple about me view at the body region
+    @view = new AboutMe region: 'body'
+```
+
+```javascript
+// JavaScript
+// routes.js
+function(match) {
+  match('login', 'login#show');
+  match('', 'index#show');
+  match('about', 'about#show');
+}
+
+// controllers/login_controller.js
+var Login = require('views/login');
+var LoginController = Chaplin.Controller.extend({
+  show: function() {
+    // Simple view, just want to show the login screen.
+    this.view = new Login();
+  }
+});
+
+// controllers/site_controller.js
+var Site = require('views/site');
+var Header = require('views/header');
+var Footer = require('views/footer');
+var SiteController = Chaplin.Controller.extend({
+  beforeAction: function() {
+    // Compose the Site view, which is a simple 3-row stacked layout that
+    // provides the header, footer, and body regions
+    this.compose('site', Site);
+
+    // Compose the Header view, which binds itself to whatever container
+    // is exposed in Site under the header region
+    this.compose('header', Header, {region: 'header'});
+
+    // Likewise for the footer region
+    this.compose('footer', Footer, {region: 'footer'});
+  }
+});
+
+// controllers/index_controller.js
+var Index = require('views/index');
+var SiteController = require('controllers/site_controller');
+var IndexController = SiteController.extend({
+  show: function() {
+    // Instantiate this simple index view at the body region.
+    this.view = new Index({region: 'body'});
+  }
+});
+
+// controllers/about_me_controller.js
+var AboutMe = require('views/aboutme');
+var SiteController = require('controllers/site_controller');
+var AboutMeController = SiteController.extend({
+  show: function() {
+    // Instantiate this simple about me view at the body region.
+    this.view = new AboutMe({region: 'body'});
+  }
+});
 ```
 
 Given the controllers above here is what would happen each time the URL is
 routed:
 
 ```coffeescript
-route 'login'
+route('login')
 # 'views/login' is initialized and rendered
 
-route ''
+route('')
 # 'views/site' is initialized and rendered
 # 'views/header' is initialized and rendered
 # 'views/footer' is initialized and rendered
 # 'views/index' is initialized and rendered
 # 'views/login' is disposed
 
-route 'about'
+route('about')
 # 'views/aboutme' is initialized and rendered
 # 'views/index' is disposed
 
-route 'login'
+route('login')
 # 'views/login' is initialized and rendered
 # 'views/index' is disposed
 # 'views/footer' is disposed
@@ -115,6 +173,7 @@ the compose method (be it a view or an object with properties that have
 dispose methods).
 
 ```coffeescript
+# CoffeeScript
   @compose 'something-strange',
     compose: ->
       @model = new Model {id: 42}
@@ -122,4 +181,17 @@ dispose methods).
       @model.fetch()
 
     check: -> @model.id is 42
+```
+
+```javascript
+// JavaScript
+  this.compose('something-strange', {
+    compose: function() {
+      this.model = new Model({id: 42});
+      this.view = new View({model: this.model});
+      this.model.fetch();
+    }
+
+    check: function() {return this.model.id === 42;}
+  });
 ```

@@ -10,7 +10,7 @@ $ = Backbone.$
 
 module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Specifies if current element should be kept in DOM after disposal.
   keepElement: false
@@ -76,8 +76,13 @@ module.exports = class View extends Backbone.View
   constructor: (options) ->
     # Copy some options to instance properties.
     if options
-      _(this).extend _.pick options, [
-        'autoAttach', 'autoRender', 'container', 'containerMethod', 'region'
+      _.extend this, _.pick options, [
+        'autoAttach'
+        'autoRender'
+        'container'
+        'containerMethod'
+        'region'
+        'regions'
       ]
 
     # Wrap `render` so `attach` is called afterwards.
@@ -93,6 +98,10 @@ module.exports = class View extends Backbone.View
       @attach arguments... if @autoAttach
       # Return the view.
       this
+
+    # Initialize subviews collections.
+    @subviews = []
+    @subviewsByName = {}
 
     # Call Backbone’s constructor.
     super
@@ -239,8 +248,8 @@ module.exports = class View extends Backbone.View
   # Getting or adding a subview.
   subview: (name, view) ->
     # Initialize subviews collections if they don’t exist yet.
-    subviews = @subviews ?= []
-    byName = @subviewsByName ?= {}
+    subviews = @subviews
+    byName = @subviewsByName
 
     if name and view
       # Add the subview, ensure it’s unique.
@@ -255,8 +264,8 @@ module.exports = class View extends Backbone.View
   # Removing a subview.
   removeSubview: (nameOrView) ->
     return unless nameOrView
-    subviews = @subviews ?= []
-    byName = @subviewsByName ?= {}
+    subviews = @subviews
+    byName = @subviewsByName
 
     if typeof nameOrView is 'string'
       # Name given, search for a subview by name.
@@ -362,13 +371,10 @@ module.exports = class View extends Backbone.View
     @unregisterAllRegions()
 
     # Dispose subviews.
-    subview.dispose() for subview in @subviews if @subviews?
+    subview.dispose() for subview in @subviews
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
-
-    # Unbind all referenced handlers.
-    @stopListening()
 
     # Remove all event handlers on this module.
     @off()
@@ -378,10 +384,12 @@ module.exports = class View extends Backbone.View
       # Unsubscribe from all DOM events.
       @undelegateEvents()
       @undelegate()
+      # Unbind all referenced handlers.
+      @stopListening()
     else
       # Remove the topmost element from DOM. This also removes all event
       # handlers from the element and all its children.
-      @$el.remove()
+      @remove()
 
     # Remove element references, options,
     # model/collection references and subview lists.

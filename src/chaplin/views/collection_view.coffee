@@ -95,7 +95,7 @@ module.exports = class CollectionView extends View
   constructor: (options) ->
     # Apply options to view instance.
     if (options)
-      _(this).extend _.pick options, ['renderItems', 'itemView']
+      _.extend this, _.pick options, ['renderItems', 'itemView']
 
     # Initialize list for visible items.
     @visibleItems = []
@@ -242,7 +242,7 @@ module.exports = class CollectionView extends View
   # Filters only child item views from all current subviews.
   getItemViews: ->
     itemViews = {}
-    if @subviewsByName
+    if @subviews.length > 0
       for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
         itemViews[name.slice(9)] = view
     itemViews
@@ -259,7 +259,7 @@ module.exports = class CollectionView extends View
     filterCallback ?= @filterCallback
 
     # Show/hide existing views.
-    unless _(@getItemViews()).isEmpty()
+    unless _.isEmpty @getItemViews()
       for item, index in @collection.models
 
         # Apply filter to the item.
@@ -452,7 +452,7 @@ module.exports = class CollectionView extends View
   updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
     visibilityChanged = false
 
-    visibleItemsIndex = _(@visibleItems).indexOf item
+    visibleItemsIndex = _.indexOf @visibleItems, item
     includedInVisibleItems = visibleItemsIndex isnt -1
 
     if includedInFilter and not includedInVisibleItems

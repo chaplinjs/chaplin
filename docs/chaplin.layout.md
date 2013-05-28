@@ -7,7 +7,7 @@
 ### initialize([options={}])
 
 * **options**:
-    * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*
+    * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*. If `false`y, chaplin won’t route links at all.
     * **skipRouting**: if you want to skip the internal routing in some situation. Can take the following value:
         * selector: check if the activated link matches the selector.
         * function: check the return value. Return `true` to continue routing, return `false` to stop routing. The path and the elements are passed as parameters. Example: `function(href, el) { return href == 'bla'; }`
@@ -59,6 +59,13 @@ To register app-wide events, you can define them in the `events` hash. It works 
 If you want to route links internally, you can use the `events` hash with the `openLink` function like so:
 
 ```coffeescript
+# CoffeeScript
+events:
+  'click a': 'openLink'
+```
+
+```javascript
+// JavaScript
 events: {
   'click a': 'openLink'
 }
@@ -67,30 +74,44 @@ events: {
 To open all external links (different hostname) in a new window, you can set `openExternalLinksInNewWindow` to true when initializing `Chaplin.Layout` in your `Application`:
 
 ```coffeescript
+# CoffeeScript
 class MyApplication extends Chaplin.Application
-
   initialize: ->
     # ...
-    @initLayout
-      openExternalLinksInNewWindow: true
+    @initLayout openExternalLinksInNewWindow: true
 ```
 
-To add a custom check whether or not a link should be open internally, you can pass the `linkTest` function when initializing `Chaplin.Layout` in your `Application`:
+```javascript
+// JavaScript
+var MyApplication = Chaplin.Application.extend({
+  initialize: function() {
+    // ...
+    this.initLayout({openExternalLinksInNewWindow: true});
+  }
+});
+```
+
+To add a custom check whether or not a link should be open internally, you can override the `isExternalLink` method:
 
 ```coffeescript
-class MyApplication extends Chaplin.Application
+# CoffeeScript
+class Layout extends Chaplin.Layout
+  isExternalLink: (href) -> # some test on the href variable
+```
 
-  initialize: ->
-    # ...
-    @initLayout
-      linkTest: (href) -> # some test on the href variable
+```javascript
+// JavaScript
+var Layout = Chaplin.Layout.extend({
+  isExternalLink: function(href) {} # some test on the href variable
+});
 ```
 
 ### View loading
 
-There is nothing to do, the Layout is listening to the `beforeControllerDispose` and `dispatcher:dispatch` and will trigger the function when a new route is called. If you are not happing with the site scrolling to the top of the page on each view load, you can set the `scrollTo` option when initializing `Chaplin.Layout` in your `Application`:
+There is nothing to do, the Layout is listening to the `beforeControllerDispose` and `dispatcher:dispatch` and will trigger the function when a new route is called. If you are not happy with the site scrolling to the top of the page on each view load, you can set the `scrollTo` option when initializing `Chaplin.Layout` in your `Application`:
 
 ```coffeescript
+# CoffeeScript
 class MyApplication extends Chaplin.Application
 
   initialize: ->
@@ -99,4 +120,18 @@ class MyApplication extends Chaplin.Application
       scrollTo: [10, 30] # will scroll to x=10px and y=30px.
       # OR
       scrollTo: false    # deactivate the scroll
+```
+
+```javascript
+// JavaScript
+var MyApplication = Chaplin.Application.extend({
+  initialize: function() {
+    // ...
+    this.initLayout({
+      scrollTo: [10, 30] // will scroll to x=10px and y=30px.
+      // OR
+      scrollTo: false    // deactivate the scroll
+    });
+  }
+});
 ```

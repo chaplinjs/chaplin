@@ -15,7 +15,7 @@ module.exports = class Application
   @extend = Backbone.Model.extend
 
   # Mixin an `EventBroker` for **publish/subscribe** functionality.
-  _(@prototype).extend EventBroker
+  _.extend @prototype, EventBroker
 
   # Site-wide title that is mapped to HTML `title` tag.
   title: ''
@@ -28,8 +28,47 @@ module.exports = class Application
   layout: null
   router: null
   composer: null
+  initialized: false
 
-  initialize: ->
+  constructor: (options = {}) ->
+    @initialize options
+
+  initialize: (options = {}) ->
+    # Check if app is already initialized.
+    if @initialized
+      throw new Error 'Application#initialize: App was already initialized'
+
+    # Initialize core components.
+    # ---------------------------
+
+    # Register all routes.
+    # You might pass Router/History options as the second parameter.
+    # Chaplin enables pushState per default and Backbone uses / as
+    # the root per default. You might change that in the options
+    # if necessary:
+    # @initRouter routes, pushState: false, root: '/subdir/'
+    @initRouter options.routes, options
+
+    # Dispatcher listens for routing events and initialises controllers.
+    @initDispatcher options
+
+    # Layout listens for click events & delegates internal links to router.
+    @initLayout options
+
+    # Composer grants the ability for views and stuff to be persisted.
+    @initComposer options
+
+    # Mediator is a global message broker which implements pub / sub pattern.
+    @initMediator()
+
+    # Actually start routing.
+    @startRouting()
+
+    # Mark app as initialized.
+    @initialized = true
+
+    # Freeze the application instance to prevent further changes.
+    Object.freeze? this
 
   # **Chaplin.Dispatcher** sits between the router and controllers to listen
   # for routing events. When they occur, Chaplin.Dispatcher loads the target
@@ -52,6 +91,15 @@ module.exports = class Application
 
   initComposer: (options = {}) ->
     @composer = new Composer options
+
+  # **Chaplin.mediator** is a singleton that serves as the sole communication
+  # channel for all parts of the application. It should be sealed so that its
+  # misuse as a kitchen sink is prohibited. If you do want to give modules
+  # access to some shared resource, however, add it here before sealing the
+  # mediator.
+
+  initMediator: ->
+    mediator.seal()
 
   # **Chaplin.Router** is responsible for observing URL changes. The router
   # is a replacement for Backbone.Router and *does not inherit from it*
@@ -79,10 +127,13 @@ module.exports = class Application
     # Am I already disposed?
     return if @disposed
 
+    # Check if object is already frozen.
+    frozen = Object.isFrozen? this
+
     properties = ['dispatcher', 'layout', 'router', 'composer']
     for prop in properties when this[prop]?
       this[prop].dispose()
-      delete this[prop]
+      delete this[prop] unless frozen
 
     @disposed = true
 

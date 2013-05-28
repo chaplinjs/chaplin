@@ -32,6 +32,7 @@ Gets the whole chain of object prototypes.
 Get all property versions from object’s prototype chain. Usage:
 
 ```coffeescript
+# CoffeeScript
 class A
   prop: 1
 class B extends A
@@ -41,6 +42,18 @@ b = new B
 getAllPropertyVersions b, 'prop'  # => [1, 2]
 ```
 
+```javascript
+// JavaScript
+function A() {}
+A.prototype.prop = 1;
+
+function B() {}
+B.prototype = Object.create(A);
+
+var b = new B;
+getAllPropertyVersions(b, 'prop'); // => [1, 2]
+```
+
 ## upcase(str)
 * **String str**
 * **returns upcased String**
@@ -48,8 +61,15 @@ getAllPropertyVersions b, 'prop'  # => [1, 2]
 Ensure the first character of **str** is capitalized
 
 ```coffeescript
+# CoffeeScript
 utils.upcase 'larry bird' # 'Larry bird'
 utils.upcase 'AIR'        # 'AIR'
+```
+
+```javascript
+// JavaScript
+utils.upcase('larry bird'); // 'Larry bird'
+utils.upcase('AIR');        // 'AIR'
 ```
 
 ## modifierKeyPressed

@@ -9,8 +9,8 @@ define [
     machine = null
     beforeEach ->
       machine = {}
-      _(machine).extend Backbone.Events
-      _(machine).extend SyncMachine
+      _.extend machine, Backbone.Events
+      _.extend machine, SyncMachine
 
     it 'should change its state', ->
       expect(machine.syncState()).to.be 'unsynced'
