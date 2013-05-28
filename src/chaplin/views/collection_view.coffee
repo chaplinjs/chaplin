@@ -329,13 +329,6 @@ module.exports = class CollectionView extends View
 
     @$list.html fragment
 
-    # Tell the views that it was added to its parent.
-    for view in itemViews
-      view.trigger 'addedToParent'
-
-    # Trigger `visibilityChange` event manually.
-    @trigger 'visibilityChange', @visibleItems
-
   # Instantiate and render an item using the `viewsByCid` hash as a cache.
   renderItem: (item) ->
     # Get the existing view.
