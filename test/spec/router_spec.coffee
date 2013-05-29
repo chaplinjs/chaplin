@@ -274,8 +274,7 @@ define [
           constraints:
             id: /^\d+$/
             stuff: /^\d+$/
-
-        expect(-> router.route '/constraints/123-foo').to.throwError()
+            stuff2: /\w/
 
         router.route '/constraints/123'
         expect(spy).was.called()
