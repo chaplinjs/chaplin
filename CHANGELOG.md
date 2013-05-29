@@ -1,4 +1,13 @@
-# Chaplin 0.9.1 (unreleased)
+# Chaplin 0.10.0 (unreleased)
+* Improved `Chaplin.Application`:
+    * Added default `Application#initialize` functionality.
+    * Application is now initialized by default with `new Application`
+      constructor method instead of `Application#initialize`.
+* Improved `Chaplin.Router`:
+    * Early error is now thrown for `!router:route` and `!router:routeByName`
+      methods when nothing is matched.
+* Improved `Chaplin.View`:
+    * `regions` option can now be passed to constructor.
 * Fix controller disposal after redirect.
 
 # Chaplin 0.9.0 (4 May 2013)
