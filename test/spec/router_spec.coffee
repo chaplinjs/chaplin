@@ -266,6 +266,22 @@ define [
 
         mediator.unsubscribe 'router:match', spy
 
+
+      it 'should impose only used constraints', ->
+        spy = sinon.spy()
+        mediator.subscribe 'router:match', spy
+        router.match 'constraints/:id', 'null#null',
+          constraints:
+            id: /^\d+$/
+            stuff: /^\d+$/
+
+        expect(-> router.route '/constraints/123-foo').to.throwError()
+
+        router.route '/constraints/123'
+        expect(spy).was.called()
+
+        mediator.unsubscribe 'router:match', spy
+
       it 'should deny regular expression as pattern', ->
         expect(-> router.match /url/, 'null#null').to.throwError()
 
