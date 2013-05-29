@@ -92,17 +92,14 @@ module.exports = class Router # This class does not extend Backbone.Router.
         handler.callback path, options
         return true
 
-    if options.silent
-      false
-    else
-      throw new Error 'Router#route: request was not routed'
+    throw new Error 'Router#route: request was not routed'
 
   # Find the URL for given criteria using the registered routes and
   # provided parameters. The criteria may be just the name of a route
   # or an object containing the name, controller, and/or action.
   # Warning: this is usually **hot** code in terms of performance.
   # Returns the URL string or false.
-  reverse: (criteria, params, silent) ->
+  reverse: (criteria, params) ->
     root = @options.root
 
     if params? and typeof params isnt 'object'
@@ -121,10 +118,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
         return url
 
     # We didn't get anything.
-    if silent
-      false
-    else
-      throw new Error 'Router#reverse: invalid route specified'
+    throw new Error 'Router#reverse: invalid route specified'
 
   # Handler for the global !router:route event.
   routeHandler: (path, options, callback) ->
@@ -147,7 +141,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       callback = options
       options = {}
 
-    path = @reverse name, params, options?.silent
+    path = @reverse name, params
     routed = @route path, options
     callback? routed
 
