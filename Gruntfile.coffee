@@ -441,7 +441,7 @@ module.exports = (grunt) ->
       ['init', '.']
       ['add', '.'],
       ['commit', '-m', "Add docs from #{(new Date).toISOString()}"],
-      ['remote', 'add', 'origin', 'git@github.com:chaplin/chaplin.git'],
+      ['remote', 'add', 'origin', 'git@github.com:chaplinjs/chaplin.git'],
       ['push', 'origin', 'master:refs/heads/gh-pages', '--force']
     ]
     gitRunner = (args, next) ->
