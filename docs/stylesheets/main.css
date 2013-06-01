@@ -92,9 +92,11 @@ form.language .active:after {
   border-bottom-color: #666;
 }
 form.language input {
-  display: none;
+  position: relative;
+  left: -10000px;
 }
 form.language label {
+  overflow: hidden;
   line-height: 32px;
   text-indent: 5%;
   cursor: pointer;
@@ -123,7 +125,8 @@ form.language .javascript {
   .sidebar {
     position: fixed;
     height: 100%;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   #content {
     margin-left: 25.64%;
