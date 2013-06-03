@@ -197,13 +197,14 @@ var SomeView = View.extend({
 ```
 
 <h3 class="module-member" id="delegate">delegate(eventType, [selector], handler)</h3>
-* **String eventType - jQuery DOM event, (e.g. 'click', 'focus', etc )**,
+* **String eventType - jQuery DOM event (e.g. 'click', 'focus', etc.)**,
 * **String selector (optional, if not set will bind to the view's $el)**,
 * **function handler (automatically bound to `this`)**
+* **returns the bound handler function**
 
 Backbone's `events` hash doesn't work well with inheritance, so Chaplin provides the `delegate` method for this purpose. `delegate` is a wrapper for jQuery's `@$el.on` method, and has the same method signature.
 
-For events, affecting the whole view the signature is `delegate(eventType, handler)`:
+For events affecting the whole view the signature is `delegate(eventType, handler)`:
 
 ```coffeescript
 @delegate('click', @clicked)
@@ -221,6 +222,36 @@ For events only affecting an element or colletion of elements in the view, pass 
 
 ```javascript
 this.delegate('click', 'button.confirm', this.confirm);
+```
+
+### undelegate(eventType, [selector], handler)
+* **String eventType - jQuery DOM event (e.g. 'click', 'focus', etc.)**,
+* **String selector (optional, if not set will bind to the view's $el)**,
+* **function handler (automatically bound to `this`)**
+* **returns the bound handler function**
+
+Allows to remove DOM event handlers that have been added using `delegate`.
+`undelegate` is a wrapper for jQuery's `@$el.off` method, and has the same
+method signature.
+
+Since `delegate` automatically binds the handler function to the view, you need
+to pass the bound handler to remove it. This is a new function and not the same
+as the original handler passed to `delegate`.
+
+Luckily, `delegate` returns the bound handler so you can save it for later removal:
+
+```coffeescript
+# CoffeeScript
+@boundConfirm = @delegate 'click', 'button.confirm', @confirm
+# Later:
+@undelegate 'click', 'button.confirm', @boundConfirm
+```
+
+```coffeescript
+// JavaScript
+this.boundConfirm = this.delegate('click', 'button.confirm', this.confirm);
+// Later:
+this.undelegate('click', 'button.confirm', this.boundConfirm);
 ```
 
 ## Regions

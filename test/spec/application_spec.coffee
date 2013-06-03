@@ -13,8 +13,14 @@ define [
   describe 'Application', ->
     app = null
 
+    getApp = (noInit) ->
+      App = if noInit
+        class extends Application then initialize: ->
+      else
+        Application
+
     beforeEach ->
-      app = new Application()
+      app = new (getApp true)
 
     afterEach ->
       app.dispose()
@@ -27,7 +33,7 @@ define [
       for own name, value of EventBroker
         expect(app[name]).to.be EventBroker[name]
 
-    it 'should initialize', ->
+    it 'should have initialize function', ->
       expect(app.initialize).to.be.a 'function'
       app.initialize()
 
@@ -66,6 +72,11 @@ define [
       app.initRouter (->), root: '/', pushState: false
       app.startRouting()
       expect(Backbone.History.started).to.be true
+      Backbone.history.stop()
+
+    it 'should throw an error on double-init', ->
+      expect(-> (new (getApp false)).initialize()).to.throwError()
+      Backbone.history.stop()
 
     it 'should dispose itself correctly', ->
       expect(app.dispose).to.be.a 'function'
