@@ -162,11 +162,11 @@ define [
       spy = sinon.spy()
       handler = view.delegate 'click', spy
       expect(handler).to.be.a 'function'
-      $(view.el).trigger 'click'
+      view.$el.trigger 'click'
       expect(spy).was.called()
 
       view.undelegate()
-      $(view.el).trigger 'click'
+      view.$el.trigger 'click'
       expect(spy.callCount).to.be 1
 
       view.render()
@@ -187,14 +187,31 @@ define [
     it 'should register and remove multiple user input event handlers', ->
       spy = sinon.spy()
       handler = view.delegate 'click keypress', spy
-      $(view.el).trigger 'click'
-      $(view.el).trigger 'keypress'
+      view.$el.trigger 'click'
+      view.$el.trigger 'keypress'
       expect(spy).was.calledTwice()
 
       view.undelegate()
-      $(view.el).trigger 'click'
-      $(view.el).trigger 'keypress'
+      view.$el.trigger 'click'
+      view.$el.trigger 'keypress'
       expect(spy).was.calledTwice()
+
+    it 'should allow undelegating one event', ->
+      spy = sinon.spy()
+      spy2 = sinon.spy()
+      handler = view.delegate 'click keypress', spy
+      handler2 = view.delegate 'focusout', spy2
+      view.$el.trigger 'click'
+      view.$el.trigger 'keypress'
+      expect(spy).was.calledTwice()
+      expect(spy2).was.notCalled()
+
+      view.undelegate 'click keypress'
+      view.$el.trigger 'click'
+      view.$el.trigger 'keypress'
+      view.$el.trigger 'focusout'
+      expect(spy).was.calledTwice()
+      expect(spy2).was.calledOnce()
 
     it 'should check delegate parameters', ->
       expect(-> view.delegate 1, 2, 3).to.throwError()
