@@ -1,26 +1,24 @@
-# [Chaplin.Composer](../src/chaplin/composer.coffee)
+---
+layout: default
+title: Chaplin.Composer
+module_path: src/chaplin/composer.coffee
+---
 
 ## Overview
 
-Grants the ability for views (and related data) to be persisted beyond one
-controller action.
+Grants the ability for views (and related data) to be persisted beyond one controller action.
 
-If a view is composed in a controller action method it will be instantiated
-and rendered if the view has not been composed in the current or previous
-action methods.
+If a view is composed in a controller action method it will be instantiated and rendered if the view has not been composed in the current or previous action methods.
 
-If a view was composed in the previous action method and is not composed
-in the current action method, it will be disposed and removed from the DOM.
+If a view was composed in the previous action method and is not composed in the current action method, it will be disposed and removed from the DOM.
 
 ## Example
 
-A common use case is a login page. This login page is a simple centered form.
-However, the main application needs both header and footer controllers.
+A common use case is a login page. This login page is a simple centered form.  However, the main application needs both header and footer controllers.
 
 Here is this use case demonstrated in coffeescript pseudocode:
 
 ```coffeescript
-# CoffeeScript
 # routes.coffee
 (match) ->
   match 'login', 'login#show'
@@ -73,7 +71,6 @@ class AboutMeController extends SiteController
 ```
 
 ```javascript
-// JavaScript
 // routes.js
 function(match) {
   match('login', 'login#show');
@@ -130,8 +127,7 @@ var AboutMeController = SiteController.extend({
 });
 ```
 
-Given the controllers above here is what would happen each time the URL is
-routed:
+Given the controllers above here is what would happen each time the URL is routed:
 
 ```coffeescript
 route('login')
@@ -159,21 +155,14 @@ route('login')
 
 ## Long form
 
-By default, when a controller requests a view to be composed, the composer
-checks if the view instance exists and the options hash is equal. If that is
-true the view is destroyed and composed.
+By default, when a controller requests a view to be composed, the composer checks if the view instance exists and the options hash is equal. If that is true the view is destroyed and composed.
 
 By default, the compose method only allows for composing views.
 
-The following example shows another way to use the compose method to allow for
-just about anything. The check method should return true when it wishes
-the composition to be disposed and the compose method to be called.
-The composer will track and ensure proper disposal of whatever is returned from
-the compose method (be it a view or an object with properties that have
+The following example shows another way to use the compose method to allow for just about anything. The check method should return true when it wishes the composition to be disposed and the compose method to be called. The composer will track and ensure proper disposal of whatever is returned from the compose method (be it a view or an object with properties that have
 dispose methods).
 
 ```coffeescript
-# CoffeeScript
   @compose 'something-strange',
     compose: ->
       @model = new Model {id: 42}
@@ -184,7 +173,6 @@ dispose methods).
 ```
 
 ```javascript
-// JavaScript
   this.compose('something-strange', {
     compose: function() {
       this.model = new Model({id: 42});

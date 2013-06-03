@@ -1,4 +1,7 @@
-# Memory Management and Object Disposal
+---
+layout: default
+title: Memory Management and Object Disposal
+---
 
 A core concern of the Chaplin architecture is a proper memory management. While there isn’t a broad discussion about garbage collection in JavaScript applications, it’s an important topic. Since Backbone provides little out of the box to manage memory, Chaplin extends Backbone's Model, Collection and View classes to implement a powerful disposal process which ensures that each controller, model, collection and view cleans up after itself.
 

@@ -1,91 +1,95 @@
-# [Chaplin.CollectionView](../src/chaplin/views/collection_view.coffee)
+---
+layout: default
+title: Chaplin.CollectionView
+module_path: src/chaplin/views/collection_view.coffee
+---
 
 The `CollectionView` is responsible for displaying collections. For every item in a collection, it instantiates a given item view and inserts it into the DOM. It reacts to collection change events (`add`, `remove` and `reset`) and provides basic filtering, caching of views, fallback content and loading indicators.
 
-## Properties of `Chaplin.CollectionView`
+<h2 id="properties">Properties</h2>
 
-### itemView
+<h3 class="module-member" id="itemView">itemView</h3>
 * **a View that extends from Chaplin.View (default null)**
 
   Your item View class, which will represent the individual items
   in the collection
 
-### autoRender
+<h3 class="module-member" id="autoRender">autoRender</h3>
 * **boolean (default true)**
 
   Render the view automatically on instantiation. This overrides
   Chaplin.View's default of false. Your inheriting classes (and
   instatiated objects via the options hash) can set their own value.
 
-### renderItems
+<h3 class="module-member" id="renderItems">renderItems</h3>
 * **boolean (default true)**
 
   Should the view automatically render all items on instantiation?
 
   Can be passed during instantiation via the options hash.
 
-### animationDuration
+<h3 class="module-member" id="animationDuration">animationDuration</h3>
 * **int, duration in ms (default 500)**
 
   When new items are added, their views are faded in over a period of
   `animationDuration` milliseconds. Set to 0 to disable fade in.
 
-### listSelector
+<h3 class="module-member" id="listSelector">listSelector</h3>
 * **string (default null)**
 
   Specifies a selector for container of all item views.
   If empty, current view $el is used.
 
-### itemSelector
+<h3 class="module-member" id="itemSelector">itemSelector</h3>
 * **string (default null)**
 
   Selector which identifies child elements belonging to collection.
   If empty, all children of listSelector are considered.
 
-### loadingSelector
+<h3 class="module-member" id="loadingSelector">loadingSelector</h3>
 * **string (default null)**
 
   Selector for a loading indicator element which is shown
   while the collection is syncing.
 
-### fallbackSelector
+<h3 class="module-member" id="fallbackSelector">fallbackSelector</h3>
 * **string (default null)**
 
   Selector for a fallback element which is shown if the collection is empty.
 
-### useCssAnimation
+<h3 class="module-member" id="useCssAnimation">useCssAnimation</h3>
 * **boolean (default false)**
 
   By default, fading in is done by javascript function which can be
   slow on mobile devices. CSS animations are faster,
   but require user’s manual definitions.
 
-### animationStartClass
+<h3 class="module-member" id="animationStartClass">animationStartClass</h3>
 * **string (default `animated-item-view`)**
 
   CSS classes that will be used when hiding / showing child views starts.
 
-### animationEndClass
+<h3 class="module-member" id="animationEndClass">animationEndClass</h3>
 * **string (default `animated-item-view-end`)**
 
   CSS classes that will be used when hiding / showing child views ends.
 
-## Methods of `Chaplin.CollectionView`
+<h2 id="methods">Methods</h2>
   Most of CollectionView's methods should not need to be called
   externally. Modifying the underlying collection will automatically
   update the items on screen (for instance, fetching more models
   from the server), as the view listens for `add`, `remove`, and
   `reset` events by default.
 
-### initialize([options={}])
+<h3 class="module-member" id="initialize">initialize([options={}])</h3>
 * **options**
     * **renderItems** see [renderItems](#renderItems)
     * **itemView** see [itemView](#itemView)
     * **filterer** automatically calls [filter](#filter) if set
-    * all [View](./chaplin.view.md#initialize) and standard
-    [Backbone.View](http://backbonejs.org/#View-constructor) options
+    * all [View](./chaplin.view.html#initialize) and standard
+      [Backbone.View](http://backbonejs.org/#View-constructor) options
 
-### filter([filterer, [filterCallback]])
+<h3 class="module-member" id="filter">filter([filterer, [filterCallback]])</h3>
 * **function filterer (see below)**
 * **function filterCallback (see below)**
 
@@ -94,17 +98,18 @@ The `CollectionView` is responsible for displaying collections. For every item i
 
   Called with no arguments is a no-op
 
-### filterer(item, index)
+<h3 class="module-member" id="filterer">filterer(item, index)</h3>
 * **Model item**
-* **int index of ***item*** in collection**
+* **int index of item in collection**
 * **returns boolean: is item included?**
 
   A iterator function that determines which items are shown. Can be passed
   in during instantiation via `options`. The function is optional; if not
   set all items will be included.
 
+#### Example
+
 ```coffeescript
-# CoffeeScript
 filterer: (item, index) ->
   item.get 'color' is 'red'
 
@@ -112,11 +117,9 @@ filterer: (item, index) ->
 
 filterer: (item, index) ->
   index < 20 if @limit? else true
-
 ```
 
 ```javascript
-// JavaScript
 filterer: function(item, index) {
   return item.get('color') === 'red';
 }
@@ -127,7 +130,7 @@ filterer: function(item, index) {
 }
 ```
 
-### filterCallback(view, included)
+<h3 class="module-member" id="filterCallback">filterCallback(view, included)</h3>
 * **View view**
 * **boolean included**
 
@@ -135,8 +138,9 @@ filterer: function(item, index) {
 
   Default is to hide excluded views
 
+#### Example
+
 ```coffeescript
-# CoffeeScript
 filterCallback: (view, included) ->
   view.$el.toggleClass('active', included)
 
@@ -148,7 +152,6 @@ filterCallback: (view, included) ->
 ```
 
 ```javascript
-// JavaScript
 filterCallback: function(view, included) {
   view.$el.toggleClass('active', included);
 }
@@ -161,33 +164,33 @@ filterCallback: function(view, included) {
 }
 ```
 
-### addCollectionListeners()
+<h3 class="module-member" id="addCollectionListeners">addCollectionListeners()</h3>
 
   By default adds event listeners for `add`, `remove`, and `reset` events. Can
   be extended to track more events.
 
-### getItemViews()
+<h3 class="module-member" id="getItemViews">getItemViews()</h3>
 
   Returns a hash of views, keyed by their `cid` property
 
-### renderAllItems()
+<h3 class="module-member" id="renderAllItems">renderAllItems()</h3>
 
   Render and insert all items in collection, triggering `visibilityChange` event
 
-### renderItem(model)
+<h3 class="module-member" id="renderItem">renderItem(model)</h3>
 * **Model item**
 
   Instantiate and render the view for an item using the `viewsByCid`
   hash as a cache.
 
-### initItemView(model)
+<h3 class="module-member" id="initItemView">initItemView(model)</h3>
 * **Model model**
 
   Returns an instance of the view class (as determined by `@itemView`).
   Override this method to use several item view constructors depending
   on the model type or data.
 
-### insertView(item, view, [index], [enableAnimation])
+<h3 class="module-member" id="insertView">insertView(item, view, [index], [enableAnimation])</h3>
 * **Model item**
 * **View view**
 * **int index (if unset will search through collection)**
@@ -196,12 +199,12 @@ filterCallback: function(view, included) {
   Inserts a view into the list at the proper position, runs the `@filterer`
   function.
 
-### removeViewForItem(model)
+<h3 class="module-member" id="removeViewForItem">removeViewForItem(model)</h3>
 * **Model item**
 
   Remove the view for an item, triggering a `visibilityChange` event
 
-### updateVisibleItems(item, [includedInFilter], [triggerEvent])
+<h3 class="module-member" id="updateVisibleItems">updateVisibleItems(item, [includedInFilter], [triggerEvent])</h3>
 * **Model item**
 * **boolean includedInFilter**
 * **triggerEvent (default true)**
@@ -217,8 +220,9 @@ property. Standard View conventions like adding `@listenTo` handlers
 should still take place in `initialize`, but the majority of Collection-
 specific logic is handled by this class.
 
+#### Example
+
 ```coffeescript
-# CoffeeScript
 class LikesView extends CollectionView
   autoRender: true
   className: 'likes-list'
@@ -227,7 +231,6 @@ class LikesView extends CollectionView
 ```
 
 ```javascript
-// JavaScript
 var LikesView = CollectionView.extend({
   autoRender: true,
   className: 'likes-list',
@@ -236,7 +239,7 @@ var LikesView = CollectionView.extend({
 });
 ```
 
-### Examples
+### Real World Examples
 
 * [Ost.io PostsView](https://github.com/paulmillr/ostio/blob/master/app/views/post/posts-view.coffee)
 * [Facebook LikesView](https://github.com/chaplinjs/facebook-example/blob/master/coffee/views/likes_view.coffee)
