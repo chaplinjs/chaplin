@@ -424,6 +424,33 @@ module.exports = (grunt) ->
     'watch'
   ]
 
+  # Publish Documentation
+  # ---------------------
+  grunt.registerTask 'docs:publish', 'Publish docs to gh-pages branch.', ->
+    path = require('path')
+    temp = require('temp')
+
+    continuation = this.async()
+    tmpDirPath = temp.path()
+
+    grunt.file.recurse path.join('docs'), (abspath, rootdir, subdir, filename) ->
+      parent = if subdir then path.join(tmpDirPath, subdir) else tmpDirPath
+      grunt.file.mkdir parent
+      grunt.file.copy abspath, path.join(parent, filename)
+    gitArgs = [
+      ['init', '.']
+      ['add', '.'],
+      ['commit', '-m', "Add docs from #{(new Date).toISOString()}"],
+      ['remote', 'add', 'origin', 'git@github.com:chaplinjs/chaplin.git'],
+      ['push', 'origin', 'master:refs/heads/gh-pages', '--force']
+    ]
+    gitRunner = (args, next) ->
+      grunt.util.spawn {cmd: "git", args: args, opts: {cwd: tmpDirPath}}, (error, result, code) -> next(error)
+    grunt.util.async.forEachSeries gitArgs, gitRunner, ->
+      grunt.file.delete tmpDirPath, force: true
+      grunt.log.writeln "Published docs to gh-pages."
+      continuation()
+
   # Default
   # -------
   grunt.registerTask 'default', [
