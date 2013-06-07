@@ -159,9 +159,9 @@
 # Chaplin 0.6.0 (30 December 2012)
 * Updated required Backbone version to 0.9.9+.
 * Improved `Chaplin.Collection`:
-    * Removed `Collection#update` since this function is now provided
-      by Backbone itself. The `deep` option is now called `merge` and it
-      defaults to true.
+    * Removed `Collection#update` since this function is now provided by Backbone itself
+      (`Collection#update` in Backbone < 1.0, `Collection#set` in Backbone >= 1.0).
+      The `deep` option is now called `merge` and it defaults to true.
 * Improved `Chaplin.Controller`:
     * Added Rails-like before action filters to `Controller`s.
     * Added `Controller#redirectToRoute` which works like
