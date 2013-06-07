@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.View
 module_path: src/chaplin/views/view.coffee
+Chaplin: View
 ---
 
 Chaplin’s `View` class is a highly extended and adapted Backbone `View`. All views should inherit from this class to avoid repetition.
