@@ -5,8 +5,7 @@ define [
   'chaplin/models/collection'
   'chaplin/views/view'
   'chaplin/views/collection_view'
-  'chaplin/lib/sync_machine'
-], (_, jQuery, Model, Collection, View, CollectionView, SyncMachine) ->
+], (_, jQuery, Model, Collection, View, CollectionView) ->
   'use strict'
 
   describe 'CollectionView', ->
@@ -685,8 +684,6 @@ define [
 
       beforeEach ->
         createCollection()
-        # Mix in SyncMachine into Collection
-        _.extend collection, SyncMachine
 
         collectionView = new TemplatedCollectionView {collection}
 

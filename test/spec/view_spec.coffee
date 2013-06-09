@@ -7,8 +7,7 @@ define [
   'chaplin/models/model'
   'chaplin/models/collection'
   'chaplin/lib/event_broker'
-  'chaplin/lib/sync_machine'
-], (_, $, Backbone, mediator, View, Model, Collection, EventBroker, SyncMachine) ->
+], (_, $, Backbone, mediator, View, Model, Collection, EventBroker) ->
   'use strict'
 
   describe 'View', ->
@@ -379,23 +378,23 @@ define [
       expect(items[1]).to.be.an 'object'
       expect(items[1].bar).to.be 'bar'
 
-    it 'should add the SyncMachine state to the template data', ->
-      setModel()
-      _.extend model, SyncMachine
-      templateData = view.getTemplateData()
-      expect(templateData.synced).to.be false
-      model.beginSync()
-      model.finishSync()
-      templateData = view.getTemplateData()
-      expect(templateData.synced).to.be true
+    # it 'should add the SyncMachine state to the template data', ->
+    #   setModel()
+    #   _.extend model, SyncMachine
+    #   templateData = view.getTemplateData()
+    #   expect(templateData.synced).to.be false
+    #   model.beginSync()
+    #   model.finishSync()
+    #   templateData = view.getTemplateData()
+    #   expect(templateData.synced).to.be true
 
-    it 'should not cover existing SyncMachine properties', ->
-      setModel()
-      _.extend model, SyncMachine
-      model.set syncState: 'foo', synced: 'bar'
-      templateData = view.getTemplateData()
-      expect(templateData.syncState).to.be 'foo'
-      expect(templateData.synced).to.be 'bar'
+    # it 'should not cover existing SyncMachine properties', ->
+    #   setModel()
+    #   _.extend model, SyncMachine
+    #   model.set syncState: 'foo', synced: 'bar'
+    #   templateData = view.getTemplateData()
+    #   expect(templateData.syncState).to.be 'foo'
+    #   expect(templateData.synced).to.be 'bar'
 
     describe 'Events', ->
 
