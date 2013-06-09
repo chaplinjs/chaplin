@@ -2,7 +2,6 @@
 # Load all components and expose them.
 module.exports =
   Application:    require 'chaplin/application'
-  mediator:       require 'chaplin/mediator'
   Dispatcher:     require 'chaplin/dispatcher'
   Controller:     require 'chaplin/controllers/controller'
   Composer:       require 'chaplin/composer'
@@ -14,9 +13,8 @@ module.exports =
   CollectionView: require 'chaplin/views/collection_view'
   Route:          require 'chaplin/lib/route'
   Router:         require 'chaplin/lib/router'
-  Delayer:        require 'chaplin/lib/delayer'
   EventBroker:    require 'chaplin/lib/event_broker'
   helpers:        require 'chaplin/lib/helpers'
+  mediator:       require 'chaplin/mediator'
   support:        require 'chaplin/lib/support'
-  SyncMachine:    require 'chaplin/lib/sync_machine'
   utils:          require 'chaplin/lib/utils'
