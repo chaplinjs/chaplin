@@ -4,11 +4,9 @@ title: Chaplin.mediator
 module_path: src/chaplin/mediator.coffee
 ---
 
-As all modules are encapsulated and independent from each other, we need a way to make them communicate. That's the Mediator's role. The Mediator implement the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) (Pub/Sub) pattern to ensure loose coupling of application modules. That’s just a simple object which has per default three methods for global Publish/Subscribe: `subscribe`, `unsubscribe` and `publish`.
+It is one of the basic goals of Chaplin to enforce module encapsulation and independence and to direct communication through controlled channels. Chaplin’s `mediator` object is the enabler of this controlled communication. It implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) (pub/sub) pattern to ensure loose coupling of application modules, while still allowing for ease of information exchange. Instead of making direct use of other parts of the application, modules communicate by events, similar to how changes in the DOM are communicated to client-side code. Modules can listen for and react to events, but also publish events of their own to give other modules the chance to react. There are only three basic methods for this application-wide communication: `subscribe`, `unsubscribe` and `publish`.
 
-To inform other modules that something happened, a module doesn’t send messages directly (i.e. calling methods of specific objects). Instead, it publishes a message to the mediator without having to know who is listening. Other application modules might subscribe to these messages and react upon them.
-
-**Note:** If you want to give Pub/Sub functionality to a Class, also look at the [EventBroker](./chaplin.event_broker.html).
+**Note:** If you want to give local pub/sub functionality to a class, take a look at the [EventBroker](./chaplin.event_broker.html).
 
 
 <h2 id="methods">Methods</h2>
@@ -27,7 +25,7 @@ A wrapper for `Backbone.Events.trigger`. See Backbone [documentation](http://bac
 
 ## Usage
 
-Any module that need to publish or subscrib to messages to/from other modules must require `Chaplin` as a dependency.
+In any module that needs to communicate with other modules, access to the application-wide pub/sub system can be gained by requiring `Chaplin` as a dependency. The mediator object is then available as `Chaplin.mediator`.
 
 ```coffeescript
 define ['chaplin', 'otherdependency'], (Chaplin, OtherDependency) ->
@@ -37,7 +35,7 @@ define ['chaplin', 'otherdependency'], (Chaplin, OtherDependency) ->
 define(['chaplin', 'otherdependency'], function(Chaplin, OtherDependency) {})
 ```
 
-For example, if you have a session_controller that logs the user in, it will tell the mediator (which will tell it to interested modules) that the login happened by doing:
+For example, if you have a session controller for logging in users, it will tell the mediator that the login occurred:
 
 ```coffeescript
 Chaplin.mediator.publish 'login', user
@@ -47,7 +45,7 @@ Chaplin.mediator.publish 'login', user
 Chaplin.mediator.publish('login', user);
 ```
 
-Any module that is interested to know about the user login will subscribe to it by doing:
+The mediator will propagate this event to any module that was subscribed to the `'login'` event, as in this example:
 
 ```coffeescript
 Chaplin.mediator.subscribe 'login', @doSomething
@@ -57,7 +55,7 @@ Chaplin.mediator.subscribe 'login', @doSomething
 Chaplin.mediator.subscribe('login', this.doSomething);
 ```
 
-Finally, if this module needs to stop listening on the login event, it can just unsubscribe by doing:
+Finally, if this module needs to stop listening for the login event, it can simply unsubscribe at any time:
 
 ```coffeescript
 Chaplin.mediator.unsubscribe 'login', @doSomething
