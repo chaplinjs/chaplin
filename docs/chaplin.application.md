@@ -4,13 +4,7 @@ title: Chaplin.Application
 module_path: src/chaplin/application.coffee
 ---
 
-The **Chaplin.Application** object is a bootstrapper and a point of extension
-for the core modules of **Chaplin**: the **[Dispatcher](#initDispatcher)**, the
-**[Layout](#initLayout)**, the **[Router](#initRouter)**, and the
-**[Composer](#initComposer)**. The object is inteded to be extended by your
-application.  The `initialize` method of your derived class must initialize
-the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`,
-and then launching navigation with `startRouting`
+The **Chaplin.Application** object is a bootstrapper and a point of extension for the core modules of **Chaplin**: the **[Dispatcher](#initDispatcher)**, the **[Layout](#initLayout)**, the **[Router](#initRouter)**, and the **[Composer](#initComposer)**. The object is intended to be extended by your application.  The `initialize` method of your derived class must initialize the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`, and then launching navigation with `startRouting`.
 
 ```coffeescript
 Chaplin = require 'chaplin'
@@ -54,10 +48,7 @@ module.exports = Application;
 <h2 id="properties">Properties</h2>
 
 <h3 class="module-member" id="title">title</h3>
-This is the top-level title that is defaulted into the options hash
-forwarded to the layout module. The default title template of the layout
-module will append this value to the subtitle passed to the `!adjustTitle`
-event to construct the document title.
+This is the top-level title, handed to the layout module in the options hash. When using the [layout module](./chaplin.layout.html)’s default title template, the value for `title` will be appended to the subtitle passed to the `!adjustTitle` event in order to construct the document’s title.
 
 ```coffeescript
 # [...]
@@ -84,7 +75,7 @@ mediator.publish('!adjustTitle', 'Apple');
 <h3 class="module-member" id="initDispatcher">initDispatcher([options])</h3>
 Initializes the **dispatcher** module; forwards passed options to its contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.html)** for more information.
 
-To replace the dispatcher with a derived class (possibly with various extensions), you'd override the `initDispatcher` method and construct the dispatcher class as follows:
+To replace the dispatcher with a derived class (possibly with various extensions), you’d override the `initDispatcher` method and construct the dispatcher class as follows:
 
 ```coffeescript
 # [...]
@@ -107,12 +98,12 @@ var Application = Chaplin.Application.extend({
 ```
 
 <h3 class="module-member" id="initRouter">initRouter(routes, [options])</h3>
-Initializes the **router** module; forwards passed options to its constructor. This starts the routing off by checking the current URL against all defined routes and executes the matched handler. See **[Chaplin.Router](./chaplin.router.html)** for more information.
+Initializes the **router** module; forwards passed options to its constructor. This starts the routing off by checking the current URL against all defined routes and executing the matched handler. See **[Chaplin.Router](./chaplin.router.html)** for more information.
 
 * **routes**
   The routing function that contains the match invocations, normally located in `routes.coffee`.
 
-To replace the router with a derived class (possibly with various extensions), you'd override the `initRouter` method and construct the router class as follows (ensuring to start the routing process as well):
+To replace the router with a derived class (possibly with various extensions), you’d override the `initRouter` method and construct the router class as follows (ensuring to start the routing process as well):
 
 ```coffeescript
 # [...]
@@ -169,7 +160,7 @@ var Application = Chaplin.Application.extend({
 ```
 
 <h3 class="module-member" id="initLayout">initLayout([options])</h3>
-Initializes the **layout** module; forwards passed options to its constructor. See **[Chaplin.Layout](./chaplin.layout.html)** for more information.
+Initializes the **layout** module, forwarding the options hash to its constructor. See **[Chaplin.Layout](./chaplin.layout.html)** for more information.
 
 To replace the layout with a derived class (possibly with various extensions), you'd override the `initLayout` method and construct the layout class as follows:
 

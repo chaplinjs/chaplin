@@ -3,7 +3,7 @@ layout: default
 title: Event Handling
 ---
 
-For models and views, there are several wrapper methods for event handler registration.  In contrast to the direct methods, they will save memory because the handlers will be removed correctly once the model or view is disposed. The methods will also be bound to the caller for ease of registration.
+For models and views, there are several wrapper methods for event handler registration. In contrast to the direct methods, they help prevent memory leakage, because the handlers will be removed correctly once the model or view is disposed. The methods will also be bound to the caller for ease of registration.
 
 ## Mediator
 
@@ -25,7 +25,7 @@ These are aliased to `Chaplin.mediator.*` with the additional benefit of automat
 
 ## Eventable
 
-In views, the standard `@model.on` way to register a handler for a model event should not be used. Use the memory-saving wrapper `listenTo` instead:
+In views, the standard `model.on` way to register a handler for a model event should not be used. Use the memory-saving wrapper `listenTo` instead:
 
 ```coffeescript
 @listenTo @model, 'add', @doSomething

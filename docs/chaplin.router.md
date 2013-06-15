@@ -4,15 +4,15 @@ title: Chaplin.Router
 module_path: src/chaplin/lib/router.coffee
 ---
 
-The `Router` is responsible for observing URL changes. If a declared route matches the current URL, a `router:match` event is triggered.
+This module is responsible for observing URL changes and matching them against a list of declared routes. If a declared route matches the current URL, a `router:match` event is triggered.
 
-The Chaplin `Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from Backbone’s `Router`. It’s a different implementation with several advantages over the standard router.
+`Chaplin.Router` is a replacement for [Backbone.Router](http://documentcloud.github.com/backbone/#Router) and does not inherit from it. It is a stand-alone implementation with several advantages over Backbone’s default. Why change the router implementation completely?
 
-In Backbone there are no controllers. Backbone’s `Router` maps routes to its *own methods*, so it’s serves two purposes. The Chaplin `Router` is just a router, it maps URLs to *separate controllers*, in particular *controller actions*. Just like Backbone’s standard router, Chaplin is using `Backbone.History` in the background. That is, Chaplin relies upon Backbone for Hash URLs and HTML5 History (`pushState`/`popstate`).
+In Backbone there are no controllers. Instead, Backbone’s `Router` maps routes to *its own methods*, serving two purposes and being more than just a router. Chaplin on the other hand delegates the handling of actions related to a specific route to controllers. Consequently, the router is really just a router. While the router has been rewritten for this purpose, Chaplin is using `Backbone.History` in the background. That is, Chaplin relies upon Backbone for handling hash URLs and interacting with the HTML5 History API (`pushState`).
 
-## Declaring Routes in the `routes` file
+## Declaring routes in the `routes` file
 
-By convention, all application routes should be declared in a separate file, the `routes` module. This is a simple JavaScript module which calls the `match` method of the `Router` several times. For example:
+By convention, all application routes should be declared in a separate file, the `routes` module. This is a simple module in which a list of `match` statements serve to declare corresponding routes. For example:
 
 ```coffeescript
 match '', 'home#index'
@@ -24,105 +24,105 @@ match('', 'home#index');
 match('likes/:id', {controller: 'controllers/likes', action: 'show'});
 ```
 
-`match` works much like the Ruby on Rails counterpart. If a route matches, a `router:match` event is published passing the route instance and a `params` hash which contains pattern matches (like `id` in the example above) and additional GET parameters.
+Ruby on Rails developers may find `match` intuitively familiar. For more information on its usage, [see below](#match). Internally, route objects representing each entry are created. If a route matches, a `router:match` event is published, passing the route object and a `params` hash which contains name-value pairs for named placeholder parts of the path description (like `id` in the example above), as well as additional GET parameters.
 
 <h2 id="methods">Methods</h2>
 
 <h3 class="module-member" id="createHistory">createHistory()</h3>
-Creates the `Backbone.History` instance
+Creates the `Backbone.History` instance.
 
 <h3 class="module-member" id="startHistory">startHistory()</h3>
-Starts the `Backbone.History` instance.  This method should be called after all the routes have been registered.
+Starts `Backbone.History` instance. This method should be called only after all routes have been registered.
 
 <h3 class="module-member" id="stopHistory">stopHistory()</h3>
 Stops the `Backbone.History` instance from observing URL changes.
 
-<h3 class="module-member" id="match">match( [pattern], [target], [options={}] )</h3>
+<h3 class="module-member" id="match">match([pattern], [target], [options={}])</h3>
 
-Connects an address with a controller action.  Creates a new Route instance and registers it on the current Backbone.History instance.
+Connects a path with a controller action.
 
-* **pattern** (String): A pattern to match against the current URL
-* **target** (String): the controller action which is called when the route matches. Optional if you use proper **options** analogs.
-* **options** (Object): optional, object to be passed to the Routes object
+* **pattern** (String): A pattern to match against the current path.
+* **target** (String): Specifies the controller action which is called if this route matches. Optionally, replaced by an equivalent description through the `options` hash.
+* **options** (Object): optional
 
-The `pattern` argument may contain named placeholders starting with a `:` (colon) followed by an identifier. For example, `'products/:product_id/ratings/:id'` will match the URLs
-`/products/vacuum-cleaner/ratings/jane-doe` as well as `/products/8426/ratings/72`. The controller action will be passed a parameter hash with `product_id: 'vacuum-cleaner', id: 'jane-doe'` and `product_id: '8426', id: '72'`, respectively.
+The `pattern` argument may contain named placeholders starting with a colon (`:`) followed by an identifier. For example, `'products/:product_id/ratings/:id'` will match the paths
+`/products/vacuum-cleaner/ratings/jane-doe` as well as `/products/8426/ratings/72`. The controller action will be passed the parameter hash `{product_id: "vacuum-cleaner", id: "jane-doe"}` or `{product_id: "8426", id: "72"}`, respectively.
 
-The `target` argument is a string with the controller name and the action name separated by the `#` character. For example, `'likes#show'` denotes the `LikesController` and its `show` action.
+The `target` argument is a string with the controller name and the action name separated by the `#` character. For example, `'likes#show'` denotes the `show` action of the `LikesController`.
 
-You can also drop `target` and use `options.{action,controller}` for more explicitness.
+You can also equivalently specify the target via the `action` and `controller` properties of the  `options` hash.
 
-In the third parameter, fixed parameters may be passed. They will be added to the `params` hash which will be passed to the controller action. They cannot be overwritten by parameters from the URL. For example:
+The following properties of the `options` hash are recognized:
 
-```coffeescript
-match 'likes/:id', 'likes#show', params: {foo: 'bar'}
-```
+* **params** (Object): Constant parameters that will be added to the params passed to the action and overwrite any values coming from a named placeholder
 
-```javascript
-match('likes/:id', 'likes#show', {params: {foo: 'bar'}});
-```
+    ```coffeescript
+    match 'likes/:id', 'likes#show', params: {foo: 'bar'}
+    ```
 
-In this example, the `LikesController` will receive a `params` hash which has a `foo` property.
+    ```javascript
+    match('likes/:id', 'likes#show', {params: {foo: 'bar'}});
+    ```
 
-The third parameter may also impose additional constraints on named placeholders. Pass an object in the `constraints` property. Add a property for each placeholder you would like to put constraints on. Pass a regular expression as the value. For example:
+    In this example, the `LikesController` will receive a `params` hash which has a `foo` property.
 
-```coffeescript
-match 'likes/:id', 'likes#show', constraints: {id: /^\d+$/}
-```
+* **constraints** (Object): For each placeholder you would like to put constraints on, pass a regular expression of the same name:
+        
+    ```coffeescript
+    match 'likes/:id', 'likes#show', constraints: {id: /^\d+$/}
+    ```
 
-```javascript
-match('likes/:id', 'likes#show', {constraints: {id: /^\d+$/}});
-```
+    ```javascript
+    match('likes/:id', 'likes#show', {constraints: {id: /^\d+$/}});
+    ```
 
-The regular expression if the ID consists of digits only. This route will match the URL `/likes/5636`
+    The `id` regular expression enforces the corresponding part of the path to be numeric. This route will match the path `/likes/5636`, but not `/likes/5636-icecream`.
 
-Last, but not least, you can have named routes with `name` option. You can extract their urls by using `Chaplin.helpers.reverse` helper. By default, `name` option is equal to `controllerName#action`, e.g. `likes#show`.
+    If a constraint is specified for a named placeholder, this implies that the route will only match if the path both contains a corresponding part and it is of the required form.
 
-```coffeescript
-match 'likes/:id', 'likes#show', name: 'like'
-Chaplin.helpers.reverse 'like', id: 581  # => likes/581
-```
+* **name** (String): Named routes can be used when reverse-generating paths using `Chaplin.helpers.reverse` helper:
+    
+    ```coffeescript
+    match 'likes/:id', 'likes#show', name: 'like'
+    Chaplin.helpers.reverse 'like', id: 581  # => likes/581
+    ```
 
-```javascript
-match('likes/:id', 'likes#show', name: 'like'});
-Chaplin.helpers.reverse('like', {id: 581});  // => likes/581
-```
+    ```javascript
+    match('likes/:id', 'likes#show', name: 'like'});
+    Chaplin.helpers.reverse('like', {id: 581});  // => likes/581
+    ```
+    If no name is provided, the entry will automatically be named by the scheme `controller#action`, e.g. `likes#show`.
 
-<h3 class="module-member" id="route">route( [path] )</h3>
+<h3 class="module-member" id="route">route([path])</h3>
 
-Route a given path manually. Returns a boolean after it has been matched against the registered routes.
+Route a given path manually. Returns a boolean after it has been matched against the registered routes, corresponding to whether or not a match occurred.
 
-This looks quite like `Backbone.history.loadUrl`, but it accepts an absolute URL with a leading slash (e.g. `/foo`) and passes a `changeURL` parameter to the route handler function.
+This looks similar to `Backbone.history.loadUrl`, but it accepts an absolute path with a leading slash (e.g. `/foo`) and passes a `changeURL` parameter to the route handler function.
 
-* **path**: an absolute URL with a leading slash
+* **path**: an absolute path with a leading slash
 
+<h3 class="module-member" id="routeHandler">routeHandler([path], [callback])</h3>
 
-<h3 class="module-member" id="routeHandler">routeHandler( [path], [callback] )</h3>
+Handler for the global `!router:route` event, performs routing for the path given in `path`. If `callback` is provided, it will be called with a boolean value communicating whether or not there was a match.
 
-Listener for global `!router:route` event. Tries to match the given URL against Call the callback associated with the route.
-When the
+* **path**: an absolute path with a leading slash
+* **callback**: a callback which is called independent of routing success
 
-* **path**: an absolute URL with a leading slash
-* **callback**: a callback which is called in any case after routing.
+<h3 class="module-member" id="changeURL">changeURL([url])</h3>
 
+Changes the current URL and adds a history entry without triggering any route actions.
 
-<h3 class="module-member" id="changeURL">changeURL( [url] )</h3>
+* **url**: string that is going to be pushed as the page’s URL
 
-Changes the current URL and adds a history entry.  Does not trigger any routes.
+<h3 class="module-member" id="changeURLHandler">changeURLHandler([url])</h3>
 
-* **url**: string that is going to be pushed as the pages url
+Handler for the globalized `!router:changeURL` event. Calls `@changeURL`.
 
-
-<h3 class="module-member" id="changeURLHandler">changeURLHandler( [url] )</h3>
-
-Handler for the globalized `!router:changeURL` event.  Calls `@changeURL`.
-
-* **url**: string that is going to be pushed as the pages url
-
+* **url**: string that is going to be pushed as the page’s URL
 
 <h3 class="module-member" id="dispose">dispose()</h3>
 
-Stops the Backbone.history instance and removes it from the Router object.  Also unsubscribes any events attached to the Router.  Attempts to freeze the Router to prevent any changes to the Router. See [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
+Stops the Backbone.history instance and removes it from the router object. Also unsubscribes any events attached to the Router. On compliant runtimes, the router object is frozen, see [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
 
 ## Global events of `Chaplin.Router`
 
@@ -134,7 +134,7 @@ Stops the Backbone.history instance and removes it from the Router object.  Also
 * `!router:changeURL url[, options]`
 
 ## Usage
-The Chaplin Router is a dependancy of [Chaplin.Application](./chaplin.application.html) which should be extended from by your main application class. Within your application class you should initialize the Router by calling `@initRouter` passing your routes module as an argument.
+`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `@initRouter`, passing your routes module as an argument.
 
 ```coffeescript
 define [
