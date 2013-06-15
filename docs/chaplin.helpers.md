@@ -4,12 +4,12 @@ title: Chaplin.helpers
 module_path: src/chaplin/lib/helpers.coffee
 ---
 
-Helpers that use Chaplin components (global event bus etc).
+Helpers that use Chaplin components (global event bus etc.).
 
 <h3 class="module-member" id="reverse">reverse(routeName[,...params])</h3>
-Returns the url for a named route and any params.
+Returns the URL for a named route, appropriately filling in values given as `params`.
 
-For example, if you had declared this route
+For example, if you have declared the route
 
 ```coffeescript
 match '/users/:login/profile', 'users#show'
@@ -19,7 +19,7 @@ match '/users/:login/profile', 'users#show'
 match('/users/:login/profile', 'users#show');
 ```
 
-you may use:
+you can use
 
 ```coffeescript
 Chaplin.helpers.reverse 'users#show', login: 'paulmillr'
@@ -33,4 +33,4 @@ Chaplin.helpers.reverse('users#show', {login: 'paulmillr'});
 Chaplin.helpers.reverse('users#show', ['paulmillr']);
 ```
 
-this will return `'/users/paulmillr/profile'`
+to yield `'/users/paulmillr/profile'`.
