@@ -7,13 +7,13 @@ Chaplin: View
 
 Chaplin’s `View` class is a highly extended and adapted subclass of `Backbone.View`. By default, all views should inherit from this class to take advantage of its additions and improved memory management.
 
-Views may subscribe to global pub/sub and model/collection events in a manner which allows proper disposal. They have a standard `@render` method which renders a template into the view’s root element (`@el`).
+Views may subscribe to global pub/sub and model/collection events in a manner which allows proper disposal. They have a standard `render` method which renders a template into the view’s root element (`this.el`).
 
-The templating function is provided by `@getTemplateFunction`. The input data for the template is provided by `@getTemplateData`. By default, this method just returns an object delegating to the model attributes. Views might override the method to process the raw model data for the view.
+The templating function is provided by `this.getTemplateFunction`. The input data for the template is provided by `this.getTemplateData`. By default, this method just returns an object delegating to the model attributes. Views might override the method to process the raw model data for the view.
 
-In addition to Backbone’s `@events` hash and the `@delegateEvents` method, Chaplin has the `@delegate` method to register user input handlers. The declarative `@events` hash doesn’t work well for class hierarchies when several `@initialize` methods register their own handlers. The programatic approach of `@delegate` solves these problems.
+In addition to Backbone’s `events` hash and the `delegateEvents` method, Chaplin has the `delegate` method to register user input handlers. The declarative `events` hash doesn’t work well for class hierarchies when several `initialize` methods register their own handlers. The programatic approach of `delegate` solves these problems.
 
-When establishing bindings between view and model, `@model.on()` should not be used directly. Instead,  Backbone’s built-in methods for handling bindings, such as `@listenTo(@model, ...)` should be used, so handlers can be removed automatically on view disposal to prevent memory leakage.
+When establishing bindings between view and model, `this.model.on()` should not be used directly. Instead,  Backbone’s built-in methods for handling bindings, such as `this.listenTo(this.model, ...)` should be used, so handlers can be removed automatically on view disposal to prevent memory leakage.
 
 ## Features and purpose
 
@@ -36,7 +36,7 @@ When establishing bindings between view and model, `@model.on()` should not be u
 
   `options` may be specific on the view class or passed to the constructor. Passing in options during instantiation overrides the View prototype's defaults.
 
-  Views must always call `super` from their `@initialize` methods. Unlike Backbone’s `@initialize` method, Chaplin’s `@initialize` is required to create the instance’s subviews and listen for model or collection disposal.
+  Views must always call `super` from their `initialize` methods. Unlike Backbone’s `initialize` method, Chaplin’s `initialize` is required to create the instance’s subviews and listen for model or collection disposal.
 
 ## Rendering: `getTemplateFunction`, `render`, …
 
@@ -127,7 +127,7 @@ Often overriden in a base model class to intelligently pick out attributes.
 By default calls the `templateFunction` with the `templateData` and sets the HTML of the `$el`. Can be overriden in your base view if needed, though this should be suitable for the majority of cases.
 
 <h3 class="module-member" id="attach">attach</h3>
-The `@attach` method is called after the prototype chain has completed for `View#render`. It attaches the view to its `@container` element and fires an `'addedToDOM'` event on the view on success.
+The `attach` method is called after the prototype chain has completed for `View#render`. It attaches the view to its `container` element and fires an `'addedToDOM'` event on the view on success.
 
 ## Options for auto-rendering and DOM appending
 
@@ -202,7 +202,7 @@ var SomeView = View.extend({
 * **function handler (automatically bound to `this`)**
 * **returns the bound handler function**
 
-Backbone’s `events` hash doesn't work well with inheritance, so Chaplin provides the `delegate` method for this purpose. `delegate` is a wrapper for jQuery's `@$el.on` method, and has the same method signature.
+Backbone’s `events` hash doesn't work well with inheritance, so Chaplin provides the `delegate` method for this purpose. `delegate` is a wrapper for jQuery’s `this.$el.on` method, and has the same method signature.
 
 For events affecting the whole view the signature is `delegate(eventType, handler)`:
 
@@ -230,11 +230,11 @@ this.delegate('click', 'button.confirm', this.confirm);
 * **function handler (automatically bound to `this`)**
 * **returns the bound handler function**
 
-Allows to remove DOM event handlers that have been added using `@delegate`. `@undelegate` is a wrapper for jQuery's `@$el.off` method, and has the same method signature.
+Allows to remove DOM event handlers that have been added using `delegate`. `undelegate` is a wrapper for jQuery’s `this.$el.off` method, and has the same method signature.
 
-Since `@delegate` automatically binds the handler function to the view, you need to pass the bound handler to remove it. This is a new function and not the same as the original handler passed to `@delegate`.  
+Since `delegate` automatically binds the handler function to the view, you need to pass the bound handler to remove it. This is a new function and not the same as the original handler passed to `delegate`.  
 
-To allow this, `@delegate` returns the bound handler so you can save it for later removal:
+To allow this, `delegate` returns the bound handler so you can save it for later removal:
 
 ```coffeescript
 # CoffeeScript

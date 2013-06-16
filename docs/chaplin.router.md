@@ -116,7 +116,7 @@ Changes the current URL and adds a history entry without triggering any route ac
 
 <h3 class="module-member" id="changeURLHandler">changeURLHandler([url])</h3>
 
-Handler for the globalized `!router:changeURL` event. Calls `@changeURL`.
+Handler for the globalized `!router:changeURL` event. Calls `this.changeURL`.
 
 * **url**: string that is going to be pushed as the page’s URL
 
@@ -134,7 +134,7 @@ Stops the Backbone.history instance and removes it from the router object. Also 
 * `!router:changeURL url[, options]`
 
 ## Usage
-`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `@initRouter`, passing your routes module as an argument.
+`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `this.initRouter`, passing your routes module as an argument.
 
 ```coffeescript
 define [

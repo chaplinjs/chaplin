@@ -1,11 +1,11 @@
 ---
 layout: default
-title: The Architecture in Detail
+title: Chaplin Documentation
 ---
 
-The following chapters will discuss the core objects and classes of our application structure.
+Welcome to the documentation of the Chaplin framework. Chaplin is a an architecture for complex single-page web applications. To learn more about Chaplin go to [chaplinjs.org](http://chaplinjs.org) or dive right into the docs!
 
-## General and principles
+## Principles & Features
 
 * [Overview](./overview.html)
 * [Getting started](./getting_started.html)
@@ -13,5 +13,5 @@ The following chapters will discuss the core objects and classes of our applicat
 * [Disposal](./disposal.html)
 * [Handling Asynchronous Dependencies](./handling_async.html)
 
-## API docs
+## API Reference
 {% include modules.md %}
