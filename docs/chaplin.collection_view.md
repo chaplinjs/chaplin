@@ -80,7 +80,7 @@ The `CollectionView` is responsible for displaying collections. For every item i
 * **function filterer (see below)**
 * **function filterCallback (see below)**
 
-  Calling `filter` directly with a `filterer` and `filterCallback` overrides the `CollectionView`'s properties of the same name.
+  Calling `filter` directly with a `filterer` and `filterCallback` overrides the `CollectionView`’s properties of the same name.
 
   When called with no arguments it is a no-op.
 
@@ -166,7 +166,7 @@ filterCallback: function(view, included) {
 <h3 class="module-member" id="initItemView">initItemView(model)</h3>
 * **Model model**
 
-  Returns an instance of the view class (as determined by `@itemView`). Override this method to use several item view constructors depending on the model type or data.
+  Returns an instance of the view class (as determined by the `itemView` property). Override this method to use several item view constructors depending on the model type or data.
 
 <h3 class="module-member" id="insertView">insertView(item, view, [index], [enableAnimation])</h3>
 * **Model item**
@@ -174,7 +174,7 @@ filterCallback: function(view, included) {
 * **int index (if unset will search through collection)**
 * **boolean enableAnimation (default `true`)**
 
-  Inserts a view into the list at the proper position and runs the `@filterer` function.
+  Inserts a view into the list at the proper position and runs the `this.filterer` function.
 
 <h3 class="module-member" id="removeViewForItem">removeViewForItem(model)</h3>
 * **Model item**
@@ -190,7 +190,7 @@ filterCallback: function(view, included) {
 
 
 ## Usage
-Most inheriting classes of `CollectionView` should be very small, with the majority of implementations only needing to overwrite the `itemView` property. Standard `View` conventions like adding `@listenTo` handlers should still take place in `@initialize`, but the majority of collection-specific logic is handled by this class.
+Most inheriting classes of `CollectionView` should be very small, with the majority of implementations only needing to overwrite the `itemView` property. Standard `View` conventions like adding `this.listenTo` handlers should still take place in `initialize`, but the majority of collection-specific logic is handled by this class.
 
 #### Example
 

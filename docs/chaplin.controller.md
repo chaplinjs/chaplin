@@ -17,7 +17,7 @@ Navigates to `url` in app.
 
 <h3 class="module-member" id="redirectToRoute">redirectToRoute(name, params, options)</h3>
 
-Navigates to named route, like `@redirectToRoute 'likes#show', id: 502`.
+Navigates to named route, like <span class="coffeescript">`@redirectToRoute 'likes#show', id: 502`</span><span class="javascript">`this.redirectToRoute('likes#show', {id: 502})`</span>.
 
 <h3 class="module-member" id="dispose">dispose()</h3>
 

@@ -41,7 +41,7 @@ In a model, it’s fine to use `on` directly as long as the handler is a method 
 
 Most views handle user input by listening to DOM events. Backbone provides the `events` property to register event handlers declaratively. But this does not work nicely when views inherit from each other and a specific view needs to handle additional events.
 
-Chaplin’s `View` class provides the `delegate` method as a shortcut for `@$el.on`. It has the same signature as the jQuery 1.7 `on` method. Some examples:
+Chaplin’s `View` class provides the `delegate` method as a shortcut for `this.$el.on`. It has the same signature as the jQuery 1.7 `on` method. Some examples:
 
 ```coffeescript
 @delegate 'click', '.like-button', @like
@@ -53,9 +53,9 @@ this.delegate('click', '.like-button', this.like);
 this.delegate('click', '.close-button', this.skip);
 ```
 
-`delegate` registers the handler at the topmost DOM element of the view (`@el`) and catches events from nested elements using event bubbling. You can specify an optional selector to target nested elements.
+`delegate` registers the handler at the topmost DOM element of the view (`this.el`) and catches events from nested elements using event bubbling. You can specify an optional selector to target nested elements.
 
-In addition, `delegate` automatically binds the handler to the view object, so `@`/`this` points to the view. This means `delegate` creates a wrapper function which acts as the handler. As a consequence, it’s currently impossible to unbind a specific handler. Please use `@$el.off` directly to unbind all handlers of an event type for a selector:
+In addition, `delegate` automatically binds the handler to the view object, so `this` points to the view. This means `delegate` creates a wrapper function which acts as the handler. As a consequence, it’s currently impossible to unbind a specific handler. Please use `this.$el.off` directly to unbind all handlers of an event type for a selector:
 
 ```coffeescript
 @$el.off 'click', '.like-button'
