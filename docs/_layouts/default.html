@@ -25,10 +25,9 @@ version: 0.10.0
   <div class="row-fluid">
   <div class="span3 sidebar">
   <header class="site-header">
-    <h1><a href="/">Chaplin Documentation</a></h1>
+    <h1><a href="/" title="Introductory page of the documentation">Chaplin Documentation</a></h1>
   </header>
   <nav>
-    <h2>Modules</h2>
     <form action="" class="language">
       <fieldset>
         <legend>Examples in:</legend>
@@ -46,6 +45,7 @@ version: 0.10.0
         </ul>
       </fieldset>
     </form>
+    <h2>Modules</h2>
     {% capture sidebar %}{% include modules.md %}{% endcapture %}
     {{ sidebar | markdownify }}
   </nav>

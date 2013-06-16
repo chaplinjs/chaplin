@@ -18,7 +18,7 @@ body {
   background-position: center center;
 }
 .sidebar nav {
-  padding: 1em;
+  padding: 0 1em;
 }
 .sidebar ul {
   line-height: 1.25;
