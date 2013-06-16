@@ -1,0 +1,68 @@
+---
+source_base: https://github.com/chaplinjs/chaplin/blob/
+version: 0.9.0
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <title>
+    {% if page.title %} {{ page.title }} &middot; {% endif %} Chaplin Documentation
+  </title>
+  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/fonts.css">
+  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/base.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/pygments.css">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="javascripts/main.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body class="container-fluid">
+  <div class="row-fluid">
+  <div class="span3 sidebar">
+  <header class="site-header">
+    <h1><a href="/" title="Introductory page of the documentation">Chaplin Documentation</a></h1>
+  </header>
+  <nav>
+    <form action="" class="language">
+      <fieldset>
+        <legend>Examples in:</legend>
+        <ul class="languages">
+        <li class="coffeescript">
+          <label>
+            <input type="radio" name="language" value="coffeescript" checked> CoffeeScript
+          </label>
+        </li>
+        <li class="javascript">
+          <label>
+            <input type="radio" name="language" value="javascript"> JavaScript
+          </label>
+        </li>
+        </ul>
+      </fieldset>
+    </form>
+    <h2>Modules</h2>
+    {% capture sidebar %}{% include modules.md %}{% endcapture %}
+    {{ sidebar | markdownify }}
+  </nav>
+  </div>
+  <div id="content" class="span9">
+    <header class="module-info">
+    {% if page.title %}
+    <h1>
+      {{ page.title }}
+      {% if page.module_path %}
+        <a href="{{ page.source_base }}{{ page.version }}/{{ page.module_path }}">&rarr; Source</a>
+      {% endif %}
+    </h1>
+    {% endif %}
+    </header>
+    {{ content }}
+  </div>
+  </div>
+</body>
+</html>
