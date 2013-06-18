@@ -16,7 +16,7 @@ If a view was composed in the previous action method and is not composed in the 
 
 A common use case is a login page. This login page is a simple centered form.  However, the main application needs both header and footer controllers.
 
-Here is this use case demonstrated in coffeescript pseudocode:
+The following is a sketch of this use case put into code:
 
 ```coffeescript
 # routes.coffee
@@ -155,12 +155,11 @@ route('login')
 
 ## Long form
 
-By default, when a controller requests a view to be composed, the composer checks if the view instance exists and the options hash is equal. If that is true the view is destroyed and composed.
+By default, when a controller requests a view to be composed, the composer checks if the view instance exists and the new options are the same as before. If that is true the view is destroyed and composed.
 
 By default, the compose method only allows for composing views.
 
-The following example shows another way to use the compose method to allow for just about anything. The check method should return true when it wishes the composition to be disposed and the compose method to be called. The composer will track and ensure proper disposal of whatever is returned from the compose method (be it a view or an object with properties that have
-dispose methods).
+The following example shows another way to use the compose method to allow for just about anything. The check method should return true when it wishes the composition to be disposed and the compose method to be called. The composer will track and ensure proper disposal of whatever is returned from the compose method (be it a view or an object with properties that have dispose methods).
 
 ```coffeescript
   @compose 'something-strange',

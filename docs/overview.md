@@ -3,10 +3,10 @@ layout: default
 title: Overview
 ---
 
-**Chaplin** empowers you to **quick**ly develop **single-page**, **scalable** web applications; and allows you to focus on designing and developing the underlying functionality in your web application.
+Chaplin empowers you to **quickly** develop **scalable** **single-page** web applications; allowing you to focus on designing and developing the underlying functionality in your web application.
 
 ## Architecture
-Chaplin is an architecture for JavaScript web applications using the [Backbone.js](http://backbonejs.org) library. The code is originally derived from [moviepilot.com](http://moviepilot.com), a large single-page application.
+Chaplin is an architecture for JavaScript web applications based on the [Backbone.js](http://backbonejs.org) library. The code is originally derived from [moviepilot.com](http://moviepilot.com), a large single-page application.
 
 While Backbone is an easy starting point, it provides only basic, low-level patterns. Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses these limitations by providing a light-weight but flexible structure which leverages well-proven design patterns and best practises.
 
@@ -75,8 +75,8 @@ This is where the **Dispatcher** takes over. It loads the target controller and 
 Typically, a controller creates a **Model** or **Collection** and a corresponding **View**. The model or collection may fetch some data from the server which is then rendered by the view. By convention, the models, collection and views are saved as properties on the controller instance.
 
 ## [Memory Management](./disposal.html)
-A core concern of the Chaplin architecture is proper memory management. While there isn’t a broad discussion about garbage collection in JavaScript applications, it’s an important topic. In event-driven systems, registering events creates references between objects. If these references aren’t removed when a module is no longer in use, the garbage collector can’t free the memory.
+A core concern of the Chaplin architecture is proper memory management. While there isn’t a broad discussion about garbage collection in JavaScript applications, it is an important topic, especially in single-page applications, where the lifetime and multitude of objects increases compared to earlier architectures. In event-driven systems, registering events creates references between objects. If these references aren’t removed when a module is no longer in use, the garbage collector can’t free the memory.
 
-Since Backbone provides little out of the box to manage memory, Chaplin extends Backbone's Model, Collection and View classes to implement a powerful disposal process which ensures that each controller, model, collection and view cleans up after itself.
+Since Backbone provides little out of the box to manage memory, Chaplin extends Backbone’s `Model`, `Collection` and `View` classes to implement a powerful disposal process which ensures that each controller, model, collection and view cleans up after itself.
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)

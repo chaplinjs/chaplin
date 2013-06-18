@@ -6,7 +6,7 @@
 
 Chaplin is an architecture for JavaScript applications using the [Backbone.js](http://documentcloud.github.com/backbone/) library.
 
-All information, commercial support contacts and examples are available at [chaplinjs.org](http://chaplinjs.org). [Comprehensive documentation and class reference](docs/) is available on GitHub.
+All information, commercial support contacts and examples are available at [chaplinjs.org](http://chaplinjs.org), comprehensive documentation and class reference can be found at [docs.chaplinjs.org](http://docs.chaplinjs.org).
 
 [Download the latest release on chaplinjs.org](http://chaplinjs.org/#downloads). See below on how to compile from source manually.
 

@@ -4,22 +4,21 @@ title: Chaplin.Layout
 module_path: src/chaplin/views/layout.coffee
 ---
 
-`Chaplin.Layout` is the top-level application 'view'. It doesn't inherit from `Chaplin.View` but borrows some of its functionalities. It is tied to the `document` dom element and register app-wide events, such as internal links. And mainly, When a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.
+`Chaplin.Layout` is the top-level application “view”. It doesn't inherit from `Chaplin.View` but borrows some of its functionalities. It is tied to the `document` DOM element and handles app-wide events, such as clicks on application-internal links. Most importantly, when a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.
 
 <h2 id="methods">Methods</h2>
 
 <h3 class="module-member" id="initialize">initialize([options={}])</h3>
 
 * **options**:
-    * **routeLinks**: the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. *Default: 'a, .go-to'*. If `false`y, chaplin won’t route links at all.
-    * **skipRouting**: if you want to skip the internal routing in some situation. Can take the following value:
-        * selector: check if the activated link matches the selector.
+    * **routeLinks** (default `'a, .go-to'`): the selector of elements you want to apply internal routing to. Set to false to deactivate internal routing. If `false`y, chaplin won’t route links at all.
+    * **skipRouting** (default `'.noscript'`): if you want to skip the internal routing in some situation. Can take the following value:
+        * selector: check if the activated link matches the selector. The default value is a selector and will prevent routing for any links with class `noscript`.
         * function: check the return value. Return `true` to continue routing, return `false` to stop routing. The path and the elements are passed as parameters. Example: `function(href, el) { return href == 'bla'; }`
         * false: never skip routing
-    Default: '.noscript'*. That is, you can add a `noscript` class to internal links to prevent routing by the Chaplin application.
-    * **openExternalToBlank**: whether or not links to external domains should open in a new window/tab. *Default: false*
-    * **scrollTo**: the coordinates (x, y) you want to scroll to on view replacement. Set to *false* to deactivate it. *Default: [0, 0]*
-    * **titleTemplate**: a function which returns the document title. Per default, it gets a object passed with the properties `title` and `subtitle`. *Default: _.template("<%= subtitle %> - <%= title %>")*
+    * **openExternalToBlank** (default `false`): whether or not links to external domains should open in a new window/tab.
+    * **scrollTo** (default `[0, 0]`): the coordinates (x, y) you want to scroll to on view replacement. Set to *false* to deactivate it.
+    * **titleTemplate** (default `_.template("<%= subtitle %> - <%= title %>")`): a function which returns the document title. Per default, it receives an object with the properties `title` and `subtitle`.
 
 
 <h3 class="module-member" id="delegateEvents">delegateEvents([events])</h3>
@@ -44,18 +43,17 @@ Show the new view on the `dispatcher:dispatch` event sent by the dispatcher on r
 
 <h3 class="module-member" id="adjustTitle">adjustTitle(context)</h3>
 
-Adjust the title of the page base on the `titleTemplate` option. The `title` variable is the one defined at the application level and the `subtitle` the one at the controller level.
-
+Adjust the title of the page based on the `titleTemplate` option. The `title` variable is the one defined at application level, the `subtitle` the one defined at controller level.
 
 <h3 class="module-member" id="openLink">openLink(event)</h3>
 
-Open the `href` or `data-href` URL of a DOM element. When `openLink` is called it checks if the `href` is valid and runs the `skipRouting` function if set by the user. If the href valid, it checks if it is an external link and depending on the `openExternalToBlank` option, opens it in a new window. Finally, if it is an internal link, it starts routing the URL.
+Open the `href` or `data-href` URL of a DOM element. When `openLink` is called it checks if the `href` is valid and runs the `skipRouting` function if set by the user. If the `href` is valid, it checks if it is an external link and depending on the `openExternalToBlank` option, opens it in a new window. Finally, if it is an internal link, it starts routing the URL.
 
 ## Usage
 
 ### App-wide events
 
-To register app-wide events, you can define them in the `events` hash. It works like `Backbone.View.delegateEvent` on the `document` dom element.
+To register app-wide events, you can define them in the `events` hash. It works like `Backbone.View.delegateEvent` on the `document` DOM element.
 
 
 ### Route links internally
@@ -100,7 +98,7 @@ class Layout extends Chaplin.Layout
 
 ```javascript
 var Layout = Chaplin.Layout.extend({
-  isExternalLink: function(href) {} # some test on the href variable
+  isExternalLink: function(href) {} // some test on the href variable
 });
 ```
 
