@@ -408,7 +408,7 @@ module.exports = class CollectionView extends View
         # Fade the view in if it was made transparent before.
         $viewEl.animate {opacity: 1}, @animationDuration
 
-    return
+    view
 
   # Remove the view for an item.
   removeViewForItem: (item) ->
