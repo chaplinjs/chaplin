@@ -102,9 +102,9 @@ module.exports = (grunt) ->
           processContent: (content, path) ->
             name = ///temp/(.*)\.js///.exec(path)[1]
             # data = content
-            data = content.replace /require\('/g, "req('"
+            data = content.replace /require\('/g, "loader('"
             """
-            req.register('#{name}', function(exports, localReq, module) {
+            loader.register('#{name}', function(e, r, module) {
             #{data}
             });
             """
@@ -170,70 +170,28 @@ module.exports = (grunt) ->
 
         (function(){
 
-        var req = (function() {
+        var loader = (function() {
           var modules = {};
           var cache = {};
 
-          var has = function(object, name) {
-            return ({}).hasOwnProperty.call(object, name);
-          };
-
-          var expand = function(root, name) {
-            var results = [], parts, part;
-            if (/^\\.\\.?(\\/|$)/.test(name)) {
-              parts = [root, name].join('/').split('/');
-            } else {
-              parts = name.split('/');
-            }
-            for (var i = 0, length = parts.length; i < length; i++) {
-              part = parts[i];
-              if (part === '..') {
-                results.pop();
-              } else if (part !== '.' && part !== '') {
-                results.push(part);
-              }
-            }
-            return results.join('/');
-          };
-
-          var dirname = function(path) {
-            return path.split('/').slice(0, -1).join('/');
-          };
-
-          var localRequire = function(path) {
-            return function(name) {
-              var dir = dirname(path);
-              var absolute = expand(dir, name);
-              return req(absolute);
-            };
-          };
-
+          var dummy = function() {return function() {};};
           var initModule = function(name, definition) {
             var module = {id: name, exports: {}};
-            definition(module.exports, localRequire(name), module);
+            definition(module.exports, dummy(), module);
             var exports = cache[name] = module.exports;
             return exports;
           };
 
-          var req = function(name) {
-            var path = expand(name, '.');
-
-            if (has(cache, path)) return cache[path];
-            if (has(modules, path)) return initModule(path, modules[path]);
-
-            var dirIndex = expand(path, './index');
-            if (has(cache, dirIndex)) return cache[dirIndex];
-            if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
-
+          var loader = function(path) {
+            if (cache.hasOwnProperty(path)) return cache[path];
+            if (modules.hasOwnProperty(path)) return initModule(path, modules[path]);
             throw new Error('Cannot find module "' + name + '"');
           };
 
-          var register = function(bundle, fn) {
+          loader.register = function(bundle, fn) {
             modules[bundle] = fn;
           };
-
-          req.register = register;
-          return req;
+          return loader;
         })();
 
 
@@ -241,10 +199,10 @@ module.exports = (grunt) ->
         footer: '''
 
         var regDeps = function(Backbone, _) {
-          req.register('backbone', function(exports, require, module) {
+          loader.register('backbone', function(exports, require, module) {
             module.exports = Backbone;
           });
-          req.register('underscore', function(exports, require, module) {
+          loader.register('underscore', function(exports, require, module) {
             module.exports = _;
           });
         };
@@ -252,14 +210,14 @@ module.exports = (grunt) ->
         if (typeof define === 'function' && define.amd) {
           define(['backbone', 'underscore'], function(Backbone, _) {
             regDeps(Backbone, _);
-            return req('chaplin');
+            return loader('chaplin');
           });
         } else if (typeof module === 'object' && module && module.exports) {
           regDeps(require('backbone').Backbone, require('underscore'));
-          module.exports = req('chaplin');
+          module.exports = loader('chaplin');
         } else if (typeof require === 'function') {
           regDeps(window.Backbone, window._);
-          window.Chaplin = req('chaplin');
+          window.Chaplin = loader('chaplin');
         } else {
           throw new Error('Chaplin requires Common.js or AMD modules');
         }
