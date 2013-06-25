@@ -121,15 +121,11 @@ module.exports = class Router # This class does not extend Backbone.Router.
     throw new Error 'Router#reverse: invalid route specified'
 
   # Handler for the global !router:route event.
-  routeHandler: (path, options, callback) ->
+  routeHandler: (path, options) ->
     # Support old signature: Assume only path and callback were passed
     # if we only got two arguments.
-    if arguments.length is 2 and typeof options is 'function'
-      callback = options
-      options = {}
-
-    routed = @route path, options
-    callback? routed
+    options = {} if typeof options is 'function'
+    @route path, options
 
   # Find the URL for a given route name and parameters,
   # then route the URL. Returns whether a route matched.
@@ -137,13 +133,9 @@ module.exports = class Router # This class does not extend Backbone.Router.
   routeByNameHandler: (name, params, options, callback) ->
     # Support old signature: Assume options wasn't passed
     # if we only got three arguments.
-    if arguments.length is 3 and typeof options is 'function'
-      callback = options
-      options = {}
-
+    options = {} if arguments.length is 3 and typeof options is 'function'
     path = @reverse name, params
-    routed = @route path, options
-    callback? routed
+    @route path, options
 
   # Handler for the global !router:reverse event.
   reverseHandler: (name, params, callback) ->

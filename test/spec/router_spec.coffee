@@ -476,9 +476,8 @@ define [
         routeSpy = sinon.spy router, 'route'
         router.match path, 'router#route'
 
-        mediator.publish '!router:route', path, options, callback
+        mediator.publish '!router:route', path, options
         expect(routeSpy).was.calledWith path, options
-        expect(callback).was.calledWith true
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.controller).to.be 'router'
         expect(passedRoute.action).to.be 'route'
@@ -487,20 +486,17 @@ define [
           create(options, {changeURL: true})
         )
 
-        callback = sinon.spy()
         expect(->
-          mediator.publish '!router:route', 'different-path', options, callback
+          mediator.publish '!router:route', 'different-path', options
         ).to.throwError()
 
         routeSpy.restore()
 
       it 'should support the old !router:route signature without options', ->
         path = 'router-route-event-old'
-        callback = sinon.spy()
         router.match path, 'router#route'
 
-        mediator.publish '!router:route', path, callback
-        expect(callback).was.calledWith true
+        mediator.publish '!router:route', path
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.controller).to.be 'router'
         expect(passedRoute.action).to.be 'route'
@@ -538,16 +534,14 @@ define [
         router.match 'phone/:id', 'phonebook#dial', name: 'phonebook'
 
         routeSpy = sinon.spy router, 'route'
-        callbackSpy = sinon.spy()
 
         params = id: '123'
         options = replace: true
         mediator.publish '!router:routeByName', 'phonebook',
-          params, options, callbackSpy
+          params, options
 
         expectedPath = "/phone/#{params.id}"
         expect(routeSpy).was.calledWith expectedPath, options
-        expect(callbackSpy).was.calledWith true
 
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
@@ -563,12 +557,11 @@ define [
         )
 
       it 'should pass false to the callback when no named route was found', ->
-        callbackSpy = sinon.spy()
         params = {}
         options = {}
         expect(->
           mediator.publish '!router:routeByName', 'phonebook',
-            params, options, callbackSpy
+            params, options
         ).to.throwError()
 
     describe 'Changing the URL', ->
