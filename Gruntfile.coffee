@@ -90,7 +90,7 @@ module.exports = (grunt) ->
     # -------------
     # TODO: Remove this when uRequire hits 0.3
     copy:
-      commonjs:
+      universal:
         files: [
           expand: true
           dest: 'temp/'
@@ -101,10 +101,12 @@ module.exports = (grunt) ->
         options:
           processContent: (content, path) ->
             name = ///temp/(.*)\.js///.exec(path)[1]
+            # data = content
+            data = content.replace /require\('/g, "loader('"
             """
-            require.define({'#{name}': function(exports, require, module) {
-            #{content}
-            }});
+            loader.register('#{name}', function(e, r, module) {
+            #{data}
+            });
             """
 
       amd:
@@ -148,8 +150,15 @@ module.exports = (grunt) ->
     # --------------------
     # TODO: Remove this when uRequire hits 0.3
     concat:
+      universal:
+        files: [
+          dest: 'build/<%= pkg.name %>.js'
+          src: modules
+        ]
+
       options:
         separator: ';'
+
         banner: '''
         /*!
          * Chaplin <%= pkg.version %>
@@ -159,61 +168,62 @@ module.exports = (grunt) ->
          * http://chaplinjs.org
          */
 
+        (function(){
+
+        var loader = (function() {
+          var modules = {};
+          var cache = {};
+
+          var dummy = function() {return function() {};};
+          var initModule = function(name, definition) {
+            var module = {id: name, exports: {}};
+            definition(module.exports, dummy(), module);
+            var exports = cache[name] = module.exports;
+            return exports;
+          };
+
+          var loader = function(path) {
+            if (cache.hasOwnProperty(path)) return cache[path];
+            if (modules.hasOwnProperty(path)) return initModule(path, modules[path]);
+            throw new Error('Cannot find module "' + name + '"');
+          };
+
+          loader.register = function(bundle, fn) {
+            modules[bundle] = fn;
+          };
+          return loader;
+        })();
+
 
         '''
+        footer: '''
 
-      amd:
-        files: [
-          dest: 'build/amd/<%= pkg.name %>.js'
-          src: modules
-        ]
+        var regDeps = function(Backbone, _) {
+          loader.register('backbone', function(exports, require, module) {
+            module.exports = Backbone;
+          });
+          loader.register('underscore', function(exports, require, module) {
+            module.exports = _;
+          });
+        };
 
-      commonjs:
-        files: [
-          dest: 'build/commonjs/<%= pkg.name %>.js'
-          src: modules
-        ]
+        if (typeof define === 'function' && define.amd) {
+          define(['backbone', 'underscore'], function(Backbone, _) {
+            regDeps(Backbone, _);
+            return loader('chaplin');
+          });
+        } else if (typeof module === 'object' && module && module.exports) {
+          regDeps(require('backbone').Backbone, require('underscore'));
+          module.exports = loader('chaplin');
+        } else if (typeof require === 'function') {
+          regDeps(window.Backbone, window._);
+          window.Chaplin = loader('chaplin');
+        } else {
+          throw new Error('Chaplin requires Common.js or AMD modules');
+        }
 
-      brunch:
-        files: [
-          dest: 'build/brunch/<%= pkg.name %>.js'
-          src: modules
-        ]
-
-        options:
-          banner: '''
-          /*!
-           * Chaplin <%= pkg.version %>
-           *
-           * Chaplin may be freely distributed under the MIT license.
-           * For all details and documentation:
-           * http://chaplinjs.org
-           */
-
-          // Dirty hack for require-ing backbone and underscore.
-          (function() {
-            var deps = {
-              backbone: window.Backbone, underscore: window._
-            };
-
-            for (var name in deps) {
-              (function(name) {
-                var definition = {};
-                definition[name] = function(exports, require, module) {
-                  module.exports = deps[name];
-                };
-
-                try {
-                  require(item);
-                } catch(e) {
-                  require.define(definition);
-                }
-              })(name);
-            }
-          })();
-
-
-          '''
+        })();
+        '''
 
     # Lint
     # ----
@@ -267,39 +277,17 @@ module.exports = (grunt) ->
     uglify:
       options:
         mangle: false
-
-      amd:
+      universal:
         files:
-          'build/amd/chaplin.min.js': 'build/amd/chaplin.js'
-
-      commonjs:
-        files:
-          'build/commonjs/chaplin.min.js': 'build/commonjs/chaplin.js'
-
-      brunch:
-        files:
-          'build/brunch/chaplin.min.js': 'build/brunch/chaplin.js'
+          'build/chaplin.min.js': 'build/chaplin.js'
 
     # Compression
     # -----------
     compress:
-      amd:
-        files: [
-          src: 'build/amd/chaplin.min.js'
-          dest: 'build/amd/chaplin.min.js.gz'
-        ]
-
-      commonjs:
-        files: [
-          src: 'build/commonjs/chaplin.min.js'
-          dest: 'build/commonjs/chaplin.min.js.gz'
-        ]
-
-      brunch:
-        files: [
-          src: 'build/brunch/chaplin.min.js'
-          dest: 'build/brunch/chaplin.min.js.gz'
-        ]
+      files: [
+        src: 'build/chaplin.min.js'
+        dest: 'build/chaplin.min.js.gz'
+      ]
 
     # Watching for changes
     # --------------------
@@ -345,45 +333,12 @@ module.exports = (grunt) ->
 
   # Build
   # -----
-  grunt.registerTask 'build:commonjs', [
-    'coffee:compile'
-    'copy:commonjs'
-    'concat:commonjs'
-  ]
-
-  grunt.registerTask 'build:amd', [
-    'coffee:compile'
-    'urequire'
-    'copy:amd'
-    'concat:amd'
-  ]
-
-  grunt.registerTask 'build:brunch', [
-    'coffee:compile'
-    'copy:commonjs'
-    'concat:brunch'
-  ]
-
-  grunt.registerTask 'build:minified', [
-    'uglify:commonjs'
-    'compress:commonjs'
-    'uglify:amd'
-    'compress:amd'
-    'uglify:brunch'
-    'compress:brunch'
-  ]
-
-  grunt.registerTask 'build:all', [
-    'build:amd'
-    'build:commonjs'
-    'build:brunch'
-    'build:minified'
-  ]
 
   grunt.registerTask 'build', [
-    'build:amd'
-    'build:commonjs'
-    'build:brunch'
+    'coffee:compile'
+    'copy:universal'
+    'concat:universal'
+    'uglify'
   ]
 
   # Lint
