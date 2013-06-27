@@ -132,16 +132,15 @@ module.exports = class Layout extends View
 
     # Create routing options and callback.
     options = {query}
-    callback = (routed) ->
-      # Prevent default handling if the URL could be routed.
-      if routed
-        event.preventDefault()
-      else unless isAnchor
-        location.href = path
-      return
 
     # Pass to the router, try to route the path internally.
-    @publishEvent '!router:route', path, options, callback
+    try
+      @publishEvent '!router:route', path, options
+      # Prevent default handling if the URL could be routed.
+      event.preventDefault()
+    catch error
+      console?.error 'Routing error', error
+      location.href = path unless isAnchor
     return
 
   # Region management
