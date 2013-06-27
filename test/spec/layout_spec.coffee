@@ -27,13 +27,12 @@ define [
       $link.attr attributes
 
     expectWasRouted = (linkAttributes) ->
-      stub = sinon.stub().yields true
+      stub = sinon.spy()
       mediator.subscribe '!router:route', stub
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
-      [passedPath, passedOptions, passedCallback] = stub.firstCall.args
+      [passedPath, passedOptions] = stub.firstCall.args
       expect(passedPath).to.be linkAttributes.href
-      expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
       stub
 
@@ -80,15 +79,14 @@ define [
       path = '/internal/link'
       query = 'foo=bar&baz=qux'
 
-      stub = sinon.stub().yields true
+      stub = sinon.spy()
       mediator.subscribe '!router:route', stub
       linkAttributes = href: "#{path}?#{query}"
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
-      [passedPath, passedOptions, passedCallback] = stub.firstCall.args
+      [passedPath, passedOptions] = stub.firstCall.args
       expect(passedPath).to.be path
       expect(passedOptions).to.eql {query}
-      expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 
     it 'should not route links without href attributes', ->
@@ -123,17 +121,16 @@ define [
       window.open = old
 
     it 'should route clicks on elements with the “go-to” class', ->
-      stub = sinon.stub().yields true
+      stub = sinon.stub()
       mediator.subscribe '!router:route', stub
       path = '/internal/link'
       $span = $(document.createElement 'span')
         .addClass('go-to').attr('data-href', path)
         .appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
-      [passedPath, passedOptions, passedCallback] = stub.firstCall.args
+      [passedPath, passedOptions] = stub.firstCall.args
       expect(passedPath).to.be path
       expect(passedOptions).to.be.an 'object'
-      expect(passedCallback).to.be.a 'function'
       mediator.unsubscribe '!router:route', stub
 
     # With custom external checks
