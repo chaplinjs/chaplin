@@ -86,6 +86,32 @@ module.exports = (grunt) ->
           forceOverwriteSources: true
           relativeType: 'bundle'
 
+    # Publishing via Git
+    # ------------------
+    transbrute:
+      docs:
+        remote: 'git@github.com:chaplinjs/chaplin.git'
+        branch: 'gh-pages'
+        files: [
+          { expand: true, cwd: 'docs/', src: '**/*' }
+        ]
+      downloads:
+        message: "Release #{pkg.version}."
+        remote: 'git@github.com:chaplinjs/downloads.git'
+        branch: 'gh-pages'
+        files: [
+          { expand: true, cwd: 'build/', src: '{amd,brunch}/chaplin.{js,min.js}' },
+          {
+            dest: 'component.json',
+            body: {
+              name: 'chaplin',
+              version: pkg.version,
+              main: 'amd/chaplin.js',
+              dependencies: { backbone: '>= 1.0.0' }
+            }
+          }
+        ]
+
     # Module naming
     # -------------
     # TODO: Remove this when uRequire hits 0.3
@@ -379,32 +405,110 @@ module.exports = (grunt) ->
     'watch'
   ]
 
+  # Releasing
+  # ---------
+
+  grunt.registerTask 'check:versions:component', 'Check that package.json and component.json versions match', ->
+    componentVersion = grunt.file.readJSON('component.json').version
+    unless componentVersion is pkg.version
+      grunt.fail.warn "component.json is version #{componentVersion}, package.json is #{pkg.version}."
+    else
+      grunt.log.ok()
+
+  grunt.registerTask 'check:versions:changelog', 'Check that CHANGELOG.md is up to date', ->
+    # Require CHANGELOG.md to contain "Chaplin VERSION (DIGIT"
+    changelogMd = grunt.file.read('CHANGELOG.md')
+    unless RegExp("Chaplin #{pkg.version} \\(\\d").test changelogMd
+      grunt.fail.warn "CHANGELOG.md does not seem to be updated for #{pkg.version}."
+    else
+      grunt.log.ok()
+
+  grunt.registerTask 'check:versions:docs', 'Check that package.json and docs versions match', ->
+    template = grunt.file.read path.join('docs', '_layouts', 'default.html')
+    match = template.match /^version: ((\d+)\.(\d+)\.(\d+)(?:-[\dA-Za-z\-]*)?)$/m
+    unless match
+      grunt.fail.warn "Version missing in docs layout."
+    docsVersion = match[1]
+    unless docsVersion is pkg.version
+      grunt.fail.warn "Docs layout is version #{docsVersion}, package.json is #{pkg.version}."
+    else
+      grunt.log.ok()
+
+  grunt.registerTask 'check:versions', [
+    'check:versions:component',
+    'check:versions:changelog',
+    'check:versions:docs'
+  ]
+
+  grunt.registerTask 'release:git', 'Check context, commit and tag for release.', ->
+    prompt = require 'prompt'
+    prompt.start()
+    prompt.message = prompt.delimiter = ''
+    prompt.colors = false
+    # Command/query wrapper, turns description object for `spawn` into runner
+    command = (desc, message) ->
+      (next) ->
+        grunt.log.writeln message if message
+        grunt.util.spawn desc, (err, result, code) -> next(err)
+    query = (desc) ->
+      (next) -> grunt.util.spawn desc, (err, result, code) -> next(err, result)
+    # Help checking input from prompt. Returns a callback that calls the
+    # original callback `next` only if the input was as expected
+    checkInput = (expectation, next) ->
+      (err, input) ->
+        unless input and input.question is expectation
+          grunt.fail.warn "Aborted: Expected #{expectation}, got #{input}"
+        next()
+
+    steps = []
+    continuation = this.async()
+
+    # Check for master branch
+    steps.push query(cmd: 'git', args: ['rev-parse', '--abbrev-ref', 'HEAD'])
+    steps.push (result, next) ->
+      if result is 'master'
+        next()
+      else
+        prompt.get([
+            description: "Current branch is #{result}, not master. 'ok' to continue, Ctrl-C to quit."
+            pattern: /^ok$/, required: true
+          ],
+          checkInput('ok', next)
+        )
+    # List dirty files, ask for confirmation
+    steps.push query(cmd: 'git', args: ['status', '--porcelain'])
+    steps.push (result, next) ->
+      grunt.fail.warn "Nothing to commit." unless result.toString().length
+
+      grunt.log.writeln "The following dirty files will be committed:"
+      grunt.log.writeln result
+      prompt.get([
+          description: "Commit these files? 'ok' to continue, Ctrl-C to quit.",
+          pattern: /^ok$/, required: true
+        ],
+        checkInput('ok', next)
+      )
+
+    # Commit
+    steps.push command(cmd: 'git', args: ['commit', '-a', '-m', "Release #{pkg.version}"])
+
+    # Tag
+    steps.push command(cmd: 'git', args: ['tag', '-a', pkg.version])
+
+    grunt.util.async.waterfall steps, continuation
+
+  grunt.registerTask 'release', [
+    'check:versions',
+    'release:git',
+    'build',
+    'build:minified',
+    'transbrute:docs',
+    'transbrute:downloads'
+  ]
+
   # Publish Documentation
   # ---------------------
-  grunt.registerTask 'docs:publish', 'Publish docs to gh-pages branch.', ->
-    path = require('path')
-    temp = require('temp')
-
-    continuation = this.async()
-    tmpDirPath = temp.path()
-
-    grunt.file.recurse path.join('docs'), (abspath, rootdir, subdir, filename) ->
-      parent = if subdir then path.join(tmpDirPath, subdir) else tmpDirPath
-      grunt.file.mkdir parent
-      grunt.file.copy abspath, path.join(parent, filename)
-    gitArgs = [
-      ['init', '.']
-      ['add', '.'],
-      ['commit', '-m', "Add docs from #{(new Date).toISOString()}"],
-      ['remote', 'add', 'origin', 'git@github.com:chaplinjs/chaplin.git'],
-      ['push', 'origin', 'master:refs/heads/gh-pages', '--force']
-    ]
-    gitRunner = (args, next) ->
-      grunt.util.spawn {cmd: "git", args: args, opts: {cwd: tmpDirPath}}, (error, result, code) -> next(error)
-    grunt.util.async.forEachSeries gitArgs, gitRunner, ->
-      grunt.file.delete tmpDirPath, force: true
-      grunt.log.writeln "Published docs to gh-pages."
-      continuation()
+  grunt.registerTask 'docs:publish', ['check:versions:docs', 'transbrute:docs']
 
   # Default
   # -------
