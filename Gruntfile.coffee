@@ -100,13 +100,13 @@ module.exports = (grunt) ->
         remote: 'git@github.com:chaplinjs/downloads.git'
         branch: 'gh-pages'
         files: [
-          { expand: true, cwd: 'build/', src: '{amd,brunch}/chaplin.{js,min.js}' },
+          { expand: true, cwd: 'build/', src: 'chaplin.{js,min.js}' },
           {
             dest: 'component.json',
             body: {
               name: 'chaplin',
               version: pkg.version,
-              main: 'amd/chaplin.js',
+              main: 'chaplin.js',
               dependencies: { backbone: '>= 1.0.0' }
             }
           }
@@ -501,7 +501,6 @@ module.exports = (grunt) ->
     'check:versions',
     'release:git',
     'build',
-    'build:minified',
     'transbrute:docs',
     'transbrute:downloads'
   ]
