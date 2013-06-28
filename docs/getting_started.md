@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Getting started
+Chaplin: Getting started
 ---
 
 ## Download the boilerplate

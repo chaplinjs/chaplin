@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Collection
 module_path: src/chaplin/models/collection.coffee
+Chaplin: Collection
 ---
 
 `Chaplin.Collection` is an extension of `Backbone.Collection`. Major additions are disposal for improved memory management and the inclusion of the pub/sub pattern via the `Chaplin.EventBroker` mixin.

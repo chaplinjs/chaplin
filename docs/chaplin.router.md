@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Router
 module_path: src/chaplin/lib/router.coffee
+Chaplin: Router
 ---
 
 This module is responsible for observing URL changes and matching them against a list of declared routes. If a declared route matches the current URL, a `router:match` event is triggered.

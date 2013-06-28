@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.mediator
 module_path: src/chaplin/mediator.coffee
+Chaplin: mediator
 ---
 
 It is one of the basic goals of Chaplin to enforce module encapsulation and independence and to direct communication through controlled channels. Chaplin’s `mediator` object is the enabler of this controlled communication. It implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) (pub/sub) pattern to ensure loose coupling of application modules, while still allowing for ease of information exchange. Instead of making direct use of other parts of the application, modules communicate by events, similar to how changes in the DOM are communicated to client-side code. Modules can listen for and react to events, but also publish events of their own to give other modules the chance to react. There are only three basic methods for this application-wide communication: `subscribe`, `unsubscribe` and `publish`.

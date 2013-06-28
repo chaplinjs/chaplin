@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Dispatcher
 module_path: src/chaplin/dispatcher.coffee
+Chaplin: Dispatcher
 ---
 
 The `Dispatcher` sits between the router and the various controllers of your application. It listens for a routing event to occur and then:

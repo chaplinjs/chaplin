@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Composer
 module_path: src/chaplin/composer.coffee
+Chaplin: Composer
 ---
 
 ## Overview

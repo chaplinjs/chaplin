@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.support
 module_path: src/chaplin/lib/support.coffee
+Chaplin: support
 ---
 
 Provides feature detection that is used internally to determine the code path so that ECMAScript 5 features can be used if possible, without breaking compatibility with non-compliant engines.

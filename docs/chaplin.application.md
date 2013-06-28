@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Application
 module_path: src/chaplin/application.coffee
+Chaplin: Application
 ---
 
 The **Chaplin.Application** object is a bootstrapper and a point of extension for the core modules of **Chaplin**: the **[Dispatcher](#initDispatcher)**, the **[Layout](#initLayout)**, the **[Router](#initRouter)**, and the **[Composer](#initComposer)**. The object is intended to be extended by your application.  The `initialize` method of your derived class must initialize the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`, and then launching navigation with `startRouting`.

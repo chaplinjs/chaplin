@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.utils
 module_path: src/chaplin/lib/utils.coffee
+Chaplin: utils
 ---
 
 Chaplin’s utils provide common functions for use throughout the project.

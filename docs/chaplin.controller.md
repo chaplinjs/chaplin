@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Controller
 module_path: src/chaplin/controllers/controller.coffee
+Chaplin: Controller
 ---
 
 Controllers are in charge of handling the lifecycle of specific models and their associated views. That is, they are responsible for both instantiating and connecting models/collections and their views, as well as disposing of them, before handing control over to another controller. There can be only one *current* controller, which provides the main view and represents the current URL. In addition, there can be several persistent controllers for overarching tasks, like for example a `SessionController`.
