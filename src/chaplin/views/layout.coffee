@@ -171,7 +171,7 @@ module.exports = class Layout extends View
     # more-derived class overwrites the region registered by the less-derived
     # class.
     for version in utils.getAllPropertyVersions instance, 'regions'
-      for selector, name of version
+      for name, selector of version
         @registerGlobalRegion instance, name, selector
     # Return nothing.
     return
