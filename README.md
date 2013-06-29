@@ -33,16 +33,10 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
    npm install
    ```
 
-This creates two directories:
-
-* `./build/amd/` with a build using the AMD module style
-* `./build/commonjs/` with a build using the CommonJS module style
-
-Each subdirectory contains the following files:
+This creates these files in `build` dir:
 
 * `chaplin.js` – The library as a compiled JavaScript file.
 * `chaplin.min.js` – Minified. For production use you should pick this.
-* `chaplin.min.js.gz` – Minified and GZip-compressed.
 
 ## Running the Tests
 
