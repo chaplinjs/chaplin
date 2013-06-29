@@ -48,8 +48,8 @@ module.exports = class View extends Backbone.View
   #
   # This functions close to the declarative events hash; use as follows:
   # regions:
-  #   '.class': 'region'
-  #   '#id': 'region'
+  #   'region1': '.class'
+  #   'region2': '#id'
   regions: null
 
   # Region application is the reverse; you're specifying that this view
