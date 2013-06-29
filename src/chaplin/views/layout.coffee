@@ -134,13 +134,9 @@ module.exports = class Layout extends View
     options = {query}
 
     # Pass to the router, try to route the path internally.
-    try
-      @publishEvent '!router:route', path, options
-      # Prevent default handling if the URL could be routed.
-      event.preventDefault()
-    catch error
-      console?.error 'Routing error', error
-      location.href = path unless isAnchor
+    @publishEvent '!router:route', path, options
+    # Prevent default handling if the URL could be routed.
+    event.preventDefault()
     return
 
   # Region management
