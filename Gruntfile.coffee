@@ -494,7 +494,7 @@ module.exports = (grunt) ->
     steps.push command(cmd: 'git', args: ['commit', '-a', '-m', "Release #{pkg.version}"])
 
     # Tag
-    steps.push command(cmd: 'git', args: ['tag', '-a', pkg.version])
+    steps.push command(cmd: 'git', args: ['tag', '-a', pkg.version, '-m', "Version #{pkg.version}"])
 
     grunt.util.async.waterfall steps, continuation
 
