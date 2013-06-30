@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Event Handling
+Chaplin: Event Handling
 ---
 
 For models and views, there are several wrapper methods for event handler registration. In contrast to the direct methods, they help prevent memory leakage, because the handlers will be removed correctly once the model or view is disposed. The methods will also be bound to the caller for ease of registration.

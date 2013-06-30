@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Router
 module_path: src/chaplin/lib/router.coffee
+Chaplin: Router
 ---
 
 This module is responsible for observing URL changes and matching them against a list of declared routes. If a declared route matches the current URL, a `router:match` event is triggered.
@@ -67,7 +68,7 @@ The following properties of the `options` hash are recognized:
     In this example, the `LikesController` will receive a `params` hash which has a `foo` property.
 
 * **constraints** (Object): For each placeholder you would like to put constraints on, pass a regular expression of the same name:
-        
+
     ```coffeescript
     match 'likes/:id', 'likes#show', constraints: {id: /^\d+$/}
     ```
@@ -78,10 +79,11 @@ The following properties of the `options` hash are recognized:
 
     The `id` regular expression enforces the corresponding part of the path to be numeric. This route will match the path `/likes/5636`, but not `/likes/5636-icecream`.
 
-    If a constraint is specified for a named placeholder, this implies that the route will only match if the path both contains a corresponding part and it is of the required form.
+    For every constraint in the constraints object, there must be a corresponding named placeholder, and it must satisfy the constraint in order for the route to match.
+    For example, if you have a constraints object with three constraints: x, y, and z, then the route will match if and only if it has named parameters :x, :y, and :z and they all satisfy their respective regex.
 
 * **name** (String): Named routes can be used when reverse-generating paths using `Chaplin.helpers.reverse` helper:
-    
+
     ```coffeescript
     match 'likes/:id', 'likes#show', name: 'like'
     Chaplin.helpers.reverse 'like', id: 581  # => likes/581

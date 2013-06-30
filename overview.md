@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Overview
+chaplin: Overview
 ---
 
 Chaplin empowers you to **quickly** develop **scalable** **single-page** web applications; allowing you to focus on designing and developing the underlying functionality in your web application.
@@ -41,7 +42,7 @@ The `Layout` is the top-level application view. When a new controller is activat
 
 In addition, the `Layout` handles the activation of internal links. That is, you can use a normal `<a href="/foo">` element to link to another controller module.
 
-Furthermore, top-level DOM events on `document` or `body`, should be registered here.  
+Furthermore, top-level DOM events on `document` or `body`, should be registered here.
 
 ### [mediator](./chaplin.mediator.html)
 The mediator is an event broker that implements the [Publish/Subscribe](http://en.wikipedia.org/wiki/Publish/subscribe) design pattern. It should be used for most of the inter-module communication in Chaplin applications. Modules can emit events using `this.publishEvent` in order to notify other modules, and listen for such events using `this.subscribeEvent`. The mediator can also be used to easily share data between several modules, like a user model or other persistent and globally accessible data.

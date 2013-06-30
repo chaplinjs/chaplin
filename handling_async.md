@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Handling Asynchronous Dependencies
+Chaplin: Handling Asynchronous Dependencies
 ---
 
 Most processes in a client-side JavaScript application run asynchronously. It’s quite common for an application to communicate with multiple different external APIs. API bridges are established on demand and of course all API calls are asynchronous. Lazy-loading code and content is a key to performance. Therefore, handling asynchronous dependencies is a big challenge for JavaScript web applications. We’re using the following techniques to handle dependencies, from bottom-level to top-level.

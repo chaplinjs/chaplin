@@ -232,7 +232,7 @@ this.delegate('click', 'button.confirm', this.confirm);
 
 Allows to remove DOM event handlers that have been added using `delegate`. `undelegate` is a wrapper for jQuery’s `this.$el.off` method, and has the same method signature.
 
-Since `delegate` automatically binds the handler function to the view, you need to pass the bound handler to remove it. This is a new function and not the same as the original handler passed to `delegate`.  
+Since `delegate` automatically binds the handler function to the view, you need to pass the bound handler to remove it. This is a new function and not the same as the original handler passed to `delegate`.
 
 To allow this, `delegate` returns the bound handler so you can save it for later removal:
 
@@ -301,11 +301,11 @@ var MyView = Chaplin.View.extend({});
 this.view = new MyView({region: 'sidebar'});
 ```
 
-However the latter case leaves it to the controller to decide (through whatever logic) where to place the view.
+However the latter case is more flexible, as it leaves it to the controller to decide (through whatever logic) where to place the view.
 
 <h3 class="module-member" id="regions">regions</h3>
 
-A region registration hash that works much like the declarative events hash present in Backbone.
+A region registration hash that works much like the declarative events hash present in Backbone. Region names are specifyed as keys, region selectors as values. If the region selector is empty (`''`), the view’s own DOM element will be selected.
 
 The following snippet will register the named regions `sidebar` and `body` and bind them to their respective selectors directly on the prototype:
 
@@ -313,17 +313,17 @@ The following snippet will register the named regions `sidebar` and `body` and b
 # myview.coffee
 class MyView extends Chaplin.View
   regions:
-    '#page .container > .sidebar': 'sidebar'
-    '#page .container > .content': 'body'
-    '': 'myview'
+    'sidebar': '#page .container > .sidebar'
+    'body': '#page .container > .content'
+    'myview': ''
 ```
 ```javascript
 // myview.js
 var MyView = Chaplin.View({
   regions: {
-    '#page .container > .sidebar': 'sidebar',
-    '#page .container > .content': 'body',
-    '': 'myview'
+    'sidebar': '#page .container > .sidebar',
+    'body': '#page .container > .content',
+    'myview': ''
   }
 });
 ```
@@ -338,9 +338,9 @@ class MyView extends Chaplin.View
 # [...] inside action method
 @view = new MyView
   regions:
-    '#page .container > .sidebar': 'sidebar'
-    '#page .container > .content': 'body'
-    '': 'myview'
+    'sidebar': '#page .container > .sidebar'
+    'body': '#page .container > .content'
+    'myview': ''
 ```
 ```javascript
 // myview.js
@@ -350,9 +350,9 @@ var MyView = Chaplin.View({});
 // [...] inside action method
 this.view = new MyView({
   regions: {
-    '#page .container > .sidebar': 'sidebar',
-    '#page .container > .content': 'body',
-    '': 'myview'
+    'sidebar': '#page .container > .sidebar',
+    'body': '#page .container > .content',
+    'myview': ''
   }
 });
 ```
@@ -369,17 +369,17 @@ Functionally registers a region exactly the same as if it were in the regions ha
 class MyView extends Chaplin.View
   initialize: ->
     super
-    @registerRegion '#page .container > .sidebar', 'sidebar'
-    @registerRegion '#page .container > .content', 'body'
-    @registerRegion '', 'myview'
+    @registerRegion 'sidebar', '#page .container > .sidebar'
+    @registerRegion 'body', '#page .container > .content'
+    @registerRegion 'myview', ''
 ```
 ```javascript
 var MyView = Chaplin.View.extend({
   initialize: function() {
     Chaplin.View.prototype.initialize.apply(this, arguments);
-    this.registerRegion('#page .container > .sidebar', 'sidebar');
-    this.registerRegion('#page .container > .content', 'body');
-    this.registerRegion('', 'myview');
+    this.registerRegion('sidebar', '#page .container > .sidebar');
+    this.registerRegion('body', '#page .container > .content');
+    this.registerRegion('myview', '');
   }
 });
 ```

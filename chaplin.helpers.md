@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.helpers
 module_path: src/chaplin/lib/helpers.coffee
+Chaplin: helpers
 ---
 
 Helpers that use Chaplin components (global event bus etc.).

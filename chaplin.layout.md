@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Layout
 module_path: src/chaplin/views/layout.coffee
+Chaplin: Layout
 ---
 
 `Chaplin.Layout` is the top-level application “view”. It doesn't inherit from `Chaplin.View` but borrows some of its functionalities. It is tied to the `document` DOM element and handles app-wide events, such as clicks on application-internal links. Most importantly, when a new controller is activated, `Chaplin.Layout` is responsible for changing the main view to the view of the new controller.

@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.Model
 module_path: src/chaplin/models/model.coffee
+Chaplin: Model
 ---
 
 `Chaplin.Model` is an extension of `Backbone.Model`. Major additions are disposal for improved memory management and the inclusion of the pub/sub pattern via the `Chaplin.EventBroker` mixin.

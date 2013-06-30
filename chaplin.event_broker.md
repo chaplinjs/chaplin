@@ -2,6 +2,7 @@
 layout: default
 title: Chaplin.EventBroker
 module_path: src/chaplin/lib/event_broker.coffee
+Chaplin: EventBroker
 ---
 
 The `EventBroker` offers an interface to interact with [Chaplin.mediator](./chaplin.mediator.html), meant to be used as a mixin.
