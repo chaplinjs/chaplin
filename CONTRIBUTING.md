@@ -166,22 +166,19 @@ Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob
 
 A reminder to maintainers what should be done before every release.
 
-1. Update `package.json`, `component.json` and `CHANGELOG.md`, commit with “Release VERSION.”,
-git-tag last commit with new version.
-2. Generate new versions: `grunt build && grunt build:minified`.
-3. Update downloads: `cp -r ../chaplin/build/* . && rm {amd,brunch}/*.gz && rm commonjs`,
-   update downloads `component.json`, commit and tag new version.
-4. Update chaplinjs.org.
-5. Tweet about new version. Template:
+1. Update `package.json`, `component.json` and `CHANGELOG.md`,
+  `grunt release`
+2. Update chaplinjs.org.
+3. Tweet about new version. Template:
 
     Chaplin $RELEASE released! $CHANGES. Changelog: https://github.com/chaplinjs/chaplin/blob/master/CHANGELOG.md. Diff: https://github.com/chaplinjs/chaplin/compare/$PREV_RELEASE...$RELEASE
 
-6. Update
+4. Update
 [brunch-with-chaplin](https://github.com/paulmillr/brunch-with-chaplin),
 [chaplin-boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) and
 [chaplin-boilerplate-plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
 with new chaplin versions.
-7. Update examples:
+5. Update examples:
 [Ost.io](https://github.com/paulmillr/ostio),
 [composer-example](https://github.com/chaplinjs/composer-example),
 [todomvc](https://github.com/addyosmani/todomvc).
