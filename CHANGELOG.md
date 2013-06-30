@@ -1,4 +1,4 @@
-# Chaplin 0.10.0 (unreleased)
+# Chaplin 0.10.0 (30 June 2013)
 Chaplin now provides universal build for Common.js and AMD.
 
 * Improved `Chaplin.Application`:

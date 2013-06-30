@@ -466,6 +466,7 @@ module.exports = (grunt) ->
     # Check for master branch
     steps.push query(cmd: 'git', args: ['rev-parse', '--abbrev-ref', 'HEAD'])
     steps.push (result, next) ->
+      result = result.toString().trim()
       if result is 'master'
         next()
       else
