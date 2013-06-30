@@ -251,7 +251,7 @@ module.exports = class View extends Backbone.View
   # -----------------
 
   # Functionally register a single region.
-  registerRegion: (selector, name) ->
+  registerRegion: (name, selector) ->
     @publishEvent '!region:register', this, name, selector
 
   # Functionally unregister a single region by name.
