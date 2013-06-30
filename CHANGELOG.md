@@ -1,4 +1,6 @@
 # Chaplin 0.10.0 (unreleased)
+Chaplin now provides universal build for Common.js and AMD.
+
 * Improved `Chaplin.Application`:
     * Application is now initialized by default with `new Application`
       constructor method instead of `Application#initialize`.
@@ -6,7 +8,7 @@
 * Improved `Chaplin.Router`:
     * Early error is now thrown for `!router:route` and `!router:routeByName`
       methods when nothing is matched.
-    * Removed `callback` argument from `!router:route` and 
+    * Removed `callback` argument from `!router:route` and
       `!router:routeByName`.
 * Improved `Chaplin.View`:
     * **Breaking:** `regions` syntax has changed to more logical.
@@ -14,6 +16,7 @@
       Now: `regions: {'region': '.selector'}`.
       We’ve made a small utility that automatically updates your code
       to new syntax: [replace.js](https://gist.github.com/paulmillr/5891455).
+      Also, updated `registerRegion` method signature to similar.
     * `regions` option can now be passed to constructor.
     * `insertView` now returns inserted view.
 * Fix controller disposal after redirect.
