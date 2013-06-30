@@ -6,8 +6,8 @@ Chaplin now provides universal build for Common.js and AMD.
       constructor method instead of `Application#initialize`.
     * Added default `Application#initialize` functionality.
 * Improved `Chaplin.Router`:
-    * Early error is now thrown for `!router:route` and `!router:routeByName`
-      methods when nothing is matched.
+    * Early error is now thrown for `!router:route`, `!router:routeByName`
+      and Chaplin.helpers.reverse methods when nothing is matched.
     * Removed `callback` argument from `!router:route` and
       `!router:routeByName`.
 * Improved `Chaplin.View`:
