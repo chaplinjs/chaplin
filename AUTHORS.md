@@ -6,10 +6,6 @@ Chaplin is currently maintained by:
 * Paul Miller – [@paulmillr](http://twitter.com/paulmillr) – [paulmillr.com](http://paulmillr.com/)
 * Karel Ledru-Mathé – [@karelledrumathe](http://twitter.com/karelledrumathe) – [ledrumathe.com](http://ledrumathe.com/)
 * Ryan Leckey – [@mehcode](https://github.com/mehcode)
-
-Chaplin was initially written by:
-
-* Mathias Schäfer
 * Johannes Emerich – [@knuton](https://twitter.com/knuton) – [johannes.emerich.de](http://johannes.emerich.de/)
 
 With input and contributions from (in chronological order):
