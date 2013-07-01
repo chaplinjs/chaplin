@@ -39,7 +39,7 @@ Chaplin now provides universal build for Common.js and AMD.
       `deleted_users#show` won’t longer be rewritten to `deletedUsers#show`.
       The controller name in the route is directly used as module name.
 * Improved `Chaplin.View`:
-    * Added `keepInElement` property (false by default).
+    * Added `keepElement` property (false by default).
       When truthy, the view’s DOM element won’t be removed after disposal.
     * `View#dispose` now calls Backbone’s `View#remove` method.
     * Subviews are now always an array.
