@@ -26,7 +26,7 @@ CD = (function () {
       // Add class for inline code
       $('body').removeClass('show-' + other).addClass('show-' + language);
       // Toggle code blocks
-      $('.highlight')
+      $('.highlight:has(.coffeescript), .highlight:has(.javascript)')
         .hide()
         .filter(':has(.' + language + ')').show();
     }
