@@ -5,51 +5,64 @@ module_path: src/chaplin/application.coffee
 Chaplin: Application
 ---
 
-The **Chaplin.Application** object is a bootstrapper and a point of extension for the core modules of **Chaplin**: the **[Dispatcher](#initDispatcher)**, the **[Layout](#initLayout)**, the **[Router](#initRouter)**, and the **[Composer](#initComposer)**. The object is intended to be extended by your application.  The `initialize` method of your derived class must initialize the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`, and then launching navigation with `startRouting`.
+The **Chaplin.Application** object is a bootstrapper and a point of extension
+for the core modules of **Chaplin**: the **[Dispatcher](#initDispatcher)**, the
+**[Layout](#initLayout)**, the **[Router](#initRouter)**, and the
+**[Composer](#initComposer)**. The object can be extended by your application.
+
+The easiest way to get started is by extending `Chaplin.Application` with the
+bare essentials:
 
 ```coffeescript
 Chaplin = require 'chaplin'
 routes = require 'routes'
 
-module.exports = class Application extends Chaplin.Application
-
-  initialize: ->
-    # No need to call super as the base class method is a no-op.
-
-    # Initialize core components in the required order.
-    @initRouter routes
-    @initDispatcher()
-    @initComposer()
-    @initLayout()
-
-    # Actually start routing.
-    @startRouting()
+module.exports = class MyApplication extends Chaplin.Application
+  title: 'My Application'
 ```
-
 ```javascript
 var Chaplin = require('chaplin');
 var routes = require('routes');
 
-var Application = Chaplin.Application.extend({
-  initialize: function() {
-    // Initialize core components in the required order.
-    this.initRouter(routes);
-    this.initDispatcher();
-    this.initComposer();
-    this.initLayout();
-
-    // Actually start routing.
-    this.startRouting();
-  }
+var MyApplication = Chaplin.Application.extend({
+  title: 'My Application'
 });
 
-module.exports = Application;
+module.exports = MyApplication;
 ```
+
+Then you can pass options for router, dispatcher, etc. when starting the
+application:
+
+```html
+<script>
+  require(['application', 'routes'], function(Application, routes) {
+    new Application({routes: routes, controllerSuffix: '-controller'});
+  });
+</script>
+```
+
+For a complete example of this approach, see [Chaplin
+Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate-plain).
+
+If you want to have more fine-grained control over application startup, you can
+override the various methods of `Chaplin.Application`. When overriding the
+`initialize` method, you should not call `super`, but do all the
+required calls in place or you run risk of initializing modules twice.
+
+Instead, the `initialize` method of your derived class must initialize
+the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`
+and `initMediator` methods and then initiating navigation with `startRouting`.
+For more details on proper initialization, see the original implementation in
+`Chaplin.Application`.
 
 <h2 id="properties">Properties</h2>
 
 <h3 class="module-member" id="title">title</h3>
-This is the top-level title, handed to the layout module in the options hash. When using the [layout module](./chaplin.layout.html)’s default title template, the value for `title` will be appended to the subtitle passed to the `!adjustTitle` event in order to construct the document’s title.
+This is the top-level title, handed to the layout module in the options hash.
+When using the [layout module](./chaplin.layout.html)’s default title template,
+the value for `title` will be appended to the subtitle passed to the
+`!adjustTitle` event in order to construct the document’s title.
 
 ```coffeescript
 # [...]
