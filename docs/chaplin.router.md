@@ -95,17 +95,17 @@ The following properties of the `options` hash are recognized:
     ```
     If no name is provided, the entry will automatically be named by the scheme `controller#action`, e.g. `likes#show`.
 
-<h3 class="module-member" id="route">route([path])</h3>
+<h3 class="module-member" id="route">route([path], [options])</h3>
 
-Route a given path manually. Returns a boolean after it has been matched against the registered routes, corresponding to whether or not a match occurred.
+Route a given path manually. If given, `options` will be passed on to `Backbone.History`. Throws an error unless a match occurred.
 
 This looks similar to `Backbone.history.loadUrl`, but it accepts an absolute path with a leading slash (e.g. `/foo`) and passes a `changeURL` parameter to the route handler function.
 
 * **path**: an absolute path with a leading slash
 
-<h3 class="module-member" id="routeHandler">routeHandler([path], [callback])</h3>
+<h3 class="module-member" id="routeHandler">routeHandler([path], [options])</h3>
 
-Handler for the global `!router:route` event, performs routing for the path given in `path`. If `callback` is provided, it will be called with a boolean value communicating whether or not there was a match.
+Handler for the global `!router:route` event, performs routing for the path given in `path` via the `route` method.
 
 * **path**: an absolute path with a leading slash
 * **callback**: a callback which is called independent of routing success
@@ -130,8 +130,8 @@ Stops the Backbone.history instance and removes it from the router object. Also 
 
 `Chaplin.Router` listens to these global events:
 
-* `!router:route path[, options], callback`
-* `!router:routeByName name, params[, options], callback`
+* `!router:route path[, options]`
+* `!router:routeByName name, params[, options]`
 * `!router:reverse name, params[, options], callback`
 * `!router:changeURL url[, options]`
 
