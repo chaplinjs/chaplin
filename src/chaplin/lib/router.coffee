@@ -77,8 +77,16 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
-  route: (path, options) =>
+  route: (pathDesc, options) =>
     options = if options then _.clone(options) else {}
+
+    # Accept path to be given implicitly via object
+    if typeof pathDesc is 'object'
+      params = pathDesc.params or {}
+      delete pathDesc.params
+      path = @reverse pathDesc, params
+    else
+      path = pathDesc
 
     # Update the URL programmatically after routing.
     _.defaults options, changeURL: true
@@ -121,27 +129,28 @@ module.exports = class Router # This class does not extend Backbone.Router.
     throw new Error 'Router#reverse: invalid route specified'
 
   # Handler for the global !router:route event.
-  routeHandler: (path, options) ->
+  routeHandler: (pathDesc, options) ->
     # DEPRECATION Tolerate old signature: Assume only path was passed
     #             if second argument is callback.
+    #             When removing this in the next version, `Router#route` can
+    #             itself become the handler function.
     if typeof options is 'function'
       options = {}
       console.group "Deprecation Warning"
       console.warn "Callbacks for '!router:route' have been removed. Update your code."
       console.groupEnd()
-    @route path, options
+    @route pathDesc, options
 
+  # DEPRECATION To be removed.
   # Find the URL for a given route name and parameters,
   # then route the URL. Returns whether a route matched.
   # Handler for the global !router:routeByName event.
   routeByNameHandler: (name, params, options) ->
-    # DEPRECATION Tolerate old signature: Assume `options` wasn't passed
-    #             if third argument is callback.
-    if typeof options is 'function'
-      options = {}
-      console.group "Deprecation Warning"
-      console.warn "Callbacks for '!router:routeByName' have been removed. Update your code."
-      console.groupEnd()
+    console.group "Deprecation Warning"
+    console.warn "'!router:routeByName' has been deprecated."
+    console.warn "Use configuration objects with '!router:route'."
+    console.groupEnd()
+    options = {} if typeof options is 'function'
     path = @reverse name, params
     @route path, options
 

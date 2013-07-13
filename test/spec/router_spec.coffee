@@ -138,6 +138,22 @@ define [
 
         mediator.unsubscribe 'router:match', spy
 
+      it 'should match configuration objects', ->
+        spy = sinon.spy()
+        mediator.subscribe 'router:match', spy
+        router.match 'correct-match', 'null#null'
+        router.match 'correct-match-with-name', 'null#null', name: 'null'
+        router.match 'correct-match-with/:named_param', 'null#null', name: 'with-param'
+
+        routed1 = router.route controller: 'null', action: 'null'
+        routed2 = router.route name: 'null'
+        routed3 = router.route name: 'with-param', params: { named_param: 23 }
+
+        expect(routed1 and routed2 and routed3).to.be true
+        expect(spy).was.calledThrice()
+
+        mediator.unsubscribe 'router:match', spy
+
       it 'should match correctly when using the root option', ->
         subdirRooter = new Router randomOption: 'foo', pushState: false, root: '/subdir/'
         spy = sinon.spy()
