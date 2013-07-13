@@ -122,18 +122,26 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
   # Handler for the global !router:route event.
   routeHandler: (path, options) ->
-    # Support old signature: Assume only path and callback were passed
-    # if we only got two arguments.
-    options = {} if typeof options is 'function'
+    # DEPRECATION Tolerate old signature: Assume only path was passed
+    #             if second argument is callback.
+    if typeof options is 'function'
+      options = {}
+      console.group "Deprecation Warning"
+      console.warn "Callbacks for '!router:route' have been removed. Update your code."
+      console.groupEnd()
     @route path, options
 
   # Find the URL for a given route name and parameters,
   # then route the URL. Returns whether a route matched.
   # Handler for the global !router:routeByName event.
-  routeByNameHandler: (name, params, options, callback) ->
-    # Support old signature: Assume options wasn't passed
-    # if we only got three arguments.
-    options = {} if arguments.length is 3 and typeof options is 'function'
+  routeByNameHandler: (name, params, options) ->
+    # DEPRECATION Tolerate old signature: Assume `options` wasn't passed
+    #             if third argument is callback.
+    if typeof options is 'function'
+      options = {}
+      console.group "Deprecation Warning"
+      console.warn "Callbacks for '!router:routeByName' have been removed. Update your code."
+      console.groupEnd()
     path = @reverse name, params
     @route path, options
 
