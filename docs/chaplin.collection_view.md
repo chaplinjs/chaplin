@@ -96,7 +96,7 @@ The `CollectionView` is responsible for displaying collections. For every item i
 
 ```coffeescript
 filterer: (item, index) ->
-  item.get 'color' is 'red'
+  item.get('color') is 'red'
 
 ...
 

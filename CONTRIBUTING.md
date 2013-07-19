@@ -166,7 +166,7 @@ Follow [the git style guide](https://github.com/paulmillr/code-style-guides/blob
 
 A reminder to maintainers what should be done before every release.
 
-1. Update `package.json`, `component.json` and `CHANGELOG.md`,
+1. Update `package.json`, `bower.json`, `component.json` and `CHANGELOG.md`,
   `grunt release`
 2. Update chaplinjs.org.
 3. Tweet about new version. Template:
