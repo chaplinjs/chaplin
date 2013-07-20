@@ -50,7 +50,8 @@ utils =
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
     chain = [object.constructor.prototype]
-    chain.push object while object = object.constructor?.__super__
+    while object = object.constructor?.__super__ ? object.constructor?.superclass
+      chain.push object
     chain
 
   # Get all property versions from object’s prototype chain.
