@@ -211,7 +211,7 @@ module.exports = (grunt) ->
           var loader = function(path) {
             if (cache.hasOwnProperty(path)) return cache[path];
             if (modules.hasOwnProperty(path)) return initModule(path, modules[path]);
-            throw new Error('Cannot find module "' + name + '"');
+            throw new Error('Cannot find module "' + path + '"');
           };
 
           loader.register = function(bundle, fn) {
