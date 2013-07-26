@@ -74,7 +74,7 @@ The `CollectionView` is responsible for displaying collections. For every item i
     * **renderItems** see [renderItems](#renderItems)
     * **itemView** see [itemView](#itemView)
     * **filterer** automatically calls [filter](#filter) if set
-    * all [View](./chaplin.view.html#initialize) and standard
+    * all [View](./chaplin.view.md#initialize) and standard
       [`Backbone.View` options](http://backbonejs.org/#View-constructor)
 
 <h3 class="module-member" id="filter">filter([filterer, [filterCallback]])</h3>

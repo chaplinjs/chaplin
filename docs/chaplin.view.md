@@ -434,9 +434,9 @@ var YourView = View.extend({
 
 # Publish/Subscribe
 
-`View` includes the [EventBroker](./chaplin.event_broker.html) mixin to provide publish/subscribe capabilities using the [mediator](./chaplin.mediator.html)
+`View` includes the [EventBroker](./chaplin.event_broker.md) mixin to provide publish/subscribe capabilities using the [mediator](./chaplin.mediator.md)
 
-## [Methods](./chaplin.event_broker.html#methods) of `Chaplin.EventBroker`
+## [Methods](./chaplin.event_broker.md#methods) of `Chaplin.EventBroker`
 
 <h3 class="module-member" id="publishEvent">publishEvent(event, arguments...)</h3>
 Publish the global `event` with `arguments`.

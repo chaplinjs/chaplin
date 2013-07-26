@@ -10,7 +10,7 @@ For models and views, there are several wrapper methods for event handler regist
 
 Global events use the `mediator` as an event channel. On most objects in chaplin (including models, views, and controllers), there are shortcuts for manipulating global events. These methods are mixed into eventable objects by way of the [EventBroker][].
 
-[EventBroker]: chaplin.event_broker.html
+[EventBroker]: chaplin.event_broker.md
 
 ```coffeescript
 @subscribeEvent 'dispatcher:dispatch', @dispatch

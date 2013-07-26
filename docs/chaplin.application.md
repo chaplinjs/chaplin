@@ -60,7 +60,7 @@ For more details on proper initialization, see the original implementation in
 
 <h3 class="module-member" id="title">title</h3>
 This is the top-level title, handed to the layout module in the options hash.
-When using the [layout module](./chaplin.layout.html)’s default title template,
+When using the [layout module](./chaplin.layout.md)’s default title template,
 the value for `title` will be appended to the subtitle passed to the
 `!adjustTitle` event in order to construct the document’s title.
 
@@ -87,7 +87,7 @@ mediator.publish('!adjustTitle', 'Apple');
 <h2 id="methods">Methods</h2>
 
 <h3 class="module-member" id="initDispatcher">initDispatcher([options])</h3>
-Initializes the **dispatcher** module; forwards passed options to its contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.html)** for more information.
+Initializes the **dispatcher** module; forwards passed options to its contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.md)** for more information.
 
 To replace the dispatcher with a derived class (possibly with various extensions), you’d override the `initDispatcher` method and construct the dispatcher class as follows:
 
@@ -112,7 +112,7 @@ var Application = Chaplin.Application.extend({
 ```
 
 <h3 class="module-member" id="initRouter">initRouter(routes, [options])</h3>
-Initializes the **router** module; forwards passed options to its constructor. This starts the routing off by checking the current URL against all defined routes and executing the matched handler. See **[Chaplin.Router](./chaplin.router.html)** for more information.
+Initializes the **router** module; forwards passed options to its constructor. This starts the routing off by checking the current URL against all defined routes and executing the matched handler. See **[Chaplin.Router](./chaplin.router.md)** for more information.
 
 * **routes**
   The routing function that contains the match invocations, normally located in `routes.coffee`.
@@ -149,7 +149,7 @@ var Application = Chaplin.Application.extend({
 When all of the routes have been matched, call `startRouting()` to begin monitoring routing events, and dispatching routes. Invoke this method after all of the components have been initialized as this will also match the current URL and dispatch the matched route.
 
 <h3 class="module-member" id="initComposer">initComposer([options])</h3>
-Initializes the **composer** module; forwards passed options to its constructor. See **[Chaplin.Composer](./chaplin.composer.html)** for more information.
+Initializes the **composer** module; forwards passed options to its constructor. See **[Chaplin.Composer](./chaplin.composer.md)** for more information.
 
 To replace the layout with a derived class (possibly with various extensions), you'd override the `initComposer` method and construct the composer class as follows:
 
@@ -174,7 +174,7 @@ var Application = Chaplin.Application.extend({
 ```
 
 <h3 class="module-member" id="initLayout">initLayout([options])</h3>
-Initializes the **layout** module, forwarding the options hash to its constructor. See **[Chaplin.Layout](./chaplin.layout.html)** for more information.
+Initializes the **layout** module, forwarding the options hash to its constructor. See **[Chaplin.Layout](./chaplin.layout.md)** for more information.
 
 To replace the layout with a derived class (possibly with various extensions), you'd override the `initLayout` method and construct the layout class as follows:
 
