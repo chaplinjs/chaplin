@@ -118,7 +118,7 @@ module.exports = class Layout extends View
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
-        window.open el.href
+        window.open href
       return
 
     if isAnchor
