@@ -28,7 +28,7 @@ Disposes all models and views on current `Controller` instance.
 
 ### Structure
 
-By convention, there is one controller for each application module. A controller may provide methods for several actions like `index`, `show`, `edit`, etc. These action methods are called by the [Chaplin.Dispatcher](./chaplin.dispatcher.html) when an associated route matches.
+By convention, there is one controller for each application module. A controller may provide methods for several actions like `index`, `show`, `edit`, etc. These action methods are called by the [Chaplin.Dispatcher](./chaplin.dispatcher.md) when an associated route matches.
 
 A controller is usually started following a route match. Each route entry points to one controller action, for example `likes#show`, which is the `show` action of the `LikesController`.
 
@@ -37,7 +37,7 @@ A controller is usually started following a route match. Each route entry points
 
 By default, all controllers must be placed in the `/controllers/`  folder (the / stands for the root of the `baseURL` you have defined for your loader) and be suffixed with `_controller`. So for instance, the `LikesController` needs to be defined in the file `/controllers/likes_controller.js`.
 
-If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.html#initialize).
+If you want to overwrite this behaviour, you can edit the `controller_path` and `controller_suffix` options in the options hash you pass to `Chaplin.Application.initDispatcher` or `Chaplin.Dispatcher.initialize`. See details in the `Chaplin.Dispatcher` [documentation](./chaplin.dispatcher.md#initialize).
 
 
 ### Before actions
@@ -112,7 +112,7 @@ Normal models and collections should also be saved as instance properties so Cha
 
 By default a new controller is instantiated with every route match. That means models and views are disposed by default, even if the new controller is the same as the old controller.
 
-To persist models and views in a controlled way, it is recommended to use the [Chaplin.Composer](./chaplin.composer.html).
+To persist models and views in a controlled way, it is recommended to use the [Chaplin.Composer](./chaplin.composer.md).
 
 Chaplin will automatically dispose all models and views that are properties of the controller instance. If you’re using the Composer to reuse models and views, you need to use local variables instead of controller properties. Otherwise Chaplin will dispose them with the controller.
 

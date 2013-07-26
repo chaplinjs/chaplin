@@ -7,7 +7,7 @@ Chaplin: utils
 
 Chaplin’s utils provide common functions for use throughout the project.
 
-These functions are generic and not related to any specific Chaplin components. Useful functions for messing with Chaplin are available in [Chaplin.helpers](chaplin.helpers.html).
+These functions are generic and not related to any specific Chaplin components. Useful functions for messing with Chaplin are available in [Chaplin.helpers](chaplin.helpers.md).
 
 <h3 class="module-member" id="beget">beget(parent)</h3>
 * **returns a new object with `parent` as its prototype**

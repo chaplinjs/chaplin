@@ -8,11 +8,11 @@ Welcome to the documentation of the Chaplin framework. Chaplin is an architectur
 
 ## Principles & Features
 
-* [Overview](./overview.html)
-* [Getting started](./getting_started.html)
-* [Event Handling Overview](./events.html)
-* [Disposal](./disposal.html)
-* [Handling Asynchronous Dependencies](./handling_async.html)
+* [Overview](./overview.md)
+* [Getting started](./getting_started.md)
+* [Event Handling Overview](./events.md)
+* [Disposal](./disposal.md)
+* [Handling Asynchronous Dependencies](./handling_async.md)
 
 ## API Reference
 {% include modules.md %}

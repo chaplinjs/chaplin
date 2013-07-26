@@ -5,7 +5,7 @@ module_path: src/chaplin/lib/event_broker.coffee
 Chaplin: EventBroker
 ---
 
-The `EventBroker` offers an interface to interact with [Chaplin.mediator](./chaplin.mediator.html), meant to be used as a mixin.
+The `EventBroker` offers an interface to interact with [Chaplin.mediator](./chaplin.mediator.md), meant to be used as a mixin.
 
 <h2 id="methods">Methods</h2>
 
