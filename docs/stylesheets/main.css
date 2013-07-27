@@ -119,6 +119,11 @@ form.language .javascript {
 .show-javascript span.javascript {
   display: inline;
 }
+
+img[*="chaplin-lifecycle.png"] {
+  width: 100%;
+}
+
 /* Device Dependent */
 @media (min-width: 768px) { /* Desktop */
   .sidebar {
