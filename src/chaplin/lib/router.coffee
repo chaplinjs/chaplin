@@ -17,8 +17,11 @@ module.exports = class Router # This class does not extend Backbone.Router.
   _.extend @prototype, EventBroker
 
   constructor: (@options = {}) ->
+    # Enable pushState by default for HTTP(s).
+    # Disable it for file:// schema.
+    isWebFile = window.location.protocol isnt 'file:'
     _.defaults @options,
-      pushState: true
+      pushState: isWebFile
       root: '/'
 
     # Cached regex for stripping a leading subdir and hash/slash.
