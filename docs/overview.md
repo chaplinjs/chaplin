@@ -12,6 +12,9 @@ Chaplin is an architecture for JavaScript web applications based on the [Backbon
 While Backbone is an easy starting point, it provides only basic, low-level patterns. Backbone provides little structure above simple routing, individual models, views and their binding. Chaplin addresses these limitations by providing a light-weight but flexible structure which leverages well-proven design patterns and best practises.
 
 ## Framework
+
+[![](http://chaplinjs.org/images/chaplin-lifecycle.png)](http://chaplinjs.org/images/chaplin-lifecycle.png)
+
 ### [Application](./chaplin.application.html)
 The bootstrapper of the application; an extension point for key parts of the architecture.
 
