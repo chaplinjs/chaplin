@@ -120,7 +120,7 @@ form.language .javascript {
   display: inline;
 }
 
-img[*="chaplin-lifecycle.png"] {
+img[src$="chaplin-lifecycle.png"] {
   width: 100%;
 }
 
