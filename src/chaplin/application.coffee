@@ -28,15 +28,15 @@ module.exports = class Application
   layout: null
   router: null
   composer: null
-  initialized: false
+  started: false
 
   constructor: (options = {}) ->
     @initialize options
 
   initialize: (options = {}) ->
-    # Check if app is already initialized.
-    if @initialized
-      throw new Error 'Application#initialize: App was already initialized'
+    # Check if app is already started.
+    if @started
+      throw new Error 'Application#initialize: App was already started'
 
     # Initialize core components.
     # ---------------------------
@@ -61,14 +61,8 @@ module.exports = class Application
     # Mediator is a global message broker which implements pub / sub pattern.
     @initMediator()
 
-    # Actually start routing.
-    @startRouting()
-
-    # Mark app as initialized.
-    @initialized = true
-
-    # Freeze the application instance to prevent further changes.
-    Object.freeze? this
+    # Start the application.
+    @start()
 
   # **Chaplin.Dispatcher** sits between the router and controllers to listen
   # for routing events. When they occur, Chaplin.Dispatcher loads the target
@@ -115,9 +109,16 @@ module.exports = class Application
     # Register any provided routes.
     routes? @router.match
 
-  startRouting: ->
+  # Can be customized when overridden.
+  start: ->
     # After registering the routes, start **Backbone.history**.
     @router.startHistory()
+
+    # Mark app as initialized.
+    @started = true
+
+    # Freeze the application instance to prevent further changes.
+    Object.freeze? this
 
   # Disposal
   # --------

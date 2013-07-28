@@ -68,9 +68,9 @@ define [
       expect(passedMatch).to.be.a 'function'
       expect(Backbone.History.started).to.be false
 
-    it 'should start Backbone.history with startRouting()', ->
+    it 'should start Backbone.history with start()', ->
       app.initRouter (->), root: '/', pushState: false
-      app.startRouting()
+      app.start()
       expect(Backbone.History.started).to.be true
       Backbone.history.stop()
 
