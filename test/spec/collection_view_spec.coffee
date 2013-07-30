@@ -86,7 +86,7 @@ define [
     viewsMatchCollection = ->
       children = getViewChildren()
       expect(children.length).to.be collection.length
-      collection.each (model, index) ->
+      collection.forEach (model, index) ->
         $el = children.eq index
 
         expectedId = String model.id
@@ -376,7 +376,7 @@ define [
         visibleItems = collectionView.visibleItems
         expect(visibleItems).to.be.an 'array'
         expect(visibleItems.length).to.be collection.length
-        collection.each (model, index) ->
+        collection.forEach (model, index) ->
           expect(visibleItems[index]).to.be model
 
       it 'should fire visibilityChange events', ->
@@ -517,7 +517,7 @@ define [
           model.get('title') is 'new'
 
         children = getViewChildren()
-        collection.each (model, index) ->
+        collection.forEach (model, index) ->
           $el = children.eq(index)
           visible = model.get('title') is 'new'
           displayValue = $el.css 'display'
@@ -611,7 +611,7 @@ define [
           )
           expect(hasClass).to.be true
 
-        collection.each (model, index) ->
+        collection.forEach (model, index) ->
           call = filterCallbackSpy.getCall index
           checkCall model, call
 
