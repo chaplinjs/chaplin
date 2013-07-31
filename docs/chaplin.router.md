@@ -138,7 +138,7 @@ Stops the Backbone.history instance and removes it from the router object. Also 
 
 `Chaplin.Router` listens to these global events:
 
-* `!router:route path[, options], callback`
+* `!router:route path[, options]`
 * `!router:reverse name, params[, options], callback`
 * `!router:changeURL url[, options]`
 
