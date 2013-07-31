@@ -24,8 +24,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
     # Cached regex for stripping a leading subdir and hash/slash.
     @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
 
-    @subscribeEvent '!router:route', @routeHandler
-    @subscribeEvent '!router:routeByName', @routeByNameHandler
+    @subscribeEvent '!router:route', @route
     @subscribeEvent '!router:reverse', @reverseHandler
     @subscribeEvent '!router:changeURL', @changeURLHandler
 
@@ -127,32 +126,6 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
     # We didn't get anything.
     throw new Error 'Router#reverse: invalid route specified'
-
-  # Handler for the global !router:route event.
-  routeHandler: (pathDesc, options) ->
-    # DEPRECATION Tolerate old signature: Assume only path was passed
-    #             if second argument is callback.
-    #             When removing this in the next version, `Router#route` can
-    #             itself become the handler function.
-    if typeof options is 'function'
-      options = {}
-      console.group "Deprecation Warning"
-      console.warn "Callbacks for '!router:route' have been removed. Update your code."
-      console.groupEnd()
-    @route pathDesc, options
-
-  # DEPRECATION To be removed.
-  # Find the URL for a given route name and parameters,
-  # then route the URL. Returns whether a route matched.
-  # Handler for the global !router:routeByName event.
-  routeByNameHandler: (name, params, options) ->
-    console.group "Deprecation Warning"
-    console.warn "'!router:routeByName' has been deprecated."
-    console.warn "Use configuration objects with '!router:route'."
-    console.groupEnd()
-    options = {} if typeof options is 'function'
-    path = @reverse name, params
-    @route path, options
 
   # Handler for the global !router:reverse event.
   reverseHandler: (name, params, callback) ->

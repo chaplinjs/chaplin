@@ -55,16 +55,6 @@ module.exports = class Controller
     @redirected = true
     @publishEvent '!router:route', pathDesc, options
 
-  # DEPRECATION To be removed.
-  # Redirect to named route.
-  redirectToRoute: (name, params, options) ->
-    console.group "Deprecation Warning"
-    console.warn "redirectToRoute has been deprecated."
-    console.warn "Use configuration objects with redirectTo."
-    console.groupEnd()
-    @redirected = true
-    @publishEvent '!router:routeByName', name, params, options
-
   # Disposal
   # --------
 

@@ -105,11 +105,18 @@ Route a given path manually. Returns a boolean after it has been matched against
   * **name**: name of a [named route](#match), can replace **controller** and **action**,
   * **params**: params hash.
 
-<h3 class="module-member" id="routeHandler">routeHandler([path], [callback])</h3>
+For routing from other modules, the `!router:route` event can be used. All of the following would be valid use cases.
 
-Handler for the global `!router:route` event, performs routing for the path given in `path`. If `callback` is provided, it will be called with a boolean value communicating whether or not there was a match.
-
-* **path**: an absolute path with a leading slash
+```coffeescript
+@publishEvent '!router:route', name: 'show_message',  params: {id: 80}
+@publishEvent '!router:route', controller: 'messages', action: 'show', params: {id: 80}
+@publishEvent '!router:route', '/messages/80'
+```
+```javascript
+this.publishEvent('!router:route', {name: 'show_message',  params: {id: 80}})
+this.publishEvent('!router:route', {controller: 'messages', action: 'show', params: {id: 80}})
+this.publishEvent('!router:route', '/messages/80')
+```
 
 <h3 class="module-member" id="changeURL">changeURL([url])</h3>
 
@@ -119,7 +126,7 @@ Changes the current URL and adds a history entry without triggering any route ac
 
 <h3 class="module-member" id="changeURLHandler">changeURLHandler([url])</h3>
 
-Handler for the globalized `!router:changeURL` event. Calls `this.changeURL`.
+Handler for the globalized `!router:changeURL` event. Calls `changeURL`.
 
 * **url**: string that is going to be pushed as the page’s URL
 
@@ -132,12 +139,11 @@ Stops the Backbone.history instance and removes it from the router object. Also 
 `Chaplin.Router` listens to these global events:
 
 * `!router:route path[, options], callback`
-* `!router:routeByName name, params[, options], callback` (**deprecated**)
 * `!router:reverse name, params[, options], callback`
 * `!router:changeURL url[, options]`
 
 ## Usage
-`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `this.initRouter` (passing your routes module as an argument) followed by `this.startRouting`.
+`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `initRouter` (passing your routes module as an argument) followed by `startRouting`.
 
 
 ```coffeescript

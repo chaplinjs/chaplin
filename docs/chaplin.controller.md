@@ -16,12 +16,6 @@ Adjusts document title to `subtitle - title`. A title template can be set when i
 
 Navigates to `path` in app. `path` can be either a path given as a string, or an object describing a route. See [the `route` method of the `Router`](./chaplin.router.html#route) for details.
 
-<h3 class="module-member" id="redirectToRoute">redirectToRoute(name, params, options)</h3>
-
-**Deprecated.** Use [`redirectTo`](#redirectTo) instead.
-
-Navigates to named route, like <span class="coffeescript">`@redirectToRoute 'likes#show', id: 502`</span><span class="javascript">`this.redirectToRoute('likes#show', {id: 502})`</span>.
-
 <h3 class="module-member" id="dispose">dispose()</h3>
 
 Disposes all models and views on current `Controller` instance.
