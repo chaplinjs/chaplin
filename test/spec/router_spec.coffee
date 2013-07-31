@@ -138,6 +138,22 @@ define [
 
         mediator.unsubscribe 'router:match', spy
 
+      it 'should match configuration objects', ->
+        spy = sinon.spy()
+        mediator.subscribe 'router:match', spy
+        router.match 'correct-match', 'null#null'
+        router.match 'correct-match-with-name', 'null#null', name: 'null'
+        router.match 'correct-match-with/:named_param', 'null#null', name: 'with-param'
+
+        routed1 = router.route controller: 'null', action: 'null'
+        routed2 = router.route name: 'null'
+        routed3 = router.route name: 'with-param', params: { named_param: 23 }
+
+        expect(routed1 and routed2 and routed3).to.be true
+        expect(spy).was.calledThrice()
+
+        mediator.unsubscribe 'router:match', spy
+
       it 'should match correctly when using the root option', ->
         subdirRooter = new Router randomOption: 'foo', pushState: false, root: '/subdir/'
         spy = sinon.spy()
@@ -468,7 +484,7 @@ define [
 
     describe 'Listening to the the !router:route event', ->
 
-      it 'should listen to the !router:route event', ->
+      it 'should route when receiving a path', ->
         path = 'router-route-event'
         options = replace: true
         callback = sinon.spy()
@@ -477,7 +493,6 @@ define [
         router.match path, 'router#route'
 
         mediator.publish '!router:route', path, options
-        expect(routeSpy).was.calledWith path, options
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.controller).to.be 'router'
         expect(passedRoute.action).to.be 'route'
@@ -492,36 +507,42 @@ define [
 
         routeSpy.restore()
 
-      it 'should support the old !router:route signature without options', ->
-        path = 'router-route-event-old'
-        router.match path, 'router#route'
-
-        mediator.publish '!router:route', path
-        expect(passedRoute).to.be.an 'object'
-        expect(passedRoute.controller).to.be 'router'
-        expect(passedRoute.action).to.be 'route'
-        expect(passedRoute.path).to.be path
-        expect(passedParams).to.be.an 'object'
-        expect(passedOptions).to.eql {changeURL: true}
-
-    describe 'Routing by Name', ->
-
-      it 'should listen to the !router:routeByName event', ->
+      it 'should route when receiving a name', ->
 
         router.match '', 'home#index', name: 'home'
-        mediator.publish '!router:routeByName', 'home'
+        mediator.publish '!router:route', name: 'home'
 
         expect(passedRoute.controller).to.be 'home'
         expect(passedRoute.action).to.be 'index'
         expect(passedRoute.path).to.be ''
         expect(passedParams).to.be.an 'object'
 
-      it 'should route by name and params', ->
-        router.match '', 'home#index', name: 'home'
+      it 'should route when receiving both name and params', ->
         router.match 'phone/:id', 'phonebook#dial', name: 'phonebook'
 
         params = id: '123'
-        mediator.publish '!router:routeByName', 'phonebook', params
+        mediator.publish '!router:route', name: 'phonebook', params: params
+        expect(passedRoute.controller).to.be 'phonebook'
+        expect(passedRoute.action).to.be 'dial'
+        expect(passedRoute.path).to.be "phone/#{params.id}"
+        expect(passedParams).not.to.be params
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.id).to.be params.id
+
+      it 'should route when receiving controller and action name', ->
+        router.match '', 'home#index'
+        mediator.publish '!router:route', controller: 'home', action: 'index'
+
+        expect(passedRoute.controller).to.be 'home'
+        expect(passedRoute.action).to.be 'index'
+        expect(passedRoute.path).to.be ''
+        expect(passedParams).to.be.an 'object'
+
+      it 'should route when receiving controller and action name and params', ->
+        router.match 'phone/:id', 'phonebook#dial'
+
+        params = id: '123'
+        mediator.publish '!router:route', controller: 'phonebook', action: 'dial', params: params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -537,15 +558,11 @@ define [
 
         params = id: '123'
         options = replace: true
-        mediator.publish '!router:routeByName', 'phonebook',
-          params, options
-
-        expectedPath = "/phone/#{params.id}"
-        expect(routeSpy).was.calledWith expectedPath, options
+        mediator.publish '!router:route', name: 'phonebook', params: params, options
 
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
-        expect(passedRoute.path).to.be expectedPath[1..]
+        expect(passedRoute.path).to.be "phone/#{params.id}"
         expect(passedParams).not.to.be params
         expect(passedParams).to.be.an 'object'
         expect(passedParams.id).to.be params.id
@@ -556,12 +573,9 @@ define [
           )
         )
 
-      it 'should pass false to the callback when no named route was found', ->
-        params = {}
-        options = {}
+      it 'should throw an error when no match was found', ->
         expect(->
-          mediator.publish '!router:routeByName', 'phonebook',
-            params, options
+          mediator.publish '!router:route', 'phonebook'
         ).to.throwError()
 
     describe 'Changing the URL', ->

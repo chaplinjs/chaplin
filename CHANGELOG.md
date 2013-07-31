@@ -1,3 +1,9 @@
+# Chaplin 0.11.0 (unreleased)
+* Removed `!router:routeByName`/`redirectToByName` to be replaced by extended
+  capabilities of `!router:route`/`redirectTo`, see
+  [#634](https://github.com/chaplinjs/chaplin/pull/634) and
+  [the updated docs](http://docs.chaplinjs.org/chaplin.router.html#route).
+
 # Chaplin 0.10.0 (30 June 2013)
 Chaplin now provides universal build for Common.js and AMD.
 
