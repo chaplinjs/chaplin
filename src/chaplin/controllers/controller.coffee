@@ -51,14 +51,9 @@ module.exports = class Controller
   # -----------
 
   # Redirect to URL.
-  redirectTo: (url, options) ->
+  redirectTo: (pathDesc, options) ->
     @redirected = true
-    @publishEvent '!router:route', url, options
-
-  # Redirect to named route.
-  redirectToRoute: (name, params, options) ->
-    @redirected = true
-    @publishEvent '!router:routeByName', name, params, options
+    @publishEvent '!router:route', pathDesc, options
 
   # Disposal
   # --------
