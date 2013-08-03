@@ -102,12 +102,42 @@ module.exports = (grunt) ->
         files: [
           { expand: true, cwd: 'build/', src: 'chaplin.{js,min.js}' },
           {
+            dest: 'bower.json',
+            body: {
+              name: 'chaplin',
+              repo: 'chaplinjs/downloads',
+              version: pkg.version,
+              main: 'chaplin.js',
+              scripts: ['chaplin.js'],
+              dependencies: { backbone: '1.x' }
+            }
+          },
+          {
             dest: 'component.json',
             body: {
               name: 'chaplin',
+              repo: 'chaplinjs/downloads',
               version: pkg.version,
               main: 'chaplin.js',
-              dependencies: { backbone: '>= 1.0.0' }
+              scripts: ['chaplin.js'],
+              dependencies: { 'components/backbone': '1.0.0' }
+            }
+          },
+          {
+            dest: 'package.json',
+            body: {
+              name: 'chaplin',
+              version: pkg.version,
+              description: 'Chaplin.js',
+              main: 'chaplin.js',
+              scripts: { test: 'echo "Error: no test specified" && exit 1' },
+              repository: {
+                type: 'git', url: 'git://github.com/chaplinjs/downloads.git'
+              },
+              author: 'Chaplin team',
+              license: 'MIT',
+              bugs: { url: 'https://github.com/chaplinjs/downloads/issues' },
+              dependencies: { backbone: '~1.0.0', underscore: '~1.5.1' }
             }
           }
         ]

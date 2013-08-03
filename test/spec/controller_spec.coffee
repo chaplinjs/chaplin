@@ -62,30 +62,32 @@ define [
 
     it 'should redirect to a named route', ->
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:routeByName', routerRoute
+      mediator.subscribe '!router:route', routerRoute
 
       name = 'params'
       params = one: '21'
-      controller.redirectToRoute name, params
+      pathDesc = name: name, params: params
+      controller.redirectTo pathDesc
 
       expect(controller.redirected).to.be true
-      expect(routerRoute).was.calledWith name, params
+      expect(routerRoute).was.calledWith pathDesc
 
-      mediator.unsubscribe '!router:routeByName', routerRoute
+      mediator.unsubscribe '!router:route', routerRoute
 
     it 'should redirect to a named route with options', ->
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:routeByName', routerRoute
+      mediator.subscribe '!router:route', routerRoute
 
       name = 'params'
       params = one: '21'
+      pathDesc = name: name, params: params
       options = replace: true
-      controller.redirectToRoute name, params, options
+      controller.redirectTo pathDesc, options
 
       expect(controller.redirected).to.be true
-      expect(routerRoute).was.calledWith name, params, options
+      expect(routerRoute).was.calledWith pathDesc, options
 
-      mediator.unsubscribe '!router:routeByName', routerRoute
+      mediator.unsubscribe '!router:route', routerRoute
 
     it 'should adjust page title', ->
       spy = sinon.spy()

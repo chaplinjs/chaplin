@@ -27,8 +27,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
     # Cached regex for stripping a leading subdir and hash/slash.
     @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
 
-    @subscribeEvent '!router:route', @routeHandler
-    @subscribeEvent '!router:routeByName', @routeByNameHandler
+    @subscribeEvent '!router:route', @route
     @subscribeEvent '!router:reverse', @reverseHandler
     @subscribeEvent '!router:changeURL', @changeURLHandler
 
@@ -80,8 +79,16 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
-  route: (path, options) =>
+  route: (pathDesc, options) =>
     options = if options then _.clone(options) else {}
+
+    # Accept path to be given implicitly via object
+    if typeof pathDesc is 'object'
+      params = pathDesc.params or {}
+      delete pathDesc.params
+      path = @reverse pathDesc, params
+    else
+      path = pathDesc
 
     # Update the URL programmatically after routing.
     _.defaults options, changeURL: true
@@ -122,23 +129,6 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
     # We didn't get anything.
     throw new Error 'Router#reverse: invalid route specified'
-
-  # Handler for the global !router:route event.
-  routeHandler: (path, options) ->
-    # Support old signature: Assume only path and callback were passed
-    # if we only got two arguments.
-    options = {} if typeof options is 'function'
-    @route path, options
-
-  # Find the URL for a given route name and parameters,
-  # then route the URL. Returns whether a route matched.
-  # Handler for the global !router:routeByName event.
-  routeByNameHandler: (name, params, options, callback) ->
-    # Support old signature: Assume options wasn't passed
-    # if we only got three arguments.
-    options = {} if arguments.length is 3 and typeof options is 'function'
-    path = @reverse name, params
-    @route path, options
 
   # Handler for the global !router:reverse event.
   reverseHandler: (name, params, callback) ->
