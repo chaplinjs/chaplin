@@ -23,6 +23,12 @@ body {
 .sidebar ul {
   line-height: 1.25;
 }
+.wrapper {
+   width: 965px;
+   margin: 0 auto;
+  position: relative;
+  height: 100%;
+}
 #content {
   padding: 56px 0 0;
 }
@@ -30,6 +36,31 @@ body {
   font-size: 14px;
   vertical-align: middle;
 }
+
+.toggle-navigation {
+  margin: 0;
+  text-transform: none;
+  top: 9px;
+  right: 10px;
+  width: 48px;
+  height: 32px;
+  padding: 8px 12px;
+  background-color: #FF5D55;
+  border: 1px solid #FF5D55;
+}
+
+.toggle-navigation > .icon-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 1px;
+}
+
+.toggle-navigation > .icon-bar + .icon-bar {
+  margin-top: 4px;
+}
+
 /* LANGUAGE SWITCHER */
 form.language {
   text-align: left;
@@ -106,6 +137,9 @@ form.language .coffeescript.active {
 form.language .javascript {
   background-image: url('../images/javascript.png');
 }
+form.language > fieldset {
+  border: 0;
+}
 /* INLINE CODE */
 .show-coffeescript span.coffeescript {
   display: inline;
@@ -124,8 +158,32 @@ img[src$="chaplin-lifecycle.png"] {
   width: 100%;
 }
 
+#content {
+  width: 690px;
+  padding: 30px;
+  top: 60px;
+  margin-bottom: 60px;
+  /* margin: 40px 0 20px 0; */
+  position: relative;
+  background: #fbfbfb;
+  border-radius: 3px;
+  border: 1px solid #cbcbcb;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.09), inset 0px 0px 2px 2px rgba(255, 255, 255, 0.5), inset 0 0 5px 5px rgba(255, 255, 255, 0.4);
+  height: auto;
+}
+
+.module-info {
+  margin-left: -40px;
+  padding-top: 7px;
+  padding-left: 40px;
+}
+.module-info > h1 {
+  /*background-color: #fff;*/
+  /*max-width: 500px;*/
+}
+
 /* Device Dependent */
-@media (min-width: 768px) { /* Desktop */
+@media (min-width: 976px) { /* Desktop */
   .sidebar {
     position: fixed;
     height: 100%;
@@ -133,12 +191,14 @@ img[src$="chaplin-lifecycle.png"] {
     overflow-y: auto;
   }
   #content {
-    margin-left: 25.64%;
+    /*margin-left: 25.64%;*/
+    position: absolute;
+    right: 20px;
   }
   .module-info {
     position: fixed;
     top: 0;
-    padding: 7px 0;
+    /*padding: 7px 0;*/
     width: 100%;
     background-color: #F5F1E8;
     background: -moz-linear-gradient(top, rgba(245,241,232,1) 0%, rgba(245,241,232,1) 6%, rgba(245,241,232,1) 75%, rgba(245,241,232,0) 100%);
@@ -148,5 +208,43 @@ img[src$="chaplin-lifecycle.png"] {
     background: -ms-linear-gradient(top, rgba(245,241,232,1) 0%,rgba(245,241,232,1) 6%,rgba(245,241,232,1) 75%,rgba(245,241,232,0) 100%);
     background: linear-gradient(to bottom, rgba(245,241,232,1) 0%,rgba(245,241,232,1) 6%,rgba(245,241,232,1) 75%,rgba(245,241,232,0) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f1e8', endColorstr='#00f5f1e8',GradientType=0 );
+  }
+
+  nav {
+    position: absolute;
+    width: 185px;
+    top: 10px;
+    /*left: 50%;*/
+    /*margin-left: -540px;*/
+  }
+  .toggle-navigation {
+    display: none;
+  }
+}
+
+@media (max-width: 975px) {
+  .wrapper {
+    width: auto;
+  }
+  #content {
+    width: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+    top: 0;
+  }
+  nav {
+    display: block;
+    font-size: 24px !important;
+    text-align: center !important;
+  }
+  nav ul {
+    list-style: none;
+  }
+  .navigation {
+    display: none;
+  }
+
+  .site-header h1 a {
+    height: 60px;
   }
 }
