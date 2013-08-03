@@ -42,4 +42,8 @@ $(document).ready(function () {
     });
   // Show code examples according to user prefs
   CD.show(CD.language());
+
+  $('.toggle-navigation').click(function(event) {
+    $('.navigation').slideToggle();
+  });
 });

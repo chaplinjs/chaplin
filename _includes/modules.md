@@ -1,3 +1,11 @@
+### General
+
+* [Overview](./)
+* [Getting started](./getting_started.html)
+* [Event handling overview](./events.html)
+* [Disposal](./disposal.html)
+* [Handling async deps](./handling_async.html)
+
 ### Core
 * <a href="./chaplin.mediator.html" title="Global event bus">Chaplin.mediator</a>
 * <a href="./chaplin.dispatcher.html" title="Broker between router and controller">Chaplin.Dispatcher</a>

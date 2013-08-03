@@ -11,7 +11,6 @@ version: 0.10.0
   </title>
   <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/fonts.css">
   <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/base.css">
-  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/pygments.css">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -22,12 +21,11 @@ version: 0.10.0
   <![endif]-->
 </head>
 <body class="container-fluid">
-  <div class="row-fluid">
-  <div class="span3 sidebar">
+  <div class="wrapper">
+  <nav class="span3 sidebar">
   <header class="site-header">
     <h1><a href="/" title="Introductory page of the documentation">Chaplin Documentation</a></h1>
   </header>
-  <nav>
     <form action="" class="language">
       <fieldset>
         <legend>Examples in:</legend>
@@ -45,12 +43,20 @@ version: 0.10.0
         </ul>
       </fieldset>
     </form>
-    <h2>Modules</h2>
+    <h2>
+      Modules
+      <button class="toggle-navigation">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </h2>
     {% capture sidebar %}{% include modules.md %}{% endcapture %}
-    {{ sidebar | markdownify }}
+    <div class="navigation">
+      {{ sidebar | markdownify }}
+    </div>
   </nav>
-  </div>
-  <div id="content" class="span9">
+  <section id="content" class="span9">
     <header class="module-info">
     {% if page.title %}
     <h1>
@@ -62,7 +68,7 @@ version: 0.10.0
     {% endif %}
     </header>
     {{ content }}
-  </div>
+  </section>
   </div>
 </body>
 </html>
