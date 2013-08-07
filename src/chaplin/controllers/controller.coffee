@@ -36,7 +36,7 @@ module.exports = class Controller
 
   # Convenience method to publish the `!composer:compose` event. See the
   # composer for information on parameters, etc.
-  compose: (name, second, third) ->
+  compose: (name) ->
     if arguments.length is 1
       # Retrieve an active composition using the retrieve event.
       item = null
@@ -45,7 +45,7 @@ module.exports = class Controller
       item
     else
       # Compose the arguments using the compose method.
-      @publishEvent '!composer:compose', name, second, third
+      @publishEvent '!composer:compose', arguments...
 
   # Redirection
   # -----------
