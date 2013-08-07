@@ -28,10 +28,10 @@ When establishing bindings between view and model, `this.model.on()` should not 
 
 <h3 class="module-member" id="initialize">initialize(options)</h3>
 * **options (default: empty hash)**
-    * `autoRender` see [autoRender](#autoRender)
-    * `autoAttach` see [autoAttach](#autoAttach)
+    * `autoRender` see [autoRender](#autorender)
+    * `autoAttach` see [autoAttach](#autoattach)
     * `container` see [container](#container)
-    * `containerMethod` see [containerMethod](#containerMethod)
+    * `containerMethod` see [containerMethod](#containermethod)
     * all standard [Backbone constructor options](http://backbonejs.org/#View-constructor) (`model`, `collection`, `el`, `id`, `className`, `tagName` and `attributes`)
 
   `options` may be specific on the view class or passed to the constructor. Passing in options during instantiation overrides the View prototype's defaults.
