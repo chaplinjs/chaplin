@@ -9,8 +9,7 @@ version: 0.10.0
   <title>
     {% if page.title %} {{ page.title }} &middot; {% endif %} Chaplin Documentation
   </title>
-  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/fonts.css">
-  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/base.css">
+  <link rel="stylesheet" type="text/css" href="http://chaplinjs.org/stylesheets/application.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/pygments.css">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -22,10 +21,9 @@ version: 0.10.0
 </head>
 <body class="container-fluid">
   <div class="wrapper">
+
   <nav class="span3 sidebar">
-  <header class="site-header">
-    <h1><a href="/" title="Introductory page of the documentation">Chaplin Documentation</a></h1>
-  </header>
+
     <form action="" class="language">
       <fieldset>
         <legend>Examples in:</legend>
@@ -57,17 +55,34 @@ version: 0.10.0
     </div>
   </nav>
   <section id="content" class="span9">
-    <header class="module-info">
-    {% if page.title %}
-    <h1>
-      {{ page.title }}
-      {% if page.module_path %}
-        <a href="{{ page.source_base }}{{ page.version }}/{{ page.module_path }}">&rarr; Source</a>
-      {% endif %}
-    </h1>
-    {% endif %}
+
+    <header class="nav-header">
+      <div class="list-wrapper">
+        <ul class="page-nav">
+          <li class="logo"><img width="30" src="http://chaplinjs.org/images/chaplin-hat.png" alt=""></li>
+          <li class="logo-text">Chaplin</li>
+          <li><a href="http://chaplinjs.org" data-pattern="\/\/chaplinjs\.org/(#.*)?$">About</a></li>
+          <li><a class="active" href="http://docs.chaplinjs.org" data-pattern="docs\.chaplinjs">Documentation</a></li>
+          <li><a href="http://chaplinjs.org/examples.html" data-pattern="examples\.html$">Examples</a></li>
+          <li><a href="http://chaplinjs.org/community.html" data-pattern="community\.html$">Community</a></li>
+        </ul>
+      </div>
     </header>
-    {{ content }}
+
+
+    <main class="actual-content">
+      <header class="module-info">
+      {% if page.title %}
+      <h1>
+        {{ page.title }}
+        {% if page.module_path %}
+          <a href="{{ page.source_base }}{{ page.version }}/{{ page.module_path }}">&rarr; Source</a>
+        {% endif %}
+      </h1>
+      {% endif %}
+      </header>
+      {{ content }}
+    </main>
   </section>
   </div>
 </body>

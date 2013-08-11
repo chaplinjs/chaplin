@@ -29,7 +29,7 @@ body {
   position: relative;
   height: 100%;
 }
-#content {
+.actual-content {
   padding: 56px 0 0;
 }
 .module-info a {
@@ -159,10 +159,10 @@ img[src$="chaplin-lifecycle.png"] {
 }
 
 #content {
-  width: 690px;
-  padding: 30px;
-  top: 60px;
+  width: 752px;
+  padding: 0;
   margin-bottom: 60px;
+  margin-top: 0;
   /* margin: 40px 0 20px 0; */
   position: relative;
   background: #fbfbfb;
@@ -170,6 +170,12 @@ img[src$="chaplin-lifecycle.png"] {
   border: 1px solid #cbcbcb;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.09), inset 0px 0px 2px 2px rgba(255, 255, 255, 0.5), inset 0 0 5px 5px rgba(255, 255, 255, 0.4);
   height: auto;
+}
+
+.actual-content {
+  padding: 30px;
+  padding-top: 45px;
+  top: 60px;
 }
 
 .module-info {
@@ -196,18 +202,11 @@ img[src$="chaplin-lifecycle.png"] {
     right: 20px;
   }
   .module-info {
-    position: fixed;
+    /*position: fixed;*/
     top: 0;
     /*padding: 7px 0;*/
     width: 100%;
-    background-color: #F5F1E8;
-    background: -moz-linear-gradient(top, rgba(245,241,232,1) 0%, rgba(245,241,232,1) 6%, rgba(245,241,232,1) 75%, rgba(245,241,232,0) 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(245,241,232,1)), color-stop(6%,rgba(245,241,232,1)), color-stop(75%,rgba(245,241,232,1)), color-stop(100%,rgba(245,241,232,0)));
-    background: -webkit-linear-gradient(top, rgba(245,241,232,1) 0%,rgba(245,241,232,1) 6%,rgba(245,241,232,1) 75%,rgba(245,241,232,0) 100%);
-    background: -o-linear-gradient(top, rgba(245,241,232,1) 0%,rgba(245,241,232,1) 6%,rgba(245,241,232,1) 75%,rgba(245,241,232,0) 100%);
-    background: -ms-linear-gradient(top, rgba(245,241,232,1) 0%,rgba(245,241,232,1) 6%,rgba(245,241,232,1) 75%,rgba(245,241,232,0) 100%);
-    background: linear-gradient(to bottom, rgba(245,241,232,1) 0%,rgba(245,241,232,1) 6%,rgba(245,241,232,1) 75%,rgba(245,241,232,0) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f1e8', endColorstr='#00f5f1e8',GradientType=0 );
+    /*background-color: #F5F1E8;*/
   }
 
   nav {
