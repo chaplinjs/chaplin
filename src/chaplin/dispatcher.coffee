@@ -2,6 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
+mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
@@ -98,11 +99,11 @@ module.exports = class Dispatcher
 
       # Passing new parameters that the action method will receive.
       @currentController.dispose params, route, options
-    
+
     # Save the new controller and its parameters.
     @currentController = controller
     @currentParams = params
-    
+
     # Call the controller action with params and options.
     controller[route.action] params, route, options
 
@@ -148,7 +149,7 @@ module.exports = class Dispatcher
 
     # Tell the router to actually change the current URL.
     url = route.path + if route.query then "?#{route.query}" else ""
-    @publishEvent '!router:changeURL', url, options if options.changeURL
+    mediator.getHandler('router:changeURL') url, options if options.changeURL
 
   # Disposal
   # --------

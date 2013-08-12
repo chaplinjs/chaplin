@@ -2,6 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
+mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 Composition = require 'chaplin/lib/composition'
 EventBroker = require 'chaplin/lib/event_broker'
@@ -35,8 +36,8 @@ module.exports = class Composer
     @compositions = {}
 
     # Subscribe to events.
-    @subscribeEvent '!composer:compose', @compose
-    @subscribeEvent '!composer:retrieve', @retrieve
+    mediator.setHandler 'composer:compose', @compose, this
+    mediator.setHandler 'composer:retrieve', @retrieve, this
     @subscribeEvent 'dispatcher:dispatch', @cleanup
 
   # Constructs a composition and composes into the active compositions.
@@ -116,6 +117,8 @@ module.exports = class Composer
     # Check for an existing composition
     current = @compositions[name]
 
+    isPromise = false
+
     # Apply the check method
     if current and current.check composition.options
       # Mark the current composition as not stale
@@ -123,19 +126,21 @@ module.exports = class Composer
     else
       # Remove the current composition and apply this one
       current.dispose() if current
-      composition.compose composition.options
+      returned = composition.compose composition.options
+      isPromise = (typeof returned?.then is 'function')
       composition.stale false
       @compositions[name] = composition
 
     # Return the active composition
-    @compositions[name]
+    if isPromise
+      returned
+    else
+      @compositions[name]
 
-  # Retrieves an active composition using the compose method and a passed
-  # callback.
-  retrieve: (name, callback) ->
+  # Retrieves an active composition using the compose method.
+  retrieve: (name) ->
     active = @compositions[name]
-    item = (if active and not active.stale() then active.item else undefined)
-    callback item
+    (if active and not active.stale() then active.item else undefined)
 
   # Declare all compositions as stale and remove all that were previously
   # marked stale without being re-composed.
@@ -159,6 +164,8 @@ module.exports = class Composer
 
     # Unbind handlers of global events
     @unsubscribeAllEvents()
+
+    mediator.removeHandlers this
 
     # Dispose of all compositions and their items (that can be)
     composition.dispose() for name, composition of @compositions

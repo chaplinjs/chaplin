@@ -4,13 +4,14 @@ define [
   'chaplin/mediator'
   'chaplin/controllers/controller'
   'chaplin/dispatcher'
-], (_, $, mediator, Controller, Dispatcher) ->
+  'chaplin/composer'
+], (_, $, mediator, Controller, Dispatcher, Composer) ->
   'use strict'
 
   describe 'Dispatcher', ->
     # Initialize shared variables
     dispatcher = params = path = options = stdOptions = route1 = route2 =
-      redirectToURLRoute = redirectToControllerRoute = null
+      redirectToURLRoute = redirectToControllerRoute = composer = null
 
     # Default options which are added on first dispatching
 
@@ -84,6 +85,7 @@ define [
     # Register before/after handlers
 
     beforeEach ->
+      mediator.setHandler 'router:changeURL', ->
       # Create a fresh Dispatcher instance for each test
       dispatcher = new Dispatcher()
       refreshParams()
@@ -92,6 +94,7 @@ define [
       if dispatcher
         dispatcher.dispose()
         dispatcher = null
+      mediator.removeHandlers ['router:changeURL']
 
     # The Tests
 
@@ -309,7 +312,7 @@ define [
 
     it 'should adjust the URL and pass route options', (done) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:changeURL', spy
+      mediator.setHandler 'router:changeURL', spy
 
       path = 'my-little-path'
       routeA = create route1, {path}
@@ -322,26 +325,26 @@ define [
         expect(passedPath).to.be path
         expect(passedOptions).to.eql stdOptions
 
-        mediator.unsubscribe '!router:changeURL', spy
+        mediator.removeHandlers ['router:changeURL']
 
         done()
 
     it 'should not adjust the URL if not desired', (done) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:changeURL', spy
+      mediator.setHandler 'router:changeURL', spy
 
       publishMatch route1, params, changeURL: false
 
       loadTest1Controller ->
         expect(spy).was.notCalled()
 
-        mediator.unsubscribe '!router:changeURL', spy
+        mediator.removeHandlers ['router:changeURL']
 
         done()
 
     it 'should add the query string when adjusting the URL', (done) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:changeURL', spy
+      mediator.setHandler 'router:changeURL', spy
 
       path = 'my-little-path'
       query = 'foo=bar'
@@ -355,7 +358,7 @@ define [
         expect(passedPath).to.be "#{path}?#{query}"
         expect(passedOptions).to.eql stdOptions
 
-        mediator.unsubscribe '!router:changeURL', spy
+        mediator.removeHandlers ['router:changeURL']
 
         done()
 
@@ -588,6 +591,43 @@ define [
               done()
 
         test()
+
+      it 'should kick around promises from compositions', (done) ->
+        composer = new Composer
+
+        deferred = $.Deferred()
+        promise = deferred.promise()
+
+        class AsyncBeforeActionController extends Controller
+          beforeAction: -> @compose 'a', -> promise
+          show: ->
+
+        controllerName = 'async_before_action3'
+        loadController = makeLoadController controllerName,
+          AsyncBeforeActionController
+
+        route = {controller: controllerName, action: 'show', path}
+        options.forceStartup = true
+
+        proto = AsyncBeforeActionController.prototype
+
+        do ->
+          beforeAction = sinon.spy proto, 'beforeAction'
+          action = sinon.spy proto, 'show'
+          publishMatch route, params, options
+
+          loadController ->
+            expect(beforeAction).was.calledOnce()
+            expect(action).was.notCalled()
+
+            deferred.resolve()
+            expect(action).was.calledOnce()
+
+            beforeAction.restore()
+            action.restore()
+
+            composer.dispose()
+            done()
 
       it 'should stop dispatching when another controller is started', (done) ->
         deferred = $.Deferred()

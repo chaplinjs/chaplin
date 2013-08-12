@@ -17,6 +17,7 @@ define [
 
     afterEach ->
       controller.dispose()
+      mediator.removeHandlers ['router:route']
 
     it 'should mixin a Backbone.Events', ->
       for own name, value of Backbone.Events
@@ -39,7 +40,7 @@ define [
       expect(controller.redirectTo).to.be.a 'function'
 
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
+      mediator.setHandler 'router:route', routerRoute
 
       url = 'redirect-target/123'
       controller.redirectTo url
@@ -47,11 +48,9 @@ define [
       expect(controller.redirected).to.be true
       expect(routerRoute).was.calledWith url
 
-      mediator.unsubscribe '!router:route', routerRoute
-
     it 'should redirect to a URL with routing options', ->
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
+      mediator.setHandler 'router:route', routerRoute
 
       url = 'redirect-target/123'
       options = replace: true
@@ -62,7 +61,7 @@ define [
 
     it 'should redirect to a named route', ->
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
+      mediator.setHandler 'router:route', routerRoute
 
       name = 'params'
       params = one: '21'
@@ -72,11 +71,9 @@ define [
       expect(controller.redirected).to.be true
       expect(routerRoute).was.calledWith pathDesc
 
-      mediator.unsubscribe '!router:route', routerRoute
-
     it 'should redirect to a named route with options', ->
       routerRoute = sinon.spy()
-      mediator.subscribe '!router:route', routerRoute
+      mediator.setHandler 'router:route', routerRoute
 
       name = 'params'
       params = one: '21'
@@ -87,16 +84,16 @@ define [
       expect(controller.redirected).to.be true
       expect(routerRoute).was.calledWith pathDesc, options
 
-      mediator.unsubscribe '!router:route', routerRoute
-
     it 'should adjust page title', ->
       spy = sinon.spy()
-      mediator.subscribe '!adjustTitle', spy
+      mediator.subscribe 'adjustTitle', spy
       controller.adjustTitle 'meh'
       expect(spy).was.calledOnce()
       expect(spy).was.calledWith 'meh'
 
     describe 'Disposal', ->
+      mediator.setHandler 'region:unregister', ->
+
       it 'should dispose itself correctly', ->
         expect(controller.dispose).to.be.a 'function'
         controller.dispose()
