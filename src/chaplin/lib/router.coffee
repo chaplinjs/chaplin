@@ -75,6 +75,10 @@ module.exports = class Router # This class does not extend Backbone.Router.
     Backbone.history.handlers.push {route, callback: route.handler}
     route
 
+  # Run `match` with given namespace as a prefix of pattern.
+  namespace: (prefix, callback) =>
+    callback (pattern, args...) => @match prefix + pattern, args...
+
   # Route a given URL path manually. Returns whether a route matched.
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)

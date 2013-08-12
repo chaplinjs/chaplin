@@ -201,6 +201,15 @@ define [
 
         mediator.unsubscribe 'router:match', spy
 
+      it 'should match with namespace', ->
+        spy = sinon.spy()
+        mediator.subscribe 'router:match', spy
+        router.namespace 'foo/', (match) =>
+          match 'bar', 'null#null'
+
+        router.route 'foo/bar'
+        expect(spy).was.called()
+
     describe 'Passing the Route', ->
 
       it 'should pass the route to the router:match handler', ->
