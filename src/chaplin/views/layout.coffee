@@ -136,7 +136,7 @@ module.exports = class Layout extends View
     options = {query}
 
     # Pass to the router, try to route the path internally.
-    mediator.getHandler('router:route') path, options
+    mediator.execute 'router:route', path, options
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
     return

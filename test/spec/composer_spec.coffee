@@ -54,39 +54,39 @@ define [
     # -----------------------------
 
     it 'should initialize a view when it is composed for the first time', ->
-      mediator.getHandler('composer:compose') 'test1', TestView1
+      mediator.execute 'composer:compose', 'test1', TestView1
       expect(_.keys(composer.compositions).length).to.be 1
       expect(composer.compositions['test1'].item).to.be.a TestView1
       mediator.publish 'dispatcher:dispatch'
 
-      mediator.getHandler('composer:compose') 'test1', TestView1
-      mediator.getHandler('composer:compose') 'test2', TestView2
+      mediator.execute 'composer:compose', 'test1', TestView1
+      mediator.execute 'composer:compose', 'test2', TestView2
       expect(_.keys(composer.compositions).length).to.be 2
       expect(composer.compositions['test2'].item).to.be.a TestView2
       mediator.publish 'dispatcher:dispatch'
 
     it 'should not initialize a view if it is already composed', ->
-      mediator.getHandler('composer:compose') 'test1', TestView1
+      mediator.execute 'composer:compose', 'test1', TestView1
       expect(_.keys(composer.compositions).length).to.be 1
       mediator.publish 'dispatcher:dispatch'
 
-      mediator.getHandler('composer:compose') 'test1', TestView1
-      mediator.getHandler('composer:compose') 'test2', TestView2
+      mediator.execute 'composer:compose', 'test1', TestView1
+      mediator.execute 'composer:compose', 'test2', TestView2
       expect(_.keys(composer.compositions).length).to.be 2
       mediator.publish 'dispatcher:dispatch'
 
-      mediator.getHandler('composer:compose') 'test1', TestView1
-      mediator.getHandler('composer:compose') 'test2', TestView2
-      mediator.getHandler('composer:compose') 'test1', TestView1
+      mediator.execute 'composer:compose', 'test1', TestView1
+      mediator.execute 'composer:compose', 'test2', TestView2
+      mediator.execute 'composer:compose', 'test1', TestView1
       expect(_.keys(composer.compositions).length).to.be 2
       mediator.publish 'dispatcher:dispatch'
 
     it 'should dispose a compose view if it is not re-composed', ->
-      mediator.getHandler('composer:compose') 'test1', TestView1
+      mediator.execute 'composer:compose', 'test1', TestView1
       expect(_.keys(composer.compositions).length).to.be 1
 
       mediator.publish 'dispatcher:dispatch'
-      mediator.getHandler('composer:compose') 'test2', TestView2
+      mediator.execute 'composer:compose', 'test2', TestView2
       mediator.publish 'dispatcher:dispatch'
 
       expect(_.keys(composer.compositions).length).to.be 1
@@ -96,7 +96,7 @@ define [
     # -----------------------------
 
     it 'should invoke compose when a view should be composed', ->
-      mediator.getHandler('composer:compose') 'weird',
+      mediator.execute 'composer:compose', 'weird',
         compose: -> @view = new TestView1()
         check: -> false
 
@@ -106,7 +106,7 @@ define [
       mediator.publish 'dispatcher:dispatch'
       expect(_.keys(composer.compositions).length).to.be 1
 
-      mediator.getHandler('composer:compose') 'weird',
+      mediator.execute 'composer:compose', 'weird',
         compose: -> @view = new TestView2()
 
       mediator.publish 'dispatcher:dispatch'
@@ -116,7 +116,7 @@ define [
     it 'should dispose the entire composition when necessary', ->
       spy = sinon.spy()
 
-      mediator.getHandler('composer:compose') 'weird',
+      mediator.execute 'composer:compose', 'weird',
         compose: ->
           @dagger = new TestView1()
           @dagger2 = new TestView1()
@@ -128,7 +128,7 @@ define [
       mediator.publish 'dispatcher:dispatch'
       expect(_.keys(composer.compositions).length).to.be 1
 
-      mediator.getHandler('composer:compose') 'weird',
+      mediator.execute 'composer:compose', 'weird',
         compose: -> @frozen = new TestView2()
         check: -> false
 
@@ -144,7 +144,7 @@ define [
     it 'should allow a function to be composed', ->
       spy = sinon.spy()
 
-      mediator.getHandler('composer:compose') 'spy', spy
+      mediator.execute 'composer:compose', 'spy', spy
       mediator.publish 'dispatcher:dispatch'
 
       expect(spy).was.called()
@@ -153,7 +153,7 @@ define [
       spy = sinon.spy()
       params = {foo: 123, bar: 123}
 
-      mediator.getHandler('composer:compose') 'spy', params, spy
+      mediator.execute 'composer:compose', 'spy', params, spy
       mediator.publish 'dispatcher:dispatch'
 
       expect(spy).was.calledWith(params)
@@ -162,7 +162,7 @@ define [
       spy = sinon.spy()
       params = {foo: 123, bar: 123}
 
-      mediator.getHandler('composer:compose') 'spy',
+      mediator.execute 'composer:compose', 'spy',
         options: params
         compose: spy
 
@@ -171,7 +171,7 @@ define [
       expect(spy).was.calledWith(params)
 
     it 'should allow a model to be composed', ->
-      mediator.getHandler('composer:compose') 'spy', Model
+      mediator.execute 'composer:compose', 'spy', Model
 
       expect(composer.compositions['spy'].item).to.be.a Model
 
@@ -183,7 +183,7 @@ define [
       class CustomComposition extends Composition
         compose: spy
 
-      mediator.getHandler('composer:compose') 'spy', CustomComposition
+      mediator.execute 'composer:compose', 'spy', CustomComposition
       mediator.publish 'dispatcher:dispatch'
 
       expect(composer.compositions['spy'].item).to.be.a Composition
@@ -198,7 +198,7 @@ define [
       class CustomComposition extends Composition
         compose: spy
 
-      mediator.getHandler('composer:compose') 'spy', CustomComposition, params
+      mediator.execute 'composer:compose', 'spy', CustomComposition, params
       mediator.publish 'dispatcher:dispatch'
 
       expect(composer.compositions['spy'].item).to.be.a Composition
@@ -208,17 +208,17 @@ define [
       expect(spy).was.calledWith(params)
 
     it 'should allow a composition to be retreived', ->
-      mediator.getHandler('composer:compose') 'spy', Model
-      item = mediator.getHandler('composer:retrieve') 'spy'
+      mediator.execute 'composer:compose', 'spy', Model
+      item = mediator.execute 'composer:retrieve', 'spy'
       expect(item).to.be composer.compositions['spy'].item
       mediator.publish 'dispatcher:dispatch'
 
     it 'should throw for invalid invocations', ->
       expect(->
-        mediator.getHandler('composer:compose') 'spy', null
+        mediator.execute 'composer:compose', 'spy', null
       ).to.throwError()
       expect(->
-        mediator.getHandler('composer:compose') compose: /a/, check: ''
+        mediator.execute 'composer:compose', compose: /a/, check: ''
       ).to.throwError()
 
     # disposal

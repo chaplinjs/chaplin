@@ -385,10 +385,10 @@ define [
         register()
         params = one: 145
         spy = sinon.spy()
-        expect(mediator.getHandler('router:reverse') 'phonebook', params).to.be '/phone/145'
+        expect(mediator.execute 'router:reverse', 'phonebook', params).to.be '/phone/145'
 
         expect(->
-          mediator.getHandler('router:reverse') 'missing', params
+          mediator.execute 'router:reverse', 'missing', params
         ).to.throwError()
 
       it 'should prepend mount point', ->
@@ -400,7 +400,7 @@ define [
         register()
 
         params = one: 145
-        res = mediator.getHandler('router:reverse') 'phonebook', params
+        res = mediator.execute 'router:reverse', 'phonebook', params
         expect(res).to.be '/subdir/phone/145'
 
     describe 'Query string extraction', ->
@@ -489,7 +489,7 @@ define [
         routeSpy = sinon.spy router, 'route'
         router.match path, 'router#route'
 
-        mediator.getHandler('router:route') path, options
+        mediator.execute 'router:route', path, options
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.controller).to.be 'router'
         expect(passedRoute.action).to.be 'route'
@@ -499,7 +499,7 @@ define [
         )
 
         expect(->
-          mediator.getHandler('router:route') 'different-path', options
+          mediator.execute 'router:route', 'different-path', options
         ).to.throwError()
 
         routeSpy.restore()
@@ -507,7 +507,7 @@ define [
       it 'should route when receiving a name', ->
 
         router.match '', 'home#index', name: 'home'
-        mediator.getHandler('router:route') name: 'home'
+        mediator.execute 'router:route', name: 'home'
 
         expect(passedRoute.controller).to.be 'home'
         expect(passedRoute.action).to.be 'index'
@@ -518,7 +518,7 @@ define [
         router.match 'phone/:id', 'phonebook#dial', name: 'phonebook'
 
         params = id: '123'
-        mediator.getHandler('router:route') name: 'phonebook', params: params
+        mediator.execute 'router:route', name: 'phonebook', params: params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -528,7 +528,7 @@ define [
 
       it 'should route when receiving controller and action name', ->
         router.match '', 'home#index'
-        mediator.getHandler('router:route') controller: 'home', action: 'index'
+        mediator.execute 'router:route', controller: 'home', action: 'index'
 
         expect(passedRoute.controller).to.be 'home'
         expect(passedRoute.action).to.be 'index'
@@ -539,7 +539,7 @@ define [
         router.match 'phone/:id', 'phonebook#dial'
 
         params = id: '123'
-        mediator.getHandler('router:route') controller: 'phonebook', action: 'dial', params: params
+        mediator.execute 'router:route', controller: 'phonebook', action: 'dial', params: params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -555,7 +555,7 @@ define [
 
         params = id: '123'
         options = replace: true
-        mediator.getHandler('router:route') name: 'phonebook', params: params, options
+        mediator.execute 'router:route', name: 'phonebook', params: params, options
 
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
@@ -572,7 +572,7 @@ define [
 
       it 'should throw an error when no match was found', ->
         expect(->
-          mediator.getHandler('router:route') 'phonebook'
+          mediator.execute 'router:route', 'phonebook'
         ).to.throwError()
 
     describe 'Changing the URL', ->
@@ -582,12 +582,12 @@ define [
         navigate = sinon.stub Backbone.history, 'navigate'
 
         options = some: 'stuff'
-        mediator.getHandler('router:changeURL') path, options
+        mediator.execute 'router:changeURL', path, options
         expect(navigate).was.calledWith path,
           replace: false, trigger: false
 
         options = replace: true, trigger: true, some: 'stuff'
-        mediator.getHandler('router:changeURL') path, options
+        mediator.execute 'router:changeURL', path, options
         expect(Backbone.history.navigate).was.calledWith path,
           replace: true, trigger: true
 

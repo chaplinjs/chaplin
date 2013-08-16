@@ -40,14 +40,7 @@ module.exports = class Controller
   compose: (name) ->
     retrieve = (arguments.length is 1)
     name = if retrieve then 'retrieve' else 'compose'
-    handler = mediator.getHandler("composer:#{name}")
-
-    if retrieve
-      # Retrieve an active composition using the retrieve event.
-      handler name
-    else
-      # Compose the arguments using the compose method.
-      handler arguments...
+    mediator.execute "composer:#{name}", arguments...
 
   # Redirection
   # -----------
@@ -55,7 +48,7 @@ module.exports = class Controller
   # Redirect to URL.
   redirectTo: (pathDesc, options) ->
     @redirected = true
-    mediator.getHandler('router:route') pathDesc, options
+    mediator.execute 'router:route', pathDesc, options
 
   # Disposal
   # --------

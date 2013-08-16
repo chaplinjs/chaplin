@@ -8,10 +8,10 @@ helpers =
 
   # Returns the url for a named route and any params.
   reverse: (routeName, params) ->
-    mediator.getHandler('router:reverse')(routeName, params)
+    mediator.execute 'router:reverse', routeName, params
 
   # Redirects to URL or route name.
   redirectTo: (pathDesc, options) ->
-    mediator.getHandler('router:route')(pathDesc, options)
+    mediator.execute 'router:route', pathDesc, options
 
 module.exports = helpers

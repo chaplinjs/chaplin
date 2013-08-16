@@ -149,7 +149,7 @@ module.exports = class Dispatcher
 
     # Tell the router to actually change the current URL.
     url = route.path + if route.query then "?#{route.query}" else ""
-    mediator.getHandler('router:changeURL') url, options if options.changeURL
+    mediator.execute 'router:changeURL', url, options if options.changeURL
 
   # Disposal
   # --------
