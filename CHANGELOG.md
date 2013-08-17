@@ -1,8 +1,19 @@
 # Chaplin 0.11.0 (unreleased)
-* Removed `!router:routeByName`/`redirectToByName` to be replaced by extended
-  capabilities of `!router:route`/`redirectTo`, see
-  [#634](https://github.com/chaplinjs/chaplin/pull/634) and
-  [the updated docs](http://docs.chaplinjs.org/chaplin.router.html#route).
+Chaplin internals now use *Request / Response* pattern instead of
+bang `!events`. Removed events:
+    * `!router:route`, `!router:routeByName` (use `helpers.redirectTo`)
+    * `!router:changeURL`
+    * `!composer:compose`, `!composer:retrieve`
+    * `!region:register`, `!region:unregister`
+* Improved `Chaplin.Controller`:
+    * `Controller::compose` method now:
+        * by default, returns the composition itself
+        * if composition body returned a promise, it returns a promise too
+* Improved `Chaplin.helpers`:
+    * Added `helpers.redirectTo` which allows to re.
+* Improved `Chaplin.utils`:
+    * `utils.getPrototypeChain` now returns prototypes from oldest to newest,
+      to match `utils.getAllPropertyVersions`.
 
 # Chaplin 0.10.0 (30 June 2013)
 Chaplin now provides universal build for Common.js and AMD.
