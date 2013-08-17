@@ -75,7 +75,8 @@ mediator.removeHandlers = (instanceOrNames) ->
   return
 
 # Make properties readonly.
-utils.readonly mediator, 'subscribe', 'unsubscribe', 'publish'
+utils.readonly mediator,
+  'subscribe', 'unsubscribe', 'publish', 'setHandler', 'execute', 'removeHandlers'
 
 # Sealing the mediator
 # --------------------
