@@ -52,7 +52,7 @@ utils =
     chain = [object.constructor.prototype]
     while object = object.constructor?.__super__ ? object.constructor?.superclass
       chain.push object
-    chain
+    chain.reverse()
 
   # Get all property versions from object’s prototype chain.
   # E.g. if object1 & object2 have `prop` and object2 inherits from
@@ -63,7 +63,7 @@ utils =
       value = proto[property]
       if value and value not in result
         result.push value
-    result.reverse()
+    result
 
   # String Helpers
   # --------------

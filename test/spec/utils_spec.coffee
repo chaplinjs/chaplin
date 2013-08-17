@@ -45,10 +45,10 @@ define [
       it 'should get prototype chain of instance', ->
         object = new D
         expect(utils.getPrototypeChain object).to.eql [
-          D.prototype,
-          C.prototype,
+          A.prototype,
           B.prototype,
-          A.prototype
+          C.prototype,
+          D.prototype
         ]
 
     describe 'getAllPropertyVersions', ->
