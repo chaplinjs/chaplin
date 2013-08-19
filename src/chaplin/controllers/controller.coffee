@@ -3,6 +3,7 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
+mediator = require 'chaplin/mediator'
 
 module.exports = class Controller
   # Borrow the static extend method from Backbone.
@@ -29,7 +30,7 @@ module.exports = class Controller
 
   # Change document title.
   adjustTitle: (subtitle) ->
-    @publishEvent '!adjustTitle', subtitle
+    mediator.execute 'adjustTitle', subtitle
 
   # Composer
   # --------
@@ -37,15 +38,9 @@ module.exports = class Controller
   # Convenience method to publish the `!composer:compose` event. See the
   # composer for information on parameters, etc.
   compose: (name) ->
-    if arguments.length is 1
-      # Retrieve an active composition using the retrieve event.
-      item = null
-      @publishEvent '!composer:retrieve', name, (composition) ->
-        item = composition
-      item
-    else
-      # Compose the arguments using the compose method.
-      @publishEvent '!composer:compose', arguments...
+    retrieve = (arguments.length is 1)
+    name = if retrieve then 'retrieve' else 'compose'
+    mediator.execute "composer:#{name}", arguments...
 
   # Redirection
   # -----------
@@ -53,7 +48,7 @@ module.exports = class Controller
   # Redirect to URL.
   redirectTo: (pathDesc, options) ->
     @redirected = true
-    @publishEvent '!router:route', pathDesc, options
+    mediator.execute 'router:route', pathDesc, options
 
   # Disposal
   # --------
