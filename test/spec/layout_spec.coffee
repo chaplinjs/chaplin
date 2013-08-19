@@ -212,7 +212,6 @@ define [
     # -------
 
     it 'should allow for views to register regions', ->
-      debugger
       view1 = class Test1View extends View
         regions:
           'view-region1': ''
