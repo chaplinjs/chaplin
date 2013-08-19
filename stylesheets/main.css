@@ -62,7 +62,7 @@ body {
   line-height: 1.25;
 }
 .wrapper {
-   width: 965px;
+   width: 752px;
    margin: 0 auto;
   position: relative;
   height: 100%;
@@ -230,15 +230,10 @@ img[src$="chaplin-lifecycle.png"] {
   #content {
     /*margin-left: 25.64%;*/
     position: absolute;
-    right: 103px;
+    /*right: 103px;*/
   }
 }
 @media (min-width: 1150px) { /* Desktop */
-  #content {
-    /*margin-left: 25.64%;*/
-    position: absolute;
-    right: 103px;
-  }
   .module-info {
     /*position: fixed;*/
     top: 0;
