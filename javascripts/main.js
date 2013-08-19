@@ -43,7 +43,20 @@ $(document).ready(function () {
   // Show code examples according to user prefs
   CD.show(CD.language());
 
-  $('.toggle-navigation').click(function(event) {
-    $('.navigation').slideToggle();
+  $('.sidebar .toggle-navigation').click(function(event) {
+    $('.sidebar .navigation').slideToggle();
   });
+
+  var queryAll = function(selector) {
+    return [].slice.call(document.querySelectorAll(selector));
+  };
+
+  document.querySelector('.page-nav .toggle-navigation').addEventListener('click', function() {
+    queryAll('.page-nav .nav-toggle-content').forEach(function(item) {
+      var existing = window.getComputedStyle(item).display;
+      var newStyle = (existing === 'none') ? 'list-item' : 'none';
+      console.log(item, newStyle)
+      item.style.display = newStyle;
+    });
+  }, true);
 });

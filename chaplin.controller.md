@@ -125,6 +125,6 @@ paths:
   # ...
 modules:
   - name: 'application'
-  - name: 'controllers/one_controller'      # included manually into the build
-  - name: 'controllers/another_controller'  # same
+  - name: 'controllers/one_controller'       # included manually into the build
+  - name: 'controllers/another_controller'   # same
 ```

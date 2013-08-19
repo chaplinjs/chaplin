@@ -59,12 +59,19 @@ version: 0.10.0
     <header class="nav-header">
       <div class="list-wrapper">
         <ul class="page-nav">
-          <li class="logo"><img width="30" src="http://chaplinjs.org/images/chaplin-hat.png" alt=""></li>
-          <li class="logo-text">Chaplin</li>
-          <li><a href="http://chaplinjs.org" data-pattern="\/\/chaplinjs\.org/(#.*)?$">About</a></li>
-          <li><a class="active" href="http://docs.chaplinjs.org" data-pattern="docs\.chaplinjs">Documentation</a></li>
-          <li><a href="http://chaplinjs.org/examples.html" data-pattern="examples\.html$">Examples</a></li>
-          <li><a href="http://chaplinjs.org/support.html" data-pattern="support\.html$">Support</a></li>
+          <li class="logo-text">
+            <div class="logo"><img class="logoa" width="30" src="http://chaplinjs.org/images/chaplin-hat.png" alt=""></div>
+            <span class="logo-text-entity">Chaplin</span>
+            <button class="toggle-navigation">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </li>
+          <li class="nav-toggle-content"><a href="http://chaplinjs.org" data-pattern="\/\/chaplinjs\.org/(#.*)?$">About</a></li>
+          <li class="nav-toggle-content"><a class="active" href="http://docs.chaplinjs.org" data-pattern="docs\.chaplinjs">Documentation</a></li>
+          <li class="nav-toggle-content"><a href="http://chaplinjs.org/examples.html" data-pattern="examples\.html$">Examples</a></li>
+          <li class="nav-toggle-content"><a href="http://chaplinjs.org/support.html" data-pattern="support\.html$">Support</a></li>
         </ul>
       </div>
     </header>
