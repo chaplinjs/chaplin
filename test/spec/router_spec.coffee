@@ -385,12 +385,10 @@ define [
         register()
         params = one: 145
         spy = sinon.spy()
-        mediator.publish '!router:reverse', 'phonebook', params, spy
-        expect(spy).was.calledWith '/phone/145'
+        expect(mediator.execute 'router:reverse', 'phonebook', params).to.be '/phone/145'
 
-        spy = sinon.spy()
         expect(->
-          mediator.publish '!router:reverse', 'missing', params, spy
+          mediator.execute 'router:reverse', 'missing', params
         ).to.throwError()
 
       it 'should prepend mount point', ->
@@ -402,9 +400,8 @@ define [
         register()
 
         params = one: 145
-        spy = sinon.spy()
-        mediator.publish '!router:reverse', 'phonebook', params, spy
-        expect(spy).was.calledWith '/subdir/phone/145'
+        res = mediator.execute 'router:reverse', 'phonebook', params
+        expect(res).to.be '/subdir/phone/145'
 
     describe 'Query string extraction', ->
 
@@ -482,7 +479,7 @@ define [
           create(options, changeURL: true)
         )
 
-    describe 'Listening to the the !router:route event', ->
+    describe 'Setting the router:route handler', ->
 
       it 'should route when receiving a path', ->
         path = 'router-route-event'
@@ -492,7 +489,7 @@ define [
         routeSpy = sinon.spy router, 'route'
         router.match path, 'router#route'
 
-        mediator.publish '!router:route', path, options
+        mediator.execute 'router:route', path, options
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.controller).to.be 'router'
         expect(passedRoute.action).to.be 'route'
@@ -502,7 +499,7 @@ define [
         )
 
         expect(->
-          mediator.publish '!router:route', 'different-path', options
+          mediator.execute 'router:route', 'different-path', options
         ).to.throwError()
 
         routeSpy.restore()
@@ -510,7 +507,7 @@ define [
       it 'should route when receiving a name', ->
 
         router.match '', 'home#index', name: 'home'
-        mediator.publish '!router:route', name: 'home'
+        mediator.execute 'router:route', name: 'home'
 
         expect(passedRoute.controller).to.be 'home'
         expect(passedRoute.action).to.be 'index'
@@ -521,7 +518,7 @@ define [
         router.match 'phone/:id', 'phonebook#dial', name: 'phonebook'
 
         params = id: '123'
-        mediator.publish '!router:route', name: 'phonebook', params: params
+        mediator.execute 'router:route', name: 'phonebook', params: params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -531,7 +528,7 @@ define [
 
       it 'should route when receiving controller and action name', ->
         router.match '', 'home#index'
-        mediator.publish '!router:route', controller: 'home', action: 'index'
+        mediator.execute 'router:route', controller: 'home', action: 'index'
 
         expect(passedRoute.controller).to.be 'home'
         expect(passedRoute.action).to.be 'index'
@@ -542,7 +539,7 @@ define [
         router.match 'phone/:id', 'phonebook#dial'
 
         params = id: '123'
-        mediator.publish '!router:route', controller: 'phonebook', action: 'dial', params: params
+        mediator.execute 'router:route', controller: 'phonebook', action: 'dial', params: params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -558,7 +555,7 @@ define [
 
         params = id: '123'
         options = replace: true
-        mediator.publish '!router:route', name: 'phonebook', params: params, options
+        mediator.execute 'router:route', name: 'phonebook', params: params, options
 
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
@@ -575,32 +572,22 @@ define [
 
       it 'should throw an error when no match was found', ->
         expect(->
-          mediator.publish '!router:route', 'phonebook'
+          mediator.execute 'router:route', 'phonebook'
         ).to.throwError()
 
     describe 'Changing the URL', ->
-
-      it 'should listen to the !router:changeURL event', ->
-        path = 'router-changeurl-event'
-        changeURL = sinon.spy router, 'changeURL'
-
-        mediator.publish '!router:changeURL', path
-        expect(changeURL).was.calledWith path
-
-        changeURL.restore()
-
       it 'should forward changeURL routing options to Backbone', ->
         path = 'router-changeurl-options'
         changeURL = sinon.spy router, 'changeURL'
         navigate = sinon.stub Backbone.history, 'navigate'
 
         options = some: 'stuff'
-        mediator.publish '!router:changeURL', path, options
+        mediator.execute 'router:changeURL', path, options
         expect(navigate).was.calledWith path,
           replace: false, trigger: false
 
         options = replace: true, trigger: true, some: 'stuff'
-        mediator.publish '!router:changeURL', path, options
+        mediator.execute 'router:changeURL', path, options
         expect(Backbone.history.navigate).was.calledWith path,
           replace: true, trigger: true
 

@@ -2,6 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
+mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
@@ -118,7 +119,7 @@ module.exports = class View extends Backbone.View
         @dispose() if not subject or subject is @collection
 
     # Register all exposed regions.
-    @publishEvent '!region:register', this if @regions?
+    mediator.execute 'region:register', this if @regions?
 
     # Render automatically if set by options or instance property.
     @render() if @autoRender
@@ -252,15 +253,15 @@ module.exports = class View extends Backbone.View
 
   # Functionally register a single region.
   registerRegion: (name, selector) ->
-    @publishEvent '!region:register', this, name, selector
+    mediator.execute 'region:register', this, name, selector
 
   # Functionally unregister a single region by name.
   unregisterRegion: (name) ->
-    @publishEvent '!region:unregister', this, name
+    mediator.execute 'region:unregister', this, name
 
   # Unregister all regions; called upon view disposal.
   unregisterAllRegions: ->
-    @publishEvent '!region:unregister', this
+    mediator.execute (name: 'region:unregister', silent: true), this
 
   # Subviews
   # --------
@@ -370,7 +371,7 @@ module.exports = class View extends Backbone.View
   # This method is called after a specific `render` of a derived class.
   attach: ->
     # Attempt to bind this view to its named region.
-    @publishEvent '!region:show', @region, this if @region?
+    mediator.execute 'region:show', @region, this if @region?
 
     # Automatically append to DOM if the container element is set.
     if @container

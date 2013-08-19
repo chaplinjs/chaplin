@@ -2,6 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
+mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 View = require 'chaplin/views/view'
@@ -29,10 +30,6 @@ module.exports = class Layout extends View
 
   listen:
     'beforeControllerDispose mediator': 'scroll'
-    '!adjustTitle mediator': 'adjustTitle'
-    '!region:show mediator': 'showRegion'
-    '!region:register mediator': 'registerRegionHandler'
-    '!region:unregister mediator': 'unregisterRegionHandler'
 
   constructor: (options = {}) ->
     @globalRegions = []
@@ -45,6 +42,11 @@ module.exports = class Layout extends View
       skipRouting: '.noscript'
       # Per default, jump to the top of the page.
       scrollTo: [0, 0]
+
+    mediator.setHandler 'region:show', @showRegion, this
+    mediator.setHandler 'region:register', @registerRegionHandler, this
+    mediator.setHandler 'region:unregister', @unregisterRegionHandler, this
+    mediator.setHandler 'adjustTitle', @adjustTitle, this
 
     super
 
@@ -66,9 +68,12 @@ module.exports = class Layout extends View
   # Get the title from the title property of the current controller.
   adjustTitle: (subtitle = '') ->
     title = @settings.titleTemplate {@title, subtitle}
-
     # Internet Explorer < 9 workaround.
-    setTimeout (-> document.title = title), 50
+    setTimeout =>
+      document.title = title
+      @publishEvent 'adjustTitle', subtitle, title
+    , 50
+    title
 
   # Automatic routing of internal links
   # -----------------------------------
@@ -134,7 +139,7 @@ module.exports = class Layout extends View
     options = {query}
 
     # Pass to the router, try to route the path internally.
-    @publishEvent '!router:route', path, options
+    mediator.execute 'router:route', path, options
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
     return
@@ -218,5 +223,7 @@ module.exports = class Layout extends View
 
     # Remove all regions and document title setting.
     delete this[prop] for prop in ['globalRegions', 'title', 'route']
+
+    mediator.removeHandlers this
 
     super

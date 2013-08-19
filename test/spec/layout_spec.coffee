@@ -28,7 +28,7 @@ define [
 
     expectWasRouted = (linkAttributes) ->
       stub = sinon.spy()
-      mediator.subscribe '!router:route', stub
+      mediator.setHandler 'router:route', stub
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
       [passedPath, passedOptions] = stub.firstCall.args
@@ -38,7 +38,7 @@ define [
 
     expectWasNotRouted = (linkAttributes) ->
       spy = sinon.spy()
-      mediator.subscribe '!router:route', spy
+      mediator.setHandler 'router:route', spy
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
@@ -54,18 +54,21 @@ define [
       testController.title = 'Test Controller Title'
 
     afterEach ->
-      layout.dispose()
       testController.dispose()
+      layout.dispose()
 
     it 'should have el, $el and $ props / methods', ->
       expect(layout.el).to.be document.body
       expect(layout.$el).to.be.a $
 
     it 'should set the document title', (done) ->
-      mediator.publish '!adjustTitle', testController.title
+      spy = sinon.spy()
+      mediator.subscribe 'adjustTitle', spy
+      mediator.execute 'adjustTitle', testController.title
       setTimeout ->
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).to.be title
+        expect(spy).was.calledWith testController.title, title
         done()
       , 60
 
@@ -80,7 +83,7 @@ define [
       query = 'foo=bar&baz=qux'
 
       stub = sinon.spy()
-      mediator.subscribe '!router:route', stub
+      mediator.setHandler 'router:route', stub
       linkAttributes = href: "#{path}?#{query}"
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
@@ -122,7 +125,7 @@ define [
 
     it 'should route clicks on elements with the “go-to” class', ->
       stub = sinon.stub()
-      mediator.subscribe '!router:route', stub
+      mediator.setHandler 'router:route', stub
       path = '/internal/link'
       $span = $(document.createElement 'span')
         .addClass('go-to').attr('data-href', path)

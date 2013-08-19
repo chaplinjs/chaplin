@@ -15,10 +15,13 @@ define [
       expect(mediator.unsubscribe).to.be.a 'function'
       expect(mediator.publish).to.be.a 'function'
 
-    it 'should have readonly Pub/Sub methods', ->
+    it 'should have readonly Pub/Sub and Resp/Req methods', ->
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
-      methods = ['subscribe', 'unsubscribe', 'publish']
+      methods = [
+        'subscribe', 'unsubscribe', 'publish',
+        'setHandler', 'execute', 'removeHandlers'
+      ]
       _.forEach methods, (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
@@ -46,6 +49,18 @@ define [
       mediator.publish eventName, payload
 
       expect(spy).was.neverCalledWith payload
+
+    it 'should have response / request methods', ->
+      expect(mediator.setHandler).to.be.a 'function'
+      expect(mediator.execute).to.be.a 'function'
+      expect(mediator.removeHandlers).to.be.a 'function'
+
+    it 'should allow to set and execute handlers', ->
+      resp = 'austrian'
+      spy = sinon.stub().returns resp
+      name = 'ancap'
+      mediator.setHandler name, spy
+      expect(mediator.execute name).to.be resp
 
     it 'should support sealing itself', ->
       strict = do (-> 'use strict'; !this)

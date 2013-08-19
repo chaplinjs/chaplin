@@ -2,6 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
+mediator = require 'chaplin/mediator'
 EventBroker = require 'chaplin/lib/event_broker'
 Route = require 'chaplin/lib/route'
 utils = require 'chaplin/lib/utils'
@@ -27,9 +28,9 @@ module.exports = class Router # This class does not extend Backbone.Router.
     # Cached regex for stripping a leading subdir and hash/slash.
     @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
 
-    @subscribeEvent '!router:route', @route
-    @subscribeEvent '!router:reverse', @reverseHandler
-    @subscribeEvent '!router:changeURL', @changeURLHandler
+    mediator.setHandler 'router:route', @route, this
+    mediator.setHandler 'router:reverse', @reverse, this
+    mediator.setHandler 'router:changeURL', @changeURL, this
 
     @createHistory()
 
@@ -79,7 +80,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
-  route: (pathDesc, options) =>
+  route: (pathDesc, options) ->
     options = if options then _.clone(options) else {}
 
     # Accept path to be given implicitly via object
@@ -130,10 +131,6 @@ module.exports = class Router # This class does not extend Backbone.Router.
     # We didn't get anything.
     throw new Error 'Router#reverse: invalid route specified'
 
-  # Handler for the global !router:reverse event.
-  reverseHandler: (name, params, callback) ->
-    callback @reverse name, params
-
   # Change the current URL, add a history entry.
   changeURL: (url, options = {}) ->
     navigateOptions =
@@ -143,11 +140,6 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
     # Navigate to the passed URL and forward options to Backbone.
     Backbone.history.navigate url, navigateOptions
-
-  # Handler for the global !router:changeURL event.
-  # Accepts both the url and an options hash that is forwarded to Backbone.
-  changeURLHandler: (url, options) ->
-    @changeURL url, options
 
   # Disposal
   # --------
@@ -162,6 +154,8 @@ module.exports = class Router # This class does not extend Backbone.Router.
     delete Backbone.history
 
     @unsubscribeAllEvents()
+
+    mediator.removeHandlers this
 
     # Finished.
     @disposed = true
