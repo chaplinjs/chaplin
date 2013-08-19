@@ -252,7 +252,6 @@ img[src$="chaplin-lifecycle.png"] {
 
 @media (min-width: 750px) and (max-width: 1150px) {
   .sidebar {
-    width: 770px;
     margin: 45px auto 0 auto;
     text-align: center;
   }
