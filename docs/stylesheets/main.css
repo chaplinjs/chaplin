@@ -61,8 +61,8 @@ body {
   line-height: 1.25;
 }
 .wrapper {
-   width: 752px;
-   margin: 0 auto;
+  width: 753px;
+  margin: 0 auto;
   position: relative;
   height: 100%;
 }
@@ -195,7 +195,7 @@ img[src$="chaplin-lifecycle.png"] {
 }
 
 #content {
-  width: 752px;
+  width: 750px;
   padding: 0;
   margin-bottom: 60px;
   margin-top: 0;
@@ -281,6 +281,11 @@ img[src$="chaplin-lifecycle.png"] {
   .sidebar .toggle-navigation {
     display: inline-block;
   }
+
+  form.language > fieldset {
+    margin: 0;
+    padding: 10px 0 0 0;
+  }
 }
 
 @media (max-width: 750px) {
@@ -292,9 +297,5 @@ img[src$="chaplin-lifecycle.png"] {
     margin-top: 0;
     margin-bottom: 0;
     top: 0;
-  }
-
-  form.language > fieldset {
-    padding: 20px 0 0 0;
   }
 }
