@@ -62,10 +62,13 @@ define [
       expect(layout.$el).to.be.a $
 
     it 'should set the document title', (done) ->
-      mediator.publish 'adjustTitle', testController.title
+      spy = sinon.spy()
+      mediator.subscribe 'adjustTitle', spy
+      mediator.execute 'adjustTitle', testController.title
       setTimeout ->
         title = "#{testController.title} \u2013 #{layout.title}"
         expect(document.title).to.be title
+        expect(spy).was.calledWith testController.title, title
         done()
       , 60
 

@@ -30,7 +30,7 @@ module.exports = class Controller
 
   # Change document title.
   adjustTitle: (subtitle) ->
-    @publishEvent 'adjustTitle', subtitle
+    mediator.execute 'adjustTitle', subtitle
 
   # Composer
   # --------
