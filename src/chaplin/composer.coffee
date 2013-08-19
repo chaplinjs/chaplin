@@ -135,7 +135,7 @@ module.exports = class Composer
     if isPromise
       returned
     else
-      @compositions[name]
+      @compositions[name].item
 
   # Retrieves an active composition using the compose method.
   retrieve: (name) ->
