@@ -1,6 +1,6 @@
 ![Chaplin](http://s3.amazonaws.com/imgly_production/3401027/original.png)
 
-[![Stories in Ready](https://badge.waffle.io/chaplinjs/chaplin.png)](http://waffle.io/chaplinjs/chaplin)
+[![Stories in Ready](https://badge.waffle.io/chaplinjs/chaplin.png?label=ready)](http://waffle.io/chaplinjs/chaplin)
 [![Build Status](https://travis-ci.org/chaplinjs/chaplin.png?branch=topics/backbone-options)](https://travis-ci.org/chaplinjs/chaplin)
 
 # An Application Architecture Using Backbone.js
