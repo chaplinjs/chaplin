@@ -1,4 +1,6 @@
 ![Chaplin](http://s3.amazonaws.com/imgly_production/3401027/original.png)
+<br />
+[![Stories in Ready](https://badge.waffle.io/chaplinjs/chaplin.png)](http://waffle.io/chaplinjs/chaplin)
 
 # An Application Architecture Using Backbone.js
 
