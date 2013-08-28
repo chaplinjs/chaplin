@@ -1,6 +1,7 @@
 # Chaplin 0.11.0 (unreleased)
 Chaplin internals now use *Request / Response* pattern instead of
 bang `!events`. Removed events:
+
     * `!router:route`, `!router:routeByName` (use `helpers.redirectTo`)
     * `!router:changeURL`
     * `!composer:compose`, `!composer:retrieve`
