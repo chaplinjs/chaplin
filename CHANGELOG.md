@@ -5,6 +5,9 @@ bang `!events`. Removed events:
     * `!router:changeURL`
     * `!composer:compose`, `!composer:retrieve`
     * `!region:register`, `!region:unregister`
+    * `!adjustTitle`
+      (use `mediator.execute('adjustTitle', name)` or `Controller#adjustTitle`).
+      An `adjustTitle` event would be triggered after title is set.
 * Improved `Chaplin.Controller`:
     * `Controller::compose` method now:
         * by default, returns the composition itself
