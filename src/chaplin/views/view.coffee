@@ -113,14 +113,15 @@ module.exports = class View extends Backbone.View
       if @region
         region = mediator.execute 'region:find', @region
         # Set the `this.el` to be the closest relevant container.
-        @el =
-          if region.instance.container?
-            if region.instance.region?
-              $(region.instance.container).find region.selector
+        if region?
+          @el =
+            if region.instance.container?
+              if region.instance.region?
+                $(region.instance.container).find region.selector
+              else
+                region.instance.container
             else
-              region.instance.container
-          else
-            region.instance.$ region.selector
+              region.instance.$ region.selector
 
       @el = @container if @container
 
