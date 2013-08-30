@@ -80,37 +80,45 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # This looks quite like Backbone.History::loadUrl but it
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
-  route: (pathDesc, options) ->
-    options = if options then _.clone(options) else {}
+  route: (pathDesc, params, options) ->
+    params = if params then _.clone(params) else {}
 
-    # Accept path to be given implicitly via object
-    if typeof pathDesc is 'object'
-      params = pathDesc.params or {}
-      delete pathDesc.params
-      path = @reverse pathDesc, params
+    # Accept path to be given explicitly via oject or implicitly via route name
+    if typeof pathDesc is 'object' and (path = pathDesc.url)?
+      # Remove leading subdir and hash or slash.
+      path = path.replace @removeRoot, ''
+
+      # Find a matching route.
+      handler = _.find Backbone.history.handlers, (handler) -> handler.route.test path
+
+      # Options is the second argument in this case
+      options = params
+      params = null
     else
-      path = pathDesc
+      options = if options then _.clone(options) else {}
 
-    # Update the URL programmatically after routing.
-    _.defaults options, changeURL: true
+      # Find a route using a passed via pathDesc string route name.
+      handler = _.find Backbone.history.handlers, (handler) ->
+        if handler.route.matches pathDesc
+          params = handler.route.normalizeParams(params)
+          return true if params
+        false
 
-    # Remove leading subdir and hash or slash.
-    path = path.replace @removeRoot, ''
+    if handler
+      # Update the URL programmatically after routing.
+      _.defaults options, changeURL: true
 
-    # Find a matching route.
-    for handler in Backbone.history.handlers
-      if handler.route.test(path)
-        handler.callback path, options
-        return true
-
-    throw new Error 'Router#route: request was not routed'
+      handler.callback path or params, options
+      return true
+    else
+      throw new Error 'Router#route: request was not routed'
 
   # Find the URL for given criteria using the registered routes and
   # provided parameters. The criteria may be just the name of a route
   # or an object containing the name, controller, and/or action.
   # Warning: this is usually **hot** code in terms of performance.
   # Returns the URL string or false.
-  reverse: (criteria, params) ->
+  reverse: (criteria, params, query) ->
     root = @options.root
 
     if params? and typeof params isnt 'object'
@@ -121,7 +129,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
     handlers = Backbone.history.handlers
     for handler in handlers when handler.route.matches criteria
       # Attempt to reverse using the provided parameter hash.
-      reversed = handler.route.reverse params
+      reversed = handler.route.reverse params, query
 
       # Return the url if we got a valid one; else we continue on.
       if reversed isnt false

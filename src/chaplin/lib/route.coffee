@@ -4,6 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
 Controller = require 'chaplin/controllers/controller'
+utils = require 'chaplin/lib/utils'
 
 module.exports = class Route
   # Borrow the static extend method from Backbone.
@@ -54,38 +55,75 @@ module.exports = class Route
     if typeof criteria is 'string'
       criteria is @name
     else
+      propertiesCount = 0
       for name in ['name', 'action', 'controller']
+        propertiesCount++
         property = criteria[name]
         return false if property and property isnt this[name]
+      return false if propertiesCount is 1 and name in ['action', 'controller']
       true
 
   # Generates route URL from params.
-  reverse: (params) ->
+  reverse: (params, query) ->
+    params = @normalizeParams(params)
+    return false if params is false
+
     url = @pattern
-    required = @paramNames
-    if not params?
-      # Ensure route does not require params.
-      return false if required.length
-    else if _.isArray params
-      # Ensure we have enough parameters.
-      return false if params.length < required.length
 
-      index = 0
-      url = url.replace /[:*][^\/\?]+/g, (match) ->
-        result = params[index]
-        index += 1
-        result
+    # From a params hash; we need to be able to return
+    # the actual URL this route represents.
+    # Iterate and replace params in pattern.
+    for name in @paramNames
+      value = params[name]
+      url = url.replace ///[:*]#{name}///g, value
+
+    return url if not query
+
+    # Stringify query params if needed.
+    if typeof query is 'object'
+      url += '?' + utils.QueryParams.stringify query
     else
-      # From a params hash; we need to be able to return
-      # the actual URL this route represents
-      # Iterate and attempt to replace params in pattern
-      for name in required
-        value = params[name]
-        return false if value is undefined
-        url = url.replace ///[:*]#{name}///g, value
+      url += (if query[0] is '?' then '' else '?') + query
 
-    # If the url tests out good; return the url; else, false.
-    if @test url then url else false
+  # Validates incoming params and returns them in a unified form - hash
+  normalizeParams: (params) ->
+    if _.isArray params
+      # Ensure we have enough parameters.
+      return false if params.length < @paramNames.length
+
+      # Convert params from array into object.
+      paramsHash = {}
+      for paramName, paramIndex in @paramNames
+        paramsHash[paramName] = params[paramIndex]
+
+      return false if not @testConstraints paramsHash
+
+      params = paramsHash
+    else
+      # null or undefined params are equivalent to an empty hash
+      params ?= {}
+
+      return false if not @testParams params
+
+    params
+
+  # Test if passed params hash matches current constraints.
+  testConstraints: (params) ->
+    # Apply the parameter constraints.
+    constraints = @options.constraints
+    if constraints
+      for own name, constraint of constraints
+        return false unless constraint.test params[name]
+
+    return true
+
+  # Test if passed params hash matches current route.
+  testParams: (params) ->
+    # Ensure that params contains all the parameters needed.
+    for paramName in @paramNames
+      return false if params[paramName] is undefined
+
+    @testConstraints params
 
   # Creates the actual regular expression that Backbone.History#loadUrl
   # uses to determine if the current url is a match.
@@ -120,47 +158,36 @@ module.exports = class Route
     # Apply the parameter constraints.
     constraints = @options.constraints
     if constraints
-      params = @extractParams path
-      for own name, constraint of constraints
-        return false unless constraint.test(params[name])
+      return @testConstraints @extractParams path
 
     return true
 
   # The handler called by Backbone.History when the route matches.
   # It is also called by Router#route which might pass options.
-  handler: (path, options) =>
-    options = if options then _.clone(options) else {}
+  handler: (pathParams, options) =>
+    options = if options then _.clone options else {}
 
-    # If no query string was passed, use the current.
-    query = options.query ? @getCurrentQuery()
+    # pathDesc may be an object with params for reversing or a simple URL.
+    if typeof pathParams is 'object'
+      queryParams = options.query
+      delete options.query
+      query = utils.QueryParams.stringify queryParams
+      params = pathParams
+      path = @reverse params
+    else
+      [path, query] = pathParams.split '?'
+      query ?= ''
+      queryParams = utils.QueryParams.parse query
+      params = @extractParams path
 
-    # Build params hash.
-    params = @buildParams path, query
+    actionParams = _.extend {}, queryParams, params, @options.params
 
     # Construct a route object to forward to the match event.
     route = {path, @action, @controller, @name, query}
 
-    # Remove the query string from routing options.
-    delete options.query
-
     # Publish a global event passing the route and the params.
     # Original options hash forwarded to allow further forwarding to backbone.
-    @publishEvent 'router:match', route, params, options
-
-  # Returns the query string for the current document.
-  getCurrentQuery: ->
-    location.search.substring 1
-
-  # Create a proper Rails-like params hash, not an array like Backbone.
-  buildParams: (path, query) ->
-    _.extend {},
-      # Add params from query string.
-      @extractQueryParams(query),
-      # Add named params from pattern matches.
-      @extractParams(path),
-      # Add additional params from options as they might
-      # overwrite params extracted from URL.
-      @options.params
+    @publishEvent 'router:match', route, actionParams, options
 
   # Extract named parameters from the URL path.
   extractParams: (path) ->
@@ -173,31 +200,5 @@ module.exports = class Route
     for match, index in matches.slice(1)
       paramName = if @paramNames.length then @paramNames[index] else index
       params[paramName] = match
-
-    params
-
-  # Extract parameters from the query string.
-  extractQueryParams: (query) ->
-    params = {}
-    return params unless query
-    pairs = query.split '&'
-    for pair in pairs
-      continue unless pair.length
-      [field, value] = pair.split '='
-      continue unless field.length
-      field = decodeURIComponent field
-      value = decodeURIComponent value
-      current = params[field]
-      if current
-        # Handle multiple params with same name:
-        # Aggregate them in an array.
-        if current.push
-          # Add the existing array.
-          current.push value
-        else
-          # Create a new array.
-          params[field] = [current, value]
-      else
-        params[field] = value
 
     params
