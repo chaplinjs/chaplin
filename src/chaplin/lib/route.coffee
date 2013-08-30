@@ -145,7 +145,7 @@ module.exports = class Route
 
   # Returns the query string for the current document.
   getCurrentQuery: ->
-    location.search.substring 1
+    location.search.substring(1) || location.href.split('?')[1] || ''
 
   # Create a proper Rails-like params hash, not an array like Backbone.
   buildParams: (path, query) ->
