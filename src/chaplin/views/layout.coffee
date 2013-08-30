@@ -200,11 +200,9 @@ module.exports = class Layout extends View
       region.instance.cid isnt instance.cid
 
   # Returns the region by its name, if found.
-  regionByName: (name, callback) ->
-    region = _.find @globalRegions, (region) ->
+  regionByName: (name) ->
+    _.find @globalRegions, (region) ->
       region.name is name and not region.instance.stale
-    callback region if callback
-    region
 
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.
