@@ -96,7 +96,7 @@ module.exports = class CollectionView extends View
   constructor: (options) ->
     # Apply options to view instance.
     if (options)
-      _.extend this, _.pick options, ['renderItems', 'itemView']
+      _.extend this, _.pick options, ['renderItems', 'itemView', 'controller']
 
     # Initialize list for visible items.
     @visibleItems = []
@@ -329,7 +329,9 @@ module.exports = class CollectionView extends View
   # on the model type or data.
   initItemView: (model) ->
     if @itemView
-      new @itemView {model, autoRender: false}
+      opts = {model, autoRender: false}
+      opts.controller = @controller if @controller?
+      new @itemView opts
     else
       throw new Error 'The CollectionView#itemView property ' +
         'must be defined or the initItemView() must be overridden.'

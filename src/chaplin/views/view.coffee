@@ -86,6 +86,7 @@ module.exports = class View extends Backbone.View
         'autoRender'
         'container'
         'containerMethod'
+        'controller'
         'region'
         'regions'
         'noWrap'
