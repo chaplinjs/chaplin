@@ -1,6 +1,7 @@
 # Chaplin 0.11.0 (unreleased)
 * Chaplin internals now use *Request / Response* pattern instead of
-bang `!events`. Removed events:
+  bang `!events`. New system allows to return values.
+  Removed events:
     * `!router:route`, `!router:routeByName` (use `helpers.redirectTo`)
     * `!router:changeURL`
     * `!composer:compose`, `!composer:retrieve`
@@ -12,6 +13,9 @@ bang `!events`. Removed events:
     * `Controller::compose` method now:
         * by default, returns the composition itself
         * if composition body returned a promise, it returns a promise too
+* Improved `Chaplin.View`:
+    * Added `noWrap` option that allows to disable Backbone top-level
+      element bound to view class.
 * Improved `Chaplin.helpers`:
     * Added `helpers.redirectTo` which allows to re.
 * Improved `Chaplin.utils`:
