@@ -70,7 +70,7 @@ Provides the logic that drives the user interface such as responding to DOM even
 Maps to a collection to generate a list of item views that are bound to the models in the collection.
 
 ## Flow
-Every Chaplin application starts with a class that inherits from `Application`. This is merely a bootstrapper which instantiates and configures the four core moules: **Dispatcher**, **Layout**, **mediator**, and **Router** (in that order).
+Every Chaplin application starts with a class that inherits from `Application`. This is merely a bootstrapper which instantiates and configures the four core modules: **Dispatcher**, **Layout**, **mediator**, and **Router** (in that order).
 
 After creating the **Router**, the routes are registered. Usually they are read from a configuration file called  `routes.{coffee,js}`. A route maps a URL pattern to a controller action. For example, the path `/` can be mapped to the `index` action of the `HomeController`.
 
