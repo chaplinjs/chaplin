@@ -16,6 +16,10 @@
 * Improved `Chaplin.View`:
     * Added `noWrap` option that allows to disable Backbone top-level
       element bound to view class.
+    * Added `optionNames` property that contains a list of options that will
+      be picked from an object passed to View, when initialising it.
+      Property allows to simply extend it in your child classes:
+      `optionNames: ParentView.prototype.concat(['template'])`
 * Improved `Chaplin.helpers`:
     * Added `helpers.redirectTo` which allows to re.
 * Improved `Chaplin.utils`:
