@@ -191,11 +191,11 @@ var SomeView = View.extend({
   listen: {
     // Listen to view events with @on.
     'eventName': 'methodName',
-    // Same as @listenTo @model, 'change:foo', this[methodName].
+    // Same as this.listenTo(this.model, 'change:foo', this[methodName])
     'change:foo model': 'methodName',
-    // Same as @listenTo @collection, 'reset', this[methodName].
+    // Same as this.listenTo(this.collection, 'reset', this[methodName])
     'reset collection': 'methodName',
-    // Same as @subscribeEvent 'pubSubEvent', this[methodName].
+    // Same as this.subscribeEvent('pubSubEvent', this[methodName])
     'pubSubEvent mediator': 'methodName',
     // The value can also be a function.
     'eventName': function() {alert('Hello!')}
