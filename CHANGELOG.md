@@ -13,6 +13,7 @@
     * `Controller::compose` method now:
         * by default, returns the composition itself
         * if composition body returned a promise, it returns a promise too
+    * Removed `Controller#redirectToRoute`. Use `Controller#redirectTo`.
 * Improved `Chaplin.View`:
     * Added `noWrap` option that allows to disable Backbone top-level
       element bound to view class.
