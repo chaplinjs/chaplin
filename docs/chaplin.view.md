@@ -169,7 +169,7 @@ Method which is used for adding the view to the DOM via the `container` element.
 <h3 class="module-member" id="listen">listen</h3>
 * **Object**
 
-Chaplin's declarative event bindings follow [Backbone's built-in event catalog](http://backbonejs.org/#Events-catalog), with the added benefit of [automatic removable of event listeners](http://docs.chaplinjs.org/events.html#toc_1). You can listen to models/collections/mediator etc.
+Chaplin's declarative event bindings follow [Backbone's built-in event catalog](http://backbonejs.org/#Events-catalog), with the added benefit of [automatically removable event listeners](http://docs.chaplinjs.org/events.html#toc_1). You can listen to models/collections/mediator etc.
 
 ```coffeescript
 class SomeView extends View
