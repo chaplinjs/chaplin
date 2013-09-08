@@ -3,6 +3,7 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
+helpers = require 'chaplin/lib/helpers'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 View = require 'chaplin/views/view'
@@ -142,7 +143,7 @@ module.exports = class Layout extends View
     options = {query}
 
     # Pass to the router, try to route the path internally.
-    mediator.execute 'router:route', path, options
+    helpers.redirectTo path, options
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
     return

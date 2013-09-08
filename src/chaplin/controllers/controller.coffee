@@ -3,6 +3,7 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
+helpers = require 'chaplin/lib/helpers'
 mediator = require 'chaplin/mediator'
 
 module.exports = class Controller
@@ -48,7 +49,7 @@ module.exports = class Controller
   # Redirect to URL.
   redirectTo: (pathDesc, options) ->
     @redirected = true
-    mediator.execute 'router:route', pathDesc, options
+    helpers.redirectTo pathDesc, options
 
   # Disposal
   # --------
