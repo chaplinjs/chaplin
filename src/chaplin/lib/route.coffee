@@ -62,9 +62,13 @@ module.exports = class Route
   # Generates route URL from params.
   reverse: (params) ->
     url = @pattern
-    if _.isArray params
+    required = @paramNames
+    if not params?
+      # Ensure route does not require params.
+      return false if required.length
+    else if _.isArray params
       # Ensure we have enough parameters.
-      return false if params.length < @paramNames.length
+      return false if params.length < required.length
 
       index = 0
       url = url.replace /[:*][^\/\?]+/g, (match) ->
@@ -75,7 +79,7 @@ module.exports = class Route
       # From a params hash; we need to be able to return
       # the actual URL this route represents
       # Iterate and attempt to replace params in pattern
-      for name in @paramNames
+      for name in required
         value = params[name]
         return false if value is undefined
         url = url.replace ///[:*]#{name}///g, value

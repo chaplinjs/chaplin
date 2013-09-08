@@ -13,9 +13,6 @@ module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
 
-  # Specifies if current element should be kept in DOM after disposal.
-  keepElement: false
-
   # Automatic rendering
   # -------------------
 
@@ -60,6 +57,17 @@ module.exports = class View extends Backbone.View
   # constructor in controller action.
   region: null
 
+  # A view is `stale` when it has been previously composed by the last
+  # route but has not yet been composed by the current route.
+  stale: false
+
+  # Flag whether to wrap a view with the `tagName` element when
+  # rendering into a region.
+  noWrap: false
+
+  # Specifies if current element should be kept in DOM after disposal.
+  keepElement: false
+
   # Subviews
   # --------
 
@@ -67,24 +75,21 @@ module.exports = class View extends Backbone.View
   subviews: null
   subviewsByName: null
 
-  # State
-  # -----
+  # Initialization
+  # --------------
 
-  # A view is `stale` when it has been previously composed by the last
-  # route but has not yet been composed by the current route.
-  stale: false
+  # List of options that will be picked from constructor.
+  # Easy to extend: `optionNames: View::optionNames.concat ['template']`
+  optionNames: [
+    'autoAttach', 'autoRender',
+    'container', 'containerMethod',
+    'region', 'regions'
+    'noWrap'
+  ]
 
   constructor: (options) ->
     # Copy some options to instance properties.
-    if options
-      _.extend this, _.pick options, [
-        'autoAttach'
-        'autoRender'
-        'container'
-        'containerMethod'
-        'region'
-        'regions'
-      ]
+    _.extend this, _.pick options, @optionNames if options
 
     # Wrap `render` so `attach` is called afterwards.
     # Enclose the original function.
@@ -103,6 +108,22 @@ module.exports = class View extends Backbone.View
     # Initialize subviews collections.
     @subviews = []
     @subviewsByName = {}
+
+    if @noWrap
+      if @region
+        region = mediator.execute 'region:find', @region
+        # Set the `this.el` to be the closest relevant container.
+        if region?
+          @el =
+            if region.instance.container?
+              if region.instance.region?
+                $(region.instance.container).find region.selector
+              else
+                region.instance.container
+            else
+              region.instance.$ region.selector
+
+      @el = @container if @container
 
     # Call Backbone’s constructor.
     super
@@ -363,7 +384,19 @@ module.exports = class View extends Backbone.View
       html = templateFunc @getTemplateData()
 
       # Replace HTML
-      @$el.html html
+      if not @noWrap
+        @$el.html html
+      else
+        $templateHtml = $(html)
+
+        if $templateHtml.length > 1
+          throw new Error 'There must be a single top-level element when ' +
+                          'using `noWrap`.'
+
+        # Undelegate the container events that were setup.
+        @undelegateEvents()
+        # Delegate events to the top-level container in the template.
+        @setElement $templateHtml, true
 
     # Return the view.
     this

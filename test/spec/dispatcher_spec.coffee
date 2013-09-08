@@ -362,9 +362,11 @@ define [
 
         done()
 
-    it 'should support redirection to a URL', (done) ->
+    it 'should support redirection to an URL', (done) ->
       dispatch = sinon.spy()
+      routed = sinon.spy()
       mediator.subscribe 'dispatcher:dispatch', dispatch
+      mediator.subscribe 'router:route', routed
 
       # Dispatch a route to check if previous controller info is correct after
       # redirection

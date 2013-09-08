@@ -1,14 +1,26 @@
 # Chaplin 0.11.0 (unreleased)
-Chaplin internals now use *Request / Response* pattern instead of
-bang `!events`. Removed events:
+* Chaplin internals now use *Request / Response* pattern instead of
+  bang `!events`. New system allows to return values.
+  Removed events:
     * `!router:route`, `!router:routeByName` (use `helpers.redirectTo`)
     * `!router:changeURL`
     * `!composer:compose`, `!composer:retrieve`
     * `!region:register`, `!region:unregister`
+    * `!adjustTitle`
+      (use `mediator.execute('adjustTitle', name)` or `Controller#adjustTitle`).
+      An `adjustTitle` event would be triggered after title is set.
 * Improved `Chaplin.Controller`:
     * `Controller::compose` method now:
         * by default, returns the composition itself
         * if composition body returned a promise, it returns a promise too
+    * Removed `Controller#redirectToRoute`. Use `Controller#redirectTo`.
+* Improved `Chaplin.View`:
+    * Added `noWrap` option that allows to disable Backbone top-level
+      element bound to view class.
+    * Added `optionNames` property that contains a list of options that will
+      be picked from an object passed to View, when initialising it.
+      Property allows to simply extend it in your child classes:
+      `optionNames: ParentView.prototype.optionNames.concat(['template'])`
 * Improved `Chaplin.helpers`:
     * Added `helpers.redirectTo` which allows to re.
 * Improved `Chaplin.utils`:

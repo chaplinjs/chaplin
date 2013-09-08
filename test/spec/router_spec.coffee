@@ -340,6 +340,7 @@ define [
         expect(route.reverse [1]).to.eql false
         expect(route.reverse one: 1).to.eql false
         expect(route.reverse two: 2).to.eql false
+        expect(route.reverse()).to.eql false
 
     describe 'Router reversing', ->
       register = ->

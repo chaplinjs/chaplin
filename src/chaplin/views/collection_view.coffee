@@ -93,11 +93,9 @@ module.exports = class CollectionView extends View
   # Constructor
   # -----------
 
-  constructor: (options) ->
-    # Apply options to view instance.
-    if (options)
-      _.extend this, _.pick options, ['renderItems', 'itemView']
+  optionNames: View::optionNames.concat ['renderItems', 'itemView']
 
+  constructor: (options) ->
     # Initialize list for visible items.
     @visibleItems = []
 

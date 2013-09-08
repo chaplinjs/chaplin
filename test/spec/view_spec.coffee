@@ -148,6 +148,50 @@ define [
       expect(view2.attach).was.notCalled()
       check view2
 
+    it 'should not wrap el with `tagName` when using a region', ->
+      mediator.setHandler 'region:register', ->
+      mediator.setHandler 'region:show', ->
+      mediator.setHandler 'region:find', ->
+
+      view1 = class Test1View extends View
+        autoRender: true
+        container: testbed
+        getTemplateFunction: ->
+          -> '<main><div id="test0"></div></main>'
+        regions:
+          'region1': '#test0'
+
+      view2 = class Test2View extends View
+        autoRender: true
+        region: 'region1'
+        tagName: 'section'
+        noWrap: true
+        regions:
+          'test1': '#test1'
+        getTemplateFunction: ->
+          -> '<div><p>View is not wrapped!</p><p id="test1">foo</p></div>'
+
+      instance1 = new Test1View()
+      instance2 = new Test2View()
+      expect($(instance2.container).find('section').length).to.be 0
+
+      instance1.dispose()
+      instance2.dispose()
+
+    it 'should not wrap el with `tagName`', ->
+      viewWrap = class Test3View extends View
+        autoRender: true
+        tagName: 'section'
+        noWrap: yes
+        container: testbed
+        getTemplateFunction: ->
+          -> '<div><p>View is not wrapped!</p><p>baz</p></div>'
+
+      instance1 = new Test3View()
+      expect($(instance1.container).find('section').length).to.be 0
+
+      instance1.dispose()
+
     it 'should fire an addedToDOM event attching itself to the DOM', ->
       view = new TestView container: testbed
       spy = sinon.spy()

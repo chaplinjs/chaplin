@@ -3,6 +3,7 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
+helpers = require 'chaplin/lib/helpers'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 View = require 'chaplin/views/view'
@@ -36,7 +37,9 @@ module.exports = class Layout extends View
     @title = options.title
     @regions = options.regions if options.regions
     @settings = _.defaults options,
-      titleTemplate: _.template("<%= subtitle %> \u2013 <%= title %>")
+      titleTemplate: _.template(
+        "<% if (subtitle) { %><%= subtitle %> \u2013 <% } %><%= title %>"
+      )
       openExternalToBlank: false
       routeLinks: 'a, .go-to'
       skipRouting: '.noscript'
@@ -46,6 +49,7 @@ module.exports = class Layout extends View
     mediator.setHandler 'region:show', @showRegion, this
     mediator.setHandler 'region:register', @registerRegionHandler, this
     mediator.setHandler 'region:unregister', @unregisterRegionHandler, this
+    mediator.setHandler 'region:find', @regionByName, this
     mediator.setHandler 'adjustTitle', @adjustTitle, this
 
     super
@@ -139,7 +143,7 @@ module.exports = class Layout extends View
     options = {query}
 
     # Pass to the router, try to route the path internally.
-    mediator.execute 'router:route', path, options
+    helpers.redirectTo path, options
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
     return
@@ -196,12 +200,16 @@ module.exports = class Layout extends View
     @globalRegions = _.filter @globalRegions, (region) ->
       region.instance.cid isnt instance.cid
 
+  # Returns the region by its name, if found.
+  regionByName: (name) ->
+    _.find @globalRegions, (region) ->
+      region.name is name and not region.instance.stale
+
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.
   showRegion: (name, instance) ->
     # Find an appropriate region.
-    region = _.find @globalRegions, (region) ->
-      region.name is name and not region.instance.stale
+    region = @regionByName name
 
     # Assert that we got a valid region.
     throw new Error "No region registered under #{name}" unless region
@@ -210,7 +218,10 @@ module.exports = class Layout extends View
     instance.container = if region.selector is ''
       region.instance.$el
     else
-      region.instance.$ region.selector
+      if region.instance.noWrap
+        $(region.instance.container).find region.selector
+      else
+        region.instance.$ region.selector
 
   # Disposal
   # --------
