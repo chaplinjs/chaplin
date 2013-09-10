@@ -1,23 +1,16 @@
 define [
   'backbone'
   'underscore'
+  'chaplin/lib/utils'
   'chaplin/mediator'
   'chaplin/lib/router'
   'chaplin/lib/route'
-], (Backbone, _, mediator, Router, Route) ->
+], (Backbone, _, utils, mediator, Router, Route) ->
   'use strict'
 
   describe 'Router and Route', ->
     # Initialize shared variables
     router = passedRoute = passedParams = passedOptions = null
-
-    # Serialize pairs into query string (without leading question mark)
-    serializequery = (pairs) ->
-      _.reduce(pairs, (memo, val, prop) ->
-        memo +
-        (if memo is '' then '' else '&') +
-        encodeURIComponent(prop) + '=' + encodeURIComponent(val)
-      , '')
 
     # router:match handler to catch the arguments
     routerMatch = (_route, _params, _options) ->
@@ -86,8 +79,8 @@ define [
         expect(route).to.be.a Route
 
       it 'should reject reserved controller action names', ->
-      for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
-        expect(-> router.match '', "null##{prop}").to.throwError()
+        for prop in ['constructor', 'initialize', 'redirectTo', 'dispose']
+          expect(-> router.match '', "null##{prop}").to.throwError()
 
       it 'should allow specifying controller and action in options', ->
         # Signature: url, 'controller#action', options
@@ -123,16 +116,30 @@ define [
         mediator.subscribe 'router:match', spy
         router.match '', 'null#null'
 
-        router.route '/'
+        router.route url: '/'
         expect(spy).was.called()
 
-      it 'should match correctly', ->
+      it 'should match route names, both default and custom', ->
+        spy = sinon.spy()
+        mediator.subscribe 'router:match', spy
+        router.match 'correct-match1', 'controller#action'
+        router.match 'correct-match2', 'null#null', name: 'routeName'
+
+        routed1 = router.route 'controller#action'
+        routed2 = router.route 'routeName'
+
+        expect(routed1 and routed2).to.be true
+        expect(spy).was.calledTwice()
+
+        mediator.unsubscribe 'router:match', spy
+
+      it 'should match URLs correctly', ->
         spy = sinon.spy()
         mediator.subscribe 'router:match', spy
         router.match 'correct-match1', 'null#null'
         router.match 'correct-match2', 'null#null'
 
-        routed = router.route '/correct-match1'
+        routed = router.route url: '/correct-match1'
         expect(routed).to.be true
         expect(spy).was.calledOnce()
 
@@ -147,10 +154,9 @@ define [
 
         routed1 = router.route controller: 'null', action: 'null'
         routed2 = router.route name: 'null'
-        routed3 = router.route name: 'with-param', params: { named_param: 23 }
 
-        expect(routed1 and routed2 and routed3).to.be true
-        expect(spy).was.calledThrice()
+        expect(routed1 and routed2).to.be true
+        expect(spy).was.calledTwice()
 
         mediator.unsubscribe 'router:match', spy
 
@@ -161,7 +167,7 @@ define [
         subdirRooter.match 'correct-match1', 'null#null'
         subdirRooter.match 'correct-match2', 'null#null'
 
-        routed = subdirRooter.route '/subdir/correct-match1'
+        routed = subdirRooter.route url: '/subdir/correct-match1'
         expect(routed).to.be true
         expect(spy).was.calledOnce()
 
@@ -174,7 +180,7 @@ define [
         router.match 'params/:one', 'null#null'
         router.match 'params/:two', 'null#null'
 
-        routed = router.route '/params/1'
+        routed = router.route url: '/params/1'
 
         expect(routed).to.be true
         expect(spy).was.calledOnce()
@@ -205,7 +211,7 @@ define [
 
       it 'should pass the route to the router:match handler', ->
         router.match 'passing-the-route', 'controller#action'
-        router.route '/passing-the-route'
+        router.route 'controller#action'
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.path).to.be 'passing-the-route'
         expect(passedRoute.controller).to.be 'controller'
@@ -213,16 +219,23 @@ define [
 
     describe 'Passing the Parameters', ->
 
-      it 'should extract named parameters', ->
+      it 'should extract named parameters from URL', ->
         router.match 'params/:one/:p_two_123/three', 'null#null'
-        router.route '/params/123-foo/456-bar/three'
+        router.route url: '/params/123-foo/456-bar/three'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.one).to.be '123-foo'
+        expect(passedParams.p_two_123).to.be '456-bar'
+
+      it 'should extract named parameters from object', ->
+        router.match 'params/:one/:p_two_123/three', 'controller#action'
+        router.route 'controller#action', one: '123-foo', p_two_123: '456-bar'
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo'
         expect(passedParams.p_two_123).to.be '456-bar'
 
       it 'should extract non-ascii named parameters', ->
         router.match 'params/:one/:two/:three/:four', 'null#null'
-        router.route "/params/o_O/*.*/ü~ö~ä/#{encodeURIComponent('éêè')}"
+        router.route url: "/params/o_O/*.*/ü~ö~ä/#{encodeURIComponent('éêè')}"
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be 'o_O'
         expect(passedParams.two).to.be '*.*'
@@ -231,21 +244,21 @@ define [
 
       it 'should match splat parameters', ->
         router.match 'params/:one/*two', 'null#null'
-        router.route '/params/123-foo/456-bar/789-qux'
+        router.route url: '/params/123-foo/456-bar/789-qux'
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo'
         expect(passedParams.two).to.be '456-bar/789-qux'
 
       it 'should match splat parameters at the beginning', ->
         router.match 'params/*one/:two', 'null#null'
-        router.route '/params/123-foo/456-bar/789-qux'
+        router.route url: '/params/123-foo/456-bar/789-qux'
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo/456-bar'
         expect(passedParams.two).to.be '789-qux'
 
       it 'should match splat parameters before a named parameter', ->
         router.match 'params/*one:two', 'null#null'
-        router.route '/params/123-foo/456-bar/789-qux'
+        router.route url: '/params/123-foo/456-bar/789-qux'
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo/456-bar/'
         expect(passedParams.two).to.be '789-qux'
@@ -255,7 +268,7 @@ define [
           params:
             foo: 'bar'
 
-        router.route '/fixed-params/123'
+        router.route url: '/fixed-params/123'
         expect(passedParams).to.be.an 'object'
         expect(passedParams.id).to.be '123'
         expect(passedParams.foo).to.be 'bar'
@@ -265,20 +278,22 @@ define [
           params:
             foo: 'bar'
 
-        router.route '/conflicting-params/123'
+        router.route url: '/conflicting-params/123'
         expect(passedParams.foo).to.be 'bar'
 
       it 'should impose parameter constraints', ->
         spy = sinon.spy()
         mediator.subscribe 'router:match', spy
-        router.match 'constraints/:id', 'null#null',
+        router.match 'constraints/:id', 'controller#action',
           constraints:
             id: /^\d+$/
 
-        expect(-> router.route '/constraints/123-foo').to.throwError()
+        expect(-> router.route url: '/constraints/123-foo').to.throwError()
+        expect(-> router.route 'controller#action', id: '123-foo').to.throwError()
 
-        router.route '/constraints/123'
-        expect(spy).was.called()
+        router.route url: '/constraints/123'
+        router.route 'controller#action', id: 123
+        expect(spy).was.calledTwice()
 
         mediator.unsubscribe 'router:match', spy
 
@@ -406,16 +421,27 @@ define [
 
     describe 'Query string extraction', ->
 
-      it 'should extract query string parameters', ->
+      it 'should extract query string parameters from an url', ->
         router.match 'query-string', 'null#null'
 
         input =
           foo: '123 456'
           'b a r': 'the _quick &brown föx= jumps over the lazy dáwg'
           'q&uu=x': 'the _quick &brown föx= jumps over the lazy dáwg'
-        query = serializequery input
+        query = utils.QueryParams.stringify input
 
-        router.route 'query-string', {query}
+        router.route url: 'query-string?' + query
+        expect(passedParams).to.eql input
+
+      it 'should extract query string parameters from an object', ->
+        router.match 'query-string', 'controller#action'
+
+        input =
+          foo: '123 456'
+          'b a r': 'the _quick &brown föx= jumps over the lazy dáwg'
+          'q&uu=x': 'the _quick &brown föx= jumps over the lazy dáwg'
+
+        router.route 'controller#action', null, {query: input}
         expect(passedParams).to.eql input
 
       it 'should extract query string params along with named', ->
@@ -426,9 +452,9 @@ define [
           bar: 'query_456'
           qux: '789 query'
           one: 'whatever'
-        query = serializequery input
+        query = utils.QueryParams.stringify input
 
-        router.route '/query-string/named', {query}
+        router.route url: '/query-string/named?' + query
         # Named params overwrite query string params
         expect(passedParams).to.eql create(input, one: 'named')
 
@@ -440,42 +466,23 @@ define [
           bar: 'query_456'
           qux: '789 query'
           one: 'whatever'
-        query = serializequery input
+        query = utils.QueryParams.stringify input
 
-        router.route '/query-string/foo/bar/qux', {query}
+        router.route url: '/query-string/foo/bar/qux?' + query
         # Named params overwrite query string params
         expect(passedParams).to.eql create(input, one: 'foo/bar/qux')
-
-      it 'should use the current query string as fallback', ->
-        input =
-          foo: 'query123'
-          bar: 'query_456'
-          qux: '789 query'
-        query = serializequery input
-
-        # We need to know this implementation detail to stub it correctly
-        stub = sinon.stub(Route.prototype, 'getCurrentQuery')
-          .returns(query)
-
-        router.match 'query-string', 'null#null'
-        router.route '/query-string'
-
-        expect(stub).was.called()
-        expect(passedParams).to.eql input
-
-        stub.restore()
 
     describe 'Passing the Routing Options', ->
 
       it 'should pass routing options', ->
-        router.match ':id', 'null#null'
-        path = '/foo'
-        query = 'x=32&y=21'
+        router.match ':id', 'controller#action'
+        query = x: 32, y: 21
         options = foo: 123, bar: 456
-        router.route path, create {query}, options
+        router.route 'controller#action', ['foo'], create {query}, options
         # It should be a different object
         expect(passedOptions).not.to.be options
-        expect(passedRoute.query).to.be query
+        expect(passedRoute.path).to.be 'foo'
+        expect(passedRoute.query).to.be 'x=32&y=21'
         expect(passedOptions).to.eql(
           create(options, changeURL: true)
         )
@@ -485,12 +492,11 @@ define [
       it 'should route when receiving a path', ->
         path = 'router-route-event'
         options = replace: true
-        callback = sinon.spy()
 
         routeSpy = sinon.spy router, 'route'
         router.match path, 'router#route'
 
-        mediator.execute 'router:route', path, options
+        mediator.execute 'router:route', url: path, options
         expect(passedRoute).to.be.an 'object'
         expect(passedRoute.controller).to.be 'router'
         expect(passedRoute.action).to.be 'route'
@@ -519,7 +525,7 @@ define [
         router.match 'phone/:id', 'phonebook#dial', name: 'phonebook'
 
         params = id: '123'
-        mediator.execute 'router:route', name: 'phonebook', params: params
+        mediator.execute 'router:route', 'phonebook', params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -540,7 +546,7 @@ define [
         router.match 'phone/:id', 'phonebook#dial'
 
         params = id: '123'
-        mediator.execute 'router:route', controller: 'phonebook', action: 'dial', params: params
+        mediator.execute 'router:route', controller: 'phonebook', action: 'dial', params
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'
         expect(passedRoute.path).to.be "phone/#{params.id}"
@@ -552,11 +558,9 @@ define [
         router.match 'index', 'null#null', name: 'home'
         router.match 'phone/:id', 'phonebook#dial', name: 'phonebook'
 
-        routeSpy = sinon.spy router, 'route'
-
         params = id: '123'
         options = replace: true
-        mediator.execute 'router:route', name: 'phonebook', params: params, options
+        mediator.execute 'router:route', 'phonebook', params, options
 
         expect(passedRoute.controller).to.be 'phonebook'
         expect(passedRoute.action).to.be 'dial'

@@ -368,6 +368,9 @@ define [
       mediator.subscribe 'dispatcher:dispatch', dispatch
       mediator.subscribe 'router:route', routed
 
+      route = sinon.spy()
+      mediator.setHandler 'router:route', route
+
       # Dispatch a route to check if previous controller info is correct after
       # redirection
       publishMatch route1, params, options
@@ -396,6 +399,7 @@ define [
         expect(d.currentRoute.path).to.be redirectToURLRoute.path
 
         expect(dispatch).was.calledOnce()
+        expect(route).was.calledOnce()
 
         mediator.unsubscribe 'dispatcher:dispatch', dispatch
         action.restore()
