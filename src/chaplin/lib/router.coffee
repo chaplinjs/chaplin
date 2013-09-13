@@ -83,15 +83,19 @@ module.exports = class Router # This class does not extend Backbone.Router.
   route: (pathDesc, params, options) ->
     params = if params then _.clone(params) else {}
 
-    # Accept path to be given explicitly via oject or implicitly via route name
-    if typeof pathDesc is 'object' and (path = pathDesc.url)?
+    # Try to extract an URL from the pathDesc if it's a hash.
+    path = pathDesc.url if typeof pathDesc is 'object'
+
+    # Accept path to be given via URL wrapped in object,
+    # or implicitly via route name, or explicitly via object.
+    if path?
       # Remove leading subdir and hash or slash.
       path = path.replace @removeRoot, ''
 
       # Find a matching route.
       handler = _.find Backbone.history.handlers, (handler) -> handler.route.test path
 
-      # Options is the second argument in this case
+      # Options is the second argument in this case.
       options = params
       params = null
     else
@@ -109,7 +113,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       _.defaults options, changeURL: true
 
       handler.callback path or params, options
-      return true
+      true
     else
       throw new Error 'Router#route: request was not routed'
 

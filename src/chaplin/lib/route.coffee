@@ -60,12 +60,12 @@ module.exports = class Route
         propertiesCount++
         property = criteria[name]
         return false if property and property isnt this[name]
-      return false if propertiesCount is 1 and name in ['action', 'controller']
-      true
+      invalidParamsCount = propertiesCount is 1 and name in ['action', 'controller']
+      not invalidParamsCount
 
   # Generates route URL from params.
   reverse: (params, query) ->
-    params = @normalizeParams(params)
+    params = @normalizeParams params
     return false if params is false
 
     url = @pattern
@@ -77,7 +77,7 @@ module.exports = class Route
       value = params[name]
       url = url.replace ///[:*]#{name}///g, value
 
-    return url if not query
+    return url unless query
 
     # Stringify query params if needed.
     if typeof query is 'object'
@@ -96,14 +96,14 @@ module.exports = class Route
       for paramName, paramIndex in @paramNames
         paramsHash[paramName] = params[paramIndex]
 
-      return false if not @testConstraints paramsHash
+      return false unless @testConstraints paramsHash
 
       params = paramsHash
     else
       # null or undefined params are equivalent to an empty hash
       params ?= {}
 
-      return false if not @testParams params
+      return false unless @testParams params
 
     params
 
@@ -115,7 +115,7 @@ module.exports = class Route
       for own name, constraint of constraints
         return false unless constraint.test params[name]
 
-    return true
+    true
 
   # Test if passed params hash matches current route.
   testParams: (params) ->
@@ -160,7 +160,7 @@ module.exports = class Route
     if constraints
       return @testConstraints @extractParams path
 
-    return true
+    true
 
   # The handler called by Backbone.History when the route matches.
   # It is also called by Router#route which might pass options.
