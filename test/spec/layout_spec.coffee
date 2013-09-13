@@ -31,8 +31,8 @@ define [
       mediator.setHandler 'router:route', stub
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
-      [passedPath, passedOptions] = stub.firstCall.args
-      expect(passedPath).to.be linkAttributes.href
+      [passedPath] = stub.firstCall.args
+      expect(passedPath).to.eql url: linkAttributes.href
       mediator.unsubscribe '!router:route', stub
       stub
 
@@ -87,9 +87,8 @@ define [
       linkAttributes = href: "#{path}?#{query}"
       createLink(linkAttributes).appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
-      [passedPath, passedOptions] = stub.firstCall.args
-      expect(passedPath).to.be path
-      expect(passedOptions).to.eql {query}
+      [passedPath] = stub.firstCall.args
+      expect(passedPath).to.eql url: linkAttributes.href
       mediator.unsubscribe '!router:route', stub
 
     it 'should not route links without href attributes', ->
@@ -131,9 +130,8 @@ define [
         .addClass('go-to').attr('data-href', path)
         .appendTo(document.body).click().remove()
       expect(stub).was.calledOnce()
-      [passedPath, passedOptions] = stub.firstCall.args
-      expect(passedPath).to.be path
-      expect(passedOptions).to.be.an 'object'
+      passedPath = stub.firstCall.args[0]
+      expect(passedPath).to.eql url: path
       mediator.unsubscribe '!router:route', stub
 
     # With custom external checks

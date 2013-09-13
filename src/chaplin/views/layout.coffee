@@ -108,7 +108,7 @@ module.exports = class Layout extends View
     href = $el.attr('href') or $el.data('href') or null
 
     # Basic href checks.
-    return if href is null or href is undefined or
+    return if not href? or
       # Technically an empty string is a valid relative URL
       # but it doesn’t make sense to route it.
       href is '' or
@@ -130,20 +130,9 @@ module.exports = class Layout extends View
         window.open href
       return
 
-    if isAnchor
-      path = el.pathname
-      query = el.search.substring 1
-      # Append leading slash for IE8.
-      path = "/#{path}" if path.charAt(0) isnt '/'
-    else
-      [path, query] = href.split '?'
-      query ?= ''
-
-    # Create routing options and callback.
-    options = {query}
-
     # Pass to the router, try to route the path internally.
-    helpers.redirectTo path, options
+    helpers.redirectTo url: href
+    
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
     return

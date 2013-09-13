@@ -84,6 +84,49 @@ utils =
   modifierKeyPressed: (event) ->
     event.shiftKey or event.altKey or event.ctrlKey or event.metaKey
 
+  # Query parameters Helpers
+  # --------------
+
+  QueryParams:
+
+    # Returns a query string from a hash
+    stringify: (queryParams) ->
+      query = ''
+      for own key, value of queryParams
+        encodedKey = encodeURIComponent key
+        if _.isArray value
+          for arrParam in value
+            query += '&' + encodedKey + '=' + encodeURIComponent arrParam
+        else
+          query += '&' + encodedKey + '=' + encodeURIComponent value
+      query and query.substring 1
+
+    # Returns a hash with query parameters from a query string
+    parse: (queryString) ->
+      params = {}
+      return params unless queryString
+      pairs = queryString.split '&'
+      for pair in pairs
+        continue unless pair.length
+        [field, value] = pair.split '='
+        continue unless field.length
+        field = decodeURIComponent field
+        value = decodeURIComponent value
+        current = params[field]
+        if current
+          # Handle multiple params with same name:
+          # Aggregate them in an array.
+          if current.push
+            # Add the existing array.
+            current.push value
+          else
+            # Create a new array.
+            params[field] = [current, value]
+        else
+          params[field] = value
+
+      params
+
 # Finish
 # ------
 

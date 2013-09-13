@@ -46,9 +46,9 @@ module.exports = class Controller
   # -----------
 
   # Redirect to URL.
-  redirectTo: (pathDesc, options) ->
+  redirectTo: (pathDesc, params, options) ->
     @redirected = true
-    helpers.redirectTo pathDesc, options
+    helpers.redirectTo pathDesc, params, options
 
   # Disposal
   # --------
