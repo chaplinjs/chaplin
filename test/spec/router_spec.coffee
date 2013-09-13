@@ -431,7 +431,7 @@ define [
         query = utils.QueryParams.stringify input
 
         router.route url: 'query-string?' + query
-        expect(passedParams).to.eql input
+        expect(passedOptions.query).to.eql input
 
       it 'should extract query string parameters from an object', ->
         router.match 'query-string', 'controller#action'
@@ -442,35 +442,7 @@ define [
           'q&uu=x': 'the _quick &brown föx= jumps over the lazy dáwg'
 
         router.route 'controller#action', null, {query: input}
-        expect(passedParams).to.eql input
-
-      it 'should extract query string params along with named', ->
-        router.match 'query-string/:one', 'null#null'
-
-        input =
-          foo: 'query123'
-          bar: 'query_456'
-          qux: '789 query'
-          one: 'whatever'
-        query = utils.QueryParams.stringify input
-
-        router.route url: '/query-string/named?' + query
-        # Named params overwrite query string params
-        expect(passedParams).to.eql create(input, one: 'named')
-
-      it 'should extract query string params along with splats', ->
-        router.match 'query-string/*one', 'null#null'
-
-        input =
-          foo: 'query123'
-          bar: 'query_456'
-          qux: '789 query'
-          one: 'whatever'
-        query = utils.QueryParams.stringify input
-
-        router.route url: '/query-string/foo/bar/qux?' + query
-        # Named params overwrite query string params
-        expect(passedParams).to.eql create(input, one: 'foo/bar/qux')
+        expect(passedOptions.query).to.eql input
 
     describe 'Passing the Routing Options', ->
 
@@ -484,7 +456,7 @@ define [
         expect(passedRoute.path).to.be 'foo'
         expect(passedRoute.query).to.be 'x=32&y=21'
         expect(passedOptions).to.eql(
-          create(options, changeURL: true)
+          create(options, changeURL: true, query: query)
         )
 
     describe 'Setting the router:route handler', ->

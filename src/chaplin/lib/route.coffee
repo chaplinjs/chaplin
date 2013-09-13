@@ -167,20 +167,20 @@ module.exports = class Route
   handler: (pathParams, options) =>
     options = if options then _.clone options else {}
 
-    # pathDesc may be an object with params for reversing or a simple URL.
+    # pathDesc may be either an object with params for reversing or a simple URL.
     if typeof pathParams is 'object'
-      queryParams = options.query
-      delete options.query
-      query = utils.QueryParams.stringify queryParams
+      query = utils.QueryParams.stringify options.query
       params = pathParams
       path = @reverse params
     else
       [path, query] = pathParams.split '?'
-      query ?= ''
-      queryParams = utils.QueryParams.parse query
+      if not query?
+        query = ''
+      else
+        options.query = utils.QueryParams.parse query
       params = @extractParams path
 
-    actionParams = _.extend {}, queryParams, params, @options.params
+    actionParams = _.extend {}, params, @options.params
 
     # Construct a route object to forward to the match event.
     route = {path, @action, @controller, @name, query}
