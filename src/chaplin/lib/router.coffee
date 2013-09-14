@@ -4,6 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
 EventBroker = require 'chaplin/lib/event_broker'
+History = require 'chaplin/lib/history'
 Route = require 'chaplin/lib/route'
 utils = require 'chaplin/lib/utils'
 
@@ -36,7 +37,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
   # Create a Backbone.History instance.
   createHistory: ->
-    Backbone.history or= new Backbone.History()
+    Backbone.history = new History()
 
   startHistory: ->
     # Start the Backbone.History instance to start routing.

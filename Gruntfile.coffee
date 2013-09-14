@@ -25,6 +25,7 @@ module.exports = (grunt) ->
     'temp/chaplin/views/collection_view.js'
     'temp/chaplin/lib/route.js'
     'temp/chaplin/lib/router.js'
+    'temp/chaplin/lib/history.js'
     'temp/chaplin/lib/delayer.js'
     'temp/chaplin/lib/event_broker.js'
     'temp/chaplin/lib/support.js'
