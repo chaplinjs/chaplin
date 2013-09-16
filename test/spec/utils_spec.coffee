@@ -61,3 +61,13 @@ define [
         expect(utils.upcase 'stuff').to.be 'Stuff'
         expect(utils.upcase 'стафф').to.be 'Стафф'
         expect(utils.upcase '123456').to.be '123456'
+
+    describe 'QueryParams', ->
+      queryParams = 'p1': 'With space', 'p 2': [999, 'a&b']
+      queryString = 'p1=With%20space&p%202=999&p%202=a%26b'
+
+      it 'should serialize query parameters from object into string', ->
+        expect(utils.QueryParams.stringify queryParams).to.be queryString
+
+      it 'should deserialize query parameters from query string into object', ->
+        expect(utils.QueryParams.parse queryString).to.eql queryParams
