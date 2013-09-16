@@ -83,7 +83,7 @@ module.exports = class View extends Backbone.View
   optionNames: [
     'autoAttach', 'autoRender',
     'container', 'containerMethod',
-    'region', 'regions'
+    'region', 'regions', 'template',
     'noWrap'
   ]
 
