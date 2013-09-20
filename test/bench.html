@@ -33,49 +33,100 @@
           });
         };
 
-        var bench = function(cases) {
+        var suiteBench = function(cases) {
           var suite = new Benchmark.Suite;
           Object.keys(cases).forEach(function(name) {
             var fn = cases[name];
             suite.add(name, fn);
           });
-          suite
+          return suite
             .on('error', function(e) {
               console.error('Error!', e);
             })
-            .on('complete', log)
-            .run({async: true});
+            .on('complete', log);
         };
 
-        // (new Benchmark.Suite)
-        //   .add('default', function() {
-        //     var models = _.range(65, 465).map(function(code) {
-        //       return {
-        //         id: String.fromCharCode(code),
-        //         title: String(Math.random())
-        //       };
-        //     });
+        var bench = function(dict) {
+          Object.keys(dict).forEach(function(name) {
+            console.time(name);
+            dict[name]();
+            console.timeEnd(name);
+          });
+        };
 
-        //     var ItemView = Chaplin.View.extend({
-        //       tagName: 'li',
-        //       attributes: function() {
-        //         return {id: this.model.id, cid: this.model.cid};
-        //       },
-        //       templateFunction: function(data) {
-        //         return data.title;
-        //       },
-        //       getTemplateFunction: function() {
-        //         return this.templateFunction;
-        //       }
-        //     });
+        var collectionBench = function() {
+          var models = _.range(65, 165).map(function(code) {
+            return {
+              id: String.fromCharCode(code),
+              title: String(Math.random())
+            };
+          });
 
-        //     var CV = Chaplin.CollectionView.extend({itemView: ItemView});
-        //     var collection = new Chaplin.Collection();
-        //     var view = new CV({collection: collection});
-        //     collection.reset(models);
-        //   })
-        //   .on('complete', log)
-        //   .run({async: true});
+          var BaseItemView = Chaplin.View.extend({
+            tagName: 'li',
+            attributes: function() {
+              return {id: this.model.id, cid: this.model.cid};
+            },
+            template: function(data) {
+              return data.title;
+            },
+            getTemplateFunction: function() {
+              return this.template;
+            }
+          });
+
+          var noCheckView = new Chaplin.CollectionView({
+            collection: new Chaplin.Collection(),
+            itemView: BaseItemView.extend({
+              attach: function() {
+                Chaplin.View.prototype.attach.call(this);
+              }
+            })
+          });
+
+          var propCheckView = new Chaplin.CollectionView({
+            collection: new Chaplin.Collection(),
+            itemView: BaseItemView.extend({
+              attach: function() {
+                if (!this.attached) {
+                  this.attached = true;
+                  Chaplin.View.prototype.attach.call(this);
+                }
+              }
+            })
+          });
+
+          var domCheckView = new Chaplin.CollectionView({
+            collection: new Chaplin.Collection(),
+            itemView: BaseItemView.extend({
+              attach: function() {
+                if (!document.body.contains(this.el)) {
+                  Chaplin.View.prototype.attach.call(this);
+                }
+              }
+            })
+          });
+
+          var gf = function(collview) {
+            collview.subviews.forEach(function(_) {_.render();});
+          };
+          noCheckView.collection.reset(models);
+          propCheckView.collection.reset(models);
+          domCheckView.collection.reset(models);
+
+
+          bench({
+            'Without contains': function() {
+              gf(noCheckView);
+            },
+            'With attr contains': function() {
+              gf(propCheckView);
+            },
+            'With DOM contains': function() {
+              gf(domCheckView);
+            }
+          });
+        };
 
         var router = new Chaplin.Router;
         router.match('index', 'null#1', {name: 'home'});
@@ -84,7 +135,7 @@
         router.match('fake/:three', 'fake#2', {name: 'about'});
         router.match('phone/:four', 'null#a');
 
-        bench({
+        var routerBench = suiteBench({
           object: function() {
             Chaplin.helpers.reverse('null#a', {four: 1});
           },
@@ -92,6 +143,9 @@
             Chaplin.helpers.reverse('null#a', [1]);
           }
         });
+
+        collectionBench();
+        // routerBench.run({async: true});
       });
     </script>
   </head>
