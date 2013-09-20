@@ -117,6 +117,13 @@ define [
       expect(view.el).to.be testbed.previousSibling
       expect(view.el.parentNode).to.be testbed.parentNode
 
+    it 'should not attach itself more than once', ->
+      spy = sinon.spy $::, 'append'
+      view = new TestView container: testbed
+      view.render()
+      view.render()
+      expect(spy.calledOnce).to.be true
+
     it 'should not attach itself if autoAttach is false', ->
       class NoAutoAttachView1 extends View
         autoAttach: false
