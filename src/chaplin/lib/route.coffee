@@ -81,7 +81,7 @@ module.exports = class Route
 
     # Stringify query params if needed.
     if typeof query is 'object'
-      url += '?' + utils.QueryParams.stringify query
+      url += '?' + utils.queryParams.stringify query
     else
       url += (if query[0] is '?' then '' else '?') + query
 
@@ -169,7 +169,7 @@ module.exports = class Route
 
     # pathDesc may be either an object with params for reversing or a simple URL.
     if typeof pathParams is 'object'
-      query = utils.QueryParams.stringify options.query
+      query = utils.queryParams.stringify options.query
       params = pathParams
       path = @reverse params
     else
@@ -177,7 +177,7 @@ module.exports = class Route
       if not query?
         query = ''
       else
-        options.query = utils.QueryParams.parse query
+        options.query = utils.queryParams.parse query
       params = @extractParams path
 
     actionParams = _.extend {}, params, @options.params

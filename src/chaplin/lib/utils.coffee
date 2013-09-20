@@ -87,7 +87,7 @@ utils =
   # Query parameters Helpers
   # --------------
 
-  QueryParams:
+  queryParams:
 
     # Returns a query string from a hash
     stringify: (queryParams) ->
