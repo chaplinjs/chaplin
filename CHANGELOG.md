@@ -21,8 +21,10 @@
       be picked from an object passed to View, when initialising it.
       Property allows to simply extend it in your child classes:
       `optionNames: ParentView.prototype.optionNames.concat(['template'])`
+    * Views now appended to DOM only if they were not there.
 * Improved `Chaplin.helpers`:
-    * Added `helpers.redirectTo` which allows to re.
+    * Added `helpers.redirectTo` which allows to redirect to other route
+      or url.
 * Improved `Chaplin.utils`:
     * `utils.getPrototypeChain` now returns prototypes from oldest to newest,
       to match `utils.getAllPropertyVersions`.
