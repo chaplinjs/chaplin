@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Chaplin Test Runner</title>
-    <link rel="stylesheet" href="components/mocha/mocha.css">
-    <script src="components/mocha/mocha.js"></script>
-    <script src="components/expect/expect.js"></script>
-    <script src="lib/sinon-1.5.2.js"></script>
+    <link rel="stylesheet" href="../bower_components/mocha/mocha.css">
+    <script src="../bower_components/mocha/mocha.js"></script>
+    <script src="../bower_components/expect/expect.js"></script>
+    <script src="../bower_components/sinon/index.js"></script>
     <script src="lib/sinon-expect-0.2.0.js"></script>
-    <script src="components/requirejs/require.js"></script>
+    <script src="../bower_components/requirejs/require.js"></script>
     <script>
       // Fix timers stubbing in IE8-9.
       var oldTimers = {setInterval: setInterval, clearInterval: clearInterval};
@@ -21,17 +21,14 @@
       requirejs.config({
         baseUrl: 'temp/',
         paths: {
-          jquery: '../components/jquery/jquery',
-          underscore: '../components/underscore/underscore',
-          backbone: '../components/backbone/backbone'
+          jquery: '../bower_components/jquery/jquery',
+          underscore: '../bower_components/lodash/dist/lodash',
+          backbone: '../bower_components/backbone/backbone'
         },
         shim: {
           backbone: {
             deps: ['underscore', 'jquery'],
             exports: 'Backbone'
-          },
-          underscore: {
-            exports: '_'
           }
         },
         // For easier development, disable browser caching
