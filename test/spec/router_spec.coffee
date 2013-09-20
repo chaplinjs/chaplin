@@ -428,7 +428,7 @@ define [
           foo: '123 456'
           'b a r': 'the _quick &brown föx= jumps over the lazy dáwg'
           'q&uu=x': 'the _quick &brown föx= jumps over the lazy dáwg'
-        query = utils.QueryParams.stringify input
+        query = utils.queryParams.stringify input
 
         router.route url: 'query-string?' + query
         expect(passedOptions.query).to.eql input
