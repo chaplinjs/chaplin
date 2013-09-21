@@ -23,6 +23,7 @@ module.exports = class History extends Backbone.History
   getFragment: (fragment, forcePushState) ->
     if not fragment?
       if @_hasPushState or not @_wantsHashChange or forcePushState
+        # CHANGED: Make fragment include query string.
         fragment = @location.pathname + @location.search
         root = @root.replace trailingSlash, ''
         fragment = fragment.substr root.length unless fragment.indexOf root
@@ -73,6 +74,9 @@ module.exports = class History extends Backbone.History
     # If we've started off with a route from a `pushState`-enabled browser,
     # but we're currently in a browser that doesn't support it...
     if @_wantsHashChange and @_wantsPushState and not @_hasPushState and not atRoot
+      # CHANGED: Prevent query string from being added before hash.
+      # So, it will appear only after #, as it has been already included
+      # into @fragment
       @fragment = @getFragment null, true
       @location.replace @root + '#' + @fragment
       # Return immediately as browser will do redirect to new url
@@ -82,6 +86,8 @@ module.exports = class History extends Backbone.History
     # in a browser where it could be `pushState`-based instead...
     else if @_wantsPushState and @_hasPushState and atRoot and loc.hash
       @fragment = @getHash().replace routeStripper, ''
+      # CHANGED: It's no longer needed to add loc.search at the end,
+      # as query params have been already included into @fragment
       @history.replaceState {}, document.title, @root + @fragment
 
     @loadUrl() if not @options.silent
