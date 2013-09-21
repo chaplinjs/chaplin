@@ -316,7 +316,7 @@ module.exports = (grunt) ->
     bower:
       install:
         options:
-          targetDir: './test/components'
+          targetDir: './test/bower_components'
           cleanup: true
 
     # Test runner
