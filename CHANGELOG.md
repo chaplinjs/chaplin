@@ -1,6 +1,8 @@
-# Chaplin 0.11.0 (unreleased)
+# Chaplin 0.11.0 (21 September 2013)
 * Chaplin internals now use *Request / Response* pattern instead of
-  bang `!events`. New system allows to return values.
+  bang `!events`. New system also allows to return values.
+  The syntax is so: `mediator.setHandler(name, function)`,
+  `mediator.execute(name, args...)`.
   Removed events:
     * `!router:route`, `!router:routeByName` (use `helpers.redirectTo`)
     * `!router:changeURL`
