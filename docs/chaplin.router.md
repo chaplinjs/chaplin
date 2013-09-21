@@ -105,28 +105,24 @@ Route a given path manually. Returns a boolean after it has been matched against
   * **name**: name of a [named route](#match), can replace **controller** and **action**,
   * **params**: params hash.
 
-For routing from other modules, the `!router:route` event can be used. All of the following would be valid use cases.
+For routing from other modules, `Chaplin.helpers.redirectTo` can be used. All of the following would be valid use cases.
 
 ```coffeescript
-@publishEvent '!router:route', name: 'show_message',  params: {id: 80}
-@publishEvent '!router:route', controller: 'messages', action: 'show', params: {id: 80}
-@publishEvent '!router:route', '/messages/80'
+Chaplin.helpers.redirectTo 'messages#show', id: 80
+Chaplin.helpers.redirectTo controller: 'messages', action: 'show', params: {id: 80}
+Chaplin.helpers.redirectTo url: '/messages/80'
 ```
 ```javascript
-this.publishEvent('!router:route', {name: 'show_message',  params: {id: 80}})
-this.publishEvent('!router:route', {controller: 'messages', action: 'show', params: {id: 80}})
-this.publishEvent('!router:route', '/messages/80')
+Chaplin.helpers.redirectTo('messages#show', {id: 80});
+Chaplin.helpers.redirectTo({controller: 'messages', action: 'show', params: {id: 80}});
+Chaplin.helpers.redirectTo({url: '/messages/80'});
 ```
 
 <h3 class="module-member" id="changeURL">changeURL([url])</h3>
 
 Changes the current URL and adds a history entry without triggering any route actions.
 
-* **url**: string that is going to be pushed as the page’s URL
-
-<h3 class="module-member" id="changeURLHandler">changeURLHandler([url])</h3>
-
-Handler for the globalized `!router:changeURL` event. Calls `changeURL`.
+Handler for the globalized `router:changeURL` request-response handler.
 
 * **url**: string that is going to be pushed as the page’s URL
 
@@ -134,16 +130,16 @@ Handler for the globalized `!router:changeURL` event. Calls `changeURL`.
 
 Stops the Backbone.history instance and removes it from the router object. Also unsubscribes any events attached to the Router. On compliant runtimes, the router object is frozen, see [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
 
-## Global events of `Chaplin.Router`
+## Request-response handlers of `Chaplin.Router`
 
-`Chaplin.Router` listens to these global events:
+`Chaplin.Router` sets these global request-response:
 
-* `!router:route path[, options]`
-* `!router:reverse name, params[, options], callback`
-* `!router:changeURL url[, options]`
+* `router:route path[, options]`
+* `router:reverse name, params[, options], callback`
+* `router:changeURL url[, options]`
 
 ## Usage
-`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `initRouter` (passing your routes module as an argument) followed by `startRouting`.
+`Chaplin.Router` is a dependency of [Chaplin.Application](./chaplin.application.html) which should be extended by your main application class. Within your application class you should initialize the `Router` by calling `initRouter` (passing your routes module as an argument) followed by `start`.
 
 
 ```coffeescript
@@ -159,7 +155,7 @@ define [
     initialize: ->
       super
       @initRouter routes
-      @startRouting()
+      @start()
 ```
 
 ```javascript
@@ -175,7 +171,7 @@ define([
     initialize: function() {
       Chaplin.Application.prototype.initialize.apply(this, arguments);
       this.initRouter(routes);
-      this.startRouting();
+      this.start();
     }
   });
 

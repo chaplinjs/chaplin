@@ -52,7 +52,7 @@ required calls in place or you run risk of initializing modules twice.
 
 Instead, the `initialize` method of your derived class must initialize
 the core modules by calling the `initRouter`, `initDispatcher`, `initLayout`
-and `initMediator` methods and then initiating navigation with `startRouting`.
+and `initMediator` methods and then initiating navigation with `start`.
 For more details on proper initialization, see the original implementation in
 `Chaplin.Application`.
 
@@ -145,8 +145,31 @@ var Application = Chaplin.Application.extend({
 });
 ```
 
-<h3 class="module-member" id="startRouting">startRouting()</h3>
-When all of the routes have been matched, call `startRouting()` to begin monitoring routing events, and dispatching routes. Invoke this method after all of the components have been initialized as this will also match the current URL and dispatch the matched route.
+<h3 class="module-member" id="start">start()</h3>
+When all of the routes have been matched, call `start()` to begin monitoring routing events, and dispatching routes. Invoke this method after all of the components have been initialized as this will also match the current URL and dispatch the matched route.
+
+For example, if you want to fetch some data before application is started, you can do it like that:
+
+```coffeescript
+# [...]
+class Application extends Chaplin.Application
+  # [...]
+  start: ->
+    mediator.user.fetch().then =>
+      super
+```
+
+```javascript
+// [...]
+var Application = Chaplin.Application.extend({
+  // [...]
+  start: function() {
+    mediator.user.fetch().then(function() {
+      Chaplin.Application.prototype.call(this);
+    });
+  }
+});
+```
 
 <h3 class="module-member" id="initComposer">initComposer([options])</h3>
 Initializes the **composer** module; forwards passed options to its constructor. See **[Chaplin.Composer](./chaplin.composer.html)** for more information.

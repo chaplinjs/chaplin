@@ -39,6 +39,8 @@
     * `Route::matches` improved not to return `true` when the only `controller` or `action` parameter passed.
     * Fixed `getCurrentQuery` error when `pushState` is disabled (gh-671).
     * Query params are now not copied to next routes (gh-677).
+* Improved `Chaplin.Application`:
+    * Renamed `startRouting` to `start`, the following method also does freezing of app object.
 * Temporarily added `Chaplin.History` that overrides `Backbone.History`.
   It won't not ignore query string history as compared to Backbone (gh-577).
 

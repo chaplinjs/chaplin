@@ -129,6 +129,23 @@ By default calls the `templateFunction` with the `templateData` and sets the HTM
 <h3 class="module-member" id="attach">attach</h3>
 The `attach` method is called after the prototype chain has completed for `View#render`. It attaches the view to its `container` element and fires an `'addedToDOM'` event on the view on success.
 
+## General options
+
+<h3 class="module-member" id="optionNames">optionNames</h3>
+* **array (default list of options)**
+
+List of options that will be picked from constructor.
+
+Easy to extend:
+
+```coffeescript
+optionNames: View::optionNames.concat ['template']
+```
+
+```javascript
+optionNames: View.prototype.optionNames.concat(['template'])
+```
+
 ## Options for rendering
 
 <h3 class="module-member" id="noWrap">noWrap</h3>
