@@ -9,7 +9,6 @@ It is one of the basic goals of Chaplin to enforce module encapsulation and inde
 
 **Note:** If you want to give local pub/sub functionality to a class, take a look at the [EventBroker](./chaplin.event_broker.html).
 
-
 <h2 id="methods">Methods</h2>
 
 <h3 class="module-member" id="subscribe">subscribe(event, handler, [context])</h3>
@@ -23,6 +22,24 @@ A wrapper for `Backbone.Events.off`. See Backbone [documentation](http://backbon
 <h3 class="module-member" id="publish">publish(event, [*args])</h3>
 
 A wrapper for `Backbone.Events.trigger`. See Backbone [documentation](http://backbonejs.org/#Events-trigger) for more details.
+
+## Request-response methods
+
+Since Chaplin 0.11, Chaplin uses
+[request-response](http://en.wikipedia.org/wiki/Request-response)
+strategy for communication between application parts.
+
+Think of it as events, but with only one allowed handler which is at the
+same time required.
+
+<h3 class="module-member" id="setHandler">setHandler(handlerName, handler)</h3>
+
+Sets a handler function for particular `handlerName`.
+
+<h3 class="module-member" id="execute">execute(handlerName, [*args])</h3>
+
+Executes a handler function from particular `handlerName`. If the handler
+is not present, an error will be thrown.
 
 ## Usage
 

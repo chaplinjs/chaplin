@@ -12,9 +12,9 @@ Controllers are in charge of handling the lifecycle of specific models and their
 <h3 class="module-member" id="adjustTitle">adjustTitle(subtitle)</h3>
 Adjusts document title to `subtitle - title`. A title template can be set when initializing the `Dispatcher`.
 
-<h3 class="module-member" id="redirectTo">redirectTo(path, options)</h3>
+<h3 class="module-member" id="redirectTo">redirectTo(params, options)</h3>
 
-Navigates to `path` in app. `path` can be either a path given as a string, or an object describing a route. See [the `route` method of the `Router`](./chaplin.router.html#route) for details.
+Simple proxy to `Chaplin.helpers.redirectTo` that also does `this.redirected = true;`. See [`Chaplin.helpers.redirectTo`](./chaplin.helpers.html#redirectTo) for details.
 
 <h3 class="module-member" id="dispose">dispose()</h3>
 
