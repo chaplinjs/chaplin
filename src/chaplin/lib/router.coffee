@@ -29,11 +29,23 @@ module.exports = class Router # This class does not extend Backbone.Router.
     # Cached regex for stripping a leading subdir and hash/slash.
     @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
 
+    @subscribeEvent '!router:route', @oldEventError
+    @subscribeEvent '!router:routeByName', @oldEventError
+    @subscribeEvent '!router:changeURL', @oldURLEventError
+
     mediator.setHandler 'router:route', @route, this
     mediator.setHandler 'router:reverse', @reverse, this
     mediator.setHandler 'router:changeURL', @changeURL, this
 
     @createHistory()
+
+  oldEventError: ->
+    throw new Error '!router:route and !router:routeByName events were removed.
+  Use `Chaplin.helpers.redirectTo`'
+
+  oldURLEventError: ->
+    throw new Error '!router:changeURL event was removed.
+  Use mediator.execute("router:changeURL")'
 
   # Create a Backbone.History instance.
   createHistory: ->
