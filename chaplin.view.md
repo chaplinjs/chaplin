@@ -129,6 +129,13 @@ By default calls the `templateFunction` with the `templateData` and sets the HTM
 <h3 class="module-member" id="attach">attach</h3>
 The `attach` method is called after the prototype chain has completed for `View#render`. It attaches the view to its `container` element and fires an `'addedToDOM'` event on the view on success.
 
+## Options for rendering
+
+<h3 class="module-member" id="noWrap">noWrap</h3>
+* **boolean (default `false`)**
+
+Specifies whether the default Backbone behavior of wrapping the template with an element, as specified with `tagName`, should be used. When `true` the template will not be wrapped and the template will be rendered as-is and must contain 1 top-level element. Works when using a `region`, `container`, or as a `CollectionView` item.
+
 ## Options for auto-rendering and DOM appending
 
 <h3 class="module-member" id="autoRender">autoRender</h3>
@@ -162,7 +169,7 @@ Method which is used for adding the view to the DOM via the `container` element.
 <h3 class="module-member" id="listen">listen</h3>
 * **Object**
 
-  Property that contains declarative event bindings to non-DOM listeners. Just like [Backbone.View#events](http://backbonejs.org/#View), but for models/collections/mediator etc.
+Chaplin's declarative event bindings follow [Backbone's built-in event catalog](http://backbonejs.org/#Events-catalog), with the added benefit of [automatically removable event listeners](http://docs.chaplinjs.org/events.html#toc_1). You can listen to models/collections/mediator etc.
 
 ```coffeescript
 class SomeView extends View
@@ -184,17 +191,18 @@ var SomeView = View.extend({
   listen: {
     // Listen to view events with @on.
     'eventName': 'methodName',
-    // Same as @listenTo @model, 'change:foo', this[methodName].
+    // Same as this.listenTo(this.model, 'change:foo', this[methodName])
     'change:foo model': 'methodName',
-    // Same as @listenTo @collection, 'reset', this[methodName].
+    // Same as this.listenTo(this.collection, 'reset', this[methodName])
     'reset collection': 'methodName',
-    // Same as @subscribeEvent 'pubSubEvent', this[methodName].
+    // Same as this.subscribeEvent('pubSubEvent', this[methodName])
     'pubSubEvent mediator': 'methodName',
     // The value can also be a function.
     'eventName': function() {alert('Hello!')}
   }
 });
 ```
+
 
 <h3 class="module-member" id="delegate">delegate(eventType, [selector], handler)</h3>
 * **String eventType - jQuery DOM event (e.g. `'click'`, `'focus'`, etc.)**,

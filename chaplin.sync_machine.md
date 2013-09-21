@@ -74,6 +74,48 @@ Sets the state machine’s state back to the previous state if the state machine
 The `Chaplin.SyncMachine` is a dependency of `Chaplin.Model` and `Chaplin.Collection` and should be used for complex synchronization of models and collections. As an example, think of making requests to you own REST API or some third party web service.
 
 ```coffeescript
+class Model extends Chaplin.Model
+  _.extend @prototype, Chaplin.SyncMachine
+
+  initialize: ->
+    super
+    @on 'request', @beginSync
+    @on 'sync', @finishSync
+    @on 'error', @unsync
+
+...
+
+# Will render view when model data will arrive from server.
+model = new Model
+view = new Chaplin.View {model}
+model.fetch().then view.render
+```
+
+```javascript
+var Model = Chaplin.Model.extend({
+  initialize: function() {
+    Chaplin.Model.prototype.initialize.apply(this, arguments);
+    this.on('request', this.beginSync);
+    this.on('sync', this.finishSync);
+    this.on('error', this.unsync);
+  }
+});
+
+_.extend(Model.prototype, Chaplin.SyncMachine);
+
+...
+
+// Will render view when model data will arrive from server.
+var model = new Model;
+var view = new Chaplin.View({model: model});
+model.fetch().then(view.render);
+```
+
+You can do the same to `Collection`.
+
+More complex example involving `Collection`:
+
+```coffeescript
 define [
   'chaplin'
   'models/post' # Post model
@@ -169,79 +211,4 @@ define([
   });
 
   return Posts;
-```
-
-Another example of using `SyncMachine` with `Model`:
-
-```coffeescript
-class Model extends Chaplin.Model
-  _.extend @prototype, Chaplin.SyncMachine
-
-  fetch: (options = {}) ->
-    @beginSync()
-    success = options.success
-    options.success = (model, response) =>
-      success? model, response
-      @finishSync()
-    super options
-
-# Will render view when model data will arrive from server.
-class View extends Chaplin.View
-  rendered: no
-  initialize: ->
-    super
-    # Render.
-    @model.synced =>
-      unless @rendered
-        @render()
-        @rendered = yes
-
-...
-
-model = new Model
-view = new View {model}
-model.fetch()
-```
-
-```javascript
-var Model = Chaplin.Model.extend({
-  initialize: function() {
-    Chaplin.Model.prototype.initialize.apply(this, arguments);
-    _.extend(this, Chaplin.SyncMachine);
-  },
-
-  fetch: function(options) {
-    if (options == null) options = {};
-    this.beginSync();
-    var success = options.success;
-
-    options.success = (function(model, response) {
-      success? model, response
-      if (typeof success === 'function') success(model, response);
-      this.finishSync();
-    }).bind(this)
-
-    Chaplin.Model.prototype.fetch.call(this, options);
-  }
-});
-
-// Will render view when model data will arrive from server.
-var View = Chaplin.View.extend({
-  rendered: false,
-  initialize: function() {
-    Chaplin.View.prototype.initialize.apply(this, arguments);
-    // Render.
-    this.model.synced((function() {
-      if (!this.rendered) {
-        this.render();
-        this.rendered = true;
-      }
-    }).bind(this));
-  }
-});
-...
-
-var model = new Model;
-var view = new View({model: model});
-model.fetch();
 ```
