@@ -92,13 +92,15 @@ utils =
     # Returns a query string from a hash
     stringify: (queryParams) ->
       query = ''
+      stringifyKeyValuePair = (encodedKey, value) ->
+        if value? then '&' + encodedKey + '=' + encodeURIComponent value else ''
       for own key, value of queryParams
         encodedKey = encodeURIComponent key
         if _.isArray value
           for arrParam in value
-            query += '&' + encodedKey + '=' + encodeURIComponent arrParam
+            query += stringifyKeyValuePair encodedKey, arrParam
         else
-          query += '&' + encodedKey + '=' + encodeURIComponent value
+          query += stringifyKeyValuePair encodedKey, value
       query and query.substring 1
 
     # Returns a hash with query parameters from a query string
