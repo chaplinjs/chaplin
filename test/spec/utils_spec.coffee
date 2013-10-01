@@ -63,11 +63,15 @@ define [
         expect(utils.upcase '123456').to.be '123456'
 
     describe 'queryParams', ->
-      queryParams = 'p1': 'With space', 'p 2': [999, 'a&b']
-      queryString = 'p1=With%20space&p%202=999&p%202=a%26b'
+      queryParams = p1: 'With space', p2_empty: '', 'p 3': [999, 'a&b']
+      queryString = 'p1=With%20space&p2_empty=&p%203=999&p%203=a%26b'
 
       it 'should serialize query parameters from object into string', ->
         expect(utils.queryParams.stringify queryParams).to.be queryString
+
+      it 'should ignore undefined and null values when serializing query parameters', ->
+        queryParams1 = p1: null, p2: undefined, p3: 'third'
+        expect(utils.queryParams.stringify queryParams1).to.be 'p3=third'
 
       it 'should deserialize query parameters from query string into object', ->
         expect(utils.queryParams.parse queryString).to.eql queryParams

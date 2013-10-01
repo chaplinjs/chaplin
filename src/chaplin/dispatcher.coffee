@@ -22,6 +22,7 @@ module.exports = class Dispatcher
   currentController: null
   currentRoute: null
   currentParams: null
+  currentQuery: null
 
   constructor: ->
     @initialize arguments...
@@ -52,6 +53,9 @@ module.exports = class Dispatcher
     params = if params then _.clone(params) else {}
     options = if options then _.clone(options) else {}
 
+    # null or undefined query parameters are equivalent to an empty hash
+    options.query = {} if not options.query?
+
     # Whether to update the URL after controller startup.
     # Default to true unless explicitly set to false.
     options.changeURL = true unless options.changeURL is false
@@ -66,7 +70,8 @@ module.exports = class Dispatcher
     return if not options.forceStartup and
       @currentRoute?.controller is route.controller and
       @currentRoute?.action is route.action and
-      _.isEqual @currentParams, params
+      _.isEqual(@currentParams, params) and
+      _.isEqual @currentQuery, options.query
 
     # Fetch the new controller, then go on.
     @loadController route.controller, (Controller) =>
@@ -103,6 +108,7 @@ module.exports = class Dispatcher
     # Save the new controller and its parameters.
     @currentController = controller
     @currentParams = params
+    @currentQuery = options.query
 
     # Call the controller action with params and options.
     controller[route.action] params, route, options

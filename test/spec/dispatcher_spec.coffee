@@ -72,7 +72,7 @@ define [
       params = id: _.uniqueId('paramsId')
       path = "test/#{params.id}"
       options = {}
-      stdOptions = create addedOptions
+      stdOptions = create addedOptions, query: {}
 
       # Fake route objects, walk like a route and swim like a route
       route1 = {controller: 'test1', action: 'show', path}
@@ -127,7 +127,7 @@ define [
         initialize = sinon.spy proto, 'initialize'
         action     = sinon.spy proto, 'show'
 
-        publishMatch route1, params, options
+        publishMatch route1, params, create(options, query: {})
 
         loadTest1Controller ->
           expect(initialize).was.notCalled()
@@ -171,6 +171,38 @@ define [
 
         done()
 
+    it 'should start the same controller if query parameters differ', (done) ->
+      proto = Test1Controller.prototype
+      initialize = sinon.spy proto, 'initialize'
+      action     = sinon.spy proto, 'show'
+
+      optionsStore = []
+
+      optionsStore.push query: key: 'a'
+      optionsStore.push query: key: 'b'
+
+      publishMatch route1, params, optionsStore[0]
+      publishMatch route1, params, optionsStore[1]
+
+      loadTest1Controller ->
+        expect(initialize).was.calledTwice()
+        expect(action).was.calledTwice()
+
+        for i in [0..1]
+          for spy in [initialize, action]
+            [passedParams, passedRoute, passedOptions] = spy.args[i]
+            expect(passedParams).to.eql params
+            expect(passedRoute.controller).to.eql route1.controller
+            expect(passedRoute.action).to.eql route1.action
+            if i is 1
+              expect(passedRoute.previous.controller).to.eql route1.controller
+            expect(passedOptions).to.eql create(stdOptions, optionsStore[i])
+
+        initialize.restore()
+        action.restore()
+
+        done()
+
     it 'should start the same controller if forced', (done) ->
       proto = Test1Controller.prototype
       initialize = sinon.spy proto, 'initialize'
@@ -193,8 +225,7 @@ define [
             expect(passedParams).to.eql paramsStore[i]
             expect(passedRoute.controller).to.be route1.controller
             expect(passedRoute.action).to.be route1.action
-            expectedOptions = create optionsStore[i], {
-              changeURL: true
+            expectedOptions = create stdOptions, optionsStore[i], {
               forceStartup: (if i is 0 then false else true)
             }
             expect(passedOptions).to.eql expectedOptions
@@ -204,9 +235,11 @@ define [
 
         done()
 
-    it 'should save the controller, action, params and path', (done) ->
+    it 'should save the controller, action, params, query and path', (done) ->
       publishMatch route1, params, options
-      publishMatch route2, params, options
+
+      options1 = create(options, query: key: 'a')
+      publishMatch route2, params, options1
 
       # Check that previous route is saved
       loadTest1Controller -> loadTest2Controller ->
@@ -215,6 +248,7 @@ define [
         expect(d.currentController).to.be.a Test2Controller
         expect(d.currentRoute).to.eql create(route2, previous: {})
         expect(d.currentParams).to.eql params
+        expect(d.currentQuery).to.eql options1.query
 
         done()
 
