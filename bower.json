@@ -1,11 +1,11 @@
 {
   "name": "chaplin",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "dependencies": {
     "mocha": "1.13.x",
     "expect": "0.2.x",
     "jquery": "1.9.x",
-    "lodash": "2.0.x",
+    "lodash": "2.2.x",
     "backbone": "1.0.x",
     "benchmark": "git://github.com/bestiejs/benchmark.js.git",
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",

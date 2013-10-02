@@ -1,3 +1,8 @@
+# Chaplin 0.11.1 (2 October 2013)
+* `Dispatcher::dispatch` now checks if `options.query` hash was changed.
+* `Route::reverse` now won't add a ? symbol at the end of a returned url if you pass an empty object as a `query` parameter (second one)
+* `utils.queryParams.stringify` will now ignore `undefined` and `null` values
+
 # Chaplin 0.11.0 (21 September 2013)
 * Chaplin internals now use *Request / Response* pattern instead of
   bang `!events`. New system also allows to return values.
