@@ -81,7 +81,8 @@ module.exports = class Route
 
     # Stringify query params if needed.
     if typeof query is 'object'
-      url += '?' + utils.queryParams.stringify query
+      queryString = utils.queryParams.stringify query
+      url += if queryString then '?' + queryString else ''
     else
       url += (if query[0] is '?' then '' else '?') + query
 
