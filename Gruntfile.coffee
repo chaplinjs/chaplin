@@ -98,6 +98,8 @@ module.exports = (grunt) ->
         ]
       downloads:
         message: "Release #{pkg.version}."
+        tag: pkg.version
+        tagMessage: "Version #{pkg.version}."
         remote: 'git@github.com:chaplinjs/downloads.git'
         branch: 'gh-pages'
         files: [
