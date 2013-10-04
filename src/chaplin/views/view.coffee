@@ -102,6 +102,8 @@ module.exports = class View extends Backbone.View
       render.apply this, arguments
       # Attach to DOM.
       @attach arguments... if @autoAttach
+      # Make sure the element is not reattached to the DOM when re-rendering.
+      @autoAttach = false
       # Return the view.
       this
 
