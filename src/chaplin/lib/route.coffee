@@ -25,7 +25,7 @@ module.exports = class Route
         Use strings with :names and `constraints` option of route'
 
     # Clone options.
-    @options = if options then _.clone(options) else {}
+    @options = if options then _.extend({}, options) else {}
 
     # Store the name on the route if given
     @name = @options.name if @options.name?
@@ -166,7 +166,7 @@ module.exports = class Route
   # The handler called by Backbone.History when the route matches.
   # It is also called by Router#route which might pass options.
   handler: (pathParams, options) =>
-    options = if options then _.clone options else {}
+    options = if options then _.extend {}, options else {}
 
     # pathDesc may be either an object with params for reversing or a simple URL.
     if typeof pathParams is 'object'

@@ -50,8 +50,8 @@ module.exports = class Dispatcher
   #
   dispatch: (route, params, options) ->
     # Clone params and options so the original objects remain untouched.
-    params = if params then _.clone(params) else {}
-    options = if options then _.clone(options) else {}
+    params = if params then _.extend {}, params else {}
+    options = if options then _.extend {}, options else {}
 
     # null or undefined query parameters are equivalent to an empty hash
     options.query = {} if not options.query?

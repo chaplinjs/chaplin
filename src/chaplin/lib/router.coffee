@@ -99,7 +99,10 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
   route: (pathDesc, params, options) ->
-    params = if params then _.clone(params) else {}
+    params = if params
+      if utils.isArray(params) then params.slice() else _.extend {}, params
+    else
+      {}
 
     # Try to extract an URL from the pathDesc if it's a hash.
     path = pathDesc.url if typeof pathDesc is 'object'
@@ -117,7 +120,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       options = params
       params = null
     else
-      options = if options then _.clone(options) else {}
+      options = if options then _.extend {}, options else {}
 
       # Find a route using a passed via pathDesc string route name.
       handler = @findHandler (handler) ->

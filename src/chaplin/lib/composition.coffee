@@ -29,7 +29,7 @@ module.exports = class Composition
   _stale: false
 
   constructor: (options) ->
-    @options = _.clone options if options?
+    @options = _.extend {}, options if options?
     @item = this
     @initialize @options
 
