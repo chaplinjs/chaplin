@@ -245,7 +245,7 @@ module.exports = class CollectionView extends View
     filterCallback ?= @filterCallback
 
     # Show/hide existing views.
-    unless _.isEmpty @getItemViews()
+    if _.keys(@getItemViews()).length
       for item, index in @collection.models
 
         # Apply filter to the item.
