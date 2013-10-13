@@ -181,7 +181,7 @@ module.exports = class View extends Backbone.View
         'handler argument must be function'
 
     # Add an event namespace, bind handler it to view.
-    list = _.map eventName.split(' '), (event) => "#{event}.delegate#{@cid}"
+    list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
     events = list.join(' ')
     bound = _.bind handler, this
     @$el.on events, (selector or null), bound
@@ -234,7 +234,7 @@ module.exports = class View extends Backbone.View
             'second argument must be a string'
         handler = third
 
-      list = _.map eventName.split(' '), (event) => "#{event}.delegate#{@cid}"
+      list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
       events = list.join(' ')
       @$el.off events, (selector or null)
     else
