@@ -43,7 +43,6 @@ handlers = mediator._handlers = {}
 
 # Sets a handler function for requests.
 mediator.setHandler = (name, method, instance) ->
-  # bound = if instance then _.bind(method, instance) else method
   handlers[name] = {instance, method}
 
 # Retrieves a handler function and executes it.

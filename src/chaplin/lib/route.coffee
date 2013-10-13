@@ -20,7 +20,7 @@ module.exports = class Route
   # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
   constructor: (@pattern, @controller, @action, options) ->
     # Disallow regexp routes.
-    if _.isRegExp @pattern
+    if typeof @pattern isnt 'string'
       throw new Error 'Route: RegExps are not supported.
         Use strings with :names and `constraints` option of route'
 

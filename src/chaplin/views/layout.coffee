@@ -37,9 +37,9 @@ module.exports = class Layout extends View
     @title = options.title
     @regions = options.regions if options.regions
     @settings = _.defaults options,
-      titleTemplate: _.template(
-        "<% if (subtitle) { %><%= subtitle %> \u2013 <% } %><%= title %>"
-      )
+      titleTemplate: (data) ->
+        st = if data.subtitle then "#{data.subtitle} \u2013 " else ''
+        st + data.title
       openExternalToBlank: false
       routeLinks: 'a, .go-to'
       skipRouting: '.noscript'
@@ -132,7 +132,7 @@ module.exports = class Layout extends View
 
     # Pass to the router, try to route the path internally.
     helpers.redirectTo url: href
-    
+
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
     return

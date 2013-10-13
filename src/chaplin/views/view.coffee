@@ -89,7 +89,9 @@ module.exports = class View extends Backbone.View
 
   constructor: (options) ->
     # Copy some options to instance properties.
-    _.extend this, _.pick options, @optionNames if options
+    if options
+      for optName, optValue of options when optName in @optionNames
+        this[optName] = optValue
 
     # Wrap `render` so `attach` is called afterwards.
     # Enclose the original function.
