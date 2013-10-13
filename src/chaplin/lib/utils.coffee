@@ -21,6 +21,14 @@ utils =
         ctor.prototype = obj
         new ctor
 
+  indexOf: do ->
+    if Array::indexOf
+      (list, index) -> list.indexOf index
+    else if _.indexOf
+      _.indexOf
+
+  isArray: Array.isArray or _.isArray
+
   # Simple duck-typing serializer for models and collections.
   serialize: (data) ->
     if typeof data.serialize is 'function'
@@ -96,7 +104,7 @@ utils =
         if value? then '&' + encodedKey + '=' + encodeURIComponent value else ''
       for own key, value of queryParams
         encodedKey = encodeURIComponent key
-        if _.isArray value
+        if utils.isArray value
           for arrParam in value
             query += stringifyKeyValuePair encodedKey, arrParam
         else

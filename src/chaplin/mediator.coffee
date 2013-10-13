@@ -65,7 +65,7 @@ mediator.removeHandlers = (instanceOrNames) ->
   unless instanceOrNames
     mediator._handlers = {}
 
-  if _.isArray(instanceOrNames)
+  if utils.isArray instanceOrNames
     for name in instanceOrNames
       delete handlers[name]
   else

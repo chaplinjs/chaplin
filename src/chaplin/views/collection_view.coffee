@@ -3,6 +3,7 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 View = require 'chaplin/views/view'
+utils = require 'chaplin/lib/utils'
 
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
@@ -422,7 +423,7 @@ module.exports = class CollectionView extends View
   updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
     visibilityChanged = false
 
-    visibleItemsIndex = _.indexOf @visibleItems, item
+    visibleItemsIndex = utils.indexOf @visibleItems, item
     includedInVisibleItems = visibleItemsIndex isnt -1
 
     if includedInFilter and not includedInVisibleItems

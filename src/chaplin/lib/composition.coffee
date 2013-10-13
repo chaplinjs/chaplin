@@ -43,7 +43,8 @@ module.exports = class Composition
   # The check method is called when this composition is asked to be
   # composed again. The passed options are the newly passed options.
   # If this returns false then the composition is re-composed.
-  check: (options) -> return _.isEqual @options, options
+  check: (options) ->
+    _.isEqual @options, options
 
   # Marks all applicable items as stale.
   stale: (value) ->

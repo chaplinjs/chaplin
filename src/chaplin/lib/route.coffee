@@ -88,7 +88,7 @@ module.exports = class Route
 
   # Validates incoming params and returns them in a unified form - hash
   normalizeParams: (params) ->
-    if _.isArray params
+    if utils.isArray params
       # Ensure we have enough parameters.
       return false if params.length < @paramNames.length
 

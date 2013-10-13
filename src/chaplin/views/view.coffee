@@ -9,6 +9,13 @@ EventBroker = require 'chaplin/lib/event_broker'
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
 
+# Function bind shortcut.
+bind = do ->
+  if Function::bind
+    (item, ctx) -> item.bind ctx
+  else if _.bind
+    _.bind
+
 module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
@@ -183,7 +190,7 @@ module.exports = class View extends Backbone.View
     # Add an event namespace, bind handler it to view.
     list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
     events = list.join(' ')
-    bound = _.bind handler, this
+    bound = bind handler, this
     @$el.on events, (selector or null), bound
 
     # Return the bound handler.
@@ -197,7 +204,7 @@ module.exports = class View extends Backbone.View
       match = key.match /^(\S+)\s*(.*)$/
       eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
-      bound = _.bind handler, this
+      bound = bind handler, this
       @$el.on eventName, (selector or null), bound
     return
 
@@ -330,7 +337,7 @@ module.exports = class View extends Backbone.View
     view.dispose()
 
     # Remove the subview from the lists.
-    index = _.indexOf subviews, view
+    index = utils.indexOf subviews, view
     subviews.splice index, 1 if index isnt -1
     delete byName[name]
 
