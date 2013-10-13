@@ -52,7 +52,9 @@ module.exports = class Composition
 
     # Sets the stale property for every item in the composition that has it.
     @_stale = value
-    for name, item of this when item and item isnt this and _.has item, 'stale'
+    for name, item of this when (
+      item and item isnt this and typeof item is 'object' and 'stale' of item
+    )
       item.stale = value
 
     # Return nothing.

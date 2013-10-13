@@ -43,7 +43,7 @@ serializeAttributes = (model, attributes, modelStack) ->
 # in the context of a given tree.
 serializeModelAttributes = (model, currentModel, modelStack) ->
   # Nullify circular references.
-  return null if model is currentModel or _.has modelStack, model.cid
+  return null if model is currentModel or model.cid of modelStack
   # Serialize recursively.
   attributes = if typeof model.getAttributes is 'function'
     # Chaplin models.

@@ -181,18 +181,20 @@ module.exports = class Layout extends View
   # Unregisters a specific named region from a view.
   unregisterGlobalRegion: (instance, name) ->
     cid = instance.cid
-    @globalRegions = _.filter @globalRegions, (region) ->
+    @globalRegions = (region for region in @globalRegions when (
       region.instance.cid isnt cid or region.name isnt name
+    ))
 
   # When views are disposed; remove all their registered regions.
   unregisterGlobalRegions: (instance) ->
-    @globalRegions = _.filter @globalRegions, (region) ->
+    @globalRegions = (region for region in @globalRegions when (
       region.instance.cid isnt instance.cid
+    ))
 
   # Returns the region by its name, if found.
   regionByName: (name) ->
-    _.find @globalRegions, (region) ->
-      region.name is name and not region.instance.stale
+    for region in @globalRegions
+      return region if region.name is name and not region.instance.stale
 
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.

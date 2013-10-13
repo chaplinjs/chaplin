@@ -41,7 +41,7 @@ module.exports = class Route
     @paramNames = []
 
     # Check if the action is a reserved name
-    if _.has Controller.prototype, @action
+    if @action of Controller.prototype
       throw new Error 'Route: You should not use existing controller ' +
         'properties as action names'
 
