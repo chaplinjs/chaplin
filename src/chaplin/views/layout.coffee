@@ -222,7 +222,6 @@ module.exports = class Layout extends View
         if $
           $(region.instance.container).find region.selector
         else
-          console.log 123, region.instance.container
           region.instance.container.querySelector region.selector
       else
         region.instance[if $ then '$' else 'find'] region.selector
