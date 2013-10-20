@@ -12,6 +12,13 @@ filterChildren = (nodeList, selector) ->
   return nodeList unless selector
   (node for node in nodeList when node.webkitMatchesSelector selector)
 
+toggleElement = do ->
+  if $
+    (elem, visible) -> elem.toggle visible
+  else
+    (elem, visible) ->
+      elem.style.display = (if visible then '' else 'none')
+
 # General class for rendering Collections.
 # Derive this class and declare at least `itemView` or override
 # `initItemView`. `initItemView` gets an item model and should instantiate
@@ -87,8 +94,8 @@ module.exports = class CollectionView extends View
   # A function that will be executed after each filter.
   # Hides excluded items by default.
   filterCallback: (view, included) ->
-    if $
-      view.$el.stop(true, true).toggle included
+    view.$el.stop(true, true) if $
+    toggleElement view.el, included
 
   # View lists
   # ----------
@@ -180,7 +187,10 @@ module.exports = class CollectionView extends View
     return unless @fallbackSelector
 
     # Set the $fallback property.
-    @$fallback = @$(@fallbackSelector)
+    if $
+      @$fallback = @$ @fallbackSelector
+    else
+      @fallback = @find @fallbackSelector
 
     # Listen for visible items changes.
     @on 'visibilityChange', @toggleFallback
@@ -201,7 +211,7 @@ module.exports = class CollectionView extends View
         # Assume it is synced.
         true
     )
-    @$fallback.toggle visible
+    toggleElement (if $ then @$fallback else @fallback), visible
 
   # Loading indicator
   # -----------------
@@ -213,7 +223,10 @@ module.exports = class CollectionView extends View
       typeof @collection.isSyncing is 'function'
 
     # Set the $loading property.
-    @$loading = @$(@loadingSelector)
+    if $
+      @$loading = @$ @loadingSelector
+    else
+      @loading = @find @loadingSelector
 
     # Listen for sync events on the collection.
     @listenTo @collection, 'syncStateChange', @toggleLoadingIndicator
@@ -228,7 +241,7 @@ module.exports = class CollectionView extends View
     # show up in this case, you need to overwrite this method to
     # disable the check.
     visible = @collection.length is 0 and @collection.isSyncing()
-    @$loading.toggle visible
+    toggleElement (if $ then @$loading else @loading), visible
 
   # Filtering
   # ---------

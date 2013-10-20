@@ -218,6 +218,8 @@ define [
       expect(spy).was.called()
 
     it 'should register and remove user input event handlers', ->
+      view.dispose()
+      view = new TestView container: testbed
       expect(view.delegate).to.be.a 'function'
       expect(view.undelegate).to.be.a 'function'
 
@@ -235,7 +237,8 @@ define [
       spy = sinon.spy()
       handler = view.delegate 'click', 'p', spy
       expect(handler).to.be.a 'function'
-      view.find('p').click()
+      p = view.el.querySelector('p')
+      p.click()
       expect(spy).was.called()
 
       expect(-> view.delegate spy).to.throwError()
@@ -260,18 +263,15 @@ define [
       spy = sinon.spy()
       spy2 = sinon.spy()
       view.delegate 'click', spy
-      view.delegate 'keypress', spy
-      view.delegate 'focusout', spy2
-      view.$el.trigger 'click'
-      view.$el.trigger 'keypress'
-      expect(spy).was.calledTwice()
+      view.delegate 'focus', spy2
+      view.el.click()
+      expect(spy).was.calledOnce()
       expect(spy2).was.notCalled()
 
-      view.undelegate 'click keypress'
-      view.$el.trigger 'click'
-      view.$el.trigger 'keypress'
-      view.$el.trigger 'focusout'
-      expect(spy).was.calledTwice()
+      view.undelegate 'click'
+      view.el.focus()
+      view.el.click()
+      expect(spy).was.calledOnce()
       expect(spy2).was.calledOnce()
 
     it 'should check delegate parameters', ->

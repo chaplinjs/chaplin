@@ -690,9 +690,9 @@ define [
       # Testing class for CollectionViews with template,
       # custom list, loading indicator and fallback elements
       class TemplatedCollectionView extends TestCollectionView
-        fallbackSelector: '> .fallback'
-        listSelector: '> ol'
-        loadingSelector: '> .loading'
+        fallbackSelector: '.fallback'
+        listSelector: 'ol'
+        loadingSelector: '.loading'
         getTemplateFunction: ->
           ->
             """
@@ -725,15 +725,25 @@ define [
       describe 'Selectors', ->
 
         it 'should append views to the listSelector', ->
-          $list = collectionView.$list
-          expect($list).to.be.a jQuery if jQuery
-          expect($list.length).to.be 1
+          if jQuery
+            $list = collectionView.$list
+            expect($list).to.be.a jQuery
+            expect($list.length).to.be 1
 
-          $list2 = collectionView.$(collectionView.listSelector)
-          expect($list.get(0)).to.be $list2.get(0)
+            $list2 = collectionView.$(collectionView.listSelector)
+            expect($list.get(0)).to.be $list2.get(0)
 
-          children = getViewChildren()
-          expect(children.length).to.be collection.length
+            children = getViewChildren()
+            expect(children.length).to.be collection.length
+          else
+            list = collectionView.list
+            expect(list).to.be.true
+
+            list2 = collectionView.find(collectionView.listSelector)
+            expect(list).to.be list2
+
+            children = getViewChildren()
+            expect(children.length).to.be collection.length
 
         it 'should respect the itemSelector property', ->
 
@@ -762,28 +772,34 @@ define [
           expect(viewChildren.length).to.be collection.length
 
           # The first element is not an item view
-          expect(allChildren.eq(0).get(0)).to.not.be viewChildren.get(0)
+          expect(allChildren[0]).to.not.be viewChildren[0]
           # The item views are append after the existing elements
-          expect(allChildren.eq(additionalLength).get(0)).to.be viewChildren.get(0)
+          expect(allChildren[additionalLength]).to.be viewChildren[0]
 
       describe 'Fallback element', ->
 
         it 'should set the fallback element properly', ->
-          $fallback = collectionView.$fallback
-          expect($fallback).to.be.a jQuery if jQuery
-          expect($fallback.length).to.be 1
+          if jQuery
+            {$fallback} = collectionView
+            expect($fallback).to.be.a jQuery if jQuery
+            expect($fallback.length).to.be 1
 
-          $fallback2 = collectionView.$(collectionView.fallbackSelector)
-          expect($fallback.get(0)).to.be $fallback2.get(0)
+            $fallback2 = collectionView.$(collectionView.fallbackSelector)
+            expect($fallback.get(0)).to.be $fallback2.get(0)
+          else
+            {fallback} = collectionView
+            expect(fallback).to.be.true
+            fallback2 = collectionView.find(collectionView.fallbackSelector)
+            expect(fallback).to.be fallback2
 
         it 'should show the fallback element properly', ->
-          $fallback = collectionView.$fallback
+          fallback = if jQuery then collectionView.$fallback[0] else collectionView.fallback
 
           expectVisible = ->
-            expect($fallback.css('display')).to.be 'block'
+            expect(fallback.style.display).to.be ''
 
           expectInvisible = ->
-            expect($fallback.css('display')).to.be 'none'
+            expect(fallback.style.display).to.be 'none'
 
           # Filled + unsynced = not visible
           collection.unsync()
@@ -827,26 +843,32 @@ define [
 
           expect(collectionView.filterer).to.be filterer
           expect(collectionView.visibleItems.length).to.be 0
-          expect(collectionView.$fallback.css('display')).to.be 'block'
+          expect(collectionView.$(collectionView.fallbackSelector)[0].style.display).to.be ''
 
       describe 'Loading indicator', ->
 
         it 'should set the loading indicator properly', ->
-          $loading = collectionView.$loading
-          expect($loading).to.be.a jQuery if jQuery
-          expect($loading.length).to.be 1
+          if jQuery
+            {$loading} = collectionView
+            expect($loading).to.be.a jQuery if jQuery
+            expect($loading.length).to.be 1
 
-          $loading2 = collectionView.$(collectionView.loadingSelector)
-          expect($loading2.get(0)).to.be $loading.get(0)
+            $loading2 = collectionView.$(collectionView.loadingSelector)
+            expect($loading.get(0)).to.be $loading2.get(0)
+          else
+            {loading} = collectionView
+            expect(loading).to.be.true
+            loading2 = collectionView.find(collectionView.loadingSelector)
+            expect(loading).to.be loading2
 
         it 'should show the loading indicator properly', ->
-          $loading = collectionView.$loading
+          loading = if jQuery then collectionView.$loading[0] else collectionView.loading
 
           expectVisible = ->
-            expect($loading.css('display')).to.be 'block'
+            expect(loading.style.display).to.be ''
 
           expectInvisible = ->
-            expect($loading.css('display')).to.be 'none'
+            expect(loading.style.display).to.be 'none'
 
           # Filled + unsynced = not visible
           collection.unsync()
