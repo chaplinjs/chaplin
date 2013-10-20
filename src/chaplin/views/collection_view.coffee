@@ -8,6 +8,10 @@ utils = require 'chaplin/lib/utils'
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
 
+filterChildren = (nodeList, selector) ->
+  return nodeList unless selector
+  (node for node in nodeList when node.webkitMatchesSelector selector)
+
 # General class for rendering Collections.
 # Derive this class and declare at least `itemView` or override
 # `initItemView`. `initItemView` gets an item model and should instantiate
@@ -83,7 +87,8 @@ module.exports = class CollectionView extends View
   # A function that will be executed after each filter.
   # Hides excluded items by default.
   filterCallback: (view, included) ->
-    view.$el.stop(true, true).toggle included
+    if $
+      view.$el.stop(true, true).toggle included
 
   # View lists
   # ----------
@@ -142,7 +147,10 @@ module.exports = class CollectionView extends View
     super
 
     # Set the $list property with the actual list container.
-    @$list = if @listSelector then @$(@listSelector) else @$el
+    if $
+      @$list = if @listSelector then @$(@listSelector) else @$el
+    else
+      @list = if @listSelector then @find(@listSelector) else @el
 
     @initFallback()
     @initLoadingIndicator()
@@ -334,7 +342,7 @@ module.exports = class CollectionView extends View
   # on the model type or data.
   initItemView: (model) ->
     if @itemView
-      new @itemView {model, autoRender: false}
+      new @itemView {autoRender: false, model}
     else
       throw new Error 'The CollectionView#itemView property ' +
         'must be defined or the initItemView() must be overridden.'
@@ -360,9 +368,15 @@ module.exports = class CollectionView extends View
     # Start animation.
     if included and enableAnimation
       if @useCssAnimation
-        $viewEl.addClass @animationStartClass
+        if $
+          $viewEl.addClass @animationStartClass
+        else
+          viewEl.classList.add @animationStartClass
       else
-        $viewEl.css 'opacity', 0
+        if $
+          $viewEl.css 'opacity', 0
+        else
+          viewEl.style.opacity = 0
 
     # Hide or mark the view if it’s filtered.
     @filterCallback view, included if @filterer
@@ -372,29 +386,50 @@ module.exports = class CollectionView extends View
     isEnd = (length) -> length is 0 or position is length
 
     # Insert the view into the list.
+    list = @list
     $list = @$list
 
     if insertInMiddle or @itemSelector
       # Get the children which originate from item views.
-      children = $list.children @itemSelector
+      children = if $
+        $list.children @itemSelector
+      else
+        filterChildren list.children, @itemSelector
       childrenLength = children.length
 
       # Check if it needs to be inserted.
-      unless children.get(position) is viewEl
+      unless children[position] is viewEl
         if isEnd childrenLength
           # Insert at the end.
-          $list.append viewEl
+          if $
+            $list.append viewEl
+          else
+            list.appendChild viewEl
         else
           # Insert at the right position.
           if position is 0
-            $next = children.eq position
-            $next.before viewEl
+            if $
+              children.eq(position).before viewEl
+            else
+              list.insertBefore viewEl, children[position]
           else
-            $previous = children.eq position - 1
-            $previous.after viewEl
+            if $
+              children.eq(position - 1).after viewEl
+            else
+              last = children[position - 1]
+              if list.lastChild is last
+                list.appendChild viewEl
+              else
+                list.insertBefore viewEl, last.nextElementSibling
     else
-      method = if isEnd length then 'append' else 'prepend'
-      $list[method] viewEl
+      if $
+        method = if isEnd length then 'append' else 'prepend'
+        $list[method] viewEl
+      else
+        if isEnd length
+          list.appendChild viewEl
+        else
+          list.insertBefore viewEl, list.firstElementChild
 
     # Tell the view that it was added to its parent.
     view.trigger 'addedToParent'
@@ -407,11 +442,18 @@ module.exports = class CollectionView extends View
       if @useCssAnimation
         # Wait for DOM state change.
         setTimeout =>
-          $viewEl.addClass @animationEndClass
+          if $
+            $viewEl.addClass @animationEndClass
+          else
+            viewEl.classList.add @animationEndClass
         , 0
       else
         # Fade the view in if it was made transparent before.
-        $viewEl.animate {opacity: 1}, @animationDuration
+        if $
+          $viewEl.animate {opacity: 1}, @animationDuration
+        else
+          viewEl.style.transition = 'opacity 1s'
+          viewEl.opacity = 1
 
     view
 

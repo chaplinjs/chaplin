@@ -23,9 +23,8 @@ define [
 
       initialize: ->
         super
-        @$el.attr
-          id: @model.id
-          cid: @model.cid
+        @el.setAttribute 'id', @model.id
+        @el.setAttribute 'cid', @model.cid
 
       templateFunction: (templateData) ->
         templateData.title
@@ -78,24 +77,33 @@ define [
       models
 
     getViewChildren = ->
-      collectionView.$list.children collectionView.itemSelector
+      if jQuery
+        collectionView.$list.children collectionView.itemSelector
+      else
+        if collectionView.itemSelector
+          (item for item in collectionView.list.children when item.webkitMatchesSelector collectionView.itemSelector)
+        else
+          collectionView.list.children
 
     getAllChildren = ->
-      collectionView.$el.children()
+      if jQuery
+        collectionView.$el.children()
+      else
+        collectionView.el.children
 
     viewsMatchCollection = ->
       children = getViewChildren()
       expect(children.length).to.be collection.length
       collection.forEach (model, index) ->
-        $el = children.eq index
+        el = children[index]
 
         expectedId = String model.id
-        actualId = $el.attr('id')
+        actualId = el.id
         expect(actualId).to.be expectedId
 
         expectedTitle = model.get('title')
         if expectedTitle?
-          actualTitle = $el.text()
+          actualTitle = el.textContent
           expect(actualTitle).to.be expectedTitle
 
     createCollection = (models) ->
@@ -159,8 +167,11 @@ define [
         expect(_.has collectionView, '$list').to.be false
 
         collectionView.render()
-        expect(collectionView.$list).to.be.a jQuery
-        expect(collectionView.$list.length).to.be 1
+        if jQuery
+          expect(collectionView.$list).to.be.a jQuery
+          expect(collectionView.$list.length).to.be 1
+        else
+          expect(collectionView.list).to.be.a Element
 
         collectionView.renderAllItems()
         viewsMatchCollection()
@@ -467,12 +478,12 @@ define [
 
         children = getAllChildren()
         for child in children
-          expect($(child).hasClass('animated-item-view')).to.be.true
+          expect(/animated-item-view/.test child.className).to.be.true
 
         # requestAnimationFrame
         setTimeout ->
           for child in children
-            expect($(child).hasClass('animated-item-view-end')).to.be.true
+            expect(/animated-item-view-end/.test child.className).to.be.true
           done()
         , 1
 
@@ -489,12 +500,12 @@ define [
 
         children = getAllChildren()
         for child in children
-          expect($(child).hasClass('a')).to.be.true
+          expect(child.className is 'a').to.be.true
 
         # requestAnimationFrame
         setTimeout ->
           for child in children
-            expect($(child).hasClass('b')).to.be.true
+            expect(child.className is 'b').to.be.true
           done()
         , 1
 
@@ -518,9 +529,9 @@ define [
 
         children = getViewChildren()
         collection.forEach (model, index) ->
-          $el = children.eq(index)
+          el = children[index]
           visible = model.get('title') is 'new'
-          displayValue = $el.css 'display'
+          displayValue = el.style.display
           if visible
             expect(displayValue).not.to.be 'none'
           else
@@ -550,9 +561,13 @@ define [
         collectionView.filter null
 
         children = getViewChildren()
-        children.each (index, element) ->
-          displayValue = jQuery(element).css 'display'
-          expect(displayValue).not.to.be 'none'
+        for element in children
+          if jQuery
+            displayValue = jQuery(element).css 'display'
+            expect(displayValue).not.to.be 'none'
+          else
+            displayValue = element.style.display
+            expect(displayValue).not.to.be 'none'
 
         expect(collectionView.visibleItems.length).to.be collection.length
 
@@ -595,7 +610,11 @@ define [
           model.get('title') is 'new'
 
         filterCallback = (view, included) ->
-          view.$el.addClass(if included then 'included' else 'not-included')
+          cls = if included then 'included' else 'not-included'
+          if jQuery
+            view.$el.addClass cls
+          else
+            view.el.classList.add cls
 
         filterCallbackSpy = sinon.spy filterCallback
         collectionView.filter filterer, filterCallbackSpy
@@ -606,9 +625,9 @@ define [
           view = collectionView.subview "itemView:#{model.cid}"
           included = filterer model
           expect(call.calledWith(view, included)).to.be true
-          hasClass = view.$el.hasClass(
+          hasClass = view.el.className.indexOf(
             if included then 'included' else 'not-included'
-          )
+          ) isnt -1
           expect(hasClass).to.be true
 
         collection.forEach (model, index) ->
@@ -707,7 +726,7 @@ define [
 
         it 'should append views to the listSelector', ->
           $list = collectionView.$list
-          expect($list).to.be.a jQuery
+          expect($list).to.be.a jQuery if jQuery
           expect($list.length).to.be 1
 
           $list2 = collectionView.$(collectionView.listSelector)
@@ -751,7 +770,7 @@ define [
 
         it 'should set the fallback element properly', ->
           $fallback = collectionView.$fallback
-          expect($fallback).to.be.a jQuery
+          expect($fallback).to.be.a jQuery if jQuery
           expect($fallback.length).to.be 1
 
           $fallback2 = collectionView.$(collectionView.fallbackSelector)
@@ -814,7 +833,7 @@ define [
 
         it 'should set the loading indicator properly', ->
           $loading = collectionView.$loading
-          expect($loading).to.be.a jQuery
+          expect($loading).to.be.a jQuery if jQuery
           expect($loading.length).to.be 1
 
           $loading2 = collectionView.$(collectionView.loadingSelector)

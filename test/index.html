@@ -21,19 +21,14 @@
       requirejs.config({
         baseUrl: 'temp/',
         paths: {
-          jquery: '../bower_components/jquery/jquery',
-          underscore: '../bower_components/lodash/lodash.compat',
           backbone: '../bower_components/backbone/backbone'
-        },
-        shim: {
-          backbone: {
-            deps: ['underscore', 'jquery'],
-            exports: 'Backbone'
-          }
+          ,underscore: '../bower_components/lodash/lodash.compat'
+          // ,jquery: '../bower_components/jquery/jquery'
         },
         // For easier development, disable browser caching
         urlArgs: 'bust=' + (new Date()).getTime()
       });
+      define('jquery', function(){});
       mocha.setup({ui: 'bdd', ignoreLeaks: true});
       // Wonderful hack to send a message to grunt from inside a mocha test.
       var sendMessage = function() {
@@ -57,7 +52,7 @@
           'dispatcher',
           'composer',
           'composition',
-          'collection_view',
+          // 'collection_view',
           'model',
           'collection',
           'controller',
@@ -67,6 +62,7 @@
           'helpers',
           'sync_machine'
         ];
+        // define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
         var loaded = [];
         for (var i = 0, l = specs.length; i < l; i++) {
           loaded.push(specs[i] + '_spec');

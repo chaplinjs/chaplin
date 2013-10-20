@@ -84,11 +84,18 @@ module.exports = class Layout extends View
 
   startLinkRouting: ->
     route = @settings.routeLinks
-    @$el.on 'click', route, @openLink if route
+    return unless route
+    if $
+      @$el.on 'click', route, @openLink
+    else
+      @delegate 'click', route, @openLink
 
   stopLinkRouting: ->
     route = @settings.routeLinks
-    @$el.off 'click', route if route
+    if $
+      @$el.off 'click', route if route
+    else
+      @undelegate 'click', route, @openLink
 
   isExternalLink: (link) ->
     link.target is '_blank' or
@@ -100,12 +107,11 @@ module.exports = class Layout extends View
   openLink: (event) =>
     return if utils.modifierKeyPressed(event)
 
-    el = event.currentTarget
-    $el = $(el)
+    el = if $ then event.currentTarget else event.delegateTarget
     isAnchor = el.nodeName is 'A'
 
     # Get the href and perform checks on it.
-    href = $el.attr('href') or $el.data('href') or null
+    href = el.getAttribute('href') or el.getAttribute('data-href') or null
 
     # Basic href checks.
     return if not href? or
@@ -119,7 +125,7 @@ module.exports = class Layout extends View
     skipRouting = @settings.skipRouting
     type = typeof skipRouting
     return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and $el.is skipRouting
+      type is 'string' and (if $ then $(el).is(skipRouting) else el.webkitMatchesSelector skipRouting)
 
     # Handle external links.
     external = isAnchor and @isExternalLink el
@@ -207,12 +213,19 @@ module.exports = class Layout extends View
 
     # Apply the region selector.
     instance.container = if region.selector is ''
-      region.instance.$el
+      if $
+        region.instance.$el
+      else
+        region.instance.el
     else
       if region.instance.noWrap
-        $(region.instance.container).find region.selector
+        if $
+          $(region.instance.container).find region.selector
+        else
+          console.log 123, region.instance.container
+          region.instance.container.querySelector region.selector
       else
-        region.instance.$ region.selector
+        region.instance[if $ then '$' else 'find'] region.selector
 
   # Disposal
   # --------

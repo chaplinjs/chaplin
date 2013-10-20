@@ -1,5 +1,4 @@
 'use strict'
-Backbone = require 'backbone'
 
 # Feature detection
 # -----------------
@@ -17,8 +16,6 @@ support =
       return o.foo is 'bar'
     catch error
       return false
-
-  jquery: Boolean Backbone.$
 
 # Return our creation.
 module.exports = support

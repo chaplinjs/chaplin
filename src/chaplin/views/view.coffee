@@ -3,8 +3,8 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
+utils = require 'chaplin/lib/utils'
 
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
@@ -43,7 +43,7 @@ module.exports = class View extends Backbone.View
 
   # Method which is used for adding the view to the DOM
   # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
-  containerMethod: 'append'
+  containerMethod: if $ then 'append' else 'appendChild'
 
   # Regions
   # -------
@@ -167,7 +167,7 @@ module.exports = class View extends Backbone.View
   #   delegate(eventName, selector, handler)
   #   e.g.
   #   @delegate('click', 'button.confirm', @confirm)
-  delegate: (eventName, second, third) ->
+  delegate1: (eventName, second, third) ->
     if typeof eventName isnt 'string'
       throw new TypeError 'View#delegate: first argument must be a string'
 
@@ -198,6 +198,8 @@ module.exports = class View extends Backbone.View
 
   # Copy of original Backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
+    if Backbone.View::delegateEvents.length is 2
+      return Backbone.View::delegateEvents.call this, events, true
     for key, value of events
       handler = if typeof value is 'function' then value else this[value]
       throw new Error "Method '#{handler}' does not exist" unless handler
@@ -210,12 +212,9 @@ module.exports = class View extends Backbone.View
 
   # Override Backbones method to combine the events
   # of the parent view if it exists.
-  delegateEvents: (events) ->
-    @undelegateEvents()
-    if events
-      @_delegateEvents events
-      return
-    return unless @events
+  delegateEvents: (events, keepOld) ->
+    @undelegateEvents() unless keepOld
+    return @_delegateEvents events if events
     # Call _delegateEvents for all superclasses’ `events`.
     for classEvents in utils.getAllPropertyVersions this, 'events'
       if typeof classEvents is 'function'
@@ -224,7 +223,7 @@ module.exports = class View extends Backbone.View
     return
 
   # Remove all handlers registered with @delegate.
-  undelegate: (eventName, second, third) ->
+  undelegate1: (eventName, second, third) ->
     if eventName
       if typeof eventName isnt 'string'
         throw new TypeError 'View#undelegate: first argument must be a string'
@@ -325,10 +324,9 @@ module.exports = class View extends Backbone.View
     else
       # View instance given, search for the corresponding name.
       view = nameOrView
-      for otherName, otherView of byName
-        if view is otherView
-          name = otherName
-          break
+      for otherName, otherView of byName when otherView is view
+        name = otherName
+        break
 
     # Break if no view and name were found.
     return unless name and view and view.dispose
@@ -393,19 +391,23 @@ module.exports = class View extends Backbone.View
       html = templateFunc @getTemplateData()
 
       # Replace HTML
-      if not @noWrap
-        @$el.html html
-      else
-        $templateHtml = $(html)
+      if @noWrap
+        el = document.createElement 'div'
+        el.innerHTML = html
 
-        if $templateHtml.length > 1
+        if el.children.length > 1
           throw new Error 'There must be a single top-level element when ' +
                           'using `noWrap`.'
 
         # Undelegate the container events that were setup.
         @undelegateEvents()
         # Delegate events to the top-level container in the template.
-        @setElement $templateHtml, true
+        @setElement el.firstChild, true
+      else
+        if $
+          @$el.html html
+        else
+          @el.innerHTML = html
 
     # Return the view.
     this
@@ -417,7 +419,18 @@ module.exports = class View extends Backbone.View
 
     # Automatically append to DOM if the container element is set.
     if @container and not document.body.contains @el
-      $(@container)[@containerMethod] @el
+      if $
+        $(@container)[@containerMethod] @el
+      else
+        container = if typeof @container is 'string'
+          document.querySelector @container
+        else
+          @container
+
+        if typeof @containerMethod is 'function'
+          @containerMethod container, @el
+        else
+          container[@containerMethod] @el
       # Trigger an event.
       @trigger 'addedToDOM'
 
