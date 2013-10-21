@@ -406,6 +406,7 @@ define [
         itemView: ItemView
 
       it 'should animate the opacity of new items', ->
+        return unless jQuery
         $css = sinon.stub jQuery.prototype, 'css', -> this
         $animate = sinon.stub jQuery.prototype, 'animate', -> this
 
@@ -429,6 +430,8 @@ define [
         $animate.restore()
 
       it 'should not animate if animationDuration is 0', ->
+        return unless jQuery
+
         $css = sinon.spy jQuery.prototype, 'css'
         $animate = sinon.spy jQuery.prototype, 'animate'
 
@@ -446,6 +449,8 @@ define [
         $animate.restore()
 
       it 'should not animate when re-inserting', ->
+        return unless jQuery
+
         $css = sinon.stub jQuery.prototype, 'css', -> this
         $animate = sinon.stub jQuery.prototype, 'animate', -> this
 

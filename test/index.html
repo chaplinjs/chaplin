@@ -7,6 +7,8 @@
     <script src="bower_components/mocha/mocha.js"></script>
     <script src="bower_components/expect/expect.js"></script>
     <script src="bower_components/sinon/index.js"></script>
+    <script src="bower_components/subsequent/subsequent.js"></script>
+    <script src="bower_components/davy/davy.js"></script>
     <script src="lib/sinon-expect-0.2.0.js"></script>
     <script src="bower_components/requirejs/require.js"></script>
     <script>
@@ -22,13 +24,14 @@
         baseUrl: 'temp/',
         paths: {
           backbone: '../bower_components/backbone/backbone'
-          ,underscore: '../bower_components/lodash/lodash.compat'
+          ,underscore: '../bower_components/lodash/dist/lodash.compat'
           // ,jquery: '../bower_components/jquery/jquery'
         },
         // For easier development, disable browser caching
         urlArgs: 'bust=' + (new Date()).getTime()
       });
       define('jquery', function(){});
+      // define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
       mocha.setup({ui: 'bdd', ignoreLeaks: true});
       // Wonderful hack to send a message to grunt from inside a mocha test.
       var sendMessage = function() {
@@ -62,7 +65,6 @@
           'helpers',
           'sync_machine'
         ];
-        // define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
         var loaded = [];
         for (var i = 0, l = specs.length; i < l; i++) {
           loaded.push(specs[i] + '_spec');

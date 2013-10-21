@@ -10,7 +10,8 @@ $ = Backbone.$
 
 filterChildren = (nodeList, selector) ->
   return nodeList unless selector
-  (node for node in nodeList when node.webkitMatchesSelector selector)
+  for node in nodeList when Backbone.utils.matchesSelector node, selector
+    node
 
 toggleElement = do ->
   if $
