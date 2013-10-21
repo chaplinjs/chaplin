@@ -17,15 +17,21 @@ define [
     preventDefault = (event) -> event.preventDefault()
     document.body.addEventListener 'click', preventDefault unless $
 
+    omit = (object, excluded) ->
+      result = {}
+      for key, value of object when key isnt excluded
+        result[key] = value
+      result
+
     createLink = (attributes) ->
-      attributes = if attributes then _.clone(attributes) else {}
+      attributes = if attributes then _.extend {}, attributes else {}
       # Yes, this is ugly. We’re doing it because IE8-10 reports an incorrect
       # protocol if the href attribute is set programatically.
       if attributes.href?
         div = document.createElement 'div'
         div.innerHTML = "<a href='#{attributes.href}'>Hello World</a>"
         link = div.firstChild
-        attributes = _.omit attributes, 'href'
+        attributes = omit attributes, 'href'
       else
         link = document.createElement 'a'
       for key, value of attributes

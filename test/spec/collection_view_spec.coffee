@@ -41,6 +41,9 @@ define [
     # Helpers
     # -------
 
+    hasOwnProp = (object, prop) ->
+      Object::hasOwnProperty.call object, prop
+
     # Create 26 objects with IDs A-Z and a random title
     freshModels = ->
       for code in [65..90] # A-Z
@@ -164,7 +167,7 @@ define [
 
         children = getAllChildren()
         expect(children.length).to.be 0
-        expect(_.has collectionView, '$list').to.be false
+        expect(hasOwnProp collectionView, '$list').to.be false
 
         collectionView.render()
         if jQuery
@@ -686,7 +689,7 @@ define [
           expect(view.disposed).to.be true
 
         for prop in ['visibleItems']
-          expect(_.has collectionView, prop).to.be false
+          expect(hasOwnProp collectionView, prop).to.be false
 
         return
 
@@ -920,7 +923,7 @@ define [
           collectionView.dispose()
 
           for prop in ['$list', '$fallback', '$loading']
-            expect(_.has collectionView, prop).to.be false
+            expect(hasOwnProp collectionView, prop).to.be false
 
           return
 

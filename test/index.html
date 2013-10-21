@@ -24,14 +24,14 @@
         baseUrl: 'temp/',
         paths: {
           backbone: '../bower_components/backbone/backbone'
-          ,underscore: '../bower_components/lodash/dist/lodash.compat'
+          // ,underscore: '../bower_components/lodash/dist/lodash.compat'
           // ,jquery: '../bower_components/jquery/jquery'
         },
         // For easier development, disable browser caching
         urlArgs: 'bust=' + (new Date()).getTime()
       });
       define('jquery', function(){});
-      // define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
+      define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
       mocha.setup({ui: 'bdd', ignoreLeaks: true});
       // Wonderful hack to send a message to grunt from inside a mocha test.
       var sendMessage = function() {

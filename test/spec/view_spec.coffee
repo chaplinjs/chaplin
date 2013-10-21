@@ -342,7 +342,7 @@ define [
       d.click 'a'
 
       delay ->
-        for index in _.range(1, 5)
+        for index in [1...5]
           expect(d["a#{index}Handler"]).was.calledOnce()
         for index in bcd
           expect(d["#{index}Handler"]).was.notCalled()
@@ -398,7 +398,8 @@ define [
     it 'should return empty template data without a model', ->
       templateData = view.getTemplateData()
       expect(templateData).to.be.an 'object'
-      expect(_.isEmpty templateData).to.be true
+      isEmpty = (Object.keys or _.keys)(templateData).length is 0
+      expect(isEmpty).to.be true
 
     it 'should return proper template data for a Chaplin model', ->
       setModel()

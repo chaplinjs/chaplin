@@ -22,7 +22,7 @@ define [
         'subscribe', 'unsubscribe', 'publish',
         'setHandler', 'execute', 'removeHandlers'
       ]
-      _.forEach methods, (property) ->
+      for property in methods
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
         expect(desc.writable).to.be false
