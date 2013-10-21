@@ -81,7 +81,7 @@ define [
         collectionView.$list.children collectionView.itemSelector
       else
         if collectionView.itemSelector
-          (item for item in collectionView.list.children when item.webkitMatchesSelector collectionView.itemSelector)
+          (item for item in collectionView.list.children when Backbone.utils.matchesSelector item, collectionView.itemSelector)
         else
           collectionView.list.children
 
