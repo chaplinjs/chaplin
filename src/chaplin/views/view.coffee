@@ -16,6 +16,32 @@ bind = do ->
   else if _.bind
     _.bind
 
+setHTML = do ->
+  if $
+    (elem, html) -> elem.html html
+  else
+    (elem, html) -> elem.innerHTML = html
+
+attach = do ->
+  if $
+    (view) ->
+      actual = $(view.container)
+      if typeof view.containerMethod is 'function'
+        view.containerMethod actual, view.el
+      else
+        actual[view.containerMethod] view.el
+  else
+    (view) ->
+      actual = if typeof view.container is 'string'
+        document.querySelector view.container
+      else
+        view.container
+
+      if typeof view.containerMethod is 'function'
+        view.containerMethod actual, view.el
+      else
+        actual[view.containerMethod] view.el
+
 module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
@@ -406,10 +432,7 @@ module.exports = class View extends Backbone.View
         # Delegate events to the top-level container in the template.
         @setElement el.firstChild, true
       else
-        if $
-          @$el.html html
-        else
-          @el.innerHTML = html
+        setHTML (if $ then @$el else @el), html
 
     # Return the view.
     this
@@ -421,18 +444,7 @@ module.exports = class View extends Backbone.View
 
     # Automatically append to DOM if the container element is set.
     if @container and not document.body.contains @el
-      if $
-        $(@container)[@containerMethod] @el
-      else
-        container = if typeof @container is 'string'
-          document.querySelector @container
-        else
-          @container
-
-        if typeof @containerMethod is 'function'
-          @containerMethod container, @el
-        else
-          container[@containerMethod] @el
+      attach this
       # Trigger an event.
       @trigger 'addedToDOM'
 

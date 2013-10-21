@@ -20,6 +20,88 @@ toggleElement = do ->
     (elem, visible) ->
       elem.style.display = (if visible then '' else 'none')
 
+addClass = do ->
+  if $
+    (elem, cls) -> elem.addClass cls
+  else
+    (elem, cls) -> elem.classList.add cls
+
+startAnimation = do ->
+  if $
+    (elem, useCssAnimation, cls) ->
+      if useCssAnimation
+        addClass elem, cls
+      else
+        elem.css 'opacity', 0
+  else
+    (elem, useCssAnimation, cls) ->
+      if useCssAnimation
+        addClass elem, cls
+      else
+        elem.style.opacity = 0
+
+endAnimation = do ->
+  if $
+    (elem, duration) -> elem.animate {opacity: 1}, duration
+  else
+    (elem, duration) ->
+      elem.style.transition = "opacity #{(duration / 1000)}s"
+      elem.opacity = 1
+
+insertView = do ->
+  if $
+    (list, viewEl, position, length, itemSelector) ->
+      insertInMiddle = (0 < position < length)
+      isEnd = (length) -> length is 0 or position is length
+
+      if insertInMiddle or itemSelector
+        # Get the children which originate from item views.
+        children = list.children itemSelector
+        childrenLength = children.length
+
+        # Check if it needs to be inserted.
+        unless children[position] is viewEl
+          if isEnd childrenLength
+            # Insert at the end.
+            list.append viewEl
+          else
+            # Insert at the right position.
+            if position is 0
+              children.eq(position).before viewEl
+            else
+              children.eq(position - 1).after viewEl
+      else
+        method = if isEnd length then 'append' else 'prepend'
+        list[method] viewEl
+  else
+    (list, viewEl, position, length, itemSelector) ->
+      insertInMiddle = (0 < position < length)
+      isEnd = (length) -> length is 0 or position is length
+
+      if insertInMiddle or itemSelector
+        # Get the children which originate from item views.
+        children = filterChildren list.children, itemSelector
+        childrenLength = children.length
+
+        # Check if it needs to be inserted.
+        unless children[position] is viewEl
+          if isEnd childrenLength
+            # Insert at the end.
+            list.appendChild viewEl
+          else if position is 0
+            # Insert at the right position.
+            list.insertBefore viewEl, children[position]
+          else
+            last = children[position - 1]
+            if list.lastChild is last
+              list.appendChild viewEl
+            else
+              list.insertBefore viewEl, last.nextElementSibling
+      else if isEnd length
+        list.appendChild viewEl
+      else
+        list.insertBefore viewEl, list.firstChild
+
 # General class for rendering Collections.
 # Derive this class and declare at least `itemView` or override
 # `initItemView`. `initItemView` gets an item model and should instantiate
@@ -376,74 +458,21 @@ module.exports = class CollectionView extends View
       true
 
     # Get the view’s top element.
-    viewEl = view.el
-    $viewEl = view.$el
+    elem = if $ then view.$el else view.el
 
     # Start animation.
     if included and enableAnimation
-      if @useCssAnimation
-        if $
-          $viewEl.addClass @animationStartClass
-        else
-          viewEl.classList.add @animationStartClass
-      else
-        if $
-          $viewEl.css 'opacity', 0
-        else
-          viewEl.style.opacity = 0
+      startAnimation elem, @useCssAnimation, @animationStartClass
 
     # Hide or mark the view if it’s filtered.
     @filterCallback view, included if @filterer
 
     length = @collection.length
-    insertInMiddle = (0 < position < length)
-    isEnd = (length) -> length is 0 or position is length
 
     # Insert the view into the list.
-    list = @list
-    $list = @$list
+    list = if $ then @$list else @list
 
-    if insertInMiddle or @itemSelector
-      # Get the children which originate from item views.
-      children = if $
-        $list.children @itemSelector
-      else
-        filterChildren list.children, @itemSelector
-      childrenLength = children.length
-
-      # Check if it needs to be inserted.
-      unless children[position] is viewEl
-        if isEnd childrenLength
-          # Insert at the end.
-          if $
-            $list.append viewEl
-          else
-            list.appendChild viewEl
-        else
-          # Insert at the right position.
-          if position is 0
-            if $
-              children.eq(position).before viewEl
-            else
-              list.insertBefore viewEl, children[position]
-          else
-            if $
-              children.eq(position - 1).after viewEl
-            else
-              last = children[position - 1]
-              if list.lastChild is last
-                list.appendChild viewEl
-              else
-                list.insertBefore viewEl, last.nextElementSibling
-    else
-      if $
-        method = if isEnd length then 'append' else 'prepend'
-        $list[method] viewEl
-      else
-        if isEnd length
-          list.appendChild viewEl
-        else
-          list.insertBefore viewEl, list.firstElementChild
+    insertView list, elem, position, length, @itemSelector
 
     # Tell the view that it was added to its parent.
     view.trigger 'addedToParent'
@@ -455,19 +484,10 @@ module.exports = class CollectionView extends View
     if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
-        setTimeout =>
-          if $
-            $viewEl.addClass @animationEndClass
-          else
-            viewEl.classList.add @animationEndClass
-        , 0
+        setTimeout (=> addClass elem, @animationEndClass), 0
       else
         # Fade the view in if it was made transparent before.
-        if $
-          $viewEl.animate {opacity: 1}, @animationDuration
-        else
-          viewEl.style.transition = 'opacity 1s'
-          viewEl.opacity = 1
+        endAnimation elem, @animationDuration
 
     view
 
