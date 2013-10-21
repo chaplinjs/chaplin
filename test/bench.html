@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8">
     <title>Chaplin Test Runner</title>
-    <script src="components/benchmark/benchmark.js"></script>
-    <script src="components/requirejs/require.js"></script>
+    <script src="bower_components/benchmark/benchmark.js"></script>
+    <script src="bower_components/requirejs/require.js"></script>
     <script>
       requirejs.config({
         baseUrl: 'temp/',
         paths: {
-          jquery: '../components/jquery/jquery',
-          underscore: '../components/underscore/underscore',
-          backbone: '../components/backbone/backbone'
+          // jquery: '../bower_components/jquery/jquery',
+          underscore: '../bower_components/lodash/dist/lodash.compat',
+          backbone: '../bower_components/backbone/backbone'
         },
         shim: {
           backbone: {
@@ -25,6 +25,9 @@
         // For easier development, disable browser caching
         urlArgs: 'bust=' + (new Date()).getTime()
       });
+
+      define('jquery', function(){});
+      // define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
 
       require(['chaplin'], function(Chaplin) {
         var log = function() {
@@ -47,15 +50,19 @@
         };
 
         var bench = function(dict) {
-          Object.keys(dict).forEach(function(name) {
-            console.time(name);
+          Object.keys(dict).map(function(name) {
+            var start = Date.now();
             dict[name]();
-            console.timeEnd(name);
+            return {name: name, time: Date.now() - start};
+          }).forEach(function(item) {
+            var p = document.createElement('p');
+            p.textContent = item.name + ': ' + item.time + 'ms';
+            document.body.appendChild(p);
           });
         };
 
         var collectionBench = function() {
-          var models = _.range(65, 165).map(function(code) {
+          var models = _.range(65, 565).map(function(code) {
             return {
               id: String.fromCharCode(code),
               title: String(Math.random())
@@ -75,55 +82,34 @@
             }
           });
 
-          var noCheckView = new Chaplin.CollectionView({
-            collection: new Chaplin.Collection(),
-            itemView: BaseItemView.extend({
-              attach: function() {
-                Chaplin.View.prototype.attach.call(this);
-              }
-            })
-          });
-
-          var propCheckView = new Chaplin.CollectionView({
-            collection: new Chaplin.Collection(),
-            itemView: BaseItemView.extend({
-              attach: function() {
-                if (!this.attached) {
-                  this.attached = true;
-                  Chaplin.View.prototype.attach.call(this);
-                }
-              }
-            })
-          });
-
-          var domCheckView = new Chaplin.CollectionView({
-            collection: new Chaplin.Collection(),
-            itemView: BaseItemView.extend({
-              attach: function() {
-                if (!document.body.contains(this.el)) {
-                  Chaplin.View.prototype.attach.call(this);
-                }
-              }
-            })
+          var View = Chaplin.CollectionView.extend({
+            itemView: BaseItemView
           });
 
           var gf = function(collview) {
             collview.subviews.forEach(function(_) {_.render();});
           };
-          noCheckView.collection.reset(models);
-          propCheckView.collection.reset(models);
-          domCheckView.collection.reset(models);
-
 
           bench({
-            'Without contains': function() {
-              gf(noCheckView);
+            '50 items': function() {
+              new View({
+                collection: new Chaplin.Collection(models.slice(0, 50))
+              })
             },
-            'With attr contains': function() {
-              gf(propCheckView);
+            '100 items': function() {
+              new View({
+                collection: new Chaplin.Collection(models.slice(50, 150))
+              })
             },
-            'With DOM contains': function() {
-              gf(domCheckView);
+            '200 items': function() {
+              new View({
+                collection: new Chaplin.Collection(models.slice(150, 350))
+              })
+            },
+            '500 items': function() {
+              new View({
+                collection: new Chaplin.Collection(models.slice(0, 500))
+              })
             }
           });
         };
