@@ -57,12 +57,12 @@
           }).forEach(function(item) {
             var p = document.createElement('p');
             p.textContent = item.name + ': ' + item.time + 'ms';
-            document.body.appendChild(p);
+            document.body.insertAdjacentHTML('afterbegin', p.outerHTML);
           });
         };
 
         var collectionBench = function() {
-          var models = _.range(65, 565).map(function(code) {
+          var models = _.range(65, 1565).map(function(code) {
             return {
               id: String.fromCharCode(code),
               title: String(Math.random())
@@ -72,7 +72,8 @@
           var BaseItemView = Chaplin.View.extend({
             tagName: 'li',
             attributes: function() {
-              return {id: this.model.id, cid: this.model.cid};
+              var m = this.model;
+              return {className: m.id, 'data-cid': m.cid};
             },
             template: function(data) {
               return data.title;
@@ -83,33 +84,34 @@
           });
 
           var View = Chaplin.CollectionView.extend({
+            animationDuration: 0,
+            container: document.body,
             itemView: BaseItemView
           });
 
-          var gf = function(collview) {
-            collview.subviews.forEach(function(_) {_.render();});
+          var items = {
+            50: new Chaplin.Collection(models.slice(0, 50)),
+            100: new Chaplin.Collection(models.slice(50, 150)),
+            200: new Chaplin.Collection(models.slice(150, 350)),
+            500: new Chaplin.Collection(models.slice(0, 500)),
+            1500: new Chaplin.Collection(models)
           };
 
           bench({
             '50 items': function() {
-              new View({
-                collection: new Chaplin.Collection(models.slice(0, 50))
-              })
+              new View({collection: items['50'], className: '50'});
             },
             '100 items': function() {
-              new View({
-                collection: new Chaplin.Collection(models.slice(50, 150))
-              })
+              new View({collection: items['100'], className: '100'});
             },
             '200 items': function() {
-              new View({
-                collection: new Chaplin.Collection(models.slice(150, 350))
-              })
+              new View({collection: items['200'], className: '200'});
             },
             '500 items': function() {
-              new View({
-                collection: new Chaplin.Collection(models.slice(0, 500))
-              })
+              new View({collection: items['500'], className: '500'});
+            },
+            '1500 items': function() {
+              new View({collection: items['1500'], className: '1500'});
             }
           });
         };
