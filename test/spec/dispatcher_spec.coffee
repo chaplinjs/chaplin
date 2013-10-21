@@ -568,8 +568,7 @@ define [
     describe 'Asynchronous Before Actions', ->
 
       it 'should handle asynchronous before actions', (done) ->
-        deferred = $.Deferred()
-        promise = deferred.promise()
+        promise = new Promise
 
         class AsyncBeforeActionController extends Controller
           beforeAction: -> promise
@@ -586,12 +585,13 @@ define [
 
         loadController ->
           expect(action).was.notCalled()
-          deferred.resolve()
-          expect(action).was.calledOnce()
+          promise.fulfill()
 
-          action.restore()
-
-          done()
+          setTimeout ->
+            expect(action).was.calledOnce()
+            action.restore()
+            done()
+          , 0
 
       it 'should support multiple asynchronous controllers', (done) ->
 
@@ -634,9 +634,7 @@ define [
 
       it 'should kick around promises from compositions', (done) ->
         composer = new Composer
-
-        deferred = $.Deferred()
-        promise = deferred.promise()
+        promise = new Promise
 
         class AsyncBeforeActionController extends Controller
           beforeAction: -> @compose 'a', -> promise
@@ -660,18 +658,19 @@ define [
             expect(beforeAction).was.calledOnce()
             expect(action).was.notCalled()
 
-            deferred.resolve()
-            expect(action).was.calledOnce()
+            promise.fulfill()
+            setTimeout ->
+              expect(action).was.calledOnce()
 
-            beforeAction.restore()
-            action.restore()
+              beforeAction.restore()
+              action.restore()
 
-            composer.dispose()
-            done()
+              composer.dispose()
+              done()
+            , 0
 
       it 'should stop dispatching when another controller is started', (done) ->
-        deferred = $.Deferred()
-        promise = deferred.promise()
+        promise = new Promise
 
         class NeverendingController extends Controller
           beforeAction: -> promise
@@ -704,11 +703,13 @@ define [
             expect(secondAction).was.calledOnce()
 
             # Test what happens when the Promise is resolved later
-            deferred.resolve()
-            expect(firstAction).was.notCalled()
+            promise.fulfill()
+            setTimeout ->
+              expect(firstAction).was.notCalled()
 
-            beforeAction.restore()
-            firstAction.restore()
-            secondAction.restore()
+              beforeAction.restore()
+              firstAction.restore()
+              secondAction.restore()
 
-            done()
+              done()
+            , 0
