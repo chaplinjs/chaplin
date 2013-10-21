@@ -26,6 +26,8 @@ define [
     class TestView3 extends NullView
     class TestView4 extends NullView
 
+    keys = Object.keys or _.keys
+
     beforeEach ->
       # Instantiate
       composer = new Composer
@@ -55,41 +57,41 @@ define [
 
     it 'should initialize a view when it is composed for the first time', ->
       mediator.execute 'composer:compose', 'test1', TestView1
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       expect(composer.compositions['test1'].item).to.be.a TestView1
       mediator.publish 'dispatcher:dispatch'
 
       mediator.execute 'composer:compose', 'test1', TestView1
       mediator.execute 'composer:compose', 'test2', TestView2
-      expect(_.keys(composer.compositions).length).to.be 2
+      expect(keys(composer.compositions).length).to.be 2
       expect(composer.compositions['test2'].item).to.be.a TestView2
       mediator.publish 'dispatcher:dispatch'
 
     it 'should not initialize a view if it is already composed', ->
       mediator.execute 'composer:compose', 'test1', TestView1
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       mediator.publish 'dispatcher:dispatch'
 
       mediator.execute 'composer:compose', 'test1', TestView1
       mediator.execute 'composer:compose', 'test2', TestView2
-      expect(_.keys(composer.compositions).length).to.be 2
+      expect(keys(composer.compositions).length).to.be 2
       mediator.publish 'dispatcher:dispatch'
 
       mediator.execute 'composer:compose', 'test1', TestView1
       mediator.execute 'composer:compose', 'test2', TestView2
       mediator.execute 'composer:compose', 'test1', TestView1
-      expect(_.keys(composer.compositions).length).to.be 2
+      expect(keys(composer.compositions).length).to.be 2
       mediator.publish 'dispatcher:dispatch'
 
     it 'should dispose a compose view if it is not re-composed', ->
       mediator.execute 'composer:compose', 'test1', TestView1
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
 
       mediator.publish 'dispatcher:dispatch'
       mediator.execute 'composer:compose', 'test2', TestView2
       mediator.publish 'dispatcher:dispatch'
 
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       expect(composer.compositions['test2'].item).to.be.a TestView2
 
     # composing with the long form
@@ -100,17 +102,17 @@ define [
         compose: -> @view = new TestView1()
         check: -> false
 
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       expect(composer.compositions['weird'].view).to.be.a TestView1
 
       mediator.publish 'dispatcher:dispatch'
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
 
       mediator.execute 'composer:compose', 'weird',
         compose: -> @view = new TestView2()
 
       mediator.publish 'dispatcher:dispatch'
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       expect(composer.compositions['weird'].view).to.be.a TestView2
 
     it 'should dispose the entire composition when necessary', ->
@@ -122,22 +124,22 @@ define [
           @dagger2 = new TestView1()
         check: -> false
 
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       expect(composer.compositions['weird'].dagger).to.be.a TestView1
 
       mediator.publish 'dispatcher:dispatch'
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
 
       mediator.execute 'composer:compose', 'weird',
         compose: -> @frozen = new TestView2()
         check: -> false
 
       mediator.publish 'dispatcher:dispatch'
-      expect(_.keys(composer.compositions).length).to.be 1
+      expect(keys(composer.compositions).length).to.be 1
       expect(composer.compositions['weird'].frozen).to.be.a TestView2
 
       mediator.publish 'dispatcher:dispatch'
-      expect(_.keys(composer.compositions).length).to.be 0
+      expect(keys(composer.compositions).length).to.be 0
 
     # various compose forms
     # ---------------------
@@ -229,7 +231,7 @@ define [
       composer.dispose()
 
       for prop in ['compositions']
-        expect(_(composer).has prop).to.not.be.ok()
+        expect(composer.hasOwnProperty prop).to.not.be.ok()
 
       expect(composer.disposed).to.be true
       expect(Object.isFrozen(composer)).to.be true if Object.isFrozen

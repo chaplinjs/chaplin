@@ -43,7 +43,7 @@ define [
       composition.dispose()
 
       for prop in ['compositions']
-        expect(_.has composition, prop).to.not.be.ok()
+        expect(composition.hasOwnProperty prop).to.not.be.ok()
 
       expect(composition.disposed).to.be true
       expect(Object.isFrozen(composition)).to.be true if Object.isFrozen

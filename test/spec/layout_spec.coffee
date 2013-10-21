@@ -11,25 +11,45 @@ define [
   describe 'Layout', ->
     # Initialize shared variables
     layout = testController = router = null
+    template = -> -> '<div id="test1"></div><div id="test2"></div>'
+    template5 = -> -> '<div id="test1"></div><div id="test5"></div>'
+
+    preventDefault = (event) -> event.preventDefault()
+    document.body.addEventListener 'click', preventDefault unless $
+
+    omit = (object, excluded) ->
+      result = {}
+      for key, value of object when key isnt excluded
+        result[key] = value
+      result
 
     createLink = (attributes) ->
-      attributes = if attributes then _.clone(attributes) else {}
+      attributes = if attributes then _.extend {}, attributes else {}
       # Yes, this is ugly. We’re doing it because IE8-10 reports an incorrect
       # protocol if the href attribute is set programatically.
       if attributes.href?
         div = document.createElement 'div'
         div.innerHTML = "<a href='#{attributes.href}'>Hello World</a>"
         link = div.firstChild
-        attributes = _.omit attributes, 'href'
-        $link = $(link)
+        attributes = omit attributes, 'href'
       else
-        $link = $(document.createElement 'a')
-      $link.attr attributes
+        link = document.createElement 'a'
+      for key, value of attributes
+        link.setAttribute key, value
+      link
+
+    appendClickRemove = (element) ->
+      document.body.appendChild element
+      if $
+        $(element).click()
+      else
+        element.click()
+      document.body.removeChild element
 
     expectWasRouted = (linkAttributes) ->
       stub = sinon.spy()
       mediator.setHandler 'router:route', stub
-      createLink(linkAttributes).appendTo(document.body).click().remove()
+      appendClickRemove createLink linkAttributes
       expect(stub).was.calledOnce()
       [passedPath] = stub.firstCall.args
       expect(passedPath).to.eql url: linkAttributes.href
@@ -39,7 +59,7 @@ define [
     expectWasNotRouted = (linkAttributes) ->
       spy = sinon.spy()
       mediator.setHandler 'router:route', spy
-      createLink(linkAttributes).appendTo(document.body).click().remove()
+      appendClickRemove createLink linkAttributes
       expect(spy).was.notCalled()
       mediator.unsubscribe '!router:route', spy
       spy
@@ -57,9 +77,12 @@ define [
       testController.dispose()
       layout.dispose()
 
+    after ->
+      document.body.removeEventListener 'click', preventDefault unless $
+
     it 'should have el, $el and $ props / methods', ->
       expect(layout.el).to.be document.body
-      expect(layout.$el).to.be.a $
+      expect(layout.$el).to.be.a $ if $
 
     it 'should set the document title', (done) ->
       spy = sinon.spy()
@@ -85,7 +108,7 @@ define [
       stub = sinon.spy()
       mediator.setHandler 'router:route', stub
       linkAttributes = href: "#{path}?#{query}"
-      createLink(linkAttributes).appendTo(document.body).click().remove()
+      appendClickRemove createLink linkAttributes
       expect(stub).was.calledOnce()
       [passedPath] = stub.firstCall.args
       expect(passedPath).to.eql url: linkAttributes.href
@@ -126,9 +149,10 @@ define [
       stub = sinon.stub()
       mediator.setHandler 'router:route', stub
       path = '/internal/link'
-      $span = $(document.createElement 'span')
-        .addClass('go-to').attr('data-href', path)
-        .appendTo(document.body).click().remove()
+      span = document.createElement 'span'
+      span.className = 'go-to'
+      span.setAttribute 'data-href', path
+      appendClickRemove span
       expect(stub).was.calledOnce()
       passedPath = stub.firstCall.args[0]
       expect(passedPath).to.eql url: path
@@ -304,10 +328,12 @@ define [
 
     it 'should allow for views to be applied to regions', ->
       view1 = class Test1View extends View
+        autoRender: true
+        getTemplateFunction: template
         regions:
-          'test0': ''
-          'test1': '#test1'
-          'test2': '#test2'
+          test0: ''
+          test1: '#test1'
+          test2: '#test2'
 
       view2 = class Test2View extends View
         autoRender: true
@@ -316,19 +342,24 @@ define [
       instance1 = new Test1View()
       instance2 = new Test2View {region: 'test2'}
       instance3 = new Test2View {region: 'test0'}
-      expect(instance2.container.selector).to.be '#test2'
-      expect(instance3.container).to.be instance1.$el
+
+      expect(instance2.container.id).to.be 'test2'
+      expect(instance3.container).to.be instance1.el
 
       instance1.dispose()
       instance2.dispose()
 
     it 'should apply regions in the order they were registered', ->
       view1 = class Test1View extends View
+        autoRender: true
+        getTemplateFunction: template
         regions:
           'test1': '#test1'
           'test2': '#test2'
 
       view2 = class Test2View extends View
+        autoRender: true
+        getTemplateFunction: template5
         regions:
           'test1': '#test1'
           'test2': '#test5'
@@ -340,7 +371,7 @@ define [
       instance1 = new Test1View()
       instance2 = new Test2View()
       instance3 = new Test3View {region: 'test2'}
-      expect(instance3.container.selector).to.be '#test5'
+      expect(instance3.container.id).to.be 'test5'
 
       instance1.dispose()
       instance2.dispose()
@@ -348,11 +379,15 @@ define [
 
     it 'should only apply regions from non-stale views', ->
       view1 = class Test1View extends View
+        autoRender: true
+        getTemplateFunction: template
         regions:
           'test1': '#test1'
           'test2': '#test2'
 
       view2 = class Test2View extends View
+        autoRender: true
+        getTemplateFunction: template
         regions:
           'test1': '#test1'
           'test2': '#test5'
@@ -365,7 +400,7 @@ define [
       instance2 = new Test2View()
       instance2.stale = true
       instance3 = new Test3View {region: 'test2'}
-      expect(instance3.container.selector).to.be '#test2'
+      expect(instance3.container.id).to.be 'test2'
 
       instance1.dispose()
       instance2.dispose()
@@ -386,7 +421,7 @@ define [
         expect(Object.isFrozen(layout)).to.be true
 
       mediator.publish 'foo'
-      $('#testbed').click()
+      document.querySelector('#testbed').click()
 
       # It should unsubscribe from events
       expect(spy1).was.notCalled()

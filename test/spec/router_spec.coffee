@@ -367,7 +367,8 @@ define [
 
       it 'should allow for registering routes with a name', ->
         register()
-        names = _.pluck _.pluck(Backbone.history.handlers, 'route'), 'name'
+        names = for handler in Backbone.history.handlers
+          handler.route.name
         expect(names).to.eql ['home', 'phonebook', 'about', 'about', 'null#a']
 
       it 'should allow for reversing a route by its default name', ->
