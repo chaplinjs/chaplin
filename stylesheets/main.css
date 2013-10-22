@@ -248,6 +248,8 @@ img[src$="chaplin-lifecycle.png"] {
     top: 10px;
     left: 50%;
     margin-left: -570px;
+    height: 100%;
+    overflow: scroll;
   }
 }
 
