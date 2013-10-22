@@ -213,7 +213,8 @@ module.exports = class CollectionView extends View
   addCollectionListeners: ->
     @listenTo @collection, 'add', @itemAdded
     @listenTo @collection, 'remove', @itemRemoved
-    @listenTo @collection, 'reset sort', @itemsReset
+    @listenTo @collection, 'reset', @itemsReset
+    @listenTo @collection, 'sort', @itemsSorted
 
   # Rendering
   # ---------
@@ -262,6 +263,19 @@ module.exports = class CollectionView extends View
   # When all items are resetted, render all anew.
   itemsReset: =>
     @renderAllItems()
+
+  # When the collection is sorted, reposition all the item views
+  itemsSorted: =>
+    items = @collection.models
+
+    fragment = document.createDocumentFragment()
+
+    # Re-insert views in collection order
+    for item, index in items
+      view = @subview "itemView:#{item.cid}"
+      fragment.appendChild view.el
+
+    @$list.html fragment
 
   # Fallback message when the collection is empty
   # ---------------------------------------------
@@ -390,32 +404,40 @@ module.exports = class CollectionView extends View
     # Reset visible items.
     @visibleItems = []
 
-    # Collect remaining views.
-    remainingViewsByCid = {}
-    for item in items
-      view = @subview "itemView:#{item.cid}"
-      if view
-        # View remains.
-        remainingViewsByCid[item.cid] = view
-
     # Remove old views of items not longer in the list.
-    for own cid, view of @getItemViews() when cid not of remainingViewsByCid
+    for own cid, view of @getItemViews()
       # Remove the view.
       @removeSubview "itemView:#{cid}"
 
+    # Create a fragment where we append all item views
+    fragment = document.createDocumentFragment()
+
+    itemViews = []
+
     # Re-insert remaining items; render and insert new items.
     for item, index in items
-      # Check if view was already created.
-      view = @subview "itemView:#{item.cid}"
-      if view
-        # Re-insert the view.
-        @insertView item, view, index, false
-      else
-        # Create a new view, render and insert it.
-        @insertView item, @renderItem(item), index
+      view = @renderItem item
 
-    # If no view was created, trigger `visibilityChange` event manually.
-    @trigger 'visibilityChange', @visibleItems if items.length is 0
+      # Is the item included in the filter?
+      included = if typeof @filterer is 'function'
+        @filterer item
+      else
+        true
+
+      # Hide or mark the view if it’s filtered.
+      @filterCallback view, included if @filterer
+
+      # Update the list of visible items. Dont trigger the event.
+      @updateVisibleItems item, included, false
+
+      # Append the view top element to the fragment
+      fragment.appendChild view.el
+
+      # Push the view to a local array so that we dont have to iterate
+      # twice with @getItemViews()
+      itemViews.push view
+
+    @$list.html fragment
 
   # Instantiate and render an item using the `viewsByCid` hash as a cache.
   renderItem: (item) ->
