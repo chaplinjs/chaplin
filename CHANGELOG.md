@@ -1,3 +1,9 @@
+# Chaplin 0.11.2 (24 October 2013)
+* Added support for [Exoskeleton](http://exosjs.com) — faster and leaner Backbone.
+* Thanks to that, you can now use Chaplin without underscore or jQuery
+  dependencies at all! Just Exoskeleton and Chaplin.
+  Make sure to set `window._` to `Backbone.utils` in no-deps environment.
+
 # Chaplin 0.11.1 (2 October 2013)
 * `Dispatcher::dispatch` now checks if `options.query` hash was changed.
 * `Route::reverse` now won't add a ? symbol at the end of a returned url if you pass an empty object as a `query` parameter (second one)
