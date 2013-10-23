@@ -21,7 +21,6 @@ Memory-saving serializing of model attributes. Maps models to their attributes r
 <h3 class="module-member" id="dispose">dispose()</h3>
 Sends a `'dispose'` event to all associated collections and views to announce that the model is being disposed. Unsubscribes all global and local event handlers and also removes all the event handlers that were subscribed to this model’s events. Removes the collection reference, internal attribute hashes and event handlers. On compliant runtimes the model is frozen to prevent any further changes to it, see [Object.freeze](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/freeze).
 
-
 ## Usage
 To take advantage of the built in memory management, use `subscribeEvent` instead of registering model methods directly as handlers for global events. This ensures that the handler is added in a way that allows for automatic removal on model/collection disposal. It’s crucial to remove all references to model/collection methods to allow them to be garbage collected.
 

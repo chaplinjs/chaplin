@@ -10,24 +10,17 @@
         baseUrl: 'temp/',
         paths: {
           // jquery: '../bower_components/jquery/jquery',
-          underscore: '../bower_components/lodash/dist/lodash.compat',
+          // underscore: '../bower_components/lodash/dist/lodash.compat',
           backbone: '../bower_components/backbone/backbone'
-        },
-        shim: {
-          backbone: {
-            deps: ['underscore', 'jquery'],
-            exports: 'Backbone'
-          },
-          underscore: {
-            exports: '_'
-          }
         },
         // For easier development, disable browser caching
         urlArgs: 'bust=' + (new Date()).getTime()
       });
 
       define('jquery', function(){});
-      // define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
+      define('underscore', ['backbone'], function(Backbone){
+        return Backbone.utils;
+      });
 
       require(['chaplin'], function(Chaplin) {
         var log = function() {
@@ -49,34 +42,39 @@
             .on('complete', log);
         };
 
-        var bench = function(dict) {
-          Object.keys(dict).map(function(name) {
+        var bench = function(title, dict) {
+          var paragraphs = Object.keys(dict).map(function(name) {
             var start = Date.now();
             dict[name]();
             return {name: name, time: Date.now() - start};
-          }).forEach(function(item) {
-            var p = document.createElement('p');
-            p.textContent = item.name + ': ' + item.time + 'ms';
-            document.body.insertAdjacentHTML('afterbegin', p.outerHTML);
+          }).map(function(item) {
+            return item.name + ': ' + item.time + 'ms'
           });
+          var insert = function(html) {
+            document.body.insertAdjacentHTML('afterbegin', '<p>' + html + '</p>');
+          };
+          paragraphs.forEach(insert)
+          insert('<h3>' + title + '</h3>');
         };
 
         var collectionBench = function() {
-          var models = _.range(65, 1565).map(function(code) {
-            return {
-              id: String.fromCharCode(code),
-              title: String(Math.random())
-            };
-          });
+          var models = [];
+          for (var code = 65; code <= 1565; code++) {
+            models.push({
+              id: code,
+              char: String.fromCharCode(code),
+              title: String(Math.random()).slice(2)
+            });
+          }
 
           var BaseItemView = Chaplin.View.extend({
             tagName: 'li',
             attributes: function() {
               var m = this.model;
-              return {className: m.id, 'data-cid': m.cid};
+              return {className: m.char, 'data-cid': m.cid};
             },
             template: function(data) {
-              return data.title;
+              return data.char + ' - ' + data.title;
             },
             getTemplateFunction: function() {
               return this.template;
@@ -97,7 +95,7 @@
             1500: new Chaplin.Collection(models)
           };
 
-          bench({
+          bench('Rendering collection views', {
             '50 items': function() {
               new View({collection: items['50'], className: '50'});
             },
