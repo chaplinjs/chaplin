@@ -4,6 +4,7 @@
 * [Getting started](./getting_started.html)
 * [Event handling overview](./events.html)
 * [Disposal](./disposal.html)
+* [Using without jQuery and Underscore](./no-deps.html)
 * [Handling async deps](./handling_async.html)
 
 ### Core
