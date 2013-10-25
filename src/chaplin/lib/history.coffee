@@ -60,7 +60,7 @@ module.exports = class History extends Backbone.History
     # 'onhashchange' is supported, determine how we check the URL state.
     if (@_hasPushState)
       Backbone.$(window).on 'popstate', @checkUrl
-    else if @_wantsHashChange and 'onhashchange' in window and not oldIE
+    else if @_wantsHashChange and 'onhashchange' of window and not oldIE
       Backbone.$(window).on 'hashchange', @checkUrl
     else if @_wantsHashChange
       @_checkUrlInterval = setInterval @checkUrl, @interval
