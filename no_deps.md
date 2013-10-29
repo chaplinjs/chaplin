@@ -12,17 +12,24 @@ Instead of including 40K of gzipped javascript before Chaplin, you just need to 
 
 To use Chaplin with Exoskeleton without dependencies on Underscore and jQuery:
 
-In AMD environment:
+* If you are using **AMD** (not Brunch):
+  Define dummy underscore and jQuery modules before application start:
 
-* Define dummy underscore and jQuery modules before application start:
+  ```javascript
+  define('jquery', function(){});
+  define('underscore', ['backbone'], function(Backbone){
+    return Backbone.utils;
+  });
+  ```
+* If you are using **Brunch**:
+    1. Install exoskeleton: `bower install -s exoskeleton`
+    2. Add override of chaplin dependencies to `bower.json`:
 
-```javascript
-define('jquery', function(){});
-define('underscore', ['backbone'], function(Backbone){
-  return Backbone.utils;
-});
-```
+    ```
+    "overrides": {
+      "chaplin": {"dependencies": {"exoskeleton": "*"}}
+    }
+    ```
 
-In Brunch environment:
-
-* Make sure to set `window._` to `Backbone.utils` in no-deps environment.
+Example commit of switching Backbone app (Brunch) to Exoskeleton shown here
+https://github.com/paulmillr/ostio/commit/514ba86d32ae174d144871c25f58825ea093de33
