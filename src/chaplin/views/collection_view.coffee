@@ -178,7 +178,7 @@ module.exports = class CollectionView extends View
   # Hides excluded items by default.
   filterCallback: (view, included) ->
     view.$el.stop(true, true) if $
-    toggleElement view.el, included
+    toggleElement (if $ then view.$el else view.el), included
 
   # View lists
   # ----------
