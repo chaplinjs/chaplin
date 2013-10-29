@@ -61,7 +61,7 @@ module.exports = class Layout extends View
   # -------------------------------
 
   # Handler for the global beforeControllerDispose event.
-  scroll: (controller) ->
+  scroll: ->
     # Reset the scroll position.
     position = @settings.scrollTo
     if position
