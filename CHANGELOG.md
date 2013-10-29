@@ -1,3 +1,9 @@
+# Chaplin 0.11.3 (29 October 2013)
+* Fixed view regions.
+* Fixed filtering of collection view elements.
+* Backbone.History is now used as Chaplin.History if it's patched
+  (with query string support).
+
 # Chaplin 0.11.2 (24 October 2013)
 * Added support for [Exoskeleton](http://exosjs.com) — faster and leaner Backbone.
 * Thanks to that, you can now use Chaplin without underscore or jQuery
