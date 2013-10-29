@@ -16,7 +16,7 @@ isExplorer = /msie [\w.]+/
 trailingSlash = /\/$/
 
 # Patched Backbone.History with a basic query strings support
-module.exports = class History extends Backbone.History
+class History extends Backbone.History
 
   # Get the cross-browser normalized URL fragment, either from the URL,
   # the hash, or the override.
@@ -43,24 +43,18 @@ module.exports = class History extends Backbone.History
     @options          = _.extend {}, {root: '/'}, @options, options
     @root             = @options.root
     @_wantsHashChange = @options.hashChange isnt false
-    @_wantsPushState  = not not @options.pushState
-    @_hasPushState    = not not (@options.pushState and @history and @history.pushState)
+    @_wantsPushState  = Boolean @options.pushState
+    @_hasPushState    = Boolean (@options.pushState and @history and @history.pushState)
     fragment          = @getFragment()
-    docMode           = document.documentMode
-    oldIE             = isExplorer.exec(navigator.userAgent.toLowerCase()) and (not docMode or docMode <= 7)
 
     # Normalize root to always include a leading and trailing slash.
     @root = ('/' + @root + '/').replace rootStripper, '/'
-
-    if oldIE and @._wantsHashChange
-      @iframe = Backbone.$('<iframe src="javascript:0" tabindex="-1" />').hide().appendTo('body')[0].contentWindow
-      @navigate fragment
 
     # Depending on whether we're using pushState or hashes, and whether
     # 'onhashchange' is supported, determine how we check the URL state.
     if (@_hasPushState)
       Backbone.$(window).on 'popstate', @checkUrl
-    else if @_wantsHashChange and 'onhashchange' of window and not oldIE
+    else if @_wantsHashChange and 'onhashchange' of window
       Backbone.$(window).on 'hashchange', @checkUrl
     else if @_wantsHashChange
       @_checkUrlInterval = setInterval @checkUrl, @interval
@@ -91,3 +85,5 @@ module.exports = class History extends Backbone.History
       @history.replaceState {}, document.title, @root + @fragment
 
     @loadUrl() if not @options.silent
+
+module.exports = if Backbone.$ then History else Backbone.History
