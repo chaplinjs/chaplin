@@ -804,7 +804,7 @@ define [
           fallback = if jQuery then collectionView.$fallback[0] else collectionView.fallback
 
           expectVisible = ->
-            expect(fallback.style.display).to.be ''
+            expect(fallback.style.display).to.be if jQuery then 'block' else ''
 
           expectInvisible = ->
             expect(fallback.style.display).to.be 'none'
@@ -851,7 +851,7 @@ define [
 
           expect(collectionView.filterer).to.be filterer
           expect(collectionView.visibleItems.length).to.be 0
-          expect(collectionView.$(collectionView.fallbackSelector)[0].style.display).to.be ''
+          expect(collectionView.$(collectionView.fallbackSelector)[0].style.display).to.be(if jQuery then 'block' else '')
 
       describe 'Loading indicator', ->
 
@@ -873,7 +873,7 @@ define [
           loading = if jQuery then collectionView.$loading[0] else collectionView.loading
 
           expectVisible = ->
-            expect(loading.style.display).to.be ''
+            expect(loading.style.display).to.be if jQuery then 'block' else ''
 
           expectInvisible = ->
             expect(loading.style.display).to.be 'none'

@@ -343,8 +343,12 @@ define [
       instance2 = new Test2View {region: 'test2'}
       instance3 = new Test2View {region: 'test0'}
 
-      expect(instance2.container.id).to.be 'test2'
-      expect(instance3.container).to.be instance1.el
+      if $
+        expect(instance2.container.attr('id')).to.be 'test2'
+        expect(instance3.container).to.be instance1.$el
+      else
+        expect(instance2.container.id).to.be 'test2'
+        expect(instance3.container).to.be instance1.el
 
       instance1.dispose()
       instance2.dispose()
@@ -371,7 +375,10 @@ define [
       instance1 = new Test1View()
       instance2 = new Test2View()
       instance3 = new Test3View {region: 'test2'}
-      expect(instance3.container.id).to.be 'test5'
+      if $
+        expect(instance3.container.attr('id')).to.be 'test5'
+      else
+        expect(instance3.container.id).to.be 'test5'
 
       instance1.dispose()
       instance2.dispose()
@@ -400,7 +407,10 @@ define [
       instance2 = new Test2View()
       instance2.stale = true
       instance3 = new Test3View {region: 'test2'}
-      expect(instance3.container.id).to.be 'test2'
+      if $
+        expect(instance3.container.attr('id')).to.be 'test2'
+      else
+        expect(instance3.container.id).to.be 'test2'
 
       instance1.dispose()
       instance2.dispose()

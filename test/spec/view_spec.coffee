@@ -226,6 +226,7 @@ define [
       spy = sinon.spy()
       handler = view.delegate 'click', spy
       expect(handler).to.be.a 'function'
+      view.render()
       view.el.click()
       expect(spy).was.called()
 
@@ -233,7 +234,6 @@ define [
       view.el.click()
       expect(spy.callCount).to.be 1
 
-      view.render()
       spy = sinon.spy()
       handler = view.delegate 'click', 'p', spy
       expect(handler).to.be.a 'function'
@@ -280,6 +280,8 @@ define [
       spy2 = sinon.spy()
       view.delegate 'click', spy
       view.delegate 'focus', spy2
+      view.render()
+
       view.el.click()
       expect(spy).was.calledOnce()
       expect(spy2).was.notCalled()

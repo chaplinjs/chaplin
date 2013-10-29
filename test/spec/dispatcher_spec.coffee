@@ -591,7 +591,7 @@ define [
             expect(action).was.calledOnce()
             action.restore()
             done()
-          , 0
+          , 50
 
       it 'should support multiple asynchronous controllers', (done) ->
 
@@ -667,7 +667,7 @@ define [
 
               composer.dispose()
               done()
-            , 0
+            , 50
 
       it 'should stop dispatching when another controller is started', (done) ->
         promise = new Promise
@@ -712,4 +712,4 @@ define [
               secondAction.restore()
 
               done()
-            , 0
+            , 50

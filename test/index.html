@@ -11,73 +11,7 @@
     <script src="bower_components/davy/davy.js"></script>
     <script src="lib/sinon-expect-0.2.0.js"></script>
     <script src="bower_components/requirejs/require.js"></script>
-    <script>
-      // Fix timers stubbing in IE8-9.
-      var oldTimers = {setInterval: setInterval, clearInterval: clearInterval};
-      eval('function setInterval() {}; function clearInterval() {}');
-      var oldIE = (/MSIE [89]/.test(navigator.userAgent));
-      var timers = oldIE ? sinon.clock : oldTimers;
-      window.setInterval = timers.setInterval;
-      window.clearInterval = timers.clearInterval;
-
-      requirejs.config({
-        baseUrl: 'temp/',
-        paths: {
-          backbone: '../bower_components/backbone/backbone'
-          // ,underscore: '../bower_components/lodash/dist/lodash.compat'
-          // ,jquery: '../bower_components/jquery/jquery'
-        },
-        // For easier development, disable browser caching
-        urlArgs: 'bust=' + (new Date()).getTime()
-      });
-      define('jquery', function(){});
-      define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
-      mocha.setup({ui: 'bdd', ignoreLeaks: true});
-      // Wonderful hack to send a message to grunt from inside a mocha test.
-      var sendMessage = function() {
-        var args = [].slice.call(arguments);
-        // Remove if when generating test coverage.
-        if (window.mochaPhantomJS) {
-           alert(JSON.stringify(args));
-        }
-      };
-      mocha.suite.afterAll(function() {
-        sendMessage('mocha.coverage', window.__coverage__);
-      });
-      window.expect = SinonExpect.enhance(expect, sinon, 'was');
-      window.onload = function() {
-        var specs = [
-          'event_broker',
-          'mediator',
-          'router',
-          'application',
-          'layout',
-          'dispatcher',
-          'composer',
-          'composition',
-          'collection_view',
-          'model',
-          'collection',
-          'controller',
-          'view',
-          'delayer',
-          'utils',
-          'helpers',
-          'sync_machine'
-        ];
-        var loaded = [];
-        for (var i = 0, l = specs.length; i < l; i++) {
-          loaded.push(specs[i] + '_spec');
-        }
-        require(loaded, function() {
-          if (window.mochaPhantomJS) {
-            mochaPhantomJS.run();
-          } else {
-            mocha.run();
-          }
-        });
-      };
-    </script>
+    <script src="initialize.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
