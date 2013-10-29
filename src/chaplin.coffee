@@ -14,7 +14,6 @@ module.exports =
   CollectionView: require 'chaplin/views/collection_view'
   Route:          require 'chaplin/lib/route'
   Router:         require 'chaplin/lib/router'
-  Delayer:        require 'chaplin/lib/delayer'
   EventBroker:    require 'chaplin/lib/event_broker'
   helpers:        require 'chaplin/lib/helpers'
   support:        require 'chaplin/lib/support'
