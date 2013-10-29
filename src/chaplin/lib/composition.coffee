@@ -4,6 +4,8 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
 
+has = Object::hasOwnProperty
+
 # Composition
 # -----------
 
@@ -54,7 +56,8 @@ module.exports = class Composition
     # Sets the stale property for every item in the composition that has it.
     @_stale = value
     for name, item of this when (
-      item and item isnt this and typeof item is 'object' and 'stale' of item
+      item and item isnt this and
+      typeof item is 'object' and has.call(item, 'stale')
     )
       item.stale = value
 

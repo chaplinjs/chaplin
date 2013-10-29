@@ -199,8 +199,8 @@ module.exports = class Layout extends View
 
   # Returns the region by its name, if found.
   regionByName: (name) ->
-    for region in @globalRegions
-      return region if region.name is name and not region.instance.stale
+    for reg in @globalRegions when reg.name is name and not reg.instance.stale
+      return reg
 
   # When views are instantiated and request for a region assignment;
   # attempt to fulfill it.
