@@ -335,7 +335,7 @@ module.exports = (grunt) ->
     # ------
     uglify:
       options:
-        mangle: false
+        mangle: true
       universal:
         files:
           'build/chaplin.min.js': 'build/chaplin.js'
