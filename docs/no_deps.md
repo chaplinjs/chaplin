@@ -4,7 +4,7 @@ title: Using without jQuery and Underscore
 Chaplin: Using without jQuery and Underscore
 ---
 
-Thanks to [Exoskeleton](http://exosjs.com), Chaplin can be used without any dependencies than Exoskeleton (Backbone) itself.
+Thanks to [Exoskeleton](http://exosjs.com), Chaplin can be used without any dependencies other than Exoskeleton (Backbone) itself.
 
 Exoskeleton is a faster and leaner Backbone for your HTML5 apps. It targets newer (IE9+) browsers, incorporates great new features and speed updates and plays great with Chaplin.
 
