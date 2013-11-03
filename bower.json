@@ -11,7 +11,7 @@
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",
     "requirejs": "~2.1.8",
     "davy": "~0.0.4",
-    "exoskeleton": "~0.4.0"
+    "exoskeleton": "~0.5.0"
   },
   "exportsOverride": {
     "mocha": {
