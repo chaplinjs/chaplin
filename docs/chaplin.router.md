@@ -99,7 +99,7 @@ The following properties of the `options` hash are recognized:
 
 Route a given path manually. Returns a boolean after it has been matched against the registered routes, corresponding to whether or not a match occurred. Updates the URL in the browser.
 
-* **path** can be either a string, or an object describing a route by
+* **path** can be an object describing a route by
   * **controller**: name of the controller,
   * **action**: name of the action,
   * **name**: name of a [named route](#match), can replace **controller** and **action**,
