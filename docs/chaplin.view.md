@@ -161,7 +161,7 @@ Specifies whether the default Backbone behavior of wrapping the template with an
 Specifies whether the view’s `render` method should be called automatically when a view is instantiated.
 
 <h3 class="module-member" id="autoAttach">autoAttach</h3>
-* **boolean (default `true`**
+* **boolean (default `true`)**
 
 Specifies whether the view’s `attach` method should be called automatically after `render` was called.
 
