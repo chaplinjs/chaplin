@@ -237,10 +237,12 @@ module.exports = class CollectionView extends View
     super
 
     # Set the $list property with the actual list container.
+    listSelector = _.result this, 'listSelector'
+
     if $
-      @$list = if @listSelector then @$(@listSelector) else @$el
+      @$list = if listSelector then @$(listSelector) else @$el
     else
-      @list = if @listSelector then @find(@listSelector) else @el
+      @list = if listSelector then @find(@listSelector) else @el
 
     @initFallback()
     @initLoadingIndicator()
