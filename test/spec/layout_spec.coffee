@@ -43,7 +43,7 @@ define [
       if $
         $(element).click()
       else
-        element.click()
+        window.clickOnElement element.click()
       document.body.removeChild element
 
     expectWasRouted = (linkAttributes) ->
@@ -431,7 +431,7 @@ define [
         expect(Object.isFrozen(layout)).to.be true
 
       mediator.publish 'foo'
-      document.querySelector('#testbed').click()
+      window.clickOnElement document.querySelector('#testbed')
 
       # It should unsubscribe from events
       expect(spy1).was.notCalled()

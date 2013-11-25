@@ -227,24 +227,24 @@ define [
       handler = view.delegate 'click', spy
       expect(handler).to.be.a 'function'
       view.render()
-      view.el.click()
+      window.clickOnElement view.el
       expect(spy).was.called()
 
       view.undelegate()
-      view.el.click()
+      window.clickOnElement view.el
       expect(spy.callCount).to.be 1
 
       spy = sinon.spy()
       handler = view.delegate 'click', 'p', spy
       expect(handler).to.be.a 'function'
       p = view.el.querySelector('p')
-      p.click()
+      window.clickOnElement p
       expect(spy).was.called()
 
       expect(-> view.delegate spy).to.throwError()
 
       view.undelegate()
-      p.click()
+      window.clickOnElement p
       expect(spy.callCount).to.be 1
 
     # Simulates focus event.
@@ -282,13 +282,13 @@ define [
       view.delegate 'focus', spy2
       view.render()
 
-      view.el.click()
+      window.clickOnElement view.el
       expect(spy).was.calledOnce()
       expect(spy2).was.notCalled()
 
       view.undelegate 'click'
       simulateEvent view.el, 'focus'
-      view.el.click()
+      window.clickOnElement view.el
       expect(spy).was.calledOnce()
       expect(spy2).was.calledOnce()
 
@@ -314,7 +314,7 @@ define [
         a1Handler: sinon.spy()
 
         click: (index) ->
-          @el.querySelector("##{index}").click()
+          window.clickOnElement @el.querySelector("##{index}")
 
       class B extends A
         events:
@@ -624,7 +624,7 @@ define [
         spy = sinon.spy()
         view = new AutoRenderView
         view.delegateEvents 'click p': spy
-        view.el.querySelector('p').click()
+        window.clickOnElement view.el.querySelector('p')
         delay ->
           expect(spy).was.calledOnce()
           done()
@@ -646,11 +646,11 @@ define [
         view = new PreservedView
         parent = view.el
         el = parent.querySelector('p')
-        el.click()
+        window.clickOnElement el
         expect(spy1).was.called()
         expect(spy2).was.called()
         view.dispose()
-        el.click()
+        window.clickOnElement el
         expect(spy1.callCount).to.be 1
         expect(spy2.callCount).to.be 1
         parent.parentNode.removeChild(parent)
@@ -669,11 +669,11 @@ define [
           click: spy2
         parent = view.el
         el = parent.querySelector('p')
-        el.click()
+        window.clickOnElement el
         expect(spy1).was.called()
         expect(spy2).was.called()
         view.undelegateEvents()
-        el.click()
+        window.clickOnElement el
         expect(spy1.callCount).to.be 1
         expect(spy2.callCount).to.be 1
         parent.parentNode.removeChild(parent)

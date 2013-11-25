@@ -5,7 +5,7 @@
     "mocha": "1.13.x",
     "expect": "0.2.x",
     "jquery": "1.9.x",
-    "lodash": "2.2.x",
+    "lodash": "2.3.x",
     "backbone": "1.1.x",
     "benchmark": "git://github.com/bestiejs/benchmark.js.git",
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",

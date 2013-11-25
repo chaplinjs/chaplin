@@ -568,7 +568,7 @@ define [
     describe 'Asynchronous Before Actions', ->
 
       it 'should handle asynchronous before actions', (done) ->
-        promise = new Promise
+        promise = new Davy
 
         class AsyncBeforeActionController extends Controller
           beforeAction: -> promise
@@ -634,7 +634,7 @@ define [
 
       it 'should kick around promises from compositions', (done) ->
         composer = new Composer
-        promise = new Promise
+        promise = new Davy
 
         class AsyncBeforeActionController extends Controller
           beforeAction: -> @compose 'a', -> promise
@@ -670,7 +670,7 @@ define [
             , 50
 
       it 'should stop dispatching when another controller is started', (done) ->
-        promise = new Promise
+        promise = new Davy
 
         class NeverendingController extends Controller
           beforeAction: -> promise

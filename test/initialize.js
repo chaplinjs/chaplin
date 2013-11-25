@@ -12,7 +12,7 @@ var match = window.location.search.match(/type=([-\w]+)/)
 var testType = window.testType || (match ? match[1] : 'backbone');
 
 var addDeps = function() {
-  paths.underscore = '../bower_components/lodash/dist/lodash.compat';
+  paths.underscore = '../bower_components/lodash/lodash.compat';
   paths.jquery = '../bower_components/jquery/jquery';
 };
 if (testType === 'backbone') {
@@ -52,13 +52,21 @@ mocha.setup({ui: 'bdd', ignoreLeaks: true});
 var sendMessage = function() {
   var args = [].slice.call(arguments);
   // Remove if when generating test coverage.
-  if (window.mochaPhantomJS) {
+  if (window.mochaPhantomJS)
      alert(JSON.stringify(args));
-  }
 };
 mocha.suite.afterAll(function() {
   sendMessage('mocha.coverage', window.__coverage__);
 });
+window.clickOnElement = function(el) {
+  if (el.click) {
+    el.click();
+  } else {
+    var ev = document.createEvent('Events');
+    ev.initEvent('click', true, false);
+    el.dispatchEvent(ev);
+  }
+};
 window.expect = SinonExpect.enhance(expect, sinon, 'was');
 window.addEventListener('DOMContentLoaded', function() {
   var specs = [
