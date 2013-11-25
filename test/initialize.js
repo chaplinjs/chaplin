@@ -83,7 +83,6 @@ window.addEventListener('DOMContentLoaded', function() {
     'collection',
     'controller',
     'view',
-    'delayer',
     'utils',
     'helpers',
     'sync_machine'
