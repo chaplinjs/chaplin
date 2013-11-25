@@ -1,3 +1,8 @@
+# Chaplin 0.12.0 (unreleased)
+* Removed Delayer. Use [separate Delayer package](https://github.com/chaplinjs/delayer)
+  if you want to use it.
+* `CollectionView#listSelector` can now also be a function.
+
 # Chaplin 0.11.3 (29 October 2013)
 * Fixed view regions.
 * Fixed filtering of collection view elements.
