@@ -84,7 +84,6 @@ window.addEventListener('DOMContentLoaded', function() {
     'controller',
     'view',
     'utils',
-    'helpers',
     'sync_machine'
   ];
   var loaded = [];

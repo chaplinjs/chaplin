@@ -15,7 +15,6 @@ module.exports =
   Route:          require 'chaplin/lib/route'
   Router:         require 'chaplin/lib/router'
   EventBroker:    require 'chaplin/lib/event_broker'
-  helpers:        require 'chaplin/lib/helpers'
   support:        require 'chaplin/lib/support'
   SyncMachine:    require 'chaplin/lib/sync_machine'
   utils:          require 'chaplin/lib/utils'

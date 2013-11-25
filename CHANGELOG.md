@@ -1,6 +1,8 @@
 # Chaplin 0.12.0 (unreleased)
-* Removed Delayer. Use [separate Delayer package](https://github.com/chaplinjs/delayer)
+* Removed `Delayer`. Use [separate Delayer package](https://github.com/chaplinjs/delayer)
   if you want to use it.
+* `Chaplin.helpers` were merged with `Chaplin.utils`.
+  Use `utils` now for `reverse` and `redirectTo`.
 * `CollectionView#listSelector` can now also be a function.
 
 # Chaplin 0.11.3 (29 October 2013)

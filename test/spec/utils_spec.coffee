@@ -2,7 +2,8 @@ define [
   'backbone'
   'underscore'
   'chaplin/lib/utils'
-], (Backbone, _, utils) ->
+  'chaplin/mediator'
+], (Backbone, _, utils, mediator) ->
   'use strict'
 
   describe 'utils', ->
@@ -61,6 +62,46 @@ define [
         expect(utils.upcase 'stuff').to.be 'Stuff'
         expect(utils.upcase 'стафф').to.be 'Стафф'
         expect(utils.upcase '123456').to.be '123456'
+
+    describe 'reverse', ->
+      beforeEach ->
+        mediator.unsubscribe()
+      afterEach ->
+        mediator.unsubscribe()
+
+      it 'should return the url for a named route', ->
+        stubbedRouteHandler = (routeName, params) ->
+          expect(routeName).to.be 'foo'
+          expect(params).to.eql {id: 3, d: "data"}
+          '/foo/bar'
+        mediator.setHandler 'router:reverse', stubbedRouteHandler
+
+        url = utils.reverse 'foo', id: 3, d: "data"
+        expect(url).to.be '/foo/bar'
+
+      it 'should return the url for a named route with empty path', ->
+        stubbedRouteHandler = (routeName, params) ->
+          expect(routeName).to.be 'home'
+          expect(params).to.be undefined
+          '/'
+        mediator.setHandler 'router:reverse', stubbedRouteHandler
+
+        url = utils.reverse 'home'
+        expect(url).to.be '/'
+
+      it 'should throw exception if no route found', ->
+        stubbedRouteHandler = (routeName, params) ->
+          false
+        mediator.setHandler 'router:reverse', stubbedRouteHandler
+
+        try
+          url = utils.reverse 'foo', id: 3, d: "data"
+        catch err
+          expect(err).to.be.an Error
+
+      # it 'should return null if router does not respond', ->
+      #   url = utils.reverse 'foo', id: 3, d: "data"
+      #   expect(url).to.be null
 
     describe 'queryParams', ->
       queryParams = p1: 'With space', p2_empty: '', 'p 3': [999, 'a&b']
