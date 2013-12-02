@@ -705,7 +705,7 @@ define [
             # Test what happens when the Promise is resolved later
             promise.fulfill()
             setTimeout ->
-              expect(firstAction).was.notCalled()
+              expect(firstAction).was.calledOnce()
 
               beforeAction.restore()
               firstAction.restore()
