@@ -528,6 +528,12 @@ define [
         collectionView.filter filterer
         expect(filterer.callCount).to.be collection.length
 
+      it 'should not set filterer to non-function', ->
+        basicSetup()
+        filterer = collectionView.filterer = sinon.spy -> true
+        collectionView.filter()
+        expect(filterer.callCount).to.be collection.length
+
       it 'should hide filtered views per default', ->
         basicSetup()
         addThree()
