@@ -351,9 +351,6 @@ module.exports = class CollectionView extends View
     if typeof filterCallback is 'function' or filterCallback is null
       @filterCallback = filterCallback
 
-    filterer ?= @filterer
-    filterCallback ?= @filterCallback
-
     hasItemViews = do =>
       if @subviews.length > 0
         for name of @subviewsByName when name.slice(0, 9) is 'itemView:'
@@ -365,8 +362,8 @@ module.exports = class CollectionView extends View
       for item, index in @collection.models
 
         # Apply filter to the item.
-        included = if typeof filterer is 'function'
-          filterer item, index
+        included = if typeof @filterer is 'function'
+          @filterer item, index
         else
           true
 
@@ -378,7 +375,7 @@ module.exports = class CollectionView extends View
             "no view found for #{item.cid}"
 
         # Show/hide or mark the view accordingly.
-        filterCallback view, included
+        @filterCallback view, included
 
         # Update visibleItems list, but do not trigger an event immediately.
         @updateVisibleItems view.model, included, false
