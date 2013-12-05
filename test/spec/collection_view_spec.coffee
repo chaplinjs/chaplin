@@ -523,6 +523,7 @@ define [
         basicSetup()
         filterer = sinon.spy (model, position) ->
           expect(model).to.be.a Model
+          expect(this).to.be collectionView
           expect(position).to.be.a 'number'
           true
         collectionView.filter filterer
