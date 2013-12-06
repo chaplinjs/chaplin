@@ -77,6 +77,13 @@ module.exports = class Route
       value = params[name]
       url = url.replace ///[:*]#{name}///g, value
 
+    # Add or remove trailing slash according to options
+    switch @options.trailing
+      when yes
+        url += '/' unless url[-1..] is '/'
+      when no
+        url = url[...-1] if url[-1..] is '/'
+
     return url unless query
 
     # Stringify query params if needed.
@@ -135,9 +142,9 @@ module.exports = class Route
       # Replace named parameters, collecting their names.
       .replace(/(?::|\*)(\w+)/g, @addParamName)
 
-    # Create the actual regular expression, match until the end of the URL or
-    # the begin of query string.
-    @regExp = ///^#{pattern}(?=\?|$)///
+    # Create the actual regular expression, match until the end of the URL,
+    # trailing slash or the begin of query string.
+    @regExp = ///^#{pattern}(?=\?|\/?$|\/\?)///
 
   addParamName: (match, paramName) =>
     # Save parameter name.
