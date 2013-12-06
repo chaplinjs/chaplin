@@ -92,11 +92,11 @@ module.exports = class Dispatcher
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
-    @_future_previousRoute = @currentRoute
-    @_future_currentRoute = _.extend {}, route, {previous: utils.beget(@_future_previousRoute)}
+    @nextPreviousRoute = @currentRoute
+    @nextCurrentRoute = _.extend {}, route, {previous: utils.beget(@nextPreviousRoute)}
 
-    controller = new Controller params, @_future_currentRoute, options
-    @executeBeforeAction controller, @_future_currentRoute, params, options
+    controller = new Controller params, @nextCurrentRoute, options
+    @executeBeforeAction controller, @nextCurrentRoute, params, options
 
   # Executes controller action.
   executeAction: (controller, route, params, options) ->
@@ -132,12 +132,12 @@ module.exports = class Dispatcher
 
     executeAction = =>
       if controller.redirected or @currentRoute and route is @currentRoute
-        @_future_previousRoute = @_future_currentRoute = null
+        @nextPreviousRoute = @nextCurrentRoute = null
         controller.dispose()
         return
-      @previousRoute = @_future_previousRoute
-      @currentRoute = @_future_currentRoute
-      @_future_previousRoute = @_future_currentRoute = null
+      @previousRoute = @nextPreviousRoute
+      @currentRoute = @nextCurrentRoute
+      @nextPreviousRoute = @nextCurrentRoute = null
       @executeAction controller, route, params, options
 
     unless before
