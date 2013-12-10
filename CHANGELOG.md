@@ -19,8 +19,8 @@
   Make sure to set `window._` to `Backbone.utils` in no-deps environment.
 
 # Chaplin 0.11.1 (2 October 2013)
-* `Dispatcher::dispatch` now checks if `options.query` hash was changed.
-* `Route::reverse` now won't add a ? symbol at the end of a returned url if you pass an empty object as a `query` parameter (second one)
+* `Dispatcher#dispatch` now checks if `options.query` hash was changed.
+* `Route#reverse` now won't add a ? symbol at the end of a returned url if you pass an empty object as a `query` parameter (second one)
 * `utils.queryParams.stringify` will now ignore `undefined` and `null` values
 
 # Chaplin 0.11.0 (21 September 2013)
@@ -37,7 +37,7 @@
       (use `mediator.execute('adjustTitle', name)` or `Controller#adjustTitle`).
       An `adjustTitle` event would be triggered after title is set.
 * Improved `Chaplin.Controller`:
-    * `Controller::compose` method now:
+    * `Controller#compose` method now:
         * by default, returns the composition itself
         * if composition body returned a promise, it returns a promise too
     * Removed `Controller#redirectToRoute`. Use `Controller#redirectTo`.
@@ -60,8 +60,8 @@
     * `utils.getPrototypeChain` now returns prototypes from
       oldest to newest, to match `utils.getAllPropertyVersions`.
 * Improved `Chaplin.Router`:
-    * `Route::reverse` (as well as `Router::reverse`) are now able to add query parameters to the reversed URL, no matter if they are already stringified or not when passed into the reverse (as a third parameter).
-    * `Route::matches` improved not to return `true` when the only `controller` or `action` parameter passed.
+    * `Route#reverse` (as well as `Router#reverse`) are now able to add query parameters to the reversed URL, no matter if they are already stringified or not when passed into the reverse (as a third parameter).
+    * `Route#matches` improved not to return `true` when the only `controller` or `action` parameter passed.
     * Fixed `getCurrentQuery` error when `pushState` is disabled (gh-671).
     * Query params are now not copied to next routes (gh-677).
 * Improved `Chaplin.Application`:

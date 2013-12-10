@@ -7,7 +7,43 @@ Chaplin: utils
 
 Chaplin’s utils provide common functions for use throughout the project.
 
-These functions are generic and not related to any specific Chaplin components. Useful functions for messing with Chaplin are available in [Chaplin.helpers](chaplin.helpers.html).
+<h3 class="module-member" id="redirectTo">redirectTo([...params])</h3>
+Does a in-app redirect:
+
+1. `redirectTo('messages#show', {id: 2})` — to a named route.
+2. `redirectTo({url: 'messages/2'})` — to an URL.
+3. `redirectTo({controller: 'messages', action: 'show', params: {id: 2}})` — etc.
+
+In the past, `!route:route[byName]` event was used for this purpose.
+
+<h3 class="module-member" id="reverse">reverse(routeName[,...params])</h3>
+Returns the URL for a named route, appropriately filling in values given as `params`.
+
+For example, if you have declared the route
+
+```coffeescript
+match '/users/:login/profile', 'users#show'
+```
+
+```javascript
+match('/users/:login/profile', 'users#show');
+```
+
+you can use
+
+```coffeescript
+Chaplin.utils.reverse 'users#show', login: 'paulmillr'
+# or
+Chaplin.utils.reverse 'users#show', ['paulmillr']
+```
+
+```javascript
+Chaplin.utils.reverse('users#show', {login: 'paulmillr'});
+// or
+Chaplin.utils.reverse('users#show', ['paulmillr']);
+```
+
+to yield `'/users/paulmillr/profile'`.
 
 <h3 class="module-member" id="beget">beget(parent)</h3>
 * **returns a new object with `parent` as its prototype**
