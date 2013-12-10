@@ -6,6 +6,7 @@
 * [Disposal](./disposal.html)
 * [Using without jQuery and Underscore](./no_deps.html)
 * [Handling async deps](./handling_async.html)
+* [Upgrading Chaplin](./upgrading.html)
 
 ### Core
 * <a href="./chaplin.mediator.html" title="Global event bus">Chaplin.mediator</a>
