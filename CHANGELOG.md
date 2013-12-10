@@ -1,4 +1,4 @@
-# Chaplin 0.12.0 (unreleased)
+# Chaplin 0.12.0 (10 December 2013)
 * Added support for Exoskeleton 0.6. Previous versions are now incompatible.
 * Removed `Delayer`. Use [separate Delayer package](https://github.com/chaplinjs/delayer)
   if you want to use it.
