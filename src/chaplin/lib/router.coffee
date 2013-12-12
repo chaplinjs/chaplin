@@ -41,7 +41,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
   oldEventError: ->
     throw new Error '!router:route and !router:routeByName events were removed.
-  Use `Chaplin.helpers.redirectTo`'
+  Use `Chaplin.utils.redirectTo`'
 
   oldURLEventError: ->
     throw new Error '!router:changeURL event was removed.
