@@ -43,7 +43,7 @@ define [
       if $
         $(element).click()
       else
-        window.clickOnElement element.click()
+        window.clickOnElement element
       document.body.removeChild element
 
     expectWasRouted = (linkAttributes) ->
