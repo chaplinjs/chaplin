@@ -6,6 +6,8 @@
   Use `utils` now for `reverse` and `redirectTo`.
 * `CollectionView#filter` now ignores arguments if they are not functions. Useful if you want to call it on some DOM event from `events` hash.
 * `CollectionView#listSelector` can now also be a function.
+* `Dispatcher` now loads common.js code on next event loop tick (`setTimeout load, 0`)
+  instead of previous fully synchronous behaviour to match AMD.
 
 # Chaplin 0.11.3 (29 October 2013)
 * Fixed view regions.
