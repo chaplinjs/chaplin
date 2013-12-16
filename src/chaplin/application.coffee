@@ -1,13 +1,20 @@
 'use strict'
 
+# Third-party libraries.
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
+
+# JavaScript classes which are instantiated with `new`
 Dispatcher = require 'chaplin/dispatcher'
 Layout = require 'chaplin/views/layout'
 Composer = require 'chaplin/composer'
 Router = require 'chaplin/lib/router'
+
+# A mix-in that should be mixed to class.
 EventBroker = require 'chaplin/lib/event_broker'
+
+# Independent global event bus that is used by itself, so lowercased.
+mediator = require 'chaplin/mediator'
 
 # The bootstrapper is the entry point for Chaplin apps.
 module.exports = class Application
@@ -117,8 +124,8 @@ module.exports = class Application
     # Mark app as initialized.
     @started = true
 
-    # Freeze the application instance to prevent further changes.
-    Object.freeze? this
+    # Seal the application instance to prevent further changes.
+    Object.seal? this
 
   # Disposal
   # --------
@@ -128,13 +135,9 @@ module.exports = class Application
     # Am I already disposed?
     return if @disposed
 
-    # Check if object is already frozen.
-    frozen = Object.isFrozen? this
-
     properties = ['dispatcher', 'layout', 'router', 'composer']
     for prop in properties when this[prop]?
       this[prop].dispose()
-      delete this[prop] unless frozen
 
     @disposed = true
 
