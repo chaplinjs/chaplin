@@ -490,7 +490,8 @@ module.exports = class View extends Backbone.View
       'subviews', 'subviewsByName',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
+    for prop in properties
+      this[prop] = null
 
     # Finished.
     @disposed = true

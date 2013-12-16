@@ -76,7 +76,7 @@ module.exports = class Composition
     for own prop, obj of this when obj and typeof obj.dispose is 'function'
       unless obj is this
         obj.dispose()
-        delete this[prop]
+        this[prop] = null
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()

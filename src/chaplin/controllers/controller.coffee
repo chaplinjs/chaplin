@@ -61,7 +61,7 @@ module.exports = class Controller
     # Dispose and delete all members which are disposable.
     for own prop, obj of this when obj and typeof obj.dispose is 'function'
       obj.dispose()
-      delete this[prop]
+      this[prop] = null
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()

@@ -235,7 +235,8 @@ module.exports = class Layout extends View
     @stopLinkRouting()
 
     # Remove all regions and document title setting.
-    delete this[prop] for prop in ['globalRegions', 'title', 'route']
+    for prop in ['globalRegions', 'title', 'route']
+      this[prop] = null
 
     mediator.removeHandlers this
 

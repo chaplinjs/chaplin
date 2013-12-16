@@ -101,7 +101,8 @@ module.exports = class Model extends Backbone.Model
       '_silent', '_pending',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
+    for prop in properties
+      this[prop] = null
 
     # Finished.
     @disposed = true

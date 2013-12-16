@@ -184,7 +184,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
     # Stop Backbone.History instance and remove it.
     @stopHistory()
-    delete Backbone.history
+    Backbone.history = null
 
     @unsubscribeAllEvents()
 

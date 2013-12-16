@@ -138,6 +138,7 @@ module.exports = class Application
     properties = ['dispatcher', 'layout', 'router', 'composer']
     for prop in properties when this[prop]?
       this[prop].dispose()
+      this[prop] = null
 
     @disposed = true
 
