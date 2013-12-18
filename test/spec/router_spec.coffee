@@ -145,6 +145,14 @@ define [
 
         mediator.unsubscribe 'router:match', spy
 
+      it 'should match URLs with optional params correctly', ->
+        router.match 'items(/page/:page)', 'null#null'
+
+        routed = router.route url: '/items'
+        expect(routed).to.be true
+        routed = router.route url: '/items/page/2'
+        expect(routed).to.be true
+
       it 'should match configuration objects', ->
         spy = sinon.spy()
         mediator.subscribe 'router:match', spy
@@ -262,6 +270,24 @@ define [
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo/456-bar/'
         expect(passedParams.two).to.be '789-qux'
+
+      it 'should match optional named parameters', ->
+        router.match 'items(/page/:page)', 'null#null'
+        router.route url: '/items'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.page).to.be undefined
+        router.route url: '/items/page/5'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.page).to.be '5'
+
+      it 'should match optional splat parameters', ->
+        router.match 'items(/:slug)', 'null#null'
+        router.route url: '/items'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.slug).to.be undefined
+        router.route url: '/items/5-boots'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.slug).to.be '5-boots'
 
       it 'should pass fixed parameters', ->
         router.match 'fixed-params/:id', 'null#null',

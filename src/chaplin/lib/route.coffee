@@ -14,7 +14,8 @@ module.exports = class Route
   _.extend @prototype, EventBroker
 
   # Taken from Backbone.Router.
-  escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
+  escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g
+  optionalParam = /\((.*?)\)/g
 
   # Create a route for a URL pattern and a controller action
   # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
@@ -139,6 +140,8 @@ module.exports = class Route
     pattern = @pattern
       # Escape magic characters.
       .replace(escapeRegExp, '\\$&')
+      # Catch optional parameters.
+      .replace(optionalParam, '(?:$1)?')
       # Replace named parameters, collecting their names.
       .replace(/(?::|\*)(\w+)/g, @addParamName)
 
