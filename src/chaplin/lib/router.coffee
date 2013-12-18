@@ -99,13 +99,15 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # accepts an absolute URL with a leading slash (e.g. /foo)
   # and passes the routing options to the callback function.
   route: (pathDesc, params, options) ->
+    # Try to extract an URL from the pathDesc if it's a hash.
+    if typeof pathDesc is 'object'
+      path = pathDesc.url
+      params = pathDesc.params if not params and pathDesc.params
+
     params = if params
       if utils.isArray(params) then params.slice() else _.extend {}, params
     else
       {}
-
-    # Try to extract an URL from the pathDesc if it's a hash.
-    path = pathDesc.url if typeof pathDesc is 'object'
 
     # Accept path to be given via URL wrapped in object,
     # or implicitly via route name, or explicitly via object.

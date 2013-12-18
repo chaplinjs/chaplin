@@ -296,7 +296,7 @@ define [
         d = dispatcher
         expect(d.previousRoute.controller).to.be 'test1'
         expect(d.currentController).to.be.a Test2Controller
-        expect(d.currentRoute).to.eql create(route2, previous: {})
+        expect(d.currentRoute).to.eql create(route2, previous: {params})
         expect(d.currentParams).to.eql params
         expect(d.currentQuery).to.eql options1.query
 

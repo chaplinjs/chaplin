@@ -82,7 +82,7 @@ module.exports = class Dispatcher
       @currentRoute?.controller is route.controller and
       @currentRoute?.action is route.action and
       _.isEqual(@currentParams, params) and
-      _.isEqual @currentQuery, options.query
+      _.isEqual(@currentQuery, options.query)
 
     # Fetch the new controller, then go on.
     @loadController route.controller, (Controller) =>
@@ -104,7 +104,9 @@ module.exports = class Dispatcher
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
     @nextPreviousRoute = @currentRoute
-    @nextCurrentRoute = _.extend {}, route, {previous: utils.beget(@nextPreviousRoute)}
+    previous = _.extend {}, @nextPreviousRoute
+    previous.params = @currentParams if @currentParams?
+    @nextCurrentRoute = _.extend {}, route, {previous}
 
     controller = new Controller params, @nextCurrentRoute, options
     @executeBeforeAction controller, @nextCurrentRoute, params, options
