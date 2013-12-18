@@ -106,6 +106,7 @@ module.exports = class Dispatcher
     @nextPreviousRoute = @currentRoute
     previous = _.extend {}, @nextPreviousRoute
     previous.params = @currentParams if @currentParams?
+    delete previous.previous if previous.previous
     @nextCurrentRoute = _.extend {}, route, {previous}
 
     controller = new Controller params, @nextCurrentRoute, options
