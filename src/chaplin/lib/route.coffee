@@ -14,7 +14,9 @@ module.exports = class Route
   _.extend @prototype, EventBroker
 
   # Taken from Backbone.Router.
-  escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g
+  escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g
+  optionalRegExp = /\((.*?)\)/g
+  paramRegExp = /(?::|\*)(\w+)/g
 
   # Create a route for a URL pattern and a controller action
   # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
@@ -38,7 +40,9 @@ module.exports = class Route
     @name ?= @controller + '#' + @action
 
     # Initialize list of :params which the route will use.
-    @paramNames = []
+    @allParams = []
+    @requiredParams = []
+    @optionalParams = []
 
     # Check if the action is a reserved name
     if @action of Controller.prototype
@@ -73,9 +77,21 @@ module.exports = class Route
     # From a params hash; we need to be able to return
     # the actual URL this route represents.
     # Iterate and replace params in pattern.
-    for name in @paramNames
+    for name in @requiredParams
       value = params[name]
       url = url.replace ///[:*]#{name}///g, value
+
+    # Replace optional params.
+    for name in @optionalParams
+      if value = params[name]
+        url = url.replace ///[:*]#{name}///g, value
+
+    # Kill unfulfilled optional portions.
+    url = url.replace optionalRegExp, (match, portion) ->
+      if portion.match /[:*]/g
+        ""
+      else
+        portion
 
     # Add or remove trailing slash according to options
     switch @options.trailing
@@ -97,11 +113,11 @@ module.exports = class Route
   normalizeParams: (params) ->
     if utils.isArray params
       # Ensure we have enough parameters.
-      return false if params.length < @paramNames.length
+      return false if params.length < @requiredParams.length
 
       # Convert params from array into object.
       paramsHash = {}
-      for paramName, paramIndex in @paramNames
+      for paramName, paramIndex in @requiredParams
         paramsHash[paramName] = params[paramIndex]
 
       return false unless @testConstraints paramsHash
@@ -128,7 +144,7 @@ module.exports = class Route
   # Test if passed params hash matches current route.
   testParams: (params) ->
     # Ensure that params contains all the parameters needed.
-    for paramName in @paramNames
+    for paramName in @requiredParams
       return false if params[paramName] is undefined
 
     @testConstraints params
@@ -137,20 +153,45 @@ module.exports = class Route
   # uses to determine if the current url is a match.
   createRegExp: ->
     pattern = @pattern
-      # Escape magic characters.
-      .replace(escapeRegExp, '\\$&')
-      # Replace named parameters, collecting their names.
-      .replace(/(?::|\*)(\w+)/g, @addParamName)
+
+    # Escape magic characters.
+    pattern = pattern.replace(escapeRegExp, '\\$&')
+
+    # Keep accurate back-reference indices in allParams.
+    # Eg. Matching the regex returns arrays like [a, undefined, c]
+    #  and each item needs to be matched to the correct
+    #  named parameter via its position in the array.
+    @replaceParams pattern, (match, param) =>
+      @allParams.push param
+
+    # Process optional route portions.
+    pattern = pattern.replace optionalRegExp, @parseOptionalPortion
+
+    # Process remaining required params.
+    pattern = @replaceParams pattern, (match, param) =>
+      @requiredParams.push param
+      @paramCapturePattern match
 
     # Create the actual regular expression, match until the end of the URL,
     # trailing slash or the begin of query string.
     @regExp = ///^#{pattern}(?=\?|\/?$|\/\?)///
 
-  addParamName: (match, paramName) =>
-    # Save parameter name.
-    @paramNames.push paramName
-    # Replace with a character class.
-    if match.charAt(0) is ':'
+  parseOptionalPortion: (match, optionalPortion) =>
+    # Extract and replace params.
+    portion = @replaceParams optionalPortion, (match, param) =>
+      @optionalParams.push param
+      # Replace the match (eg. :foo) with capturing groups.
+      @paramCapturePattern match
+
+    # Replace the optional portion with a non-capturing and optional group.
+    "(?:#{portion})?"
+
+  replaceParams: (s, callback) =>
+    # Parse :foo and *bar, replacing via callback.
+    s.replace paramRegExp, callback
+
+  paramCapturePattern: (param) ->
+    if param.charAt(0) is ':'
       # Regexp for :foo.
       '([^\/\?]+)'
     else
@@ -204,9 +245,9 @@ module.exports = class Route
     # Apply the regular expression.
     matches = @regExp.exec path
 
-    # Fill the hash using the paramNames and the matches.
+    # Fill the hash using param names and the matches.
     for match, index in matches.slice(1)
-      paramName = if @paramNames.length then @paramNames[index] else index
+      paramName = if @allParams.length then @allParams[index] else index
       params[paramName] = match
 
     params

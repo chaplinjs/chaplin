@@ -217,6 +217,14 @@ define [
         expect(passedRoute.controller).to.be 'controller'
         expect(passedRoute.action).to.be 'action'
 
+      it 'should handle optional parameters', ->
+        router.match 'items(/missing/:missing)(/present/:present)', 'controller#action'
+        router.route url: '/items/present/1'
+        expect(passedRoute).to.be.an 'object'
+        expect(passedRoute.path).to.be 'items/present/1'
+        expect(passedRoute.controller).to.be 'controller'
+        expect(passedRoute.action).to.be 'action'
+
     describe 'Passing the Parameters', ->
 
       it 'should extract named parameters from URL', ->
@@ -262,6 +270,43 @@ define [
         expect(passedParams).to.be.an 'object'
         expect(passedParams.one).to.be '123-foo/456-bar/'
         expect(passedParams.two).to.be '789-qux'
+
+      it 'should match optional named parameters', ->
+        router.match 'items/:type(/page/:page)(/min/:min/max/:max)', 'null#null'
+
+        router.route url: '/items/clothing'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.type).to.be 'clothing'
+        expect(passedParams.page).to.be undefined
+        expect(passedParams.min).to.be undefined
+        expect(passedParams.max).to.be undefined
+
+        router.route url: '/items/clothing/page/5'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.type).to.be 'clothing'
+        expect(passedParams.page).to.be '5'
+        expect(passedParams.min).to.be undefined
+        expect(passedParams.max).to.be undefined
+
+        router.route url: '/items/clothing/min/10/max/20'
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.type).to.be 'clothing'
+        expect(passedParams.page).to.be undefined
+        expect(passedParams.min).to.be '10'
+        expect(passedParams.max).to.be '20'
+
+      it 'should match optional splat parameters', ->
+        router.match 'items(/*slug)', 'null#null'
+
+        routed = router.route url: '/items'
+        expect(routed).to.be true
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.slug).to.be undefined
+
+        routed = router.route url: '/items/5-boots'
+        expect(routed).to.be true
+        expect(passedParams).to.be.an 'object'
+        expect(passedParams.slug).to.be '5-boots'
 
       it 'should pass fixed parameters', ->
         router.match 'fixed-params/:id', 'null#null',
@@ -349,6 +394,44 @@ define [
         route = new Route 'params/:two/:one/*other/:another', 'null', 'null'
         url = route.reverse [32, 156, 'someone/out/there', 'meh']
         expect(url).to.be 'params/32/156/someone/out/there/meh'
+
+      it 'should allow for reversing optional route params', ->
+        route = new Route 'items/:id(/page/:page)(/sort/:sort)', 'null', 'null'
+        url = route.reverse id: 5, page: 2, sort: 'price'
+        expect(url).to.be 'items/5/page/2/sort/price'
+
+        route = new Route 'items/:id(/page/:page/sort/:sort)', 'null', 'null'
+        url = route.reverse id: 5, page: 2, sort: 'price'
+        expect(url).to.be 'items/5/page/2/sort/price'
+
+      it 'should allow for reversing a route instance with optional splats', ->
+        route = new Route 'items/:id(-*slug)', 'null', 'null'
+        url = route.reverse id: 5, slug: "shirt"
+        expect(url).to.be 'items/5-shirt'
+
+      it 'should handle partial fulfillment of optional portions', ->
+        route = new Route 'items/:id(/page/:page)(/sort/:sort)', 'null', 'null'
+        url = route.reverse id: 5, page: 2
+        expect(url).to.be 'items/5/page/2'
+
+        route = new Route 'items/:id(/page/:page/sort/:sort)', 'null', 'null'
+        url = route.reverse id: 5, page: 2
+        expect(url).to.be 'items/5'
+
+      it 'should handle partial fulfillment of optional splats', ->
+        route = new Route 'items/:id(-*slug)(/:section)', 'null', 'null'
+        url = route.reverse id: 5, section: 'comments'
+        expect(url).to.be 'items/5/comments'
+        url = route.reverse id: 5, slug: 'boots'
+        expect(url).to.be 'items/5-boots'
+        url = route.reverse id: 5, slug: 'boots', section: 'comments'
+        expect(url).to.be 'items/5-boots/comments'
+
+        route = new Route 'items/:id(-*slug/:desc)', 'null', 'null'
+        url = route.reverse id: 5, slug: 'shirt'
+        expect(url).to.be 'items/5'
+        url = route.reverse id: 5, slug: 'shirt', desc: 'brand new'
+        expect(url).to.be 'items/5-shirt/brand new'
 
       it 'should reject reversals when there are not enough params', ->
         route = new Route 'params/:one/:two', 'null', 'null'
