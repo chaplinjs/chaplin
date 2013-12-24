@@ -640,17 +640,39 @@ define [
       it 'should forward changeURL routing options to Backbone', ->
         path = 'router-changeurl-options'
         changeURL = sinon.spy router, 'changeURL'
-        navigate = sinon.stub Backbone.history, 'navigate'
+        navigate = sinon.spy Backbone.history, 'navigate'
+        options = some: 'stuff', changeURL: true
 
-        options = some: 'stuff'
-        mediator.execute 'router:changeURL', path, options
+        router.changeURL null, null, {path}, options
         expect(navigate).was.calledWith path,
           replace: false, trigger: false
 
-        options = replace: true, trigger: true, some: 'stuff'
-        mediator.execute 'router:changeURL', path, options
-        expect(Backbone.history.navigate).was.calledWith path,
-          replace: true, trigger: true
+        forwarding = replace: true, trigger: true
+        router.changeURL null, null, {path}, create(options, forwarding)
+        expect(navigate).was.calledWith path, forwarding
+
+        changeURL.restore()
+        navigate.restore()
+
+      it 'should not adjust the URL if not desired', ->
+        path = 'router-changeurl-false'
+        changeURL = sinon.spy router, 'changeURL'
+        navigate = sinon.spy Backbone.history, 'navigate'
+
+        router.changeURL null, null, {path}, changeURL: false
+        expect(navigate).was.notCalled()
+
+        changeURL.restore()
+        navigate.restore()
+
+      it 'should add the query string when adjusting the URL', ->
+        path = 'my-little-path'
+        query = 'foo=bar'
+        changeURL = sinon.spy router, 'changeURL'
+        navigate = sinon.spy Backbone.history, 'navigate'
+
+        router.changeURL null, null, {path, query}, changeURL: true
+        expect(navigate).was.calledWith "#{path}?#{query}"
 
         changeURL.restore()
         navigate.restore()

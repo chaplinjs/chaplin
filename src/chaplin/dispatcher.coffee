@@ -60,10 +60,6 @@ module.exports = class Dispatcher
     # null or undefined query parameters are equivalent to an empty hash
     options.query = {} if not options.query?
 
-    # Whether to update the URL after controller startup.
-    # Default to true unless explicitly set to false.
-    options.changeURL = true unless options.changeURL is false
-
     # Whether to force the controller startup even
     # if current and new controllers and params match
     # Default to false unless explicitly set to true.
@@ -133,9 +129,6 @@ module.exports = class Dispatcher
     # Stop if the action triggered a redirect.
     return if controller.redirected
 
-    # Adjust the URL.
-    @adjustURL route, params, options
-
     # We're done! Spread the word!
     @publishEvent 'dispatcher:dispatch', @currentController,
       params, route, options
@@ -169,14 +162,6 @@ module.exports = class Dispatcher
       promise.then executeAction
     else
       executeAction()
-
-  # Change the URL to the new controller using the router.
-  adjustURL: (route, params, options) ->
-    return unless route.path?
-
-    # Tell the router to actually change the current URL.
-    url = route.path + if route.query then "?#{route.query}" else ""
-    mediator.execute 'router:changeURL', url, options if options.changeURL
 
   # Disposal
   # --------
