@@ -86,4 +86,48 @@ class History extends Backbone.History
 
     @loadUrl() if not @options.silent
 
+  navigate: (fragment='', options) ->
+    return false unless Backbone.History.started
+
+    options = {trigger: options} if not options or options is true
+
+    fragment = @getFragment fragment
+    url = @root + fragment
+
+    # Remove fragment replace, coz query string different mean difference page
+    # Strip the fragment of the query and hash for matching.
+    # fragment = fragment.replace(pathStripper, '')
+
+    return false if @fragment is fragment
+    @fragment = fragment
+
+    # Don't include a trailing slash on the root.
+    if fragment.length is 0 and url isnt '/'
+      url = url.slice 0, -1
+
+    # If pushState is available, we use it to set the fragment as a real URL.
+    if @_hasPushState
+      historyMethod = if options.replace then 'replaceState' else 'pushState'
+      @history[historyMethod] {}, document.title, url
+
+    # If hash changes haven't been explicitly disabled, update the hash
+    # fragment to store history.
+    else if @_wantsHashChange
+      @_updateHash @location, fragment, options.replace
+      # iframe
+      isSameFragment = fragment isnt @getFragment @getHash(@iframe)
+      if @iframe? and isSameFragment
+        # Opening and closing the iframe tricks IE7 and earlier to push a
+        # history entry on hash-tag change.  When replace is true, we don't
+        @iframe.document.open().close() unless options.replace
+        @_updateHash @iframe.location, fragment, options.replace
+
+    # If you've told us that you explicitly don't want fallback hashchange-
+    # based history, then `navigate` becomes a page refresh.
+    else
+      return @location.assign url
+
+    if options.trigger
+      return @loadUrl(fragment)
+
 module.exports = if Backbone.$ then History else Backbone.History
