@@ -34,9 +34,10 @@ module.exports = class Router # This class does not extend Backbone.Router.
     @subscribeEvent '!router:routeByName', @oldEventError
     @subscribeEvent '!router:changeURL', @oldURLEventError
 
+    @subscribeEvent 'dispatcher:dispatch', @changeURL
+
     mediator.setHandler 'router:route', @route, this
     mediator.setHandler 'router:reverse', @reverse, this
-    mediator.setHandler 'router:changeURL', @changeURL, this
 
     @createHistory()
 
@@ -45,8 +46,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
   Use `Chaplin.utils.redirectTo`'
 
   oldURLEventError: ->
-    throw new Error '!router:changeURL event was removed.
-  Use mediator.execute("router:changeURL")'
+    throw new Error '!router:changeURL event was removed.'
 
   # Create a Backbone.History instance.
   createHistory: ->
@@ -172,7 +172,11 @@ module.exports = class Router # This class does not extend Backbone.Router.
     throw new Error 'Router#reverse: invalid route specified'
 
   # Change the current URL, add a history entry.
-  changeURL: (url, options = {}) ->
+  changeURL: (controller, params, route, options) ->
+    return unless route.path? and options.changeURL
+
+    url = route.path + if route.query then "?#{route.query}" else ""
+
     navigateOptions =
       # Do not trigger or replace per default.
       trigger: options.trigger is true

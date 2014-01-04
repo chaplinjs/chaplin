@@ -16,7 +16,6 @@ define [
     # Default options which are added on first dispatching
 
     addedOptions =
-      changeURL: true
       forceStartup: false
 
     # Test controllers
@@ -85,7 +84,6 @@ define [
     # Register before/after handlers
 
     beforeEach ->
-      mediator.setHandler 'router:changeURL', ->
       # Create a fresh Dispatcher instance for each test
       dispatcher = new Dispatcher()
       refreshParams()
@@ -94,7 +92,6 @@ define [
       if dispatcher
         dispatcher.dispose()
         dispatcher = null
-      mediator.removeHandlers ['router:changeURL']
 
     # The Tests
 
@@ -341,58 +338,6 @@ define [
           expect(passedOptions).to.eql stdOptions
 
         mediator.unsubscribe 'dispatcher:dispatch', dispatch
-
-        done()
-
-    it 'should adjust the URL and pass route options', (done) ->
-      spy = sinon.spy()
-      mediator.setHandler 'router:changeURL', spy
-
-      path = 'my-little-path'
-      routeA = create route1, {path}
-      options = {}
-      publishMatch routeA, params, options
-
-      loadTest1Controller ->
-        expect(spy).was.calledOnce()
-        [passedPath, passedOptions] = spy.firstCall.args
-        expect(passedPath).to.be path
-        expect(passedOptions).to.eql stdOptions
-
-        mediator.removeHandlers ['router:changeURL']
-
-        done()
-
-    it 'should not adjust the URL if not desired', (done) ->
-      spy = sinon.spy()
-      mediator.setHandler 'router:changeURL', spy
-
-      publishMatch route1, params, changeURL: false
-
-      loadTest1Controller ->
-        expect(spy).was.notCalled()
-
-        mediator.removeHandlers ['router:changeURL']
-
-        done()
-
-    it 'should add the query string when adjusting the URL', (done) ->
-      spy = sinon.spy()
-      mediator.setHandler 'router:changeURL', spy
-
-      path = 'my-little-path'
-      query = 'foo=bar'
-
-      routeB = create route1, {path, query}
-      publishMatch routeB, params, options
-
-      loadTest1Controller ->
-        expect(spy).was.calledOnce()
-        [passedPath, passedOptions]  = spy.firstCall.args
-        expect(passedPath).to.be "#{path}?#{query}"
-        expect(passedOptions).to.eql stdOptions
-
-        mediator.removeHandlers ['router:changeURL']
 
         done()
 
