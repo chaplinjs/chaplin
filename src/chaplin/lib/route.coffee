@@ -18,6 +18,15 @@ module.exports = class Route
   optionalRegExp = /\((.*?)\)/g
   paramRegExp = /(?::|\*)(\w+)/g
 
+  # Add or remove trailing slash from path according to trailing option.
+  processTrailingSlash = (path, trailing) ->
+    switch trailing
+      when yes
+        path += '/' unless path[-1..] is '/'
+      when no
+        path = path[...-1] if path[-1..] is '/'
+    path
+
   # Create a route for a URL pattern and a controller action
   # e.g. new Route '/users/:id', 'users', 'show', { some: 'options' }
   constructor: (@pattern, @controller, @action, options) ->
@@ -93,12 +102,8 @@ module.exports = class Route
       else
         portion
 
-    # Add or remove trailing slash according to options
-    switch @options.trailing
-      when yes
-        url += '/' unless url[-1..] is '/'
-      when no
-        url = url[...-1] if url[-1..] is '/'
+    # Add or remove trailing slash according to the Route options.
+    url = processTrailingSlash url, @options.trailing
 
     return url unless query
 
@@ -174,7 +179,7 @@ module.exports = class Route
 
     # Create the actual regular expression, match until the end of the URL,
     # trailing slash or the begin of query string.
-    @regExp = ///^#{pattern}(?=\?|\/?$|\/\?)///
+    @regExp = ///^#{pattern}(?=\/?(\?|$))///
 
   parseOptionalPortion: (match, optionalPortion) =>
     # Extract and replace params.
@@ -228,6 +233,7 @@ module.exports = class Route
       else
         options.query = utils.queryParams.parse query
       params = @extractParams path
+      path = processTrailingSlash path, @options.trailing
 
     actionParams = _.extend {}, params, @options.params
 

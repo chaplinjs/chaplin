@@ -6,9 +6,6 @@ mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
-# Cached regex for removing a trailing slash.
-trailingSlash = /(\/$|\/(\?))/
-
 module.exports = class Dispatcher
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
@@ -35,7 +32,6 @@ module.exports = class Dispatcher
     @settings = _.defaults options,
       controllerPath: 'controllers/'
       controllerSuffix: '_controller'
-      trailing: no
 
     # Listen to global events.
     @subscribeEvent 'router:match', @dispatch
@@ -68,13 +64,6 @@ module.exports = class Dispatcher
     # if current and new controllers and params match
     # Default to false unless explicitly set to true.
     options.forceStartup = false unless options.forceStartup is true
-
-    if trailingSlash.test route.path
-      if @settings.trailing is no
-        route.path = route.path.replace trailingSlash, '$2'
-    else
-      if @settings.trailing is yes
-        route.path += '/'
 
     # Stop if the desired controller/action is already active
     # with the same params.

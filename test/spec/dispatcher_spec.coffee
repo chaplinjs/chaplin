@@ -98,56 +98,6 @@ define [
 
     # The Tests
 
-    it 'should add the trailing slash to route path', (done) ->
-      controllerLoaded = sinon.spy dispatcher, 'controllerLoaded'
-      dispatcher.settings.trailing = yes
-
-      publishMatch route1, params, options
-
-      loadTest1Controller ->
-        [passedRoute] = controllerLoaded.firstCall.args
-
-        expect(controllerLoaded).was.calledOnce()
-        expect(passedRoute.path).to.match /\/$/
-
-        controllerLoaded.restore()
-
-        done()
-
-    it 'should remove the trailing slash from route path', (done) ->
-      controllerLoaded = sinon.spy dispatcher, 'controllerLoaded'
-      dispatcher.settings.trailing = no
-
-      route1.path += '/'
-      publishMatch route1, params, options
-
-      loadTest1Controller ->
-        [passedRoute] = controllerLoaded.firstCall.args
-
-        expect(controllerLoaded).was.calledOnce()
-        expect(passedRoute.path).not.to.match /\/$/
-
-        controllerLoaded.restore()
-
-        done()
-
-    it 'should leave the trailing slash in the route path', (done) ->
-      controllerLoaded = sinon.spy dispatcher, 'controllerLoaded'
-      dispatcher.settings.trailing = null
-
-      route1.path += '/'
-      publishMatch route1, params, options
-
-      loadTest1Controller ->
-        [passedRoute] = controllerLoaded.firstCall.args
-
-        expect(controllerLoaded).was.calledOnce()
-        expect(passedRoute.path).to.match /\/$/
-
-        controllerLoaded.restore()
-
-        done()
-
     it 'should dispatch routes to controller actions', (done) ->
       proto = Test1Controller.prototype
       initialize = sinon.spy proto, 'initialize'

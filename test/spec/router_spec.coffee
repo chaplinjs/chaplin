@@ -109,6 +109,21 @@ define [
           router.match 'url', {}
         ).to.throwError()
 
+      it 'should pass trailing option from Router by default', ->
+        url = 'url'
+        target = 'c#a'
+
+        route = router.match url, target
+        expect(route.options.trailing).to.be router.options.trailing
+
+        router.options.trailing = true
+
+        route = router.match url, target
+        expect(route.options.trailing).to.be true
+
+        route = router.match url, target, trailing: null
+        expect(route.options.trailing).to.be null
+
     describe 'Routing', ->
 
       it 'should fire a router:match event when a route matches', ->
@@ -206,6 +221,39 @@ define [
         expect(passedParams.two).to.be undefined
 
         mediator.unsubscribe 'router:match', spy
+
+      it 'should identically match URLs that differ only by trailing slash', ->
+        router.match 'url', 'null#null'
+
+        routed = router.route url: 'url/'
+        expect(routed).to.be true
+
+        routed = router.route url: 'url/?'
+        expect(routed).to.be true
+
+        routed = router.route url: 'url/?key=val'
+        expect(routed).to.be true
+
+      it 'should leave trailing slash accordingly to current options', ->
+        router.match 'url', 'null#null', trailing: null
+        routed = router.route url: 'url/'
+        expect(routed).to.be true
+        expect(passedRoute).to.be.an 'object'
+        expect(passedRoute.path).to.be 'url/'
+
+      it 'should remove trailing slash accordingly to current options', ->
+        router.match 'url', 'null#null', trailing: false
+        routed = router.route url: 'url/'
+        expect(routed).to.be true
+        expect(passedRoute).to.be.an 'object'
+        expect(passedRoute.path).to.be 'url'
+
+      it 'should add trailing slash accordingly to current options', ->
+        router.match 'url', 'null#null', trailing: true
+        routed = router.route url: 'url'
+        expect(routed).to.be true
+        expect(passedRoute).to.be.an 'object'
+        expect(passedRoute.path).to.be 'url/'
 
     describe 'Passing the Route', ->
 
@@ -439,6 +487,11 @@ define [
         expect(route.reverse one: 1).to.eql false
         expect(route.reverse two: 2).to.eql false
         expect(route.reverse()).to.eql false
+
+      it 'should add trailing slash accordingly to current options', ->
+        route = new Route 'params', 'null', 'null', trailing: true
+        url = route.reverse()
+        expect(url).to.be 'params/'
 
     describe 'Router reversing', ->
       register = ->
