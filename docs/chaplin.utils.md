@@ -16,6 +16,10 @@ Does a in-app redirect:
 
 In the past, `!route:route[byName]` event was used for this purpose.
 
+To use replaceState and overwrite the current URL in the history you can use the
+third options arg that is forwarded to Backbone's `router.navigate`, e.g.
+`redirectTo('messages#show', {id: 2}, {replace: true})`
+
 <h3 class="module-member" id="reverse">reverse(routeName[,...params])</h3>
 Returns the URL for a named route, appropriately filling in values given as `params`.
 
