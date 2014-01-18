@@ -582,7 +582,7 @@ define [
         promise = new Davy
 
         class AsyncBeforeActionController extends Controller
-          beforeAction: -> @compose 'a', -> promise
+          beforeAction: -> @reuse 'a', -> promise
           show: ->
 
         controllerName = 'async_before_action3'
