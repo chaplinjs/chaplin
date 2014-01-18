@@ -230,7 +230,7 @@ module.exports = class View extends Backbone.View
       return Backbone.View::delegateEvents.call this, events, true
     for key, value of events
       handler = if typeof value is 'function' then value else this[value]
-      throw new Error "Method '#{handler}' does not exist" unless handler
+      throw new Error "Method '#{value}' does not exist" unless handler
       match = key.match /^(\S+)\s*(.*)$/
       eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
