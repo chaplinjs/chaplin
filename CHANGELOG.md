@@ -1,3 +1,14 @@
+# Chaplin 0.13.0 (18 January 2013)
+* Renamed `Controller#compose` to `Controller#reuse`
+* Added `trailing` option for `Router` which will:
+    * When `false` (default), strip accident route slashes: `/users/` => `/users`
+    * When `true`, append all route slashes: `/users` => `/users/`
+    * When `null`, do nothing (like before): `/users` != `/users/`
+* Normalize URI handling with trailing slashes
+* Added support for optional `Route` params, like this: `/users/(:user)`
+* `route.previous` param of controller actions is now saved only once.
+* Fixed bug when last char was removed from query string
+
 # Chaplin 0.12.0 (10 December 2013)
 * Added support for Exoskeleton 0.6. Previous versions are now incompatible.
 * Removed `Delayer`. Use [separate Delayer package](https://github.com/chaplinjs/delayer)
