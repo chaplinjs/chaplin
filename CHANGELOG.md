@@ -1,3 +1,5 @@
+See [upgrading guide](http://docs.chaplinjs.org/upgrading.html) if you're using old chaplin version and want to upgrade.
+
 # Chaplin 0.13.0 (18 January 2013)
 * Renamed `Controller#compose` to `Controller#reuse`
 * Added `trailing` option for `Router` which will:
