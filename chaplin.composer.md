@@ -9,9 +9,9 @@ Chaplin: Composer
 
 Grants the ability for views (and related data) to be persisted beyond one controller action.
 
-If a view is composed in a controller action method it will be instantiated and rendered if the view has not been composed in the current or previous action methods.
+If a view is reused in a controller action method it will be instantiated and rendered if the view has not been reused in the current or previous action methods.
 
-If a view was composed in the previous action method and is not composed in the current action method, it will be disposed and removed from the DOM.
+If a view was reused in the previous action method and is not reused in the current action method, it will be disposed and removed from the DOM.
 
 ## Example
 
@@ -41,16 +41,16 @@ Header = require 'views/header'
 Footer = require 'views/footer'
 class SiteController extends Chaplin.Controller
   beforeAction: ->
-    # Compose the Site view, which is a simple 3-row stacked layout that
+    # Reuse the Site view, which is a simple 3-row stacked layout that
     # provides the header, footer, and body regions
-    @compose 'site', Site
+    @reuse 'site', Site
 
-    # Compose the Header view, which binds itself to whatever container
+    # Reuse the Header view, which binds itself to whatever container
     # is exposed in Site under the header region
-    @compose 'header', Header, region: 'header'
+    @reuse 'header', Header, region: 'header'
 
     # Likewise for the footer region
-    @compose 'footer', Footer, region: 'footer'
+    @reuse 'footer', Footer, region: 'footer'
 
 
 # controllers/index_controller.coffee
@@ -94,16 +94,16 @@ var Header = require('views/header');
 var Footer = require('views/footer');
 var SiteController = Chaplin.Controller.extend({
   beforeAction: function() {
-    // Compose the Site view, which is a simple 3-row stacked layout that
+    // Reuse the Site view, which is a simple 3-row stacked layout that
     // provides the header, footer, and body regions
-    this.compose('site', Site);
+    this.reuse('site', Site);
 
-    // Compose the Header view, which binds itself to whatever container
+    // Reuse the Header view, which binds itself to whatever container
     // is exposed in Site under the header region
-    this.compose('header', Header, {region: 'header'});
+    this.reuse('header', Header, {region: 'header'});
 
     // Likewise for the footer region
-    this.compose('footer', Footer, {region: 'footer'});
+    this.reuse('footer', Footer, {region: 'footer'});
   }
 });
 
@@ -156,29 +156,27 @@ route('login')
 
 ## Long form
 
-By default, when a controller requests a view to be composed, the composer checks if the view instance exists and the new options are the same as before. If that is true the view is destroyed and composed.
+By default, when a controller requests a view to be reused, the composer checks if the view instance exists and the new options are the same as before. If that is true the view is destroyed and reused.
 
-By default, the compose method only allows for composing views.
-
-The following example shows another way to use the compose method to allow for just about anything. The check method should return true when it wishes the composition to be disposed and the compose method to be called. The composer will track and ensure proper disposal of whatever is returned from the compose method (be it a view or an object with properties that have dispose methods).
+The following example shows another way to use the `compose` method to allow for just about anything. The check method should return true when it wishes the composition to be disposed and the `compose` method to be called. The composer will track and ensure proper disposal of whatever is returned from the compose method (be it a view or an object with properties that have dispose methods).
 
 ```coffeescript
-  @compose 'something-strange',
+  @reuse 'main-post',
     compose: ->
-      @model = new Model {id: 42}
-      @view = new View {@model}
+      @model = new Post {id: 42}
+      @view = new PostView {@model}
       @model.fetch()
 
     check: -> @model.id is 42
 ```
 
 ```javascript
-  this.compose('something-strange', {
+  this.reuse('main-post', {
     compose: function() {
-      this.model = new Model({id: 42});
-      this.view = new View({model: this.model});
+      this.model = new Post({id: 42});
+      this.view = new PostView({model: this.model});
       this.model.fetch();
-    }
+    },
 
     check: function() {return this.model.id === 42;}
   });

@@ -4,6 +4,9 @@ title: Upgrading guide
 Chaplin: Upgrading guide
 ---
 
+### Upgrading to 0.13
+* Replace `this.compose` in Controllers with `this.reuse`.
+
 ### Upgrading to 0.12
 * Replace all references to `Chaplin.helpers` with `Chaplin.utils`.
 * If you are using Delayer, make sure to include [separate Delayer package](https://github.com/chaplinjs/delayer) — it has been removed from Chaplin core.
