@@ -179,7 +179,7 @@ module.exports = class Route
 
     # Create the actual regular expression, match until the end of the URL,
     # trailing slash or the begin of query string.
-    @regExp = ///^#{pattern}(?=\/?(?=\?|$))///
+    @regExp = ///^#{pattern}(?=\/*(?=\?|$))///
 
   parseOptionalPortion: (match, optionalPortion) =>
     # Extract and replace params.
