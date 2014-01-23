@@ -96,14 +96,14 @@ module.exports = class Route
         url = url.replace ///[:*]#{name}///g, value
 
     # Kill unfulfilled optional portions.
-    url = url.replace optionalRegExp, (match, portion) ->
+    raw = url.replace optionalRegExp, (match, portion) ->
       if portion.match /[:*]/g
         ""
       else
         portion
 
     # Add or remove trailing slash according to the Route options.
-    url = processTrailingSlash url, @options.trailing
+    url = processTrailingSlash raw, @options.trailing
 
     return url unless query
 
@@ -179,7 +179,7 @@ module.exports = class Route
 
     # Create the actual regular expression, match until the end of the URL,
     # trailing slash or the begin of query string.
-    @regExp = ///^#{pattern}(?=\/?(\?|$))///
+    @regExp = ///^#{pattern}(?=\/?(?=\?|$))///
 
   parseOptionalPortion: (match, optionalPortion) =>
     # Extract and replace params.

@@ -108,7 +108,7 @@ define [
           expect(spy.firstCall.thisValue).to.be.a Test1Controller
           [passedParams, passedRoute, passedOptions] = spy.firstCall.args
           expect(passedParams).to.eql params
-          expect(passedRoute).to.eql create(route1, previous: {})
+          expect(passedRoute).to.eql route1
           expect(passedOptions).to.eql stdOptions
 
         initialize.restore()
@@ -332,9 +332,10 @@ define [
             if firstCall then 'test1' else 'test2'
           )
           expect(passedRoute.action).to.be 'show'
-          expect(passedRoute.previous.controller).to.be(
-            if firstCall then undefined else 'test1'
-          )
+          if firstCall
+            expect(passedRoute.previous).to.be undefined
+          else
+            expect(passedRoute.previous.controller).to.be('test1')
           expect(passedOptions).to.eql stdOptions
 
         mediator.unsubscribe 'dispatcher:dispatch', dispatch
@@ -505,7 +506,7 @@ define [
           expect(action).was.calledOnce()
           [passedParams, passedRoute, passedOptions] = action.firstCall.args
           expect(passedParams).to.eql create(params, newParam: 'foo')
-          expect(passedRoute).to.eql create(route, previous: {})
+          expect(passedRoute).to.eql create(route)
           expect(passedOptions).to.eql create(stdOptions, newOption: 'bar')
 
           done()

@@ -88,11 +88,12 @@ module.exports = class Dispatcher
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
-    @nextPreviousRoute = @currentRoute
-    previous = _.extend {}, @nextPreviousRoute
-    previous.params = @currentParams if @currentParams?
-    delete previous.previous if previous.previous
-    @nextCurrentRoute = _.extend {}, route, {previous}
+    if @nextPreviousRoute = @currentRoute
+      previous = _.extend {}, @nextPreviousRoute
+      previous.params = @currentParams if @currentParams?
+      delete previous.previous if previous.previous
+      prev = {previous}
+    @nextCurrentRoute = _.extend {}, route, prev
 
     controller = new Controller params, @nextCurrentRoute, options
     @executeBeforeAction controller, @nextCurrentRoute, params, options
