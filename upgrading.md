@@ -4,7 +4,7 @@ title: Upgrading guide
 Chaplin: Upgrading guide
 ---
 
-### Upgrading to 0.13
+### Upgrading to 1.0 (0.13)
 * Replace `this.compose` in Controllers with `this.reuse`.
 
 ### Upgrading to 0.12
