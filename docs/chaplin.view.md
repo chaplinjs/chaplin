@@ -71,7 +71,7 @@ if using Handlebars
 
 ```coffeescript
 getTemplateFunction: ->
-  Handlebars.compile @template
+  Handlebars.compile do @template
 ```
 ```javascript
 getTemplateFunction: function() {
