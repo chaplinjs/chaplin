@@ -46,6 +46,8 @@ class History extends Backbone.History
     @_wantsPushState  = Boolean @options.pushState
     @_hasPushState    = Boolean (@options.pushState and @history and @history.pushState)
     fragment          = @getFragment()
+    routeStripper     = @options.routeStripper ? routeStripper
+    rootStripper      = @options.rootStripper ? rootStripper
 
     # Normalize root to always include a leading and trailing slash.
     @root = ('/' + @root + '/').replace rootStripper, '/'
