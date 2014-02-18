@@ -519,6 +519,10 @@ define [
 
         expect(-> router.reverse 'missing', one: 145).to.throwError()
 
+      it 'should report the given criteria if reversal fails', ->
+        register()
+        expect(-> router.reverse 'missing').to.throwError(/"missing"/)
+
       it 'should allow for reversing a route by its controller', ->
         register()
         url = router.reverse controller: 'null'
