@@ -165,8 +165,7 @@ module.exports = class CollectionView extends View
 
   # Selector which identifies child elements belonging to collection
   # If empty, all children of $list are considered.
-  # Not null, because of Zepto bug https://github.com/madrobby/zepto/pull/768.
-  itemSelector: undefined
+  itemSelector: null
 
   # Filtering
   # ---------
