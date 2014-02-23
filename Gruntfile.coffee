@@ -7,6 +7,7 @@ module.exports = (grunt) ->
   # Package
   # =======
   pkg = require './package.json'
+  componentsFolder = 'bower_components'
 
   # Modules
   # =======
@@ -47,7 +48,7 @@ module.exports = (grunt) ->
     clean:
       build: 'build'
       temp: 'temp'
-      components: 'components'
+      components: componentsFolder
       test: ['test/temp*', 'test/coverage']
 
     # Compilation
@@ -121,7 +122,7 @@ module.exports = (grunt) ->
               version: pkg.version,
               main: 'chaplin.js',
               scripts: ['chaplin.js'],
-              dependencies: { 'components/backbone': '1.0.0' }
+              dependencies: { '#{componentsFolder}/backbone': '1.0.0' }
             }
           },
           {
@@ -316,7 +317,7 @@ module.exports = (grunt) ->
     bower:
       install:
         options:
-          targetDir: './test/bower_components'
+          targetDir: './test/'+componentsFolder
           cleanup: true
 
     # Test runner
