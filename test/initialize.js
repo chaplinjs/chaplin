@@ -13,15 +13,15 @@ var match = window.location.search.match(/type=([-\w]+)/);
 var testType = window.testType || (match ? match[1] : 'backbone');
 
 var addDeps = function() {
-  paths.underscore = '../'+componentsFolder+'/lodash/lodash.compat';
-  paths.jquery = '../'+componentsFolder+'/jquery/jquery';
+  paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
+  paths.jquery = '../' + componentsFolder + '/jquery/jquery';
 };
 if (testType === 'backbone') {
-  paths.backbone = '../'+componentsFolder+'/backbone/backbone'
+  paths.backbone = '../' + componentsFolder + '/backbone/backbone'
   addDeps()
 } else {
   if (testType === 'deps') addDeps();
-  paths.backbone = '../'+componentsFolder+'/exoskeleton/exoskeleton'
+  paths.backbone = '../' + componentsFolder + '/exoskeleton/exoskeleton'
 }
 
 var config = {

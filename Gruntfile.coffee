@@ -122,7 +122,7 @@ module.exports = (grunt) ->
               version: pkg.version,
               main: 'chaplin.js',
               scripts: ['chaplin.js'],
-              dependencies: { '#{componentsFolder}/backbone': '1.0.0' }
+              dependencies: (obj = {}; obj["#{ componentsFolder }/backbone"] = '1.0.0'; obj)
             }
           },
           {
@@ -317,7 +317,7 @@ module.exports = (grunt) ->
     bower:
       install:
         options:
-          targetDir: './test/'+componentsFolder
+          targetDir: "./test/#{ componentsFolder }"
           cleanup: true
 
     # Test runner
