@@ -123,15 +123,15 @@
 
         var routerBench = suiteBench({
           object: function() {
-            Chaplin.helpers.reverse('null#a', {four: 1});
+            Chaplin.utils.reverse('null#a', {four: 1});
           },
           list: function() {
-            Chaplin.helpers.reverse('null#a', [1]);
+            Chaplin.utils.reverse('null#a', [1]);
           }
         });
 
         collectionBench();
-        // routerBench.run({async: true});
+        routerBench.run({async: true});
       });
     </script>
   </head>

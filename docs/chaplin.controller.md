@@ -14,7 +14,7 @@ Adjusts document title to `subtitle - title`. A title template can be set when i
 
 <h3 class="module-member" id="redirectTo">redirectTo(params, options)</h3>
 
-Simple proxy to `Chaplin.helpers.redirectTo` that also does `this.redirected = true;`. See [`Chaplin.helpers.redirectTo`](./chaplin.helpers.html#redirectTo) for details.
+Simple proxy to `Chaplin.utils.redirectTo` that also does `this.redirected = true;`. See [`Chaplin.utils.redirectTo`](./chaplin.utils.html#redirectTo) for details.
 
 <h3 class="module-member" id="dispose">dispose()</h3>
 

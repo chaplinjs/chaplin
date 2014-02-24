@@ -28,7 +28,6 @@
 * <a href="./chaplin.router.html" title="Replacement for `Backbone.Router`">Chaplin.Router</a>
 * <a href="./chaplin.support.html" title="Detection of browser features">Chaplin.support</a>
 * <a href="./chaplin.utils.html" title="Generic utility functions">Chaplin.utils</a>
-* <a href="./chaplin.helpers.html" title="Helpers with Chaplin integration">Chaplin.helpers</a>
 
 ### More
 * [Best practices and cookbook](https://github.com/chaplinjs/chaplin/wiki/)
