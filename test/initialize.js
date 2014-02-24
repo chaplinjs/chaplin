@@ -7,20 +7,21 @@ window.setInterval = timers.setInterval;
 window.clearInterval = timers.clearInterval;
 
 var paths = {};
+var componentsFolder = 'bower_components';
 
-var match = window.location.search.match(/type=([-\w]+)/)
+var match = window.location.search.match(/type=([-\w]+)/);
 var testType = window.testType || (match ? match[1] : 'backbone');
 
 var addDeps = function() {
-  paths.underscore = '../bower_components/lodash/lodash.compat';
-  paths.jquery = '../bower_components/jquery/jquery';
+  paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
+  paths.jquery = '../' + componentsFolder + '/jquery/jquery';
 };
 if (testType === 'backbone') {
-  paths.backbone = '../bower_components/backbone/backbone'
+  paths.backbone = '../' + componentsFolder + '/backbone/backbone'
   addDeps()
 } else {
   if (testType === 'deps') addDeps();
-  paths.backbone = '../bower_components/exoskeleton/exoskeleton'
+  paths.backbone = '../' + componentsFolder + '/exoskeleton/exoskeleton'
 }
 
 var config = {
