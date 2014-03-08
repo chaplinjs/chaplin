@@ -113,12 +113,12 @@ utils.upcase('AIR');        // 'AIR'
 
 Looks at an event object `event` to determine if the **shift**, **alt**, **ctrl**, or **meta** keys were pressed. Useful in link click handling (i.e. if you need ctrl-click or shift-click to open the link in a new window).
 
-<h3 class="module-member" id="queryParams.stringify">queryParams.stringify(object)</h3>
+<h3 class="module-member" id="querystring.stringify">querystring.stringify(object)</h3>
 * **Object object**
 
 Returns a query string from a hash.
 
-<h3 class="module-member" id="queryParams.parse">queryParams.parse(string)</h3>
+<h3 class="module-member" id="querystring.parse">querystring.parse(string)</h3>
 * **String string**
 
 Returns a hash with query parameters from a query string.

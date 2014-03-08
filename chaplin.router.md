@@ -82,16 +82,16 @@ The following properties of the `options` hash are recognized:
     For every constraint in the constraints object, there must be a corresponding named placeholder, and it must satisfy the constraint in order for the route to match.
     For example, if you have a constraints object with three constraints: x, y, and z, then the route will match if and only if it has named parameters :x, :y, and :z and they all satisfy their respective regex.
 
-* **name** (String): Named routes can be used when reverse-generating paths using `Chaplin.helpers.reverse` helper:
+* **name** (String): Named routes can be used when reverse-generating paths using `Chaplin.utils.reverse` helper:
 
     ```coffeescript
     match 'likes/:id', 'likes#show', name: 'like'
-    Chaplin.helpers.reverse 'like', id: 581  # => likes/581
+    Chaplin.utils.reverse 'like', id: 581  # => likes/581
     ```
 
     ```javascript
     match('likes/:id', 'likes#show', name: 'like'});
-    Chaplin.helpers.reverse('like', {id: 581});  // => likes/581
+    Chaplin.utils.reverse('like', {id: 581});  // => likes/581
     ```
     If no name is provided, the entry will automatically be named by the scheme `controller#action`, e.g. `likes#show`.
 
@@ -105,17 +105,17 @@ Route a given path manually. Returns a boolean after it has been matched against
   * **name**: name of a [named route](#match), can replace **controller** and **action**,
   * **params**: params hash.
 
-For routing from other modules, `Chaplin.helpers.redirectTo` can be used. All of the following would be valid use cases.
+For routing from other modules, `Chaplin.utils.redirectTo` can be used. All of the following would be valid use cases.
 
 ```coffeescript
-Chaplin.helpers.redirectTo 'messages#show', id: 80
-Chaplin.helpers.redirectTo controller: 'messages', action: 'show', params: {id: 80}
-Chaplin.helpers.redirectTo url: '/messages/80'
+Chaplin.utils.redirectTo 'messages#show', id: 80
+Chaplin.utils.redirectTo controller: 'messages', action: 'show', params: {id: 80}
+Chaplin.utils.redirectTo url: '/messages/80'
 ```
 ```javascript
-Chaplin.helpers.redirectTo('messages#show', {id: 80});
-Chaplin.helpers.redirectTo({controller: 'messages', action: 'show', params: {id: 80}});
-Chaplin.helpers.redirectTo({url: '/messages/80'});
+Chaplin.utils.redirectTo('messages#show', {id: 80});
+Chaplin.utils.redirectTo({controller: 'messages', action: 'show', params: {id: 80}});
+Chaplin.utils.redirectTo({url: '/messages/80'});
 ```
 
 <h3 class="module-member" id="changeURL">changeURL([url])</h3>

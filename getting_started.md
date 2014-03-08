@@ -15,11 +15,12 @@ The easiest way to start a Chaplin application is to download the boilerplate. I
 
 This is just the standard setup. You may substitute Underscore with [Lodash](http://lodash.com/docs), jQuery with [Zepto](http://zeptojs.com/) and RequireJS with different other AMD module loaders like [Curl](https://github.com/cujojs/curl).
 
-The boilerplate comes in three flavours:
+The boilerplate comes in four flavours:
 
 * [CoffeeScript code](https://github.com/chaplinjs/chaplin-boilerplate), if you develop your application in CoffeeScript
 * [Plain JavaScript code](https://github.com/chaplinjs/chaplin-boilerplate-plain), if you develop your application in normal JavaScript
 * [Brunch skeleton](https://github.com/paulmillr/brunch-with-chaplin), if you prefer using [Brunch](http://brunch.io) and synchronous common.js modules.
+* [Yo generator](https://github.com/ButuzGOL/generator-chaplinjs), that provides a functional boilerplate Chaplin app out of the box using JavaScript, Stylus and Ejs. You also get access to a number of sub-generators which can be used to easily create individual models, views, collections and so on.
 
 ## Hello World!
 

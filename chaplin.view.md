@@ -67,12 +67,26 @@ or if using templates in the DOM
 this.template = $('#comment_view_template').html();
 ```
 
-if using Handlebars
+if using pre-compiled Handlebars
+
+```coffeescript
+getTemplateFunction: ->
+  @template
+```
+
+```javascript
+getTemplateFunction: function() {
+  return this.template;
+}
+```
+
+if using non-pre-compiled Handlebars
 
 ```coffeescript
 getTemplateFunction: ->
   Handlebars.compile @template
 ```
+
 ```javascript
 getTemplateFunction: function() {
   return Handlebars.compile(this.template);
@@ -85,6 +99,7 @@ or if using underscore templates
 getTemplateFunction: ->
   _.template @template
 ```
+
 ```javascript
 getTemplateFunction: function() {
   return _.template(this.template);
