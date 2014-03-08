@@ -106,7 +106,7 @@ utils =
   # Query parameters Helpers
   # --------------
 
-  queryParams:
+  querystring:
 
     # Returns a query string from a hash
     stringify: (queryParams) ->
@@ -147,6 +147,9 @@ utils =
           params[field] = value
 
       params
+
+# Backwards-compat.
+utils.queryParams = utils.querystring
 
 # Finish
 # ------
