@@ -10,22 +10,29 @@ EventBroker = require 'chaplin/lib/event_broker'
 # Composer
 # --------
 
-# The sole job of the composer is to allow views to be 'composed'.
+# The job of the Composer is to save objects (typically models, collections or
+# views) so they might be reused by other controllers. The objects are wapped
+# in a Composition instance that has a create and check method.
 #
-# If the view has already been composed by a previous action then nothing
-# apart from registering the view as in use happens. Else, the view
-# is instantiated and passed the options that were passed in. If an action
-# is routed to where a view that was composed is not re-composed, the
+# The composer is the primary memory management mechanism in Chaplin
+# applications. Typically, all objects created in a controller are disposed
+# when another controller is created. The Composer allows to share objects
+# between controllers so they do not have to be re-created.
+#
+# If an object has already been created by a previous controller action,
+# the object is just marked as “in use”. If the object does not exist, an
+# instance is created using the constructor and the options that were passed
+# in. If an action is called that does not reuse a saved object, the object is
 # composed view is disposed.
 
-module.exports = class Composer
+class Composer
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend
 
   # Mixin an EventBroker
   _.extend @prototype, EventBroker
 
-  # The collection of composed compositions
+  # The collection of compositions
   compositions: null
 
   constructor: ->
@@ -36,118 +43,52 @@ module.exports = class Composer
     @compositions = {}
 
     # Subscribe to events.
-    mediator.setHandler 'composer:compose', @compose, this
+    mediator.setHandler 'composer:reuse', @reuse, this
+    mediator.setHandler 'composer:share', @share, this
     mediator.setHandler 'composer:retrieve', @retrieve, this
     @subscribeEvent 'dispatcher:dispatch', @cleanup
 
-  # Constructs a composition and composes into the active compositions.
-  # This function has several forms as described below:
-  #
-  # 1. compose('name', Class[, options])
-  #    Composes a class object. The options are passed to the class when
-  #    an instance is contructed and are further used to test if the
-  #    composition should be re-composed.
-  #
-  # 2. compose('name', function)
-  #    Composes a function that executes in the context of the controller;
-  #    do NOT bind the function context.
-  #
-  # 3. compose('name', options, function)
-  #    Composes a function that executes in the context of the controller;
-  #    do NOT bind the function context and is passed the options as a
-  #    parameter. The options are further used to test if the composition
-  #    should be recomposed.
-  #
-  # 4. compose('name', options)
-  #    Gives control over the composition process; the compose method of
-  #    the options hash is executed in place of the function of form (3) and
-  #    the check method is called (if present) to determine re-composition (
-  #    otherwise this is the same as form [3]).
-  #
-  # 5. compose('name', CompositionClass[, options])
-  #    Gives complete control over the composition process.
-  #
-  compose: (name, second, third) ->
-    # Normalize the arguments
-    # If the second parameter is a function we know it is (1) or (2).
-    if typeof second is 'function'
-      # This is form (1) or (5) with the optional options hash if the third
-      # is an obj or the second parameter's prototype has a dispose method
-      if third or second::dispose
-        # If the class is a Composition class then it is form (5).
-        if second.prototype instanceof Composition
-          return @_compose name, composition: second, options: third
-        else
-          return @_compose name, options: third, compose: ->
-            # The compose method here just constructs the class.
-            @item = new second @options
+  # Public handler methods
+  # ----------------------
 
-            # Render this item if it has a render method and it either
-            # doesn't have an autoRender property or that autoRender
-            # property is false
-            autoRender = @item.autoRender
-            disabledAutoRender = autoRender is undefined or not autoRender
-            if disabledAutoRender and typeof @item.render is 'function'
-              @item.render()
+  # Retrieves, checks and (re)creates a composition.
+  # Shares the composition with the next controller.
+  reuse: (name, func, options) ->
+    composition = @getOrCreateComposition name, func, options
+    composition.object
 
-      # This is form (2).
-      return @_compose name, compose: second
-
-    # If the third parameter exists and is a function this is (3).
-    if typeof third is 'function'
-      return @_compose name, compose: third, options: second
-
-    # This must be form (4).
-    return @_compose name, second
-
-  _compose: (name, options) ->
-    # Assert for programmer errors
-    if typeof options.compose isnt 'function' and not options.composition?
-      throw new Error 'Composer#compose was used incorrectly'
-
-    if options.composition?
-      # Use the passed composition directly
-      composition = new options.composition options.options
-    else
-      # Create the composition and apply the methods (if available)
-      composition = new Composition options.options
-      composition.compose = options.compose
-      composition.check = options.check if options.check
-
-    # Check for an existing composition
-    current = @compositions[name]
-
-    isPromise = false
-
-    # Apply the check method
-    if current and current.check composition.options
-      # Mark the current composition as not stale
-      current.stale false
-    else
-      # Remove the current composition and apply this one
-      current.dispose() if current
-      returned = composition.compose composition.options
-      isPromise = (typeof returned?.then is 'function')
-      composition.stale false
+  # Shares an object with the next controller.
+  # If only a name is given, marks an existing composition as non-stale.
+  # If an object is given, (re)creates a composition containing the object.
+  share: (name, object) ->
+    composition = @getComposition name
+    if object?
+      # (Re)create the composition.
+      composition.dispose() if composition
+      composition = new Composition()
+      # Don’t call `create`, just assign the object.
+      composition.object = object
       @compositions[name] = composition
-
-    # Return the active composition
-    if isPromise
-      returned
     else
-      @compositions[name].item
+      # Mark composition as non-stale.
+      unless composition
+        throw new Error "Composer#share: Composition #{name} not found"
+      composition.stale false
+    return
 
-  # Retrieves an active composition using the compose method.
-  retrieve: (name) ->
-    active = @compositions[name]
-    (if active and not active.stale() then active.item else undefined)
+  # Retrieves non-stale composition. If options are given, check if the
+  # composition can be reused.
+  retrieve: (name, options) ->
+    composition = @getComposition name
+    if object? and not composition.check(options)
+      return undefined
+    composition.object
 
-  # Declare all compositions as stale and remove all that were previously
-  # marked stale without being re-composed.
+  # Disposes all stale compositions, marks non-stale as stale.
   cleanup: ->
-    # Action method is done; perform post-action clean up
-    # Dispose and delete all no-longer-active compositions.
-    # Declare all active compositions as de-activated (eg. to be removed
+    # This method is called after the controller action.
+    # Dispose and delete all stale compositions.
+    # Mark all active compositions as stale (eg. to be removed
     # on the next controller startup unless they are re-composed).
     for name, composition of @compositions
       if composition.stale()
@@ -155,9 +96,92 @@ module.exports = class Composer
         delete @compositions[name]
       else
         composition.stale true
-
-    # Return nothing.
     return
+
+  # Internal helpers
+  # ----------------
+
+  # Checks if a composition exists and can be reused,
+  # otherwise create a new one.
+  getOrCreateComposition: (name, func, options) ->
+    composition = @getComposition()
+    if composition
+      # Check if the composition can be reused.
+      if composition.check(options)
+        # Mark existing composition as non-stale.
+        composition.stale false
+      else
+        # Check failed, dispose existing.
+        composition.dispose()
+        composition = null
+    unless composition
+      # Create from scratch.
+      composition = @createComposition name, func, options
+    composition
+
+  # Returns a non-stale composition.
+  getComposition: (name) ->
+    composition = @compositions[name]
+    return undefined unless composition or composition.stale()
+    composition
+
+  # Creates a composition.
+  # This function has several forms as described below:
+  #
+  # 1. Second param is a class (constructor function)
+  #    createComposition('name', Class[, options])
+  #    Example:
+  #    createComposition('image', Image, id: 123)
+  #
+  # 2. Second parameter is an object with `create` and `check` functions
+  #    createComposition('name', { create: Function, check: Function })
+  #    Example:
+  #    createComposition('image',
+  #      create: ->
+  #        now = new Date().getTime()
+  #        @image = new Image created: now
+  #      check: ->
+  #        now = new Date().getTime()
+  #        // Created in the last ten minutes
+  #        (now - @image.get('created')) <= 10000
+  #    )
+  #
+  # 3. Second parameter is a class that inherits from Composition
+  #    createComposition('name', CompositionClass[, options])
+  #    Example:
+  #    createComposition('image', ImageComposition, { ids: [1, 2, 3] })
+  #
+  createComposition: (name, second, options) ->
+    if typeof second is 'function'
+      func = second
+    else if typeof second is 'object'
+      create = second.create
+      check = second.check
+      # Use the as options, they can be used
+      options = { create, check }
+
+    # Dispose existing composition
+    composition = @compositions[name]
+    composition.dispose() if composition
+
+    constructor = if func.prototype instanceof Composition
+      func
+    else
+      Composition
+
+    composition = new constructor options
+    composition.check = check if check
+    composition.create = create if create
+    composition.create()
+
+    @compositions[name] = composition
+
+    composition
+
+  # Disposal
+  # --------
+
+  disposed: false
 
   dispose: ->
     return if @disposed
@@ -167,7 +191,7 @@ module.exports = class Composer
 
     mediator.removeHandlers this
 
-    # Dispose of all compositions and their items (that can be)
+    # Dispose of all compositions
     composition.dispose() for name, composition of @compositions
 
     # Remove properties
@@ -178,3 +202,5 @@ module.exports = class Composer
 
     # You’re frozen when your heart’s not open
     Object.freeze? this
+
+module.exports = Composer

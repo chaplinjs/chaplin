@@ -3,7 +3,8 @@ define [
   'chaplin/mediator'
   'chaplin/lib/event_broker'
   'chaplin/lib/composition'
-], (_, mediator, EventBroker, Composition) ->
+  'chaplin/models/model'
+], (_, mediator, EventBroker, Composition, Model) ->
   'use strict'
 
   describe 'Composition', ->
@@ -12,7 +13,7 @@ define [
 
     beforeEach ->
       # Instantiate
-      composition = new Composition
+      composition = new Composition()
 
     afterEach ->
       # Dispose
@@ -33,17 +34,23 @@ define [
       expect(composition.initialize).to.be.a 'function'
       composition.initialize()
       expect(composition.stale()).to.be false
-      expect(composition.item).to.be composition
 
     # disposal
     # --------
 
-    it 'should dispose itself correctly', ->
+    it 'should dispose itself and all objects', ->
+      model1 = new Model()
+      model2 = new Model()
+      composition.object = model1
+      composition.randomProperty = model2
+
       expect(composition.dispose).to.be.a 'function'
       composition.dispose()
 
-      for prop in ['compositions']
-        expect(composition.hasOwnProperty prop).to.not.be.ok()
+      expect(model1.disposed).to.be true
+      expect(model2.disposed).to.be true
+      expect(composition).to.not.have.property('object')
+      expect(composition).to.not.have.property('randomProperty')
 
       expect(composition.disposed).to.be true
       expect(Object.isFrozen(composition)).to.be true if Object.isFrozen
@@ -54,8 +61,7 @@ define [
     it 'should be extendable', ->
       expect(Composition.extend).to.be.a 'function'
 
-      Derivedcomposition = Composition.extend()
-      derivedcomposition = new Derivedcomposition()
-      expect(derivedcomposition).to.be.a Composition
-
-      derivedcomposition.dispose()
+      composition.dispose()
+      DerivedComposition = Composition.extend()
+      composition = new DerivedComposition()
+      expect(composition).to.be.a Composition

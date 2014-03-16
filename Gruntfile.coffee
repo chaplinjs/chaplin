@@ -367,6 +367,15 @@ module.exports = (grunt) ->
           'mocha'
         ]
 
+      test_browser:
+        files: ['test/spec/*.coffee'],
+        tasks: [
+          'coffee:compile'
+          'urequire'
+          'copy:amd'
+          'copy:test'
+        ]
+
   # Events
   # ======
   grunt.event.on 'mocha.coverage', (coverage) ->
@@ -405,23 +414,23 @@ module.exports = (grunt) ->
 
   # Test
   # ----
-  grunt.registerTask 'test', [
+  grunt.registerTask 'test_prepare', [
     'coffee:compile'
     'urequire'
     'copy:amd'
     'copy:test'
     'coffee:test'
+  ]
+
+  grunt.registerTask 'test', [
+    'test:prepare'
     'mocha'
   ]
 
   # Coverage
   # --------
   grunt.registerTask 'cover', [
-    'coffee:compile'
-    'urequire'
-    'copy:amd'
-    'copy:test'
-    'coffee:test'
+    'test_prepare'
     'copy:beforeInstrument'
     'instrument'
     'mocha'

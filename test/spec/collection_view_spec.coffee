@@ -119,10 +119,6 @@ define [
       createCollection models
       createCollectionView()
 
-    # Create a fresh collection with models and
-    # a collection view before each test
-    beforeEach ->
-
     afterEach ->
       collectionView?.dispose()
       collection?.dispose()

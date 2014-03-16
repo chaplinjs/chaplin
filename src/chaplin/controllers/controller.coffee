@@ -36,15 +36,20 @@ module.exports = class Controller
   # Composer
   # --------
 
-  # Convenience method to publish the `!composer:compose` event. See the
-  # composer for information on parameters, etc.
-  reuse: (name) ->
-    method = if arguments.length is 1 then 'retrieve' else 'compose'
-    mediator.execute "composer:#{method}", arguments...
+  # Convenience method to execute composer commands.
+  # See the composer for information on parameters.
 
-  # Deprecated method.
-  compose: ->
-    throw new Error 'Controller#compose was moved to Controller#reuse'
+  retrieve: ->
+    mediator.execute 'composer:retrieve', arguments...
+
+  reuse: ->
+    if arguments.length is 1
+      throw new Error 'Controller#reuse: Deprecation warning. ' +
+        'Please use retrieve get a composition.'
+    mediator.execute 'composer:reuse', arguments...
+
+  share: ->
+    mediator.execute 'composer:share', arguments...
 
   # Redirection
   # -----------

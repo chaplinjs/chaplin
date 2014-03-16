@@ -9,10 +9,8 @@ has = Object::hasOwnProperty
 # Composition
 # -----------
 
-# A utility class that is meant as a simple proxied version of a
-# controller that is used internally to inflate simple
-# calls to !composer:compose and may be extended and used to have complete
-# control over the composition process.
+# A composition contains one or more objects and
+
 module.exports = class Composition
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
@@ -21,8 +19,8 @@ module.exports = class Composition
   _.extend @prototype, Backbone.Events
   _.extend @prototype, EventBroker
 
-  # The item that is composed; this is by default a reference to this.
-  item: null
+  # The object that is managed.
+  object: null
 
   # The options that this composition was constructed with.
   options: null
@@ -32,34 +30,40 @@ module.exports = class Composition
 
   constructor: (options) ->
     @options = _.extend {}, options if options?
-    @item = this
     @initialize @options
 
   initialize: ->
     # Empty per default.
 
-  # The compose method is called when this composition is to be composed.
-  compose: ->
-    # Empty per default.
+  # Creates the object(s) with the given options. Per default, expects
+  # a constructor and options that will be passed to the constructor.
+  create: (constructor, options) ->
+    object = new constructor options
+    @object = object
 
-  # The check method is called when this composition is asked to be
-  # composed again. The passed options are the newly passed options.
-  # If this returns false then the composition is re-composed.
+    # If the object is a view and autoRender is disabled, render it.
+    if typeof object.render is 'function' and not object.autoRender
+      object.render()
+
+    object
+
+  # The check method determines whether the object can be reused.
+  # Per default, the new options are compared which the previous options.
+  # If the check fails, the composition is recreated.
   check: (options) ->
     _.isEqual @options, options
 
-  # Marks all applicable items as stale.
+  # Gets or sets the state status.
+  # Without arguments, returns the stale status.
+  # With a boolean argument, marks all applicable objects as (not) stale.
   stale: (value) ->
     # Return the current property if not requesting a change.
     return @_stale unless value?
 
-    # Sets the stale property for every item in the composition that has it.
+    # Sets the stale property for every object in the composition that has it.
     @_stale = value
-    for name, item of this when (
-      item and item isnt this and
-      typeof item is 'object' and has.call(item, 'stale')
-    )
-      item.stale = value
+    for name, object of this when object and has.call(object, 'stale')
+      object.stale = value
 
     # Return nothing.
     return
@@ -74,9 +78,8 @@ module.exports = class Composition
 
     # Dispose and delete all members which are disposable.
     for own prop, obj of this when obj and typeof obj.dispose is 'function'
-      unless obj is this
-        obj.dispose()
-        delete this[prop]
+      obj.dispose()
+      delete this[prop]
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
