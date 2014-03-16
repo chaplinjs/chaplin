@@ -35,17 +35,8 @@ module.exports = class Composition
   initialize: ->
     # Empty per default.
 
-  # Creates the object(s) with the given options. Per default, expects
-  # a constructor and options that will be passed to the constructor.
-  create: (constructor, options) ->
-    object = new constructor options
-    @object = object
-
-    # If the object is a view and autoRender is disabled, render it.
-    if typeof object.render is 'function' and not object.autoRender
-      object.render()
-
-    object
+  create: (options) ->
+    # Empty per default.
 
   # The check method determines whether the object can be reused.
   # Per default, the new options are compared which the previous options.

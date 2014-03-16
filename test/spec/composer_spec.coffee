@@ -147,28 +147,11 @@ define [
         object = reuse 'myComposition', { create }
         expect(object).to.be.a Composition
         expect(create).was.called()
-        expect(object1).to.be.a TestView2
+        expect(object).to.be.a TestView2
         expectCompositions 1
         expect(composer.compositions.myComposition.view).to.be.a TestView1
         dispatch()
         expectCompositions 1
-
-      it 'should recreate a new composition with a different create', ->
-        # Controller 1
-        create = sinon.spy ->
-          @view = new TestView1()
-        reuse 'myComposition', { create }
-
-        # Controller 2
-        create = sinon.spy ->
-          @view = new TestView1()
-        reuse 'myComposition', { create }
-          create: ->
-            @view = new TestView2()
-        dispatch()
-
-        expectCompositions 1
-        expect(composer.compositions.myComposition.view).to.be.a TestView2
 
       it 'should dispose stale compositions', ->
         # Controller 1
@@ -222,8 +205,8 @@ define [
         options2 = {id: 1, foo: 456}
 
         # Controller 1
-        create = sinon.spy ->
-          @model = new TestModel()
+        create = sinon.spy (options) ->
+          @model = new TestModel options
         check = sinon.spy (options) ->
           @options.id is options.id
 
@@ -232,14 +215,15 @@ define [
           check: check
 
         reuse 'myComposition', CustomComposition, options1
-        expect(create).was.calledWith(params)
+        expect(create).was.calledWith options1
         expect(check).was.notCalled()
         dispatch()
 
         expect(composer.compositions.myComposition.options).to.be options
 
-        # Controller
+        # Controller 2
         reuse 'myComposition', CustomComposition, options2
+        expect(check).was.calledWith options2
         dispatch()
 
 

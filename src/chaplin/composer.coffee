@@ -103,8 +103,13 @@ class Composer
 
   # Checks if a composition exists and can be reused,
   # otherwise create a new one.
-  getOrCreateComposition: (name, func, options) ->
-    composition = @getComposition()
+  getOrCreateComposition: (name, second, third) ->
+    if typeof second is 'function'
+      options = third
+    else
+      options = second.options
+
+    composition = @getComposition name
     if composition
       # Check if the composition can be reused.
       if composition.check(options)
@@ -116,7 +121,7 @@ class Composer
         composition = null
     unless composition
       # Create from scratch.
-      composition = @createComposition name, func, options
+      composition = @createComposition name, second, third
     composition
 
   # Returns a non-stale composition.
@@ -133,17 +138,25 @@ class Composer
   #    Example:
   #    createComposition('image', Image, id: 123)
   #
-  # 2. Second parameter is an object with `create` and `check` functions
-  #    createComposition('name', { create: Function, check: Function })
-  #    Example:
+  # 2. Second parameter is an object
+  #    createComposition('name', {
+  #      create: Function
+  #      [check: Function]
+  #      [options: Object]
+  #    })
+  #    Examples:
   #    createComposition('image',
-  #      create: ->
-  #        now = new Date().getTime()
-  #        @image = new Image created: now
-  #      check: ->
-  #        now = new Date().getTime()
-  #        // Created in the last ten minutes
-  #        (now - @image.get('created')) <= 10000
+  #      create: (options) ->
+  #        @image = new Image options
+  #    )
+  #    createComposition('image',
+  #      create: (options) ->
+  #        @image = new Image options
+  #      check: (options) ->
+  #        # Created in the last ten minutes
+  #        (options.time - @options.time) <= 10000
+  #       options:
+  #         time: new Date().getTime()
   #    )
   #
   # 3. Second parameter is a class that inherits from Composition
@@ -152,31 +165,53 @@ class Composer
   #    createComposition('image', ImageComposition, { ids: [1, 2, 3] })
   #
   createComposition: (name, second, options) ->
+    constructor = Composition
     if typeof second is 'function'
-      func = second
-    else if typeof second is 'object'
+      if second.prototype instanceof Composition
+        # Form 3
+        constructor = second
+      else
+        # Form 1
+        create = @makeCreateObject second
+    else if typeof second is 'object' and typeof second.create is 'function'
+      # Form 2
       create = second.create
       check = second.check
-      # Use the as options, they can be used
-      options = { create, check }
+      options = second.options
+    else
+      # Form NaN
+      throw new Error 'Composer#createComposition: Insufficient arguments'
 
+    @_createComposition name, constructor, options, create, check
+
+  _createComposition: (name, constructor, options, create, check) ->
     # Dispose existing composition
     composition = @compositions[name]
     composition.dispose() if composition
 
-    constructor = if func.prototype instanceof Composition
-      func
-    else
-      Composition
-
+    # Create new composition
     composition = new constructor options
     composition.check = check if check
     composition.create = create if create
-    composition.create()
+    composition.create options
 
+    # Save composition
     @compositions[name] = composition
 
     composition
+
+  makeCreateObject: (constructor) ->
+    # Creates the composition object with the given options.
+    # This function is called in the context of the composition.
+    (options) ->
+      object = new constructor options
+      @object = object
+
+      # If the object is a view and autoRender is disabled, render it.
+      if typeof object.render is 'function' and not object.autoRender
+        object.render()
+
+      object
 
   # Disposal
   # --------
