@@ -31,19 +31,8 @@ var config = {
   urlArgs: 'bust=' + (new Date()).getTime()
 };
 
-if (testType === 'backbone' || testType === 'deps') {
-  config.shim = {
-    backbone: {
-      deps: ['underscore', 'jquery'],
-      exports: 'Backbone'
-    },
-    underscore: {
-      exports: '_'
-    }
-  };
-}
-
 requirejs.config(config);
+
 if (testType === 'exos') {
   define('jquery', function(){});
   define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});

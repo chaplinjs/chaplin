@@ -292,6 +292,18 @@ define [
         expect(composer.compositions.myComposition.object).to.be object
         dispatch()
 
+      it 'should check the options', ->
+        options1 = id: 1
+        options2 = id: 2
+
+        reuse 'myComposition', Model, options1
+
+        object = receive 'myComposition', options1
+        expect(object).to.be.a Model
+
+        object = receive 'myComposition', options2
+        expect(object).to.be undefined
+
     describe 'Error handling', ->
 
       it 'should throw an error for invalid invocations', ->

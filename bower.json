@@ -7,25 +7,23 @@
     "jquery": "~1.11.0",
     "lodash": "~2.4.1",
     "backbone": "~1.1.2",
-    "benchmark": "git://github.com/bestiejs/benchmark.js.git",
+    "benchmark": "~1.0.0",
     "sinon": "http://sinonjs.org/releases/sinon-1.9.0.js",
     "requirejs": "~2.1.11",
     "davy": "~0.1.1",
-    "exoskeleton": "~0.6.3"
+    "exoskeleton": "~0.6.3",
+    "subsequent": "~0.0.6"
   },
   "exportsOverride": {
     "mocha": {
       "scripts/..": "mocha.js",
       "styles/..": "mocha.css"
     },
-    "backbone": {
-      ".": "backbone.js"
+    "expect": {
+      ".": "index.js"
     },
-    "requirejs": {
-      ".": "require.js"
-    },
-    "jquery": {
-      ".": "jquery.js"
+    "benchmark": {
+      ".": "benchmark.js"
     }
   }
 }

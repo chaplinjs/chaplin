@@ -56,20 +56,20 @@ module.exports = (grunt) ->
     coffee:
       src:
         files: [
-          expand: true
-          dest: 'temp/'
           cwd: 'src'
           src: '**/*.coffee'
+          dest: 'temp/'
           ext: '.js'
+          expand: true
         ]
 
       test:
         files: [
-          expand: true
-          dest: 'test/temp/'
           cwd: 'test/spec'
           src: '**/*.coffee'
+          dest: 'test/temp/'
           ext: '.js'
+          expand: true
         ]
 
       options:
@@ -256,25 +256,13 @@ module.exports = (grunt) ->
         '''
         footer: '''
 
-        var regDeps = function(Backbone, _) {
-          loader.register('backbone', function(exports, require, module) {
-            module.exports = Backbone;
-          });
-          loader.register('underscore', function(exports, require, module) {
-            module.exports = _;
-          });
-        };
-
         if (typeof define === 'function' && define.amd) {
           define(['backbone', 'underscore'], function(Backbone, _) {
-            regDeps(Backbone, _);
             return loader('chaplin');
           });
         } else if (typeof module === 'object' && module && module.exports) {
-          regDeps(require('backbone'), require('underscore'));
           module.exports = loader('chaplin');
         } else if (typeof require === 'function') {
-          regDeps(window.Backbone, window._ || window.Backbone.utils);
           window.Chaplin = loader('chaplin');
         } else {
           throw new Error('Chaplin requires Common.js or AMD modules');
@@ -413,11 +401,12 @@ module.exports = (grunt) ->
   # Test
   # ----
   grunt.registerTask 'prepareTest', [
+    'clean'
     'coffee:test'
-    'copy:test'
     'coffee:src'
     'urequire'
     'copy:amd'
+    'copy:test'
   ]
 
   grunt.registerTask 'test', [

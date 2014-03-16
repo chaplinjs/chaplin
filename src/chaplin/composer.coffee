@@ -85,8 +85,8 @@ class Composer
   # Returns undefined if no composition with the given name was found.
   receive: (name, options) ->
     composition = @compositions[name]
-    if composition and not composition.check(options)
-      return
+    return unless composition
+    return if options? and not composition.check(options)
     composition.object ? composition
 
   # Disposes all stale compositions, marks non-stale as stale.
