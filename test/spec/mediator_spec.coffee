@@ -62,6 +62,8 @@ define [
       mediator.setHandler name, spy
       expect(mediator.execute name).to.be resp
 
+    # TODO: Test removeHandlers
+
     it 'should support sealing itself', ->
       strict = do (-> 'use strict'; !this)
       return unless strict

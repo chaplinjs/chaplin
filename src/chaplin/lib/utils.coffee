@@ -2,7 +2,6 @@
 
 _ = require 'underscore'
 support = require 'chaplin/lib/support'
-mediator = require 'chaplin/mediator'
 
 # Utilities
 # ---------
@@ -98,11 +97,15 @@ utils =
 
   # Returns the url for a named route and any params.
   reverse: (criteria, params, query) ->
-    mediator.execute 'router:reverse', criteria, params, query
+    # Require mediator here to avoid a circular dependency
+    # between utils and mediator.
+    require('chaplin/mediator').execute 'router:reverse', criteria, params, query
 
   # Redirects to URL, route name or controller and action pair.
   redirectTo: (pathDesc, params, options) ->
-    mediator.execute 'router:route', pathDesc, params, options
+    # Require mediator here to avoid a circular dependency
+    # between utils and mediator.
+    require('chaplin/mediator').execute 'router:route', pathDesc, params, options
 
   # Query parameters Helpers
   # --------------

@@ -47,21 +47,21 @@ define [
       document.body.removeChild element
 
     expectWasRouted = (linkAttributes) ->
-      stub = sinon.spy()
-      mediator.setHandler 'router:route', stub
+      spy = sinon.spy()
+      mediator.setHandler 'router:route', spy
       appendClickRemove createLink linkAttributes
-      expect(stub).was.calledOnce()
-      [passedPath] = stub.firstCall.args
+      expect(spy).was.calledOnce()
+      [passedPath] = spy.firstCall.args
       expect(passedPath).to.eql url: linkAttributes.href
-      mediator.unsubscribe '!router:route', stub
-      stub
+      mediator.removeHandlers ['router:route']
+      spy
 
     expectWasNotRouted = (linkAttributes) ->
       spy = sinon.spy()
       mediator.setHandler 'router:route', spy
       appendClickRemove createLink linkAttributes
       expect(spy).was.notCalled()
-      mediator.unsubscribe '!router:route', spy
+      mediator.removeHandlers ['router:route']
       spy
 
     beforeEach ->
@@ -105,14 +105,14 @@ define [
       path = '/internal/link'
       query = 'foo=bar&baz=qux'
 
-      stub = sinon.spy()
-      mediator.setHandler 'router:route', stub
+      spy = sinon.spy()
+      mediator.setHandler 'router:route', spy
       linkAttributes = href: "#{path}?#{query}"
       appendClickRemove createLink linkAttributes
-      expect(stub).was.calledOnce()
-      [passedPath] = stub.firstCall.args
+      expect(spy).was.calledOnce()
+      [passedPath] = spy.firstCall.args
       expect(passedPath).to.eql url: linkAttributes.href
-      mediator.unsubscribe '!router:route', stub
+      mediator.removeHandlers ['router:route']
 
     it 'should not route links without href attributes', ->
       expectWasNotRouted name: 'foo'
@@ -139,24 +139,24 @@ define [
 
     it 'should not route clicks on external links', ->
       old = window.open
-      window.open = sinon.stub()
+      window.open = sinon.spy()
       expectWasNotRouted href: 'http://example.com/'
       expectWasNotRouted href: 'https://example.com/'
       expect(window.open).was.notCalled()
       window.open = old
 
     it 'should route clicks on elements with the “go-to” class', ->
-      stub = sinon.stub()
-      mediator.setHandler 'router:route', stub
+      spy = sinon.spy()
+      mediator.setHandler 'router:route', spy
       path = '/internal/link'
       span = document.createElement 'span'
       span.className = 'go-to'
       span.setAttribute 'data-href', path
       appendClickRemove span
-      expect(stub).was.calledOnce()
-      passedPath = stub.firstCall.args[0]
+      expect(spy).was.calledOnce()
+      passedPath = spy.firstCall.args[0]
       expect(passedPath).to.eql url: path
-      mediator.unsubscribe '!router:route', stub
+      mediator.removeHandlers ['router:route']
 
     # With custom external checks
     # ---------------------------
@@ -193,13 +193,13 @@ define [
     it 'openExternalToBlank=true should open external links in a new tab', ->
       old = window.open
 
-      window.open = sinon.stub()
+      window.open = sinon.spy()
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: 'http://www.example.org/'
       expect(window.open).was.called()
 
-      window.open = sinon.stub()
+      window.open = sinon.spy()
       layout.dispose()
       layout = new Layout title: '', openExternalToBlank: true
       expectWasNotRouted href: '/foo', rel: "external"

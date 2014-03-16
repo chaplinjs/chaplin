@@ -401,7 +401,6 @@ module.exports = (grunt) ->
   # Test
   # ----
   grunt.registerTask 'prepareTest', [
-    'clean'
     'coffee:test'
     'coffee:src'
     'urequire'
