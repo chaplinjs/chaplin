@@ -17,6 +17,7 @@ define [
 
     afterEach ->
       controller.dispose()
+      controller = null
       mediator.removeHandlers ['router:route']
 
     it 'should mixin a Backbone.Events', ->
@@ -36,54 +37,6 @@ define [
 
       derivedController.dispose()
 
-    it 'should redirect to a URL', ->
-      expect(controller.redirectTo).to.be.a 'function'
-
-      routerRoute = sinon.spy()
-      mediator.setHandler 'router:route', routerRoute
-
-      url = 'redirect-target/123'
-      controller.redirectTo url
-
-      expect(controller.redirected).to.be true
-      expect(routerRoute).was.calledWith url
-
-    it 'should redirect to a URL with routing options', ->
-      routerRoute = sinon.spy()
-      mediator.setHandler 'router:route', routerRoute
-
-      url = 'redirect-target/123'
-      options = replace: true
-      controller.redirectTo url, options
-
-      expect(controller.redirected).to.be true
-      expect(routerRoute).was.calledWith url, options
-
-    it 'should redirect to a named route', ->
-      routerRoute = sinon.spy()
-      mediator.setHandler 'router:route', routerRoute
-
-      name = 'params'
-      params = one: '21'
-      pathDesc = name: name, params: params
-      controller.redirectTo pathDesc
-
-      expect(controller.redirected).to.be true
-      expect(routerRoute).was.calledWith pathDesc
-
-    it 'should redirect to a named route with options', ->
-      routerRoute = sinon.spy()
-      mediator.setHandler 'router:route', routerRoute
-
-      name = 'params'
-      params = one: '21'
-      pathDesc = name: name, params: params
-      options = replace: true
-      controller.redirectTo pathDesc, options
-
-      expect(controller.redirected).to.be true
-      expect(routerRoute).was.calledWith pathDesc, options
-
     it 'should adjust page title', ->
       spy = sinon.spy()
       mediator.setHandler 'adjustTitle', spy
@@ -91,7 +44,58 @@ define [
       expect(spy).was.calledOnce()
       expect(spy).was.calledWith 'meh'
 
+    describe 'Redirection', ->
+
+      it 'should redirect to a URL', ->
+        expect(controller.redirectTo).to.be.a 'function'
+
+        routerRoute = sinon.spy()
+        mediator.setHandler 'router:route', routerRoute
+
+        url = 'redirect-target/123'
+        controller.redirectTo url
+
+        expect(controller.redirected).to.be true
+        expect(routerRoute).was.calledWith url
+
+      it 'should redirect to a URL with routing options', ->
+        routerRoute = sinon.spy()
+        mediator.setHandler 'router:route', routerRoute
+
+        url = 'redirect-target/123'
+        options = replace: true
+        controller.redirectTo url, options
+
+        expect(controller.redirected).to.be true
+        expect(routerRoute).was.calledWith url, options
+
+      it 'should redirect to a named route', ->
+        routerRoute = sinon.spy()
+        mediator.setHandler 'router:route', routerRoute
+
+        name = 'params'
+        params = one: '21'
+        pathDesc = name: name, params: params
+        controller.redirectTo pathDesc
+
+        expect(controller.redirected).to.be true
+        expect(routerRoute).was.calledWith pathDesc
+
+      it 'should redirect to a named route with options', ->
+        routerRoute = sinon.spy()
+        mediator.setHandler 'router:route', routerRoute
+
+        name = 'params'
+        params = one: '21'
+        pathDesc = name: name, params: params
+        options = replace: true
+        controller.redirectTo pathDesc, options
+
+        expect(controller.redirected).to.be true
+        expect(routerRoute).was.calledWith pathDesc, options
+
     describe 'Disposal', ->
+
       mediator.setHandler 'region:unregister', ->
 
       it 'should dispose itself correctly', ->

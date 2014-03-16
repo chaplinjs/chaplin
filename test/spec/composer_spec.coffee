@@ -24,7 +24,6 @@ define [
       getTemplateFunction: -> # Do nothing
     class TestView1 extends NullView
     class TestView2 extends NullView
-    class TestModel extends Model
 
     # Helpers
     # -------
@@ -34,8 +33,8 @@ define [
       mediator.execute 'composer:reuse', arguments...
     share = ->
       mediator.execute 'composer:share', arguments...
-    retrieve = ->
-      mediator.execute 'composer:retrieve', arguments...
+    receive = ->
+      mediator.execute 'composer:receive', arguments...
 
     dispatch = ->
       mediator.publish 'dispatcher:dispatch'
@@ -46,6 +45,7 @@ define [
       expect(keys(composer.compositions).length).to.be length
 
     # Setup
+    # -----
 
     beforeEach ->
       # Instantiate
@@ -90,53 +90,94 @@ define [
         expect(composer.compositions.view2.object).to.be.a TestView2
         dispatch()
 
-      it 'should recreate a composition', ->
+        expectCompositions 2
+
+      it 'should recreate a composition with the same name', ->
         # Controller 1
-        object = reuse 'view1', TestView1
-        expect(object).to.be.a TestView1
+        object1 = reuse 'view1', TestView1
+        expect(object1).to.be.a TestView1
         dispatch()
 
         # Controller 2
-        reuse 'view1', TestView2
-        expect(object).to.be.a TestView2
+        # The different constructor should be ignored, only the name matters.
+        object2 = reuse 'view1', TestView2
+        expect(object1).to.be object2
         dispatch()
 
         expectCompositions 1
 
       it 'should not recreate an existing composition', ->
+        SpyTestView1 = sinon.spy TestView1
+        SpyTestView2 = sinon.spy TestView2
+
         # Controller 1
-        reuse 'view1', TestView1
+        reuse 'view1', SpyTestView1
         expectCompositions 1
         dispatch()
 
         # Controller 2
-        reuse 'view1', TestView1
-        reuse 'view2', TestView2
+        reuse 'view1', SpyTestView1
+        reuse 'view2', SpyTestView2
         expectCompositions 2
         dispatch()
 
         # Controller 3
-        reuse 'view1', TestView1
-        reuse 'view2', TestView2
-        reuse 'view1', TestView1
+        reuse 'view1', SpyTestView1
+        reuse 'view2', SpyTestView2
+        reuse 'view1', SpyTestView1
         expectCompositions 2
         dispatch()
+
+        expect(SpyTestView1).was.calledOnce()
+        expect(SpyTestView2).was.calledOnce()
+
+      it 'should check the options', ->
+        options1 = id: 1
+        options2 = id: 2
+        SpyModel = sinon.spy Model
+
+        # Controller 1
+        reuse 'myComposition', SpyModel, options1
+        dispatch()
+
+        # Controller 2
+        reuse 'myComposition', SpyModel, options1
+        dispatch()
+
+        expectCompositions 1
+        expect(SpyModel).was.calledOnce()
+        expect(SpyModel).was.calledWith options1
+        expect(composer.compositions.myComposition.options).to.eql options1
+
+        # Controller 3
+        reuse 'myComposition', SpyModel, options2
+        dispatch()
+
+        expectCompositions 1
+        expect(SpyModel).was.calledTwice()
+        expect(SpyModel).was.calledWith options2
+        expect(composer.compositions.myComposition.options).to.eql options2
 
       it 'should dispose stale compositions', ->
         # Controller 1
         reuse 'view1', TestView1
+        dispatch()
         expectCompositions 1
+        expect(composer.compositions.view1.stale()).to.be true
 
         # Controller 2
-        dispatch()
-
-        # Controller 3
         reuse 'view2', TestView2
         dispatch()
 
         expectCompositions 1
         expect(composer.compositions.view2).to.be.a Composition
         expect(composer.compositions.view2.object).to.be.a TestView2
+        expect(composer.compositions.view2.stale()).to.be true
+
+        # Controller 3
+        # No reuse
+        dispatch()
+        expectCompositions 0
 
     describe 'reuse: custom create and check', ->
 
@@ -145,42 +186,42 @@ define [
         create = sinon.spy ->
           @view = new TestView1()
         object = reuse 'myComposition', { create }
-        expect(object).to.be.a Composition
         expect(create).was.called()
-        expect(object).to.be.a TestView2
+        expect(object).to.be.a Composition
         expectCompositions 1
         expect(composer.compositions.myComposition.view).to.be.a TestView1
         dispatch()
-        expectCompositions 1
 
       it 'should dispose stale compositions', ->
         # Controller 1
         create = sinon.spy ->
-          @view1 = new TestView()
-          @view2 = new TestView1()
+          @view1 = new TestView1()
+          @view2 = new TestView2()
         check = sinon.spy -> false
-        reuse 'myComposition', { create }
+        object = reuse 'myComposition', { create, check }
         expect(create).was.called()
         expect(check).was.notCalled()
+        expect(object).to.be.a Composition
         expectCompositions 1
         expect(composer.compositions.myComposition.view1).to.be.a TestView1
         expect(composer.compositions.myComposition.view2).to.be.a TestView2
-
         dispatch()
         expectCompositions 1
+        expect(composer.compositions.myComposition.stale()).to.be true
 
         # Controller 2
         create = sinon.spy ->
           @view3 = new TestView2()
-        check = sinon.spy -> false
-        reuse 'myComposition', { create, check }
+        object = reuse 'myComposition', { create, check }
         expect(create).was.called()
         expect(check).was.called()
-        dispatch()
+        expect(object).to.be.a Composition
         expectCompositions 1
         expect(composer.compositions.myComposition.view3).to.be.a TestView2
+        dispatch()
 
         # Controller 3
+        # No reuse
         dispatch()
         expectCompositions 0
 
@@ -188,7 +229,7 @@ define [
 
       it 'should create custom compositions', ->
         create = sinon.spy ->
-          @model = new TestModel()
+          @model = new Model()
 
         class CustomComposition extends Composition
           create: create
@@ -198,15 +239,15 @@ define [
 
         expect(create).was.called()
         expect(composer.compositions.myComposition).to.be.a CustomComposition
-        expect(composer.compositions.myComposition.model).to.be.a TestModel
+        expect(composer.compositions.myComposition.model).to.be.a Model
 
-      it 'should create a custom composition with options', ->
-        options1 = {id: 1, foo: 123}
-        options2 = {id: 1, foo: 456}
+      it 'should check the options', ->
+        options1 = id: 1
+        options2 = id: 2
 
         # Controller 1
         create = sinon.spy (options) ->
-          @model = new TestModel options
+          @model = new Model options
         check = sinon.spy (options) ->
           @options.id is options.id
 
@@ -217,69 +258,81 @@ define [
         reuse 'myComposition', CustomComposition, options1
         expect(create).was.calledWith options1
         expect(check).was.notCalled()
+        expect(composer.compositions.myComposition.options).to.eql options1
         dispatch()
-
-        expect(composer.compositions.myComposition.options).to.be options
 
         # Controller 2
-        reuse 'myComposition', CustomComposition, options2
-        expect(check).was.calledWith options2
+        reuse 'myComposition', CustomComposition, options1
+        expect(create).was.calledOnce()
+        expect(check).was.calledWith options1
         dispatch()
 
-
+        # Controller 3
+        reuse 'myComposition', CustomComposition, options2
+        expect(create).was.calledTwice()
+        expect(check).was.calledTwice()
+        expect(check).was.calledWith options2
+        expect(composer.compositions.myComposition.options).to.eql options2
+        dispatch()
 
     describe 'share', ->
 
+      it 'should allow to share objects', ->
+        model = new Model id: 123
+        view = new TestView1 model: model
+        share
 
-    describe 'retrieve', ->
+    describe 'receive', ->
 
-    # composing with the short form
-    # -----------------------------
+      it 'should allow a composition to be received', ->
+        reuse 'myComposition', Model, id: 123
+        object = receive 'myComposition'
+        expect(object).to.be.a Model
+        expect(object.id).to.be 123
+        expect(composer.compositions.myComposition.object).to.be object
+        dispatch()
 
-    # composing with the long form
-    # -----------------------------
+    describe 'Error handling', ->
 
+      it 'should throw an error for invalid invocations', ->
+        expect(->
+          reuse()
+        ).to.throwError()
 
-    # various reuse forms
-    # ---------------------
+        expect(->
+          reuse {}
+        ).to.throwError()
 
+        expect(->
+          reuse 'myComposition', null
+        ).to.throwError()
 
+        expect(->
+          reuse 'myComposition', {}
+        ).to.throwError()
 
-    it 'should allow a composition to be retreived', ->
-      reuse 'myComposition', Model
-      object = retrieve 'myComposition'
-      expect(object).to.be composer.compositions.myComposition.object
-      dispatch()
+        expect(->
+          reuse create: /a/, check: ''
+        ).to.throwError()
 
-    it 'should throw an error for invalid invocations', ->
-      expect(->
-        reuse 'myComposition', null
-      ).to.throwError()
-      expect(->
-        reuse compose: /a/, check: ''
-      ).to.throwError()
+    describe 'Disposal', ->
 
-    # Disposal
-    # --------
+      it 'should dispose itself correctly', ->
+        expect(composer.dispose).to.be.a 'function'
+        composer.dispose()
 
-    it 'should dispose itself correctly', ->
-      expect(composer.dispose).to.be.a 'function'
-      composer.dispose()
+        expect(composer).not.to.have.own.property 'compositions'
 
-      for prop in ['compositions']
-        expect(composer.hasOwnProperty prop).to.not.be.ok()
+        expect(composer.disposed).to.be true
+        expect(Object.isFrozen(composer)).to.be true if Object.isFrozen
 
-      expect(composer.disposed).to.be true
-      expect(Object.isFrozen(composer)).to.be true if Object.isFrozen
+    describe 'Extendability', ->
 
-    # extensible
-    # ----------
+      it 'should be extendable', ->
+        expect(Composer.extend).to.be.a 'function'
 
-    it 'should be extendable', ->
-      expect(Composer.extend).to.be.a 'function'
+        DerivedComposer = Composer.extend()
+        derivedComposer = new DerivedComposer()
+        expect(derivedComposer).to.be.a Composer
 
-      DerivedComposer = Composer.extend()
-      derivedComposer = new DerivedComposer()
-      expect(derivedComposer).to.be.a Composer
-
-      derivedComposer.dispose()
+        derivedComposer.dispose()

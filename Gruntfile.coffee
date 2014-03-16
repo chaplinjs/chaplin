@@ -54,7 +54,7 @@ module.exports = (grunt) ->
     # Compilation
     # -----------
     coffee:
-      compile:
+      src:
         files: [
           expand: true
           dest: 'temp/'
@@ -150,10 +150,10 @@ module.exports = (grunt) ->
     copy:
       universal:
         files: [
-          expand: true
-          dest: 'temp/'
           cwd: 'temp'
           src: '**/*.js'
+          dest: 'temp/'
+          expand: true
         ]
 
         options:
@@ -169,10 +169,10 @@ module.exports = (grunt) ->
 
       amd:
         files: [
-          expand: true
-          dest: 'temp/'
           cwd: 'temp'
           src: '**/*.js'
+          dest: 'temp/'
+          expand: true
         ]
 
         options:
@@ -182,26 +182,26 @@ module.exports = (grunt) ->
 
       test:
         files: [
-          expand: true
-          dest: 'test/temp/'
           cwd: 'temp'
           src: '**/*.js'
+          dest: 'test/temp/'
+          expand: true
         ]
 
       beforeInstrument:
         files: [
-          expand: true
-          dest: 'test/temp-original/'
           cwd: 'test/temp'
           src: '**/*.js'
+          dest: 'test/temp-original/'
+          expand: true
         ]
 
       afterInstrument:
         files: [
-          expand: true
-          dest: 'test/temp/'
           cwd: 'test/temp-original'
           src: '**/*.js'
+          dest: 'test/temp/'
+          expand: true
         ]
 
     # Module concatenation
@@ -317,7 +317,7 @@ module.exports = (grunt) ->
     bower:
       install:
         options:
-          targetDir: "./test/#{ componentsFolder }"
+          targetDir: "./test/#{componentsFolder}"
           cleanup: true
 
     # Test runner
@@ -353,10 +353,9 @@ module.exports = (grunt) ->
       coffee:
         files: ['src/**/*.coffee']
         tasks: [
-          'coffee:compile'
+          'coffee:src'
           'urequire'
           'copy:amd'
-          'copy:test'
           'mocha'
         ]
 
@@ -368,13 +367,12 @@ module.exports = (grunt) ->
         ]
 
       test_browser:
-        files: ['test/spec/*.coffee'],
+        files: ['src/**/*.coffee', 'test/spec/*.coffee']
         tasks: [
-          'coffee:compile'
-          'urequire'
-          'copy:amd'
-          'copy:test'
+          'prepareTest'
         ]
+        options:
+          spawn: false
 
   # Events
   # ======
@@ -402,7 +400,7 @@ module.exports = (grunt) ->
   # -----
 
   grunt.registerTask 'build', [
-    'coffee:compile'
+    'coffee:src'
     'copy:universal'
     'concat:universal'
     'uglify'
@@ -414,36 +412,34 @@ module.exports = (grunt) ->
 
   # Test
   # ----
-  grunt.registerTask 'test_prepare', [
-    'coffee:compile'
+  grunt.registerTask 'prepareTest', [
+    'coffee:test'
+    'copy:test'
+    'coffee:src'
     'urequire'
     'copy:amd'
-    'copy:test'
-    'coffee:test'
   ]
 
   grunt.registerTask 'test', [
-    'test:prepare'
+    'prepareTest'
     'mocha'
+  ]
+
+  grunt.registerTask 'test-watch', [
+    'test'
+    'watch'
   ]
 
   # Coverage
   # --------
   grunt.registerTask 'cover', [
-    'test_prepare'
+    'prepareTest'
     'copy:beforeInstrument'
     'instrument'
     'mocha'
     'storeCoverage'
     'copy:afterInstrument'
     'makeReport'
-  ]
-
-  # Test Watcher
-  # ------------
-  grunt.registerTask 'test-watch', [
-    'test'
-    'watch'
   ]
 
   # Releasing

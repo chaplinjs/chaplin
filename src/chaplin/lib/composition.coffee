@@ -9,7 +9,9 @@ has = Object::hasOwnProperty
 # Composition
 # -----------
 
-# A composition contains one or more objects and
+# A composition governs one or more objects and stores their initialization
+# options. It allows to check whether the objects can be reused by comparing
+# the options.
 
 module.exports = class Composition
   # Borrow the static extend method from Backbone.
@@ -23,7 +25,7 @@ module.exports = class Composition
   object: null
 
   # The options that this composition was constructed with.
-  options: null
+  # options: Object
 
   # Whether this composition is currently stale.
   _stale: false
@@ -53,7 +55,7 @@ module.exports = class Composition
 
     # Sets the stale property for every object in the composition that has it.
     @_stale = value
-    for name, object of this when object and has.call(object, 'stale')
+    for own prop, object of this when object and has.call(object, 'stale')
       object.stale = value
 
     # Return nothing.
@@ -67,19 +69,20 @@ module.exports = class Composition
   dispose: ->
     return if @disposed
 
-    # Dispose and delete all members which are disposable.
-    for own prop, obj of this when obj and typeof obj.dispose is 'function'
-      obj.dispose()
-      delete this[prop]
-
-    # Unbind handlers of global events.
     @unsubscribeAllEvents()
 
     # Unbind all referenced handlers.
     @stopListening()
 
+    # Dispose and delete all members which are disposable.
+    for own prop, object of this
+      if object and typeof object.dispose is 'function'
+        object.dispose()
+        delete this[prop]
+
+    # Unbind handlers of global events.
     # Remove properties which are not disposable.
-    properties = ['redirected']
+    properties = ['options']
     delete this[prop] for prop in properties
 
     # Finished.

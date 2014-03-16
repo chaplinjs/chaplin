@@ -49,8 +49,8 @@ define [
 
       expect(model1.disposed).to.be true
       expect(model2.disposed).to.be true
-      expect(composition).to.not.have.property('object')
-      expect(composition).to.not.have.property('randomProperty')
+      expect(composition.object).to.be null
+      expect(composition).not.to.have.property 'randomProperty'
 
       expect(composition.disposed).to.be true
       expect(Object.isFrozen(composition)).to.be true if Object.isFrozen

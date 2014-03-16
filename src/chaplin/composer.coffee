@@ -45,23 +45,25 @@ class Composer
     # Subscribe to events.
     mediator.setHandler 'composer:reuse', @reuse, this
     mediator.setHandler 'composer:share', @share, this
-    mediator.setHandler 'composer:retrieve', @retrieve, this
+    mediator.setHandler 'composer:receive', @receive, this
     @subscribeEvent 'dispatcher:dispatch', @cleanup
 
   # Public handler methods
   # ----------------------
 
-  # Retrieves, checks and (re)creates a composition.
+  # Gets, checks and (re)creates a composition.
   # Shares the composition with the next controller.
-  reuse: (name, func, options) ->
-    composition = @getOrCreateComposition name, func, options
-    composition.object
+  # Returns the object of the composition if present, otherwise the composition.
+  reuse: (name, second, third) ->
+    composition = @getOrCreateComposition name, second, third
+    composition.object ? composition
 
   # Shares an object with the next controller.
   # If only a name is given, marks an existing composition as non-stale.
   # If an object is given, (re)creates a composition containing the object.
+  # Returns nothing.
   share: (name, object) ->
-    composition = @getComposition name
+    composition = @compositions[name]
     if object?
       # (Re)create the composition.
       composition.dispose() if composition
@@ -76,13 +78,16 @@ class Composer
       composition.stale false
     return
 
-  # Retrieves non-stale composition. If options are given, check if the
-  # composition can be reused.
-  retrieve: (name, options) ->
-    composition = @getComposition name
-    if object? and not composition.check(options)
-      return undefined
-    composition.object
+  # Returns a composition that has been shared by a previous controller.
+  # Does share the composition with the next controller.
+  # If options are given, check if the composition can be reused.
+  # Returns the object of the composition if present, otherwise the composition.
+  # Returns undefined if no composition with the given name was found.
+  receive: (name, options) ->
+    composition = @compositions[name]
+    if composition and not composition.check(options)
+      return
+    composition.object ? composition
 
   # Disposes all stale compositions, marks non-stale as stale.
   cleanup: ->
@@ -109,7 +114,7 @@ class Composer
     else
       options = second.options
 
-    composition = @getComposition name
+    composition = @compositions[name]
     if composition
       # Check if the composition can be reused.
       if composition.check(options)
@@ -122,12 +127,6 @@ class Composer
     unless composition
       # Create from scratch.
       composition = @createComposition name, second, third
-    composition
-
-  # Returns a non-stale composition.
-  getComposition: (name) ->
-    composition = @compositions[name]
-    return undefined unless composition or composition.stale()
     composition
 
   # Creates a composition.
@@ -179,7 +178,6 @@ class Composer
       check = second.check
       options = second.options
     else
-      # Form NaN
       throw new Error 'Composer#createComposition: Insufficient arguments'
 
     @_createComposition name, constructor, options, create, check
