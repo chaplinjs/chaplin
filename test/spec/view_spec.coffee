@@ -292,13 +292,13 @@ define [
       expect(spy).was.calledOnce()
       expect(spy2).was.calledOnce()
 
-    it 'should check delegate parameters', ->
-      expect(-> view.delegate 1, 2, 3).to.throwError()
-      expect(-> view.delegate 'click', 'foo').to.throwError()
-      expect(-> view.delegate 'click', 'foo', 'bar').to.throwError()
-      expect(-> view.delegate 'click', 123).to.throwError()
-      # expect(-> view.delegate 'click', (->), 123).to.throwError()
-      # expect(-> view.delegate 'click', 'foo', (->), 'other').to.throwError()
+    # it 'should check delegate parameters', ->
+    #   expect(-> view.delegate 1, 2, 3).to.throwError()
+    #   expect(-> view.delegate 'click', 'foo').to.throwError()
+    #   expect(-> view.delegate 'click', 'foo', 'bar').to.throwError()
+    #   expect(-> view.delegate 'click', 123).to.throwError()
+    #   # expect(-> view.delegate 'click', (->), 123).to.throwError()
+    #   # expect(-> view.delegate 'click', 'foo', (->), 'other').to.throwError()
 
     it 'should correct inheritance of events object', (done) ->
       class A extends TestView

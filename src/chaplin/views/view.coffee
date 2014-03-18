@@ -18,7 +18,7 @@ bind = do ->
 
 setHTML = do ->
   if $
-    (elem, html) -> elem.html html
+    (elem, html) -> $(elem).html html
   else
     (elem, html) -> elem.innerHTML = html
 
@@ -156,7 +156,7 @@ module.exports = class View extends Backbone.View
               else
                 region.instance.container
             else
-              region.instance.$ region.selector
+              region.instance.$(region.selector)[0]
 
       @el = @container if @container
 
@@ -183,47 +183,6 @@ module.exports = class View extends Backbone.View
   # User input event handling
   # -------------------------
 
-  # Event handling using event delegation
-  # Register a handler for a specific event type
-  # For the whole view:
-  #   delegate(eventName, handler)
-  #   e.g.
-  #   @delegate('click', @clicked)
-  # For an element in the passing a selector:
-  #   delegate(eventName, selector, handler)
-  #   e.g.
-  #   @delegate('click', 'button.confirm', @confirm)
-  delegate: (eventName, second, third) ->
-    if Backbone.utils
-      return Backbone.utils.delegate(this, eventName, second, third)
-    if typeof eventName isnt 'string'
-      throw new TypeError 'View#delegate: first argument must be a string'
-
-    if arguments.length is 2
-      handler = second
-    else if arguments.length is 3
-      selector = second
-      if typeof selector isnt 'string'
-        throw new TypeError 'View#delegate: ' +
-          'second argument must be a string'
-      handler = third
-    else
-      throw new TypeError 'View#delegate: ' +
-        'only two or three arguments are allowed'
-
-    if typeof handler isnt 'function'
-      throw new TypeError 'View#delegate: ' +
-        'handler argument must be function'
-
-    # Add an event namespace, bind handler it to view.
-    list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-    events = list.join(' ')
-    bound = bind handler, this
-    @$el.on events, (selector or null), bound
-
-    # Return the bound handler.
-    bound
-
   # Copy of original Backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
     if Backbone.View::delegateEvents.length is 2
@@ -235,7 +194,7 @@ module.exports = class View extends Backbone.View
       eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
       bound = bind handler, this
-      @$el.on eventName, (selector or null), bound
+      @delegate eventName, (selector or null), bound
     return
 
   # Override Backbones method to combine the events
@@ -248,32 +207,6 @@ module.exports = class View extends Backbone.View
       classEvents = classEvents.call this if typeof classEvents is 'function'
       @_delegateEvents classEvents
     return
-
-  # Remove all handlers registered with @delegate.
-  undelegate: (eventName, second, third) ->
-    if Backbone.utils
-      return Backbone.utils.undelegate(this, eventName, second, third)
-    if eventName
-      if typeof eventName isnt 'string'
-        throw new TypeError 'View#undelegate: first argument must be a string'
-
-      if arguments.length is 2
-        if typeof second is 'string'
-          selector = second
-        else
-          handler = second
-      else if arguments.length is 3
-        selector = second
-        if typeof selector isnt 'string'
-          throw new TypeError 'View#undelegate: ' +
-            'second argument must be a string'
-        handler = third
-
-      list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-      events = list.join(' ')
-      @$el.off events, (selector or null)
-    else
-      @$el.off ".delegate#{@cid}"
 
   # Handle declarative event bindings from `listen`
   delegateListeners: ->
@@ -434,7 +367,7 @@ module.exports = class View extends Backbone.View
         # Delegate events to the top-level container in the template.
         @setElement el.firstChild, true
       else
-        setHTML (if $ then @$el else @el), html
+        setHTML @el, html
 
     # Return the view.
     this

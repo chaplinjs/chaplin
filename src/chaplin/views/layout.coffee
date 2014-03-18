@@ -84,17 +84,11 @@ module.exports = class Layout extends View
   startLinkRouting: ->
     route = @settings.routeLinks
     return unless route
-    if $
-      @$el.on 'click', route, @openLink
-    else
-      @delegate 'click', route, @openLink
+    @delegate 'click', route, @openLink
 
   stopLinkRouting: ->
     route = @settings.routeLinks
-    if $
-      @$el.off 'click', route if route
-    else
-      @undelegate 'click', route, @openLink
+    @undelegate 'click', route, @openLink
 
   isExternalLink: (link) ->
     link.target is '_blank' or
@@ -223,7 +217,7 @@ module.exports = class Layout extends View
         else
           region.instance.container.querySelector region.selector
       else
-        region.instance[if $ then '$' else 'find'] region.selector
+        region.instance.$ region.selector
 
   # Disposal
   # --------
