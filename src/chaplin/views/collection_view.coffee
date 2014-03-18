@@ -20,25 +20,11 @@ toggleElement = do ->
     (elem, visible) ->
       elem.style.display = (if visible then '' else 'none')
 
-addClass = do ->
-  if $
-    (elem, cls) -> elem.addClass cls
+startAnimation = (elem, useCssAnimation, cls) ->
+  if useCssAnimation
+    elem.classList.add cls
   else
-    (elem, cls) -> elem.classList.add cls
-
-startAnimation = do ->
-  if $
-    (elem, useCssAnimation, cls) ->
-      if useCssAnimation
-        addClass elem, cls
-      else
-        elem.css 'opacity', 0
-  else
-    (elem, useCssAnimation, cls) ->
-      if useCssAnimation
-        addClass elem, cls
-      else
-        elem.style.opacity = 0
+    elem.style.opacity = 0
 
 endAnimation = do ->
   if $
@@ -473,7 +459,7 @@ module.exports = class CollectionView extends View
     if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
-        setTimeout (=> addClass view.el, @animationEndClass), 0
+        setTimeout (=> view.el.classList.add @animationEndClass), 0
       else
         # Fade the view in if it was made transparent before.
         endAnimation view.el, @animationDuration
