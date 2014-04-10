@@ -58,7 +58,7 @@ utils =
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
     chain = [object.constructor.prototype]
-    while object = object.constructor?.__super__ ? object.constructor?.superclass
+    while object = object.constructor?.superclass?.prototype ? object.constructor?.__super__
       chain.push object
     chain.reverse()
 

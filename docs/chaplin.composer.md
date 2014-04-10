@@ -167,7 +167,7 @@ The following example shows another way to use the `compose` method to allow for
       @view = new PostView {@model}
       @model.fetch()
 
-    check: -> @model.id is 42
+    check: -> @model.id isnt 42
 ```
 
 ```javascript
@@ -178,6 +178,6 @@ The following example shows another way to use the `compose` method to allow for
       this.model.fetch();
     },
 
-    check: function() {return this.model.id === 42;}
+    check: function() {return this.model.id !== 42;}
   });
 ```
