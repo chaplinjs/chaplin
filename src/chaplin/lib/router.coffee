@@ -140,7 +140,8 @@ module.exports = class Router # This class does not extend Backbone.Router.
       # Update the URL programmatically after routing.
       _.defaults options, changeURL: true
 
-      handler.callback path or params, options
+      pathParams = if path? then path else params
+      handler.callback pathParams, options
       true
     else
       throw new Error 'Router#route: request was not routed'
