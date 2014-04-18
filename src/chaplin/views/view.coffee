@@ -446,7 +446,7 @@ module.exports = class View extends Backbone.View
 
     # Automatically append to DOM if the container element is set
     # and the element is not already in the DOM.
-    if @container and not (document.body.compareDocumentPosition(@el) & Node.DOCUMENT_POSITION_CONTAINED_BY)
+    if @container and not utils.elementContains document.body, @el
       attach this
       # Trigger an event.
       @trigger 'addedToDOM'
