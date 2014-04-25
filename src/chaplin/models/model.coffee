@@ -59,6 +59,13 @@ module.exports = class Model extends Backbone.Model
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
 
+
+  constructor: ->
+    super
+    # Set up declarative bindings after `initialize` has been called
+    # so initialize may create or bind methods.
+    @delegateListeners()
+
   # This method is used to get the attributes for the view template
   # and might be overwritten by decorators which cannot create a
   # proper `attributes` getter due to ECMAScript 3 limits.

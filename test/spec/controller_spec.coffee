@@ -91,6 +91,51 @@ define [
       expect(spy).was.calledOnce()
       expect(spy).was.calledWith 'meh'
 
+    describe 'Events', ->
+      class EventedController extends Controller
+        listen:
+          # self
+          'ns:a': 'a1Handler'
+          'ns:b': ->
+            @a2Handler arguments...
+
+          # mediator
+          'ns:a mediator': 'a1Handler'
+          'ns:b mediator': 'a2Handler'
+
+        initialize: ->
+          super
+          @a1Handler = sinon.spy()
+          @a2Handler = sinon.spy()
+
+      it 'should bind to own events declaratively', ->
+        controller = new EventedController()
+
+        expect(controller.a1Handler).was.notCalled()
+        expect(controller.a2Handler).was.notCalled()
+
+        controller.trigger 'ns:a'
+        expect(controller.a1Handler).was.calledOnce()
+        expect(controller.a2Handler).was.notCalled()
+
+        controller.trigger 'ns:b'
+        expect(controller.a1Handler).was.calledOnce()
+        expect(controller.a2Handler).was.calledOnce()
+
+      it 'should bind to mediator events declaratively', ->
+        controller = new EventedController()
+
+        expect(controller.a1Handler).was.notCalled()
+        expect(controller.a2Handler).was.notCalled()
+
+        mediator.publish 'ns:a'
+        expect(controller.a1Handler).was.calledOnce()
+        expect(controller.a2Handler).was.notCalled()
+
+        mediator.publish 'ns:b'
+        expect(controller.a1Handler).was.calledOnce()
+        expect(controller.a2Handler).was.calledOnce()
+
     describe 'Disposal', ->
       mediator.setHandler 'region:unregister', ->
 

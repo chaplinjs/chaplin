@@ -1,6 +1,7 @@
 'use strict'
 
 mediator = require 'chaplin/mediator'
+utils = require 'chaplin/lib/utils'
 
 # Add functionality to subscribe and publish to global
 # Publish/Subscribe events so they can be removed afterwards
@@ -52,6 +53,37 @@ EventBroker =
 
     # Publish global handler.
     mediator.publish type, args...
+
+  # Handle declarative event bindings from `listen`
+  delegateListeners: ->
+    return unless @listen
+
+    # Walk all `listen` hashes in the prototype chain.
+    for version in utils.getAllPropertyVersions this, 'listen'
+      for key, method of version
+        # Get the method, ensure it is a function.
+        if typeof method isnt 'function'
+          method = this[method]
+        if typeof method isnt 'function'
+          throw new Error 'EventBroker#delegateListeners: ' +
+            "#{method} must be function"
+
+        # Split event name and target.
+        [eventName, target] = key.split ' '
+        @delegateListener eventName, target, method
+
+    return
+
+  delegateListener: (eventName, target, callback) ->
+    if target in ['model', 'collection']
+      prop = this[target]
+      @listenTo prop, eventName, callback if prop
+    else if target is 'mediator'
+      @subscribeEvent eventName, callback
+    else if not target
+      @on eventName, callback, this
+
+    return
 
 # You’re frozen when your heart’s not open.
 Object.freeze? EventBroker

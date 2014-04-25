@@ -276,37 +276,6 @@ module.exports = class View extends Backbone.View
     else
       @$el.off ".delegate#{@cid}"
 
-  # Handle declarative event bindings from `listen`
-  delegateListeners: ->
-    return unless @listen
-
-    # Walk all `listen` hashes in the prototype chain.
-    for version in utils.getAllPropertyVersions this, 'listen'
-      for key, method of version
-        # Get the method, ensure it is a function.
-        if typeof method isnt 'function'
-          method = this[method]
-        if typeof method isnt 'function'
-          throw new Error 'View#delegateListeners: ' +
-            "#{method} must be function"
-
-        # Split event name and target.
-        [eventName, target] = key.split ' '
-        @delegateListener eventName, target, method
-
-    return
-
-  delegateListener: (eventName, target, callback) ->
-    if target in ['model', 'collection']
-      prop = this[target]
-      @listenTo prop, eventName, callback if prop
-    else if target is 'mediator'
-      @subscribeEvent eventName, callback
-    else if not target
-      @on eventName, callback, this
-
-    return
-
   # Region management
   # -----------------
 
