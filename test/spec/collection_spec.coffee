@@ -47,6 +47,51 @@ define [
       expect(actual[1].id).to.be expected[1].id
       expect(actual[1].foo).to.be expected[1].foo
 
+    describe 'Events', ->
+      class EventedCollection extends Collection
+        listen:
+          # self
+          'ns:a': 'a1Handler'
+          'add': ->
+            @a2Handler arguments...
+
+          # mediator
+          'ns:a mediator': 'a1Handler'
+          'ns:b mediator': 'a2Handler'
+
+        initialize: ->
+          super
+          @a1Handler = sinon.spy()
+          @a2Handler = sinon.spy()
+
+      it 'should bind to own events declaratively', ->
+        collection = new EventedCollection()
+
+        expect(collection.a1Handler).was.notCalled()
+        expect(collection.a2Handler).was.notCalled()
+
+        collection.trigger 'ns:a'
+        expect(collection.a1Handler).was.calledOnce()
+        expect(collection.a2Handler).was.notCalled()
+
+        collection.trigger 'add'
+        expect(collection.a1Handler).was.calledOnce()
+        expect(collection.a2Handler).was.calledOnce()
+
+      it 'should bind to mediator events declaratively', ->
+        collection = new EventedCollection()
+
+        expect(collection.a1Handler).was.notCalled()
+        expect(collection.a2Handler).was.notCalled()
+
+        mediator.publish 'ns:a'
+        expect(collection.a1Handler).was.calledOnce()
+        expect(collection.a2Handler).was.notCalled()
+
+        mediator.publish 'ns:b'
+        expect(collection.a1Handler).was.calledOnce()
+        expect(collection.a2Handler).was.calledOnce()
+
     describe 'Disposal', ->
       it 'should dispose itself correctly', ->
         expect(collection.dispose).to.be.a 'function'
