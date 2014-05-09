@@ -96,7 +96,7 @@ module.exports = class Model extends Backbone.Model
     # and event handlers.
     properties = [
       'collection',
-      'attributes', 'changed'
+      'attributes', 'changed', 'defaults',
       '_escapedAttributes', '_previousAttributes',
       '_silent', '_pending',
       '_callbacks'
