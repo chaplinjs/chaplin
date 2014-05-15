@@ -138,6 +138,47 @@ define [
       expect(actual.collection[0].number).to.be 'four'
       expect(actual.collection[1].number).to.be 'five'
 
+    describe 'Events', ->
+      class EventedModel extends Model
+        listen:
+          # self
+          'ns:a': 'a1Handler'
+          'change:test': ->
+            @a2Handler arguments...
+
+          # mediator
+          'ns:a mediator': 'a1Handler'
+          'ns:b mediator': 'a2Handler'
+
+        initialize: ->
+          super
+          @a1Handler = sinon.spy()
+          @a2Handler = sinon.spy()
+
+      it 'should bind to own events declaratively', ->
+        model = new EventedModel()
+
+        expect(model.a1Handler).was.notCalled()
+        expect(model.a2Handler).was.notCalled()
+
+        model.trigger 'ns:a'
+        expect(model.a1Handler).was.calledOnce()
+        expect(model.a2Handler).was.notCalled()
+
+        model.trigger 'change:test'
+        expect(model.a1Handler).was.calledOnce()
+        expect(model.a2Handler).was.calledOnce()
+
+      it 'should bind to mediator events declaratively', ->
+        model = new EventedModel()
+
+        expect(model.a1Handler).was.notCalled()
+        expect(model.a2Handler).was.notCalled()
+
+        mediator.publish 'ns:a'
+        expect(model.a1Handler).was.calledOnce()
+        expect(model.a2Handler).was.notCalled()
+
     describe 'Disposal', ->
       it 'should dispose itself correctly', ->
         expect(model.dispose).to.be.a 'function'

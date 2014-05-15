@@ -15,6 +15,12 @@ module.exports = class Collection extends Backbone.Collection
   # Use the Chaplin model per default, not Backbone.Model.
   model: Model
 
+  constructor: ->
+    super
+    # Set up declarative bindings after `initialize` has been called
+    # so initialize may create or bind methods.
+    @delegateListeners()
+
   # Serializes collection.
   serialize: ->
     @map utils.serialize

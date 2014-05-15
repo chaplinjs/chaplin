@@ -23,6 +23,10 @@ module.exports = class Controller
   constructor: ->
     @initialize arguments...
 
+    # Set up declarative bindings after `initialize` has been called
+    # so initialize may create or bind methods.
+    @delegateListeners()
+
   initialize: ->
     # Empty per default.
 
