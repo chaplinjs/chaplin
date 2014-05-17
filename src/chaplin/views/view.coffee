@@ -288,7 +288,7 @@ module.exports = class View extends Backbone.View
           method = this[method]
         if typeof method isnt 'function'
           throw new Error 'View#delegateListeners: ' +
-            "#{method} must be function"
+            "listener for \"#{key}\" must be function"
 
         # Split event name and target.
         [eventName, target] = key.split ' '
