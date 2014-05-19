@@ -245,7 +245,7 @@ module.exports = class View extends Backbone.View
     return @_delegateEvents events if events
     # Call _delegateEvents for all superclasses’ `events`.
     for classEvents in utils.getAllPropertyVersions this, 'events'
-      classEvents = classEvents() if typeof classEvents is 'function'
+      classEvents = classEvents.call this if typeof classEvents is 'function'
       @_delegateEvents classEvents
     return
 
