@@ -364,6 +364,7 @@ define [
       e = new E
       window.clickOnElement e.el
       expect(e.handler).was.calledOnce()
+      expect(e.handler).was.calledOn(e)
 
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
