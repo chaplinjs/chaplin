@@ -355,11 +355,15 @@ define [
           expect(d.globalHandler.callCount).to.be 4
           done()
 
-    it 'should throw an error when function is passed as second arg', ->
+    it 'should allow events to be passed as a function', ->
       class E extends TestView
         events: ->
+          'click': 'handler'
+        handler: sinon.spy()
 
-      expect(-> new E).to.throwError()
+      e = new E
+      window.clickOnElement e.el
+      expect(e.handler).was.calledOnce()
 
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
