@@ -366,6 +366,17 @@ define [
       expect(e.handler).was.calledOnce()
       expect(e.handler).was.calledOn(e)
 
+    it 'should allow "listen" to be passed as a function', ->
+      class E extends TestView
+        listen: ->
+          'test': 'handler'
+        handler: sinon.spy()
+
+      e = new E
+      e.trigger 'test'
+      expect(e.handler).was.calledOnce()
+      expect(e.handler).was.calledOn(e)
+
     it 'should add and return subviews', ->
       expect(view.subview).to.be.a 'function'
 
