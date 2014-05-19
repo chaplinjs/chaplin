@@ -281,6 +281,7 @@ module.exports = class View extends Backbone.View
 
     # Walk all `listen` hashes in the prototype chain.
     for version in utils.getAllPropertyVersions this, 'listen'
+      version = version.call this if typeof version is 'function'
       for key, method of version
         # Get the method, ensure it is a function.
         if typeof method isnt 'function'
