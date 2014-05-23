@@ -29,6 +29,20 @@ EventBroker =
     # Register global handler, force context to the subscriber.
     mediator.subscribe type, handler, this
 
+  subscribeEventOnce: (type, handler) ->
+    if typeof type isnt 'string'
+      throw new TypeError 'EventBroker#subscribeEventOnce: ' +
+        'type argument must be a string'
+    if typeof handler isnt 'function'
+      throw new TypeError 'EventBroker#subscribeEventOnce: ' +
+        'handler argument must be a function'
+
+    # Ensure that a handler isn’t registered twice.
+    mediator.unsubscribe type, handler, this
+
+    # Register global handler, force context to the subscriber.
+    mediator.subscribeOnce type, handler, this
+
   unsubscribeEvent: (type, handler) ->
     if typeof type isnt 'string'
       throw new TypeError 'EventBroker#unsubscribeEvent: ' +
