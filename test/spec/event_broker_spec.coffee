@@ -38,6 +38,18 @@ define [
 
       mediator.unsubscribe type, spy
 
+    it 'should not call "once" handler twice', ->
+      type = 'eventBrokerTest'
+      spy = sinon.spy()
+      eventBroker.subscribeEventOnce type, spy
+      eventBroker.subscribeEventOnce type, spy
+
+      mediator.publish type, 1, 2, 3, 4
+      mediator.publish type, 5, 6, 7, 8
+      expect(spy).was.calledOnce()
+      expect(spy).was.calledWith 1, 2, 3, 4
+      expect(spy).was.calledOn eventBroker
+
     it 'should unsubscribe from events', ->
       expect(eventBroker.unsubscribeEvent).to.be.a 'function'
 
