@@ -38,6 +38,8 @@ module.exports = class Route
     # Clone options.
     @options = if options then _.extend({}, options) else {}
 
+    @options.significantQS = true if @options.significantQS isnt false
+
     # Store the name on the route if given
     @name = @options.name if @options.name?
 
@@ -79,6 +81,7 @@ module.exports = class Route
   # Generates route URL from params.
   reverse: (params, query) ->
     params = @normalizeParams params
+    remainingParams = _.extend {}, params
     return false if params is false
 
     url = @pattern
@@ -89,11 +92,13 @@ module.exports = class Route
     for name in @requiredParams
       value = params[name]
       url = url.replace ///[:*]#{name}///g, value
+      delete remainingParams[name]
 
     # Replace optional params.
     for name in @optionalParams
       if value = params[name]
         url = url.replace ///[:*]#{name}///g, value
+        delete remainingParams[name]
 
     # Kill unfulfilled optional portions.
     raw = url.replace optionalRegExp, (match, portion) ->
@@ -105,14 +110,18 @@ module.exports = class Route
     # Add or remove trailing slash according to the Route options.
     url = processTrailingSlash raw, @options.trailing
 
-    return url unless query
+    return url unless query or not _.isEmpty remainingParams
 
     # Stringify query params if needed.
     if typeof query is 'object'
+      query = _.extend remainingParams, query if @options.significantQS
       queryString = utils.queryParams.stringify query
       url += if queryString then '?' + queryString else ''
     else
-      url += (if query[0] is '?' then '' else '?') + query
+      query ?= ''
+      query += utils.queryParams.stringify remainingParams if @options.significantQS
+      url += (if query[0] is '?' then '' else '?') + query if query
+      url
 
   # Validates incoming params and returns them in a unified form - hash
   normalizeParams: (params) ->
