@@ -24,6 +24,6 @@
   "main": "build/chaplin.js",
   "scripts": {
     "install": "grunt clean build",
-    "test": "grunt clean prepare test"
+    "test": "grunt prepare test"
   }
 }
