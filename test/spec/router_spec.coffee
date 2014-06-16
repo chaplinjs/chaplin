@@ -493,6 +493,14 @@ define [
         url = route.reverse id: 23, two: 3
         expect(url).to.be 'items/23?two=3'
 
+        url = route.reverse {id: 23, two: 3}, {four: 5}
+        expect(url).to.match /^items\/23\?/
+        expect(utils.queryParams.parse(url)).to.eql {two: 3, four: 5}
+
+        url = route.reverse id: 23, two: 3, "four=5"
+        expect(url).to.match /^items\/23\?/
+        expect(utils.queryParams.parse(url)).to.eql {two: 3, four: 5}
+
         route = new Route 'items/:id', 'null', 'null', significantQS: false
         url = route.reverse id: 23, two: 3
         expect(url).to.be 'items/23'

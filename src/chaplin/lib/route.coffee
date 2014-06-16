@@ -110,18 +110,11 @@ module.exports = class Route
     # Add or remove trailing slash according to the Route options.
     url = processTrailingSlash raw, @options.trailing
 
-    return url unless query or not _.isEmpty remainingParams
+    query = utils.queryParams.parse query if typeof query isnt 'object'
+    _.extend query, remainingParams unless @options.significantQS is false
 
-    # Stringify query params if needed.
-    if typeof query is 'object'
-      query = _.extend remainingParams, query if @options.significantQS
-      queryString = utils.queryParams.stringify query
-      url += if queryString then '?' + queryString else ''
-    else
-      query ?= ''
-      query += utils.queryParams.stringify remainingParams if @options.significantQS
-      url += (if query[0] is '?' then '' else '?') + query if query
-      url
+    url += '?' + utils.queryParams.stringify query unless _.isEmpty query
+    url
 
   # Validates incoming params and returns them in a unified form - hash
   normalizeParams: (params) ->
