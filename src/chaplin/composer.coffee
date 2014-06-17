@@ -80,7 +80,11 @@ module.exports = class Composer
         else
           return @_compose name, options: third, compose: ->
             # The compose method here just constructs the class.
-            @item = new second @options
+            # Model and Collection both take `options` as the second argument.
+            if second.prototype instanceof Backbone.Model or second.prototype instanceof Backbone.Collection
+              @item = new second null, @options
+            else
+              @item = new second @options
 
             # Render this item if it has a render method and it either
             # doesn't have an autoRender property or that autoRender

@@ -179,6 +179,13 @@ define [
 
       mediator.publish 'dispatcher:dispatch'
 
+    it 'should allow a model to be composed with options', ->
+      mediator.execute 'composer:compose', 'spy', Model, { collection: 2 }
+
+      expect(composer.compositions['spy'].item.collection).to.be 2
+
+      mediator.publish 'dispatcher:dispatch'
+
     it 'should allow a composition to be composed', ->
       spy = sinon.spy()
 
