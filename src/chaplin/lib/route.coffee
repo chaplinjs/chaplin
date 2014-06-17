@@ -38,7 +38,7 @@ module.exports = class Route
     # Clone options.
     @options = if options then _.extend({}, options) else {}
 
-    @options.significantQS = true if @options.significantQS isnt false
+    @options.paramsInQS = true if @options.paramsInQS isnt false
 
     # Store the name on the route if given
     @name = @options.name if @options.name?
@@ -111,8 +111,7 @@ module.exports = class Route
     url = processTrailingSlash raw, @options.trailing
 
     query = utils.queryParams.parse query if typeof query isnt 'object'
-    _.extend query, remainingParams unless @options.significantQS is false
-
+    _.extend query, remainingParams unless @options.paramsInQS is false
     url += '?' + utils.queryParams.stringify query unless _.isEmpty query
     url
 
