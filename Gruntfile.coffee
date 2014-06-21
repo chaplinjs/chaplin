@@ -139,7 +139,7 @@ module.exports = (grunt) ->
               author: 'Chaplin team',
               license: 'MIT',
               bugs: { url: 'https://github.com/chaplinjs/downloads/issues' },
-              dependencies: { backbone: '1.x', underscore: '1.x' }
+              dependencies: { backbone: '~1.1.2', underscore: '~1.6.0' }
             }
           }
         ]
