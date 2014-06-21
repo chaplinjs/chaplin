@@ -122,7 +122,7 @@ module.exports = (grunt) ->
               version: pkg.version,
               main: 'chaplin.js',
               scripts: ['chaplin.js'],
-              dependencies: (obj = {}; obj["#{ componentsFolder }/backbone"] = '1.0.0'; obj)
+              dependencies: (obj = {}; obj["#{ componentsFolder }/backbone"] = '1.x'; obj)
             }
           },
           {
@@ -139,7 +139,7 @@ module.exports = (grunt) ->
               author: 'Chaplin team',
               license: 'MIT',
               bugs: { url: 'https://github.com/chaplinjs/downloads/issues' },
-              dependencies: { backbone: '~1.0.0', underscore: '~1.5.1' }
+              dependencies: { backbone: '1.x', underscore: '1.x' }
             }
           }
         ]
