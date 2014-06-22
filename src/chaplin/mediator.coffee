@@ -27,9 +27,10 @@ mediator = {}
 
 # Mixin event methods from Backbone.Events,
 # create Publish/Subscribe aliases.
-mediator.subscribe   = Backbone.Events.on
-mediator.unsubscribe = Backbone.Events.off
-mediator.publish     = Backbone.Events.trigger
+mediator.subscribe     = mediator.on      = Backbone.Events.on
+mediator.subscribeOnce = mediator.once    = Backbone.Events.once
+mediator.unsubscribe   = mediator.off     = Backbone.Events.off
+mediator.publish       = mediator.trigger = Backbone.Events.trigger
 
 # Initialize an empty callback list so we might seal the mediator later.
 mediator._callbacks = null
@@ -75,7 +76,7 @@ mediator.removeHandlers = (instanceOrNames) ->
 
 # Make properties readonly.
 utils.readonly mediator,
-  'subscribe', 'unsubscribe', 'publish', 'setHandler', 'execute', 'removeHandlers'
+  'subscribe', 'subscribeOnce', 'unsubscribe', 'publish', 'setHandler', 'execute', 'removeHandlers'
 
 # Sealing the mediator
 # --------------------

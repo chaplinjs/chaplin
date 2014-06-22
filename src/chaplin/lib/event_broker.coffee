@@ -16,27 +16,20 @@ mediator = require 'chaplin/mediator'
 
 EventBroker =
   subscribeEvent: (type, handler) ->
-    if typeof type isnt 'string'
-      throw new TypeError 'EventBroker#subscribeEvent: ' +
-        'type argument must be a string'
-    if typeof handler isnt 'function'
-      throw new TypeError 'EventBroker#subscribeEvent: ' +
-        'handler argument must be a function'
-
     # Ensure that a handler isn’t registered twice.
     mediator.unsubscribe type, handler, this
 
     # Register global handler, force context to the subscriber.
     mediator.subscribe type, handler, this
 
-  unsubscribeEvent: (type, handler) ->
-    if typeof type isnt 'string'
-      throw new TypeError 'EventBroker#unsubscribeEvent: ' +
-        'type argument must be a string'
-    if typeof handler isnt 'function'
-      throw new TypeError 'EventBroker#unsubscribeEvent: ' +
-        'handler argument must be a function'
+  subscribeEventOnce: (type, handler) ->
+    # Ensure that a handler isn’t registered twice.
+    mediator.unsubscribe type, handler, this
 
+    # Register global handler, force context to the subscriber.
+    mediator.subscribeOnce type, handler, this
+
+  unsubscribeEvent: (type, handler) ->
     # Remove global handler.
     mediator.unsubscribe type, handler
 
@@ -46,10 +39,6 @@ EventBroker =
     mediator.unsubscribe null, null, this
 
   publishEvent: (type, args...) ->
-    if typeof type isnt 'string'
-      throw new TypeError 'EventBroker#publishEvent: ' +
-        'type argument must be a string'
-
     # Publish global handler.
     mediator.publish type, args...
 

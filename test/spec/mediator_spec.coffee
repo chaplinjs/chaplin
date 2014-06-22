@@ -12,6 +12,7 @@ define [
 
     it 'should have Pub/Sub methods', ->
       expect(mediator.subscribe).to.be.a 'function'
+      expect(mediator.subscribeOnce).to.be.a 'function'
       expect(mediator.unsubscribe).to.be.a 'function'
       expect(mediator.publish).to.be.a 'function'
 
@@ -19,7 +20,7 @@ define [
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
       methods = [
-        'subscribe', 'unsubscribe', 'publish',
+        'subscribe', 'subscribeOnce', 'unsubscribe', 'publish',
         'setHandler', 'execute', 'removeHandlers'
       ]
       for property in methods
@@ -38,6 +39,18 @@ define [
 
       expect(spy).was.calledWith payload
       mediator.unsubscribe eventName, spy
+
+    it 'should publish messages to subscribers once', ->
+      spy = sinon.spy()
+      eventName = 'foo'
+      payload = 'payload'
+
+      mediator.subscribeOnce eventName, spy
+      mediator.publish eventName, payload
+      mediator.publish eventName, "second"
+
+      expect(spy).was.calledOnce()
+      expect(spy).was.calledWith payload
 
     it 'should allow to unsubscribe to events', ->
       spy = sinon.spy()
