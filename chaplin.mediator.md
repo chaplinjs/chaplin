@@ -82,3 +82,21 @@ Chaplin.mediator.unsubscribe 'login', @doSomething
 ```javascript
 Chaplin.mediator.unsubscribe('login', this.doSomething);
 ```
+
+To add some property on mediator, it is suggested to do it in `Application#initMediator`, when mediator is getting sealed:
+
+```coffeescript
+class Application extends Chaplin.Application
+  initMediator: ->
+    Chaplin.mediator.prop = {hello: 'world'}
+    super
+```
+
+```javascript
+var Application = Chaplin.Application.extend({
+  initMediator: function() {
+    Chaplin.mediator.prop = {hello: 'world'};
+    this.constructor.__super__.initMediator.call(this);
+  }
+})
+```
