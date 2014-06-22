@@ -126,6 +126,7 @@ utils =
     parse: (queryString) ->
       params = {}
       return params unless queryString
+      queryString = queryString.slice queryString.indexOf('?') + 1
       pairs = queryString.split '&'
       for pair in pairs
         continue unless pair.length

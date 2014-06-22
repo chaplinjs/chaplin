@@ -488,6 +488,24 @@ define [
         expect(route.reverse two: 2).to.eql false
         expect(route.reverse()).to.eql false
 
+      it 'should append any extra params as querystring params', ->
+        route = new Route 'items/:id', 'null', 'null'
+        url = route.reverse id: 23, two: 3
+        expect(url).to.be 'items/23?two=3'
+
+        url = route.reverse {id: 23, two: 3}, {four: 5}
+        expect(url).to.match /^items\/23\?/
+        expect(utils.queryParams.parse(url)).to.eql {two: 3, four: 5}
+
+        url = route.reverse id: 23, two: 3, "four=5"
+        expect(url).to.match /^items\/23\?/
+        expect(utils.queryParams.parse(url)).to.eql {two: 3, four: 5}
+
+      it 'should not set extra params to querstring when paramsInQS is false'
+        route = new Route 'items/:id', 'null', 'null', paramsInQS: false
+        url = route.reverse id: 23, two: 3
+        expect(url).to.be 'items/23'
+
       it 'should add trailing slash accordingly to current options', ->
         route = new Route 'params', 'null', 'null', trailing: true
         url = route.reverse()

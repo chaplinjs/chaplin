@@ -117,6 +117,9 @@ define [
       it 'should deserialize query parameters from query string into object', ->
         expect(utils.querystring.parse queryString).to.eql queryParams
 
+      it 'should take a full url and only return params object', ->
+        expect(utils.querystring.parse "http://foo.com/app/path?#{queryString}").to.eql queryParams
+
       it 'should have old methods', ->
         expect(utils.queryParams.stringify).to.be.a 'function'
         expect(utils.queryParams.parse).to.be.a 'function'
