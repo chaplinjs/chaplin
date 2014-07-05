@@ -6,7 +6,7 @@ mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
-module.exports = class Dispatcher
+module.exports = class Dispatcherc
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
@@ -110,8 +110,8 @@ module.exports = class Dispatcher
 
     # Save the new controller and its parameters.
     @currentController = controller
-    @currentParams = params
-    @currentQuery = options.query
+    @currentParams = _.clone params
+    @currentQuery = _.clone options.query
 
     # Call the controller action with params and options.
     controller[route.action] params, route, options
