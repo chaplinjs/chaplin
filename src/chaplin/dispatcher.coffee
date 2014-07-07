@@ -6,7 +6,7 @@ mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
-module.exports = class Dispatcherc
+module.exports = class Dispatcher
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 
