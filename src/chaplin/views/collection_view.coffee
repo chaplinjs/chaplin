@@ -46,7 +46,7 @@ endAnimation = do ->
   else
     (elem, duration) ->
       elem.style.transition = "opacity #{(duration / 1000)}s"
-      elem.opacity = 1
+      elem.style.opacity = 1
 
 insertView = do ->
   if $
