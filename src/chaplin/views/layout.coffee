@@ -99,7 +99,7 @@ module.exports = class Layout extends View
   isExternalLink: (link) ->
     link.target is '_blank' or
     link.rel is 'external' or
-    link.protocol not in ['http:', 'https:', 'file:'] or
+    link.protocol not in ['http:', 'https:', location.protocol] or
     link.hostname not in [location.hostname, '']
 
   # Handle all clicks on A elements and try to route them internally.
