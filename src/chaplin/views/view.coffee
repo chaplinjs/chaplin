@@ -6,42 +6,6 @@ mediator = require 'chaplin/mediator'
 EventBroker = require 'chaplin/lib/event_broker'
 utils = require 'chaplin/lib/utils'
 
-# Shortcut to access the DOM manipulation library.
-$ = Backbone.$
-
-# Function bind shortcut.
-bind = do ->
-  if Function::bind
-    (item, ctx) -> item.bind ctx
-  else if _.bind
-    _.bind
-
-setHTML = do ->
-  if $
-    (elem, html) -> $(elem).html html
-  else
-    (elem, html) -> elem.innerHTML = html
-
-attach = do ->
-  if $
-    (view) ->
-      actual = $(view.container)
-      if typeof view.containerMethod is 'function'
-        view.containerMethod actual, view.el
-      else
-        actual[view.containerMethod] view.el
-  else
-    (view) ->
-      actual = if typeof view.container is 'string'
-        document.querySelector view.container
-      else
-        view.container
-
-      if typeof view.containerMethod is 'function'
-        view.containerMethod actual, view.el
-      else
-        actual[view.containerMethod] view.el
-
 module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
@@ -69,7 +33,7 @@ module.exports = class View extends Backbone.View
 
   # Method which is used for adding the view to the DOM
   # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
-  containerMethod: if $ then 'append' else 'appendChild'
+  containerMethod: if Backbone.$ then 'append' else 'appendChild'
 
   # Regions
   # -------
@@ -152,7 +116,7 @@ module.exports = class View extends Backbone.View
           @el =
             if region.instance.container?
               if region.instance.region?
-                $(region.instance.container).find region.selector
+                Backbone.$(region.instance.container).find region.selector
               else
                 region.instance.container
             else
@@ -193,7 +157,7 @@ module.exports = class View extends Backbone.View
       match = key.match /^(\S+)\s*(.*)$/
       eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
-      bound = bind handler, this
+      bound = _.bind handler, this
       @delegate eventName, (selector or null), bound
     return
 
@@ -367,10 +331,15 @@ module.exports = class View extends Backbone.View
         # Delegate events to the top-level container in the template.
         @setElement el.firstChild, true
       else
-        setHTML @el, html
+        @setHTML html
 
     # Return the view.
     this
+
+  # Set the innerHTML of the view's `el`. Override this method to support
+  # older browsers (IE needs the html empty before, e.g.)
+  setHTML: (html) ->
+    @el.innerHTML = html
 
   # This method is called after a specific `render` of a derived class.
   attach: ->
@@ -379,8 +348,25 @@ module.exports = class View extends Backbone.View
 
     # Automatically append to DOM if the container element is set.
     if @container and not document.body.contains @el
-      attach this
-      # Trigger an event.
+      if Backbone.$
+        actual = Backbone.$(this.container)
+        if typeof this.containerMethod is 'function'
+          this.containerMethod actual, this.el
+        else
+          actual[this.containerMethod] this.el
+      else
+        actual = if typeof this.container is 'string'
+          document.querySelector this.container
+        else
+          this.container
+
+        if typeof this.containerMethod is 'function'
+          this.containerMethod actual, this.el
+        else
+          actual[this.containerMethod] this.el
+
+      # Hook into this event for things that require the view to be in the DOM
+      # (like calculating height / width or position).
       @trigger 'addedToDOM'
 
   # Disposal

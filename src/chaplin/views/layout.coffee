@@ -7,9 +7,6 @@ utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 View = require 'chaplin/views/view'
 
-# Shortcut to access the DOM manipulation library.
-$ = Backbone.$
-
 module.exports = class Layout extends View
   # Bind to document body by default.
   el: 'body'
@@ -100,7 +97,7 @@ module.exports = class Layout extends View
   openLink: (event) =>
     return if utils.modifierKeyPressed(event)
 
-    el = if $ then event.currentTarget else event.delegateTarget
+    el = if Backbone.$ then event.currentTarget else event.delegateTarget
     isAnchor = el.nodeName is 'A'
 
     # Get the href and perform checks on it.
@@ -118,7 +115,7 @@ module.exports = class Layout extends View
     skipRouting = @settings.skipRouting
     type = typeof skipRouting
     return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and (if $ then $(el).is(skipRouting) else Backbone.utils.matchesSelector el, skipRouting)
+      type is 'string' and (if Backbone.$ then Backbone.$(el).is(skipRouting) else el.matches skipRouting)
 
     # Handle external links.
     external = isAnchor and @isExternalLink el
@@ -206,14 +203,14 @@ module.exports = class Layout extends View
 
     # Apply the region selector.
     instance.container = if region.selector is ''
-      if $
+      if Backbone.$
         region.instance.$el
       else
         region.instance.el
     else
       if region.instance.noWrap
-        if $
-          $(region.instance.container).find region.selector
+        if Backbone.$
+          Backbone.$(region.instance.container).find region.selector
         else
           region.instance.container.querySelector region.selector
       else
