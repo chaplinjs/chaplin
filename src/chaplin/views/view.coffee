@@ -112,8 +112,8 @@ module.exports = class View extends Backbone.View
   # --------------
 
   # List of options that will be picked from constructor.
-  # Easy to extend: `optionNames: View::optionNames.concat ['template']`
-  optionNames: [
+  # Easy to extend: `optionNames: -> super.concat ['template']`
+  optionNames: -> [
     'autoAttach', 'autoRender',
     'container', 'containerMethod',
     'region', 'regions'
@@ -123,7 +123,8 @@ module.exports = class View extends Backbone.View
   constructor: (options) ->
     # Copy some options to instance properties.
     if options
-      for optName, optValue of options when optName in @optionNames
+      optionNames = @optionNames()
+      for optName, optValue of options when optName in optionNames
         this[optName] = optValue
 
     # Wrap `render` so `attach` is called afterwards.
