@@ -9,6 +9,8 @@ define [
 ], (_, jQuery, Model, Collection, View, CollectionView, SyncMachine) ->
   'use strict'
 
+  jQuery = null unless jQuery?.fn
+
   describe 'CollectionView', ->
     # Initialize shared variables
     collection = null
