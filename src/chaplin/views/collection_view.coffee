@@ -104,6 +104,7 @@ module.exports = class CollectionView extends View
 
   # The actual element which is fetched using `listSelector`
   $list: null
+  listEl: null
 
   # Selector for a fallback element which is shown if the collection is empty.
   fallbackSelector: null
@@ -119,7 +120,7 @@ module.exports = class CollectionView extends View
   $loading: null
 
   # Selector which identifies child elements belonging to collection
-  # If empty, all children of $list are considered.
+  # If empty, all children of listEl are considered.
   itemSelector: null
 
   # Filtering
@@ -190,10 +191,11 @@ module.exports = class CollectionView extends View
   render: ->
     super
 
-    # Set the $list property with the actual list container.
+    # Set the listEl property with the actual list container.
     listSelector = _.result this, 'listSelector'
 
-    @$list = if listSelector then @$(listSelector)[0] else @el
+    @listEl = if listSelector then @$(listSelector)[0] else @el
+    @$list = Backbone.$ @listEl if Backbone.$
 
     @initFallback()
     @initLoadingIndicator()
@@ -415,7 +417,7 @@ module.exports = class CollectionView extends View
     length = @collection.length
 
     # Insert the view into the list.
-    insertView @$list, view.el, position, length, @itemSelector
+    insertView @listEl, view.el, position, length, @itemSelector
 
     # Tell the view that it was added to its parent.
     view.trigger 'addedToParent'
@@ -473,7 +475,7 @@ module.exports = class CollectionView extends View
     return if @disposed
 
     # Remove jQuery objects, item view cache and visible items list.
-    properties = ['$list', '$fallback', '$loading', 'visibleItems']
+    properties = ['$list', 'listEl', '$fallback', '$loading', 'visibleItems']
     delete this[prop] for prop in properties
 
     # Self-disposal.
