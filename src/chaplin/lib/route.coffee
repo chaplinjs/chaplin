@@ -123,7 +123,8 @@ module.exports = class Route
 
       # Convert params from array into object.
       paramsHash = {}
-      for paramName, paramIndex in @requiredParams
+      routeParams = @requiredParams.concat @optionalParams
+      for paramName, paramIndex in routeParams
         paramsHash[paramName] = params[paramIndex]
 
       return false unless @testConstraints paramsHash
