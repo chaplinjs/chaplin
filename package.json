@@ -11,7 +11,7 @@
     "grunt-contrib-copy": "0.4.x",
     "grunt-contrib-compress": "0.4.x",
     "grunt-contrib-watch": "0.1.4",
-    "grunt-bower-task": "0.3.x",
+    "grunt-bower-task": "0.4.x",
     "grunt-contrib-uglify": "0.2.x",
     "grunt-istanbul": "0.2.x",
     "grunt-urequire": "git://github.com/concordusapps/grunt-urequire",
