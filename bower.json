@@ -30,5 +30,10 @@
     "jquery": {
       ".": "jquery.js"
     }
-  }
+  },
+  "main": "build/chaplin.js",
+  "ignore": [
+    "src",
+    "test"
+  ]
 }

@@ -2,7 +2,6 @@
 .DS_Store
 
 # Generated folders from build process
-/build
 temp*
 
 # Local package dependencies
