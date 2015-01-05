@@ -79,8 +79,8 @@ module.exports = (grunt) ->
     # -----------------
     urequire:
       AMD:
-        bundlePath: 'temp/'
-        outputPath: 'temp/'
+        path: 'src/'
+        dstPath: 'temp/'
 
         options:
           forceOverwriteSources: true
@@ -139,7 +139,7 @@ module.exports = (grunt) ->
               author: 'Chaplin team',
               license: 'MIT',
               bugs: { url: 'https://github.com/chaplinjs/downloads/issues' },
-              dependencies: { backbone: '~1.1.2', underscore: '~1.6.0' }
+              dependencies: { backbone: '~1.1.2', underscore: '~1.6.0', requirejs: '2.1.1' }
             }
           }
         ]
