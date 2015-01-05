@@ -180,6 +180,17 @@ module.exports = class View extends Backbone.View
     # Render automatically if set by options or instance property.
     @render() if @autoRender
 
+  # Override `Backbone.$`
+  # -------------------------
+
+  # This makes it safer for views to call `@$` after disposal,
+  # which happens fairly often when dealing with async callbacks.
+  $: ->
+    if @disposed
+     return $()
+    else
+      return super
+
   # User input event handling
   # -------------------------
 

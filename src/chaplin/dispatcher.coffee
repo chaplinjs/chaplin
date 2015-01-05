@@ -2,6 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
+requirejs = require 'require'
 mediator = require 'chaplin/mediator'
 utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
@@ -80,10 +81,10 @@ module.exports = class Dispatcher
     fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
     if define?.amd
-      require [moduleName], handler
+      requirejs [moduleName], handler
     else
       setTimeout =>
-        handler require moduleName
+        handler requirejs(moduleName)
       , 0
 
   # Handler for the controller lazy-loading.
