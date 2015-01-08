@@ -5,11 +5,6 @@ Backbone = require 'backbone'
 View = require 'chaplin/views/view'
 utils = require 'chaplin/lib/utils'
 
-filterChildren = (nodeList, selector) ->
-  return nodeList unless selector
-  for node in nodeList when Backbone.utils.matchesSelector node, selector
-    node
-
 toggleElement = (elem, visible) ->
   if Backbone.$
     $(elem).toggle visible
@@ -35,7 +30,7 @@ insertView = (list, viewEl, position, length, itemSelector) ->
 
   if insertInMiddle or itemSelector
     # Get the children which originate from item views.
-    children = filterChildren list.children, itemSelector
+    children = list.querySelectorAll(itemSelector)
     childrenLength = children.length
 
     # Check if it needs to be inserted.
