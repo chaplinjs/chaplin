@@ -412,51 +412,36 @@ define [
 
       it 'should animate the opacity of new items', ->
         return unless jQuery
-        $css = sinon.stub jQuery.prototype, 'css', -> this
         $animate = sinon.stub jQuery.prototype, 'animate', -> this
 
         createCollection()
         collectionView = new AnimatingCollectionView {collection}
-
-        expect($css.callCount).to.be collection.length
-        expect($css).was.calledWith 'opacity', 0
 
         expect($animate.callCount).to.be collection.length
         args = $animate.firstCall.args
         expect(args[0]).to.eql opacity: 1
         expect(args[1]).to.be collectionView.animationDuration
 
-        expect($css.calledBefore($animate)).to.be true
-
-        addThree()
-        expect($css.callCount).to.be collection.length
-
-        $css.restore()
         $animate.restore()
 
       it 'should not animate if animationDuration is 0', ->
         return unless jQuery
 
-        $css = sinon.spy jQuery.prototype, 'css'
         $animate = sinon.spy jQuery.prototype, 'animate'
 
         createCollection()
         collectionView = new TestCollectionView {collection}
 
-        expect($css).was.notCalled()
         expect($animate).was.notCalled()
 
         addThree()
-        expect($css).was.notCalled()
         expect($animate).was.notCalled()
 
-        $css.restore()
         $animate.restore()
 
       it 'should not animate when re-inserting', ->
         return unless jQuery
 
-        $css = sinon.stub jQuery.prototype, 'css', -> this
         $animate = sinon.stub jQuery.prototype, 'animate', -> this
 
         model1 = new Model id: 1
@@ -466,15 +451,12 @@ define [
         createCollection [model1, model2]
         collectionView = new AnimatingCollectionView {collection}
 
-        expect($css).was.calledTwice()
         expect($animate).was.calledTwice()
 
         collection.reset [model1, model2, model3]
 
-        expect($css.callCount).to.be collection.length
         expect($animate.callCount).to.be collection.length
 
-        $css.restore()
         $animate.restore()
 
       it 'should animate with CSS classes', (done) ->
