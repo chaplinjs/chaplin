@@ -7,7 +7,7 @@ utils = require 'chaplin/lib/utils'
 
 toggleElement = (elem, visible) ->
   if Backbone.$
-    $(elem).toggle visible
+    Backbone.$(elem).toggle visible
   else
     elem.style.display = (if visible then '' else 'none')
 
@@ -19,7 +19,7 @@ startAnimation = (elem, useCssAnimation, cls) ->
 
 endAnimation = (elem, duration) ->
   if Backbone.$
-    $(elem).animate {opacity: 1}, duration
+    Backbone.$(elem).animate {opacity: 1}, duration
   else
     elem.style.transition = "opacity #{(duration / 1000)}s"
     elem.opacity = 1
