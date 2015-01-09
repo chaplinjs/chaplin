@@ -5,14 +5,9 @@ Backbone = require 'backbone'
 View = require 'chaplin/views/view'
 utils = require 'chaplin/lib/utils'
 
-filterChildren = (nodeList, selector) ->
-  return nodeList unless selector
-  for node in nodeList when Backbone.utils.matchesSelector node, selector
-    node
-
 toggleElement = (elem, visible) ->
   if Backbone.$
-    $(elem).toggle visible
+    Backbone.$(elem).toggle visible
   else
     elem.style.display = (if visible then '' else 'none')
 
@@ -24,7 +19,7 @@ startAnimation = (elem, useCssAnimation, cls) ->
 
 endAnimation = (elem, duration) ->
   if Backbone.$
-    elem.animate {opacity: 1}, duration
+    Backbone.$(elem).animate {opacity: 1}, duration
   else
     elem.style.transition = "opacity #{(duration / 1000)}s"
     elem.opacity = 1
@@ -35,7 +30,7 @@ insertView = (list, viewEl, position, length, itemSelector) ->
 
   if insertInMiddle or itemSelector
     # Get the children which originate from item views.
-    children = filterChildren list.children, itemSelector
+    children = list.querySelectorAll(itemSelector)
     childrenLength = children.length
 
     # Check if it needs to be inserted.
