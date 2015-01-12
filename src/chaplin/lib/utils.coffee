@@ -24,7 +24,7 @@ utils =
         #then check if the given element is included in that list.
         #Executing the query on the parentNode reduces the resulting nodeList,
         #(document doesn't have a parentNode).
-        nodeList = (this.parentNode || document).querySelectorAll(selector) || []
+        nodeList = (@parentNode || document).querySelectorAll(selector) || []
         !!~indexOf(nodeList, this)
 
       (node, selector) ->
