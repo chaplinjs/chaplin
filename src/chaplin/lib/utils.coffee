@@ -12,23 +12,19 @@ utils =
   # DOM Helpers
   # --------------
 
-  matchesSelector: do ->
-    matches = ElementProto.matches ||
-      ElementProto.webkitMatchesSelector ||
-      ElementProto.mozMatchesSelector ||
-      ElementProto.msMatchesSelector ||
-      ElementProto.oMatchesSelector ||
-      #Make our own `Element#matches` for IE8
-      (selector) ->
-        #Use querySelectorAll to find all elements matching the selector,
-        #then check if the given element is included in that list.
-        #Executing the query on the parentNode reduces the resulting nodeList,
-        #(document doesn't have a parentNode).
-        nodeList = (@parentNode || document).querySelectorAll(selector) || []
-        !!~indexOf(nodeList, this)
-
-      (node, selector) ->
-        matches.call(node, selector)
+  matchesSelector: ElementProto.matches ||
+    ElementProto.webkitMatchesSelector ||
+    ElementProto.mozMatchesSelector ||
+    ElementProto.msMatchesSelector ||
+    ElementProto.oMatchesSelector ||
+    #Make our own `Element#matches` for IE8
+    (selector) ->
+      #Use querySelectorAll to find all elements matching the selector,
+      #then check if the given element is included in that list.
+      #Executing the query on the parentNode reduces the resulting nodeList,
+      #(document doesn't have a parentNode).
+      nodeList = (@parentNode || document).querySelectorAll(selector) || []
+      !!~indexOf(nodeList, this)
 
   # Object Helpers
   # --------------

@@ -7,7 +7,7 @@ utils = require 'chaplin/lib/utils'
 
 filterChildren = (nodeList, selector) ->
   return nodeList unless selector
-  for node in nodeList when utils.matchesSelector node, selector
+  for node in nodeList when utils.matchesSelector.call node, selector
     node
 
 toggleElement = (elem, visible) ->
