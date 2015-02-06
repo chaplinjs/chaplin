@@ -203,18 +203,13 @@ module.exports = class Layout extends View
 
     # Apply the region selector.
     instance.container = if region.selector is ''
-      if Backbone.$
-        region.instance.$el
-      else
-        region.instance.el
+      region.instance.el
     else
-      if region.instance.noWrap
-        if Backbone.$
-          Backbone.$(region.instance.container).find region.selector
+      root = if region.instance.noWrap
+          region.instance.container
         else
-          region.instance.container.querySelector region.selector
-      else
-        region.instance.$ region.selector
+          region.instance.el
+      root.querySelector region.selector
 
   # Disposal
   # --------
