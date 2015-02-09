@@ -97,7 +97,7 @@ module.exports = class Layout extends View
   openLink: (event) =>
     return if utils.modifierKeyPressed(event)
 
-    el = if Backbone.$ then event.currentTarget else event.delegateTarget
+    el = event.currentTarget
     isAnchor = el.nodeName is 'A'
 
     # Get the href and perform checks on it.
@@ -115,7 +115,7 @@ module.exports = class Layout extends View
     skipRouting = @settings.skipRouting
     type = typeof skipRouting
     return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and (if Backbone.$ then Backbone.$(el).is(skipRouting) else el.matches skipRouting)
+      type is 'string' and utils.matchesSelector.call el, skipRouting
 
     # Handle external links.
     external = isAnchor and @isExternalLink el
