@@ -14,11 +14,10 @@ var testType = window.testType || (match ? match[1] : 'backbone');
 var useDeps = window.useDeps || (match ? match[2] : true);
 
 var addDeps = function() {
-  if (useDeps) {
-    paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
+  if (useDeps === true) {
     paths.jquery = '../' + componentsFolder + '/jquery/jquery';
   } else {
-    paths.NativeView = '../' + componentsFolder + '/Backbone.NativeView/backbone.nativeview';
+    paths.NativeView = '../' + componentsFolder + '/backbone.nativeview/backbone.nativeview';
   }
 };
 if (testType === 'backbone') {
@@ -28,6 +27,8 @@ if (testType === 'backbone') {
   addDeps();
   paths.backbone = '../' + componentsFolder + '/exoskeleton/exoskeleton';
 }
+
+paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
 
 var config = {
   baseUrl: 'temp/',
@@ -51,11 +52,6 @@ if (testType === 'backbone' || testType === 'deps') {
 requirejs.config(config);
 if (testType === 'exos') {
   define('jquery', function(){});
-  define('underscore', ['backbone'], function(Backbone){
-    var _ = Backbone.utils;
-    _.bind = function(fn, ctx) { return fn.bind(ctx); }
-    return _;
-  });
 }
 mocha.setup({ui: 'bdd', ignoreLeaks: true});
 // Wonderful hack to send a message to grunt from inside a mocha test.
@@ -107,14 +103,12 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  require(specs, function() {
-    if (useDeps) {
-      run();
-    } else {
-      require(['backbone', 'NativeView'], function(Backbone, NativeView) {
-        Backbone.View = NativeView;
-        run();
-      });
-    }
-  });
+  if (useDeps === true) {
+    require(specs, run)
+  } else {
+    require(['backbone', 'NativeView'], function(Backbone, NativeView) {
+      Backbone.View = NativeView;
+      require(specs, run)
+    });
+  }
 }, false);
