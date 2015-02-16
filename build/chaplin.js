@@ -2124,15 +2124,15 @@ module.exports = Route = (function() {
   };
 
   Route.prototype.normalizeParams = function(params) {
-    var paramIndex, paramName, paramsHash, _i, _len, _ref;
+    var paramIndex, paramName, paramsHash, routeParams, _i, _ref;
     if (utils.isArray(params)) {
       if (params.length < this.requiredParams.length) {
         return false;
       }
       paramsHash = {};
-      _ref = this.requiredParams;
-      for (paramIndex = _i = 0, _len = _ref.length; _i < _len; paramIndex = ++_i) {
-        paramName = _ref[paramIndex];
+      routeParams = this.requiredParams.concat(this.optionalParams);
+      for (paramIndex = _i = 0, _ref = params.length - 1; _i <= _ref; paramIndex = _i += 1) {
+        paramName = routeParams[paramIndex];
         paramsHash[paramName] = params[paramIndex];
       }
       if (!this.testConstraints(paramsHash)) {
