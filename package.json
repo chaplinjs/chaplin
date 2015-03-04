@@ -21,9 +21,5 @@
     "prompt": "0.2.x",
     "phantomjs": "1.9.x"
   },
-  "main": "build/chaplin.js",
-  "scripts": {
-    "install": "grunt clean build",
-    "test": "grunt prepare test"
-  }
+  "main": "build/chaplin.js"
 }
