@@ -134,11 +134,11 @@ module.exports = class View extends Backbone.View
       # Stop if the instance was already disposed.
       return false if @disposed
       # Call the original method.
-      render.apply this, arguments
+      returnValue = render.apply this, arguments
       # Attach to DOM.
       @attach arguments... if @autoAttach
-      # Return the view.
-      this
+      # Return value from origin method.
+      returnValue
 
     # Initialize subviews collections.
     @subviews = []

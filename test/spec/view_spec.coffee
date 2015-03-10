@@ -13,6 +13,7 @@ define [
 
   describe 'View', ->
     renderCalled = false
+    renderReturnValue = "render return value"
     view = model = collection = null
     template = '<p>content</p>'
     testbed = document.getElementById 'testbed'
@@ -56,6 +57,7 @@ define [
       render: ->
         super
         renderCalled = true
+        return renderReturnValue
 
     class AutoRenderView extends TestView
       autoRender: true
@@ -75,7 +77,7 @@ define [
     it 'should render', ->
       expect(view.render).to.be.a 'function'
       renderResult = view.render()
-      expect(renderResult).to.be view
+      expect(renderResult).to.be.equal renderReturnValue
 
     it 'should render a template', ->
       view.render()
@@ -826,7 +828,7 @@ define [
         view = new TestView container: '#testbed'
         sinon.spy(view, 'attach')
         renderResult = view.render()
-        expect(renderResult).to.be view
+        expect(renderResult).to.be renderReturnValue
         expect(view.attach.callCount).to.be 1
         expect(renderCalled).to.be true
         expect(view.el.parentNode).to.be testbed
