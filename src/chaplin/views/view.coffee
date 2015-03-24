@@ -194,7 +194,7 @@ module.exports = class View extends Backbone.View
   #   e.g.
   #   @delegate('click', 'button.confirm', @confirm)
   delegate: (eventName, second, third) ->
-    if Backbone.utilsBackbone.utils and Backbone.utilsBackbone.utils?.delegate
+    if Backbone.utils and Backbone.utils?.delegate
       return Backbone.utils.delegate(this, eventName, second, third)
     if typeof eventName isnt 'string'
       throw new TypeError 'View#delegate: first argument must be a string'
@@ -251,7 +251,7 @@ module.exports = class View extends Backbone.View
 
   # Remove all handlers registered with @delegate.
   undelegate: (eventName, second, third) ->
-    if Backbone.utilsBackbone.utils and Backbone.utilsBackbone.utils?.undelegate
+    if Backbone.utils and Backbone.utils?.undelegate
       return Backbone.utils.undelegate(this, eventName, second, third)
     if eventName
       if typeof eventName isnt 'string'
