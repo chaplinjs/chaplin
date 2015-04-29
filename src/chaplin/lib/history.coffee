@@ -104,7 +104,7 @@ class History extends Backbone.History
     @fragment = fragment
 
     # Don't include a trailing slash on the root.
-    if fragment.length is 0 and url isnt '/' and ( url isnt @root or @options.trailing isnt true )
+    if fragment.length is 0 and url isnt @root
       url = url.slice 0, -1
 
     # If pushState is available, we use it to set the fragment as a real URL.

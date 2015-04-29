@@ -518,12 +518,14 @@ define [
         router.match 'params/:two', 'null#2', name: 'about'
         router.match 'fake/:three', 'fake#2', name: 'about'
         router.match 'phone/:four', 'null#a'
+        router.match 'users/(:one)', 'null#u1'
+        router.match 'users/:one/(:two)', 'null#u2'
 
       it 'should allow for registering routes with a name', ->
         register()
         names = for handler in Backbone.history.handlers
           handler.route.name
-        expect(names).to.eql ['home', 'phonebook', 'about', 'about', 'null#a']
+        expect(names).to.eql ['home', 'phonebook', 'about', 'about', 'null#a', 'null#u1', 'null#u2']
 
       it 'should allow for reversing a route by its default name', ->
         register()
@@ -577,6 +579,18 @@ define [
         params = one: 145
         res = mediator.execute 'router:reverse', 'phonebook', params
         expect(res).to.be '/subdir/phone/145'
+
+      it 'should handle optional paramters', ->
+        register()
+
+        expect(router.reverse 'null#u1').to.be '/users'
+        expect(router.reverse 'null#u1', one: 'param1').to.be '/users/param1'
+        expect(router.reverse 'null#u1', ['param1']).to.be '/users/param1'
+
+        expect(router.reverse 'null#u2', one: 'param1').to.be '/users/param1'
+        expect(router.reverse 'null#u2', ['param1']).to.be '/users/param1'
+        expect(router.reverse 'null#u2', one: 'param1', two: 'param2').to.be '/users/param1/param2'
+        expect(router.reverse 'null#u2', ['param1', 'param2']).to.be '/users/param1/param2'
 
     describe 'Query string extraction', ->
 

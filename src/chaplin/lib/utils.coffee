@@ -103,6 +103,9 @@ utils =
   redirectTo: (pathDesc, params, options) ->
     require('chaplin/mediator').execute 'router:route', pathDesc, params, options
 
+  getCurrentRoute: ->
+    require('chaplin/mediator').execute 'router:getCurrentRoute'
+
   # Query parameters Helpers
   # --------------
 
