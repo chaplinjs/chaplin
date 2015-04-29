@@ -35,6 +35,7 @@ module.exports = class Dispatcher
 
     # Listen to global events.
     @subscribeEvent 'router:match', @dispatch
+    mediator.setHandler 'router:getCurrentRoute', @getCurrentRoute, this
 
   # Controller management.
   # Starting and disposing controllers.
@@ -152,6 +153,13 @@ module.exports = class Dispatcher
       promise.then executeAction
     else
       executeAction()
+
+  getCurrentRoute: ->
+    return {
+      route: @currentRoute,
+      params: @currentParams,
+      query: @currentQuery
+    }
 
   # Disposal
   # --------
