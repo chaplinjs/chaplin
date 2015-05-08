@@ -141,6 +141,10 @@ utils =
         continue unless field.length
         field = decodeURIComponent field
         value = decodeURIComponent value
+
+        if field.indexOf('[]') == field.length - 2 && field.length - 2 > -1
+          field = field.substring(0, field.length - 2)
+
         current = params[field]
         if current
           # Handle multiple params with same name:
