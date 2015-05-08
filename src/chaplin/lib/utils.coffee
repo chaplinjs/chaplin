@@ -125,26 +125,17 @@ utils =
     # Returns a hash with query parameters from a query string
     parse: (queryString) ->
       params = {}
-      qsDelimiter = 0
       return params unless queryString
       queryString = queryString.slice queryString.indexOf('?') + 1
       pairs = queryString.split '&'
-
       for pair in pairs
         continue unless pair.length
-
-        qsDelimiter = pair.indexOf '='
-        if qsDelimiter != -1
-          field = pair.substring(0, qsDelimiter)
-          value  = pair.substring(qsDelimiter + 1)
-
+        [field, value] = pair.split '='
         continue unless field.length
         field = decodeURIComponent field
         value = decodeURIComponent value
 
-        if field.indexOf('[]') == field.length - 2 && field.length - 2 > -1
-          field = field.substring(0, field.length - 2)
-
+        field = field.substring(0, field.length - 2) if field.indexOf('[]') == field.length - 2 && field.length - 2 > -1
         current = params[field]
         if current
           # Handle multiple params with same name:
