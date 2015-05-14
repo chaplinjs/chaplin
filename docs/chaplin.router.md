@@ -90,7 +90,7 @@ The following properties of the `options` hash are recognized:
     ```
 
     ```javascript
-    match('likes/:id', 'likes#show', name: 'like'});
+    match('likes/:id', 'likes#show', {name: 'like'});
     Chaplin.utils.reverse('like', {id: 581});  // => likes/581
     ```
     If no name is provided, the entry will automatically be named by the scheme `controller#action`, e.g. `likes#show`.
