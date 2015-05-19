@@ -6,7 +6,7 @@
     "expect": "0.2.x",
     "jquery": "1.9.x",
     "lodash": "2.3.x",
-    "backbone": "git://github.com/jashkenas/backbone#3994c1cb8592c7e30613e9f869fe60c1cdce6164",
+    "backbone": "1.2.0",
     "benchmark": "git://github.com/bestiejs/benchmark.js.git",
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",
     "requirejs": "~2.1.8",
