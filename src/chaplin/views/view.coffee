@@ -362,7 +362,7 @@ module.exports = class View extends Backbone.View
     return unless name and view and view.dispose
 
     # Dispose the view.
-    view.dispose()
+    view.dispose() if !view.disposed
 
     # Remove the subview from the lists.
     index = utils.indexOf subviews, view
