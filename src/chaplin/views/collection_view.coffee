@@ -52,7 +52,7 @@ insertView = do ->
   if $
     (list, viewEl, position, length, itemSelector) ->
       insertInMiddle = (0 < position < length)
-      isEnd = (length) -> length is 0 or position is length
+      isEnd = (length) -> length is 0 or position >= length
 
       if insertInMiddle or itemSelector
         # Get the children which originate from item views.
@@ -465,6 +465,8 @@ module.exports = class CollectionView extends View
     # Start animation.
     if included and enableAnimation
       startAnimation elem, @useCssAnimation, @animationStartClass
+    else if !included
+      return
 
     # Hide or mark the view if it’s filtered.
     @filterCallback view, included if @filterer
