@@ -97,7 +97,7 @@ module.exports = class Layout extends View
   openLink: (event) =>
     return if utils.modifierKeyPressed(event)
 
-    el = event.currentTarget
+    el = if Backbone.$ then event.currentTarget else event.delegateTarget
     isAnchor = el.nodeName is 'A'
 
     # Get the href and perform checks on it.
