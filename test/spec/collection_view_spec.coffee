@@ -6,7 +6,8 @@ define [
   'chaplin/views/view'
   'chaplin/views/collection_view'
   'chaplin/lib/sync_machine'
-], (_, jQuery, Model, Collection, View, CollectionView, SyncMachine) ->
+  'chaplin/lib/utils'
+], (_, jQuery, Model, Collection, View, CollectionView, SyncMachine, utils) ->
   'use strict'
 
   jQuery = null unless jQuery?.fn
@@ -86,9 +87,9 @@ define [
         collectionView.$list.children collectionView.itemSelector
       else
         if collectionView.itemSelector
-          (item for item in collectionView.list.children when Backbone.utils.matchesSelector item, collectionView.itemSelector)
+          (item for item in collectionView.listEl.children when utils.matchesSelector.call item, collectionView.itemSelector)
         else
-          collectionView.list.children
+          collectionView.listEl.children
 
     getAllChildren = ->
       if jQuery
@@ -176,7 +177,7 @@ define [
           expect(collectionView.$list).to.be.a jQuery
           expect(collectionView.$list.length).to.be 1
         else
-          expect(collectionView.list).to.be.a Element
+          expect(collectionView.listEl).to.be.a Element
 
         collectionView.renderAllItems()
         viewsMatchCollection()
@@ -735,10 +736,10 @@ define [
             children = getViewChildren()
             expect(children.length).to.be collection.length
           else
-            list = collectionView.list
+            list = collectionView.listEl
             expect(list).to.be.true
 
-            list2 = collectionView.find(collectionView.listSelector)
+            list2 = collectionView.el.querySelector(collectionView.listSelector)
             expect(list).to.be list2
 
             children = getViewChildren()
@@ -788,7 +789,7 @@ define [
           else
             {fallback} = collectionView
             expect(fallback).to.be.true
-            fallback2 = collectionView.find(collectionView.fallbackSelector)
+            fallback2 = collectionView.el.querySelector(collectionView.fallbackSelector)
             expect(fallback).to.be fallback2
 
         it 'should show the fallback element properly', ->
@@ -857,7 +858,7 @@ define [
           else
             {loading} = collectionView
             expect(loading).to.be.true
-            loading2 = collectionView.find(collectionView.loadingSelector)
+            loading2 = collectionView.el.querySelector(collectionView.loadingSelector)
             expect(loading).to.be loading2
 
         it 'should show the loading indicator properly', ->
