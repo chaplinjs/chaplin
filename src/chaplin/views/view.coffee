@@ -155,7 +155,7 @@ module.exports = class View extends Backbone.View
       handler = if typeof value is 'function' then value else this[value]
       throw new Error "Method '#{value}' does not exist" unless handler
       match = key.match /^(\S+)\s*(.*)$/
-      eventName = "#{match[1]}.delegateEvents#{@cid}"
+      eventName = match[1]
       selector = match[2]
       bound = _.bind handler, this
       @delegate eventName, (selector or null), bound
