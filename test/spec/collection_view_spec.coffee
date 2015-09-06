@@ -556,6 +556,7 @@ define [
         createCollection()
 
         filterer = (model) -> model.id is 'A'
+        items = collection.where(id: 'A')
         collectionView = new TestCollectionView {
           collection,
           filterer
@@ -565,7 +566,7 @@ define [
         expect(collectionView.visibleItems.length).to.be 1
 
         children = getViewChildren()
-        expect(children.length).to.be collection.length
+        expect(children.length).to.be items.length
 
       it 'should remove the filter', ->
         basicSetup()

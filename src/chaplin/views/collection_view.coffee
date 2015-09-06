@@ -465,8 +465,6 @@ module.exports = class CollectionView extends View
     # Start animation.
     if included and enableAnimation
       startAnimation elem, @useCssAnimation, @animationStartClass
-    else if !included
-      return
 
     # Hide or mark the view if it’s filtered.
     @filterCallback view, included if @filterer
@@ -476,10 +474,11 @@ module.exports = class CollectionView extends View
     # Insert the view into the list.
     list = if $ then @$list else @list
 
-    insertView list, elem, position, length, @itemSelector
+    if included
+      insertView list, elem, position, length, @itemSelector
 
-    # Tell the view that it was added to its parent.
-    view.trigger 'addedToParent'
+      # Tell the view that it was added to its parent.
+      view.trigger 'addedToParent'
 
     # Update the list of visible items, trigger a `visibilityChange` event.
     @updateVisibleItems item, included
