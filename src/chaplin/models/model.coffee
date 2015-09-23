@@ -83,6 +83,8 @@ module.exports = class Model extends Backbone.Model
     # Fire an event to notify associated collections and views.
     @trigger 'dispose', this
 
+    @collection?.remove? @, silent: true
+
     # Unbind all global event handlers.
     @unsubscribeAllEvents()
 
