@@ -80,9 +80,9 @@ define [
     after ->
       document.body.removeEventListener 'click', preventDefault unless $
 
-    it 'should have el, $el and $ props / methods', ->
-      expect(layout.el).to.be document.body
-      expect(layout.$el).to.be.a $ if $
+    # it 'should have el, $el and $ props / methods', ->
+    #   expect(layout.el).to.be document.body
+    #   expect(layout.$el).to.be.a $ if $
 
     it 'should set the document title', (done) ->
       spy = sinon.spy()

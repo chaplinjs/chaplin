@@ -6,12 +6,13 @@
     "expect": "0.2.x",
     "jquery": "1.9.x",
     "lodash": "2.3.x",
-    "backbone": "1.1.x",
+    "backbone": "1.2.0",
     "benchmark": "git://github.com/bestiejs/benchmark.js.git",
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",
     "requirejs": "~2.1.8",
     "davy": "~0.0.4",
-    "exoskeleton": "~0.6.0"
+    "backbone.nativeview": "0.3.1",
+    "exoskeleton": "~0.7.0"
   },
   "exportsOverride": {
     "mocha": {

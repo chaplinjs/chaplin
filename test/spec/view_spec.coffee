@@ -226,26 +226,22 @@ define [
       expect(view.undelegate).to.be.a 'function'
 
       spy = sinon.spy()
-      handler = view.delegate 'click', spy
-      expect(handler).to.be.a 'function'
+      view.delegate 'click', spy
       view.render()
       window.clickOnElement view.el
       expect(spy).was.called()
 
-      view.undelegate()
+      view.undelegateEvents()
       window.clickOnElement view.el
       expect(spy.callCount).to.be 1
 
       spy = sinon.spy()
-      handler = view.delegate 'click', 'p', spy
-      expect(handler).to.be.a 'function'
+      view.delegate 'click', 'p', spy
       p = view.el.querySelector('p')
       window.clickOnElement p
       expect(spy).was.called()
 
-      expect(-> view.delegate spy).to.throwError()
-
-      view.undelegate()
+      view.undelegateEvents()
       window.clickOnElement p
       expect(spy.callCount).to.be 1
 
@@ -294,13 +290,13 @@ define [
       expect(spy).was.calledOnce()
       expect(spy2).was.calledOnce()
 
-    it 'should check delegate parameters', ->
-      expect(-> view.delegate 1, 2, 3).to.throwError()
-      expect(-> view.delegate 'click', 'foo').to.throwError()
-      expect(-> view.delegate 'click', 'foo', 'bar').to.throwError()
-      expect(-> view.delegate 'click', 123).to.throwError()
-      # expect(-> view.delegate 'click', (->), 123).to.throwError()
-      # expect(-> view.delegate 'click', 'foo', (->), 'other').to.throwError()
+    # it 'should check delegate parameters', ->
+    #   expect(-> view.delegate 1, 2, 3).to.throwError()
+    #   expect(-> view.delegate 'click', 'foo').to.throwError()
+    #   expect(-> view.delegate 'click', 'foo', 'bar').to.throwError()
+    #   expect(-> view.delegate 'click', 123).to.throwError()
+    #   # expect(-> view.delegate 'click', (->), 123).to.throwError()
+    #   # expect(-> view.delegate 'click', 'foo', (->), 'other').to.throwError()
 
     it 'should correct inheritance of events object', (done) ->
       class A extends TestView

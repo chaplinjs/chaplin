@@ -6,42 +6,6 @@ mediator = require 'chaplin/mediator'
 EventBroker = require 'chaplin/lib/event_broker'
 utils = require 'chaplin/lib/utils'
 
-# Shortcut to access the DOM manipulation library.
-$ = Backbone.$
-
-# Function bind shortcut.
-bind = do ->
-  if Function::bind
-    (item, ctx) -> item.bind ctx
-  else if _.bind
-    _.bind
-
-setHTML = do ->
-  if $
-    (elem, html) -> elem.html html
-  else
-    (elem, html) -> elem.innerHTML = html
-
-attach = do ->
-  if $
-    (view) ->
-      actual = $(view.container)
-      if typeof view.containerMethod is 'function'
-        view.containerMethod actual, view.el
-      else
-        actual[view.containerMethod] view.el
-  else
-    (view) ->
-      actual = if typeof view.container is 'string'
-        document.querySelector view.container
-      else
-        view.container
-
-      if typeof view.containerMethod is 'function'
-        view.containerMethod actual, view.el
-      else
-        actual[view.containerMethod] view.el
-
 module.exports = class View extends Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
@@ -69,7 +33,7 @@ module.exports = class View extends Backbone.View
 
   # Method which is used for adding the view to the DOM
   # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
-  containerMethod: if $ then 'append' else 'appendChild'
+  containerMethod: if Backbone.$ then 'append' else 'appendChild'
 
   # Regions
   # -------
@@ -152,11 +116,11 @@ module.exports = class View extends Backbone.View
           @el =
             if region.instance.container?
               if region.instance.region?
-                $(region.instance.container).find region.selector
+                Backbone.$(region.instance.container).find region.selector
               else
                 region.instance.container
             else
-              region.instance.$ region.selector
+              region.instance.$(region.selector)[0]
 
       @el = @container if @container
 
@@ -183,47 +147,6 @@ module.exports = class View extends Backbone.View
   # User input event handling
   # -------------------------
 
-  # Event handling using event delegation
-  # Register a handler for a specific event type
-  # For the whole view:
-  #   delegate(eventName, handler)
-  #   e.g.
-  #   @delegate('click', @clicked)
-  # For an element in the passing a selector:
-  #   delegate(eventName, selector, handler)
-  #   e.g.
-  #   @delegate('click', 'button.confirm', @confirm)
-  delegate: (eventName, second, third) ->
-    if Backbone.utils
-      return Backbone.utils.delegate(this, eventName, second, third)
-    if typeof eventName isnt 'string'
-      throw new TypeError 'View#delegate: first argument must be a string'
-
-    if arguments.length is 2
-      handler = second
-    else if arguments.length is 3
-      selector = second
-      if typeof selector isnt 'string'
-        throw new TypeError 'View#delegate: ' +
-          'second argument must be a string'
-      handler = third
-    else
-      throw new TypeError 'View#delegate: ' +
-        'only two or three arguments are allowed'
-
-    if typeof handler isnt 'function'
-      throw new TypeError 'View#delegate: ' +
-        'handler argument must be function'
-
-    # Add an event namespace, bind handler it to view.
-    list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-    events = list.join(' ')
-    bound = bind handler, this
-    @$el.on events, (selector or null), bound
-
-    # Return the bound handler.
-    bound
-
   # Copy of original Backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
     if Backbone.View::delegateEvents.length is 2
@@ -234,8 +157,8 @@ module.exports = class View extends Backbone.View
       match = key.match /^(\S+)\s*(.*)$/
       eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
-      bound = bind handler, this
-      @$el.on eventName, (selector or null), bound
+      bound = _.bind handler, this
+      @delegate eventName, (selector or null), bound
     return
 
   # Override Backbones method to combine the events
@@ -248,32 +171,6 @@ module.exports = class View extends Backbone.View
       classEvents = classEvents.call this if typeof classEvents is 'function'
       @_delegateEvents classEvents
     return
-
-  # Remove all handlers registered with @delegate.
-  undelegate: (eventName, second, third) ->
-    if Backbone.utils
-      return Backbone.utils.undelegate(this, eventName, second, third)
-    if eventName
-      if typeof eventName isnt 'string'
-        throw new TypeError 'View#undelegate: first argument must be a string'
-
-      if arguments.length is 2
-        if typeof second is 'string'
-          selector = second
-        else
-          handler = second
-      else if arguments.length is 3
-        selector = second
-        if typeof selector isnt 'string'
-          throw new TypeError 'View#undelegate: ' +
-            'second argument must be a string'
-        handler = third
-
-      list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-      events = list.join(' ')
-      @$el.off events, (selector or null)
-    else
-      @$el.off ".delegate#{@cid}"
 
   # Handle declarative event bindings from `listen`
   delegateListeners: ->
@@ -434,10 +331,15 @@ module.exports = class View extends Backbone.View
         # Delegate events to the top-level container in the template.
         @setElement el.firstChild, true
       else
-        setHTML (if $ then @$el else @el), html
+        @setHTML html
 
     # Return the view.
     this
+
+  # Set the innerHTML of the view's `el`. Override this method to support
+  # older browsers (IE needs the html empty before, e.g.)
+  setHTML: (html) ->
+    @el.innerHTML = html
 
   # This method is called after a specific `render` of a derived class.
   attach: ->
@@ -446,8 +348,25 @@ module.exports = class View extends Backbone.View
 
     # Automatically append to DOM if the container element is set.
     if @container and not document.body.contains @el
-      attach this
-      # Trigger an event.
+      if Backbone.$
+        actual = Backbone.$(this.container)
+        if typeof this.containerMethod is 'function'
+          this.containerMethod actual, this.el
+        else
+          actual[this.containerMethod] this.el
+      else
+        actual = if typeof this.container is 'string'
+          document.querySelector this.container
+        else
+          this.container
+
+        if typeof this.containerMethod is 'function'
+          this.containerMethod actual, this.el
+        else
+          actual[this.containerMethod] this.el
+
+      # Hook into this event for things that require the view to be in the DOM
+      # (like calculating height / width or position).
       @trigger 'addedToDOM'
 
   # Disposal

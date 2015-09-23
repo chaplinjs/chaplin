@@ -9,19 +9,24 @@ window.clearInterval = timers.clearInterval;
 var paths = {};
 var componentsFolder = 'bower_components';
 
-var match = window.location.search.match(/type=([-\w]+)/);
+var match = window.location.search.match(/type=([-\w]+)&useDeps=([-\w]+)/);
 var testType = window.testType || (match ? match[1] : 'backbone');
+var useDeps = window.useDeps || (match ? match[2] : true);
 
 var addDeps = function() {
-  paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
-  paths.jquery = '../' + componentsFolder + '/jquery/jquery';
+  if (useDeps) {
+    paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
+    paths.jquery = '../' + componentsFolder + '/jquery/jquery';
+  } else {
+    paths.NativeView = '../' + componentsFolder + '/Backbone.NativeView/backbone.nativeview';
+  }
 };
 if (testType === 'backbone') {
-  paths.backbone = '../' + componentsFolder + '/backbone/backbone'
-  addDeps()
+  paths.backbone = '../' + componentsFolder + '/backbone/backbone';
+  addDeps();
 } else {
-  if (testType === 'deps') addDeps();
-  paths.backbone = '../' + componentsFolder + '/exoskeleton/exoskeleton'
+  addDeps();
+  paths.backbone = '../' + componentsFolder + '/exoskeleton/exoskeleton';
 }
 
 var config = {
@@ -46,7 +51,11 @@ if (testType === 'backbone' || testType === 'deps') {
 requirejs.config(config);
 if (testType === 'exos') {
   define('jquery', function(){});
-  define('underscore', ['backbone'], function(Backbone){return Backbone.utils;});
+  define('underscore', ['backbone'], function(Backbone){
+    var _ = Backbone.utils;
+    _.bind = function(fn, ctx) { return fn.bind(ctx); }
+    return _;
+  });
 }
 mocha.setup({ui: 'bdd', ignoreLeaks: true});
 // Wonderful hack to send a message to grunt from inside a mocha test.
@@ -86,16 +95,26 @@ window.addEventListener('DOMContentLoaded', function() {
     'view',
     'utils',
     'sync_machine'
-  ];
-  var loaded = [];
-  for (var i = 0, l = specs.length; i < l; i++) {
-    loaded.push(specs[i] + '_spec');
-  }
-  require(loaded, function() {
+  ].map(function(file) {
+    return file + '_spec';
+  });
+
+  var run = function() {
     if (window.mochaPhantomJS) {
       mochaPhantomJS.run();
     } else {
       mocha.run();
+    }
+  };
+
+  require(specs, function() {
+    if (useDeps) {
+      run();
+    } else {
+      require(['backbone', 'NativeView'], function(Backbone, NativeView) {
+        Backbone.View = NativeView;
+        run();
+      });
     }
   });
 }, false);
