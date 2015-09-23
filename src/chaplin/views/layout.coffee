@@ -132,7 +132,7 @@ module.exports = class Layout extends View
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
-        @openWindow href el
+        @openWindow href, el
       return
 
     # Pass to the router, try to route the path internally.
@@ -142,9 +142,9 @@ module.exports = class Layout extends View
     event.preventDefault()
     return
 
-    # Handle all browsing context resources
-    openWindow: (href, el) ->
-      window.open href
+  # Handle all browsing context resources
+  openWindow: (href, el) ->
+    window.open href
 
   # Region management
   # -----------------
