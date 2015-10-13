@@ -194,7 +194,7 @@ module.exports = class CollectionView extends View
     # Set the listEl property with the actual list container.
     listSelector = _.result this, 'listSelector'
 
-    @listEl = if listSelector then @$(listSelector)[0] else @el
+    @listEl = if listSelector then @el.querySelector(listSelector) else @el
     @$list = Backbone.$ @listEl if Backbone.$
 
     @initFallback()
@@ -226,6 +226,7 @@ module.exports = class CollectionView extends View
 
     # Set the $fallback property.
     @$fallback = @$ @fallbackSelector
+    @fallback = @el.querySelector @fallbackSelector
 
     # Listen for visible items changes.
     @on 'visibilityChange', @toggleFallback
@@ -259,6 +260,7 @@ module.exports = class CollectionView extends View
 
     # Set the $loading property.
     @$loading = @$ @loadingSelector
+    @loading = @el.querySelector @loadingSelector
 
     # Listen for sync events on the collection.
     @listenTo @collection, 'syncStateChange', @toggleLoadingIndicator

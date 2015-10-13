@@ -14,11 +14,11 @@ var testType = window.testType || (match ? match[1] : 'backbone');
 var useDeps = window.useDeps || (match ? match[2] : true);
 
 var addDeps = function() {
-  if (useDeps) {
-    paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
+  if (useDeps === true) {
     paths.jquery = '../' + componentsFolder + '/jquery/jquery';
+    paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
   } else {
-    paths.NativeView = '../' + componentsFolder + '/Backbone.NativeView/backbone.nativeview';
+    paths.NativeView = '../' + componentsFolder + '/backbone.nativeview/backbone.nativeview';
   }
 };
 if (testType === 'backbone') {
@@ -29,6 +29,7 @@ if (testType === 'backbone') {
   paths.backbone = '../' + componentsFolder + '/exoskeleton/exoskeleton';
 }
 
+
 var config = {
   baseUrl: 'temp/',
   paths: paths,
@@ -36,26 +37,9 @@ var config = {
   urlArgs: 'bust=' + (new Date()).getTime()
 };
 
-if (testType === 'backbone' || testType === 'deps') {
-  config.shim = {
-    backbone: {
-      deps: ['underscore', 'jquery'],
-      exports: 'Backbone'
-    },
-    underscore: {
-      exports: '_'
-    }
-  };
-}
-
 requirejs.config(config);
 if (testType === 'exos') {
   define('jquery', function(){});
-  define('underscore', ['backbone'], function(Backbone){
-    var _ = Backbone.utils;
-    _.bind = function(fn, ctx) { return fn.bind(ctx); }
-    return _;
-  });
 }
 mocha.setup({ui: 'bdd', ignoreLeaks: true});
 // Wonderful hack to send a message to grunt from inside a mocha test.
@@ -107,14 +91,32 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  require(specs, function() {
-    if (useDeps) {
-      run();
-    } else {
-      require(['backbone', 'NativeView'], function(Backbone, NativeView) {
-        Backbone.View = NativeView;
-        run();
+  if (useDeps === true) {
+    require(specs, run)
+  } else {
+    define('underscore', function(){});
+    require(['backbone', 'NativeView'], function(Backbone, NativeView) {
+      requirejs.undef('underscore')
+      define('underscore', function(){
+        var _ = Backbone.utils
+        _.bind = function(fn, ctx) { return fn.bind(ctx); }
+        _.isObject = function(obj) {
+            var type = typeof obj;
+            return type === 'function' || type === 'object' && !!obj;
+          };
+        _.clone = function(obj) {
+          if (!_.isObject(obj)) return obj;
+          return Array.isArray(obj) ? obj.slice() : _.extend({}, obj);
+        };
+        _.isEmpty = function(obj) {
+          if (obj == null) return true;
+          if (obj.length !== undefined) return obj.length === 0;
+          return Object.keys(obj).length === 0;
+        };
+        return _
       });
-    }
-  });
+      Backbone.View = NativeView;
+      require(specs, run)
+    });
+  }
 }, false);

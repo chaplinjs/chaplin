@@ -115,7 +115,7 @@ module.exports = class Layout extends View
     skipRouting = @settings.skipRouting
     type = typeof skipRouting
     return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and (if Backbone.$ then Backbone.$(el).is(skipRouting) else el.matches skipRouting)
+      type is 'string' and utils.matchesSelector.call el, skipRouting
 
     # Handle external links.
     external = isAnchor and @isExternalLink el
@@ -203,18 +203,13 @@ module.exports = class Layout extends View
 
     # Apply the region selector.
     instance.container = if region.selector is ''
-      if Backbone.$
-        region.instance.$el
-      else
-        region.instance.el
+      region.instance.el
     else
-      if region.instance.noWrap
-        if Backbone.$
-          Backbone.$(region.instance.container).find region.selector
+      root = if region.instance.noWrap
+          region.instance.container
         else
-          region.instance.container.querySelector region.selector
-      else
-        region.instance.$ region.selector
+          region.instance.el
+      root.querySelector region.selector
 
   # Disposal
   # --------
