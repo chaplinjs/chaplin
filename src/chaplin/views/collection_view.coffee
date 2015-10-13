@@ -52,7 +52,7 @@ insertView = do ->
   if $
     (list, viewEl, position, length, itemSelector) ->
       insertInMiddle = (0 < position < length)
-      isEnd = (length) -> length is 0 or position is length
+      isEnd = (length) -> length is 0 or position >= length
 
       if insertInMiddle or itemSelector
         # Get the children which originate from item views.
@@ -474,10 +474,11 @@ module.exports = class CollectionView extends View
     # Insert the view into the list.
     list = if $ then @$list else @list
 
-    insertView list, elem, position, length, @itemSelector
+    if included
+      insertView list, elem, position, length, @itemSelector
 
-    # Tell the view that it was added to its parent.
-    view.trigger 'addedToParent'
+      # Tell the view that it was added to its parent.
+      view.trigger 'addedToParent'
 
     # Update the list of visible items, trigger a `visibilityChange` event.
     @updateVisibleItems item, included
