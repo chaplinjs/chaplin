@@ -74,6 +74,7 @@ module.exports = (grunt) ->
 
       options:
         bare: true
+        sourceMap: true
 
     # Module conversion
     # -----------------
