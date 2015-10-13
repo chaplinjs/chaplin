@@ -149,6 +149,12 @@ utils =
 
       params
 
+  # Element Helpers
+  # --------------
+
+  elementContains: (container, elem) ->
+    container.contains elem
+
 # Backwards-compat.
 utils.queryParams = utils.querystring
 
