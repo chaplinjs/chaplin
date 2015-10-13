@@ -18,7 +18,10 @@ bind = do ->
 
 setHTML = do ->
   if $
-    (elem, html) -> elem.html html
+    (elem, html) ->
+      elem.empty()
+      elem.append html
+      html
   else
     (elem, html) -> elem.innerHTML = html
 
