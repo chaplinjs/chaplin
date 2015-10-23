@@ -13,7 +13,7 @@ var match = window.location.search.match(/type=([-\w]+)/);
 var testType = window.testType || (match ? match[1] : 'backbone');
 
 var addDeps = function() {
-  paths.underscore = '../' + componentsFolder + '/lodash/lodash.compat';
+  paths.underscore = '../' + componentsFolder + '/lodash/lodash';
   paths.jquery = '../' + componentsFolder + '/jquery/jquery';
 };
 if (testType === 'backbone') {
