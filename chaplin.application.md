@@ -87,7 +87,7 @@ mediator.publish('!adjustTitle', 'Apple');
 <h2 id="methods">Methods</h2>
 
 <h3 class="module-member" id="initDispatcher">initDispatcher([options])</h3>
-Initializes the **dispatcher** module; forwards passed options to its contructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.html)** for more information.
+Initializes the **dispatcher** module; forwards passed options to its constructor. See **[Chaplin.Dispatcher](./chaplin.dispatcher.html)** for more information.
 
 To replace the dispatcher with a derived class (possibly with various extensions), you’d override the `initDispatcher` method and construct the dispatcher class as follows:
 

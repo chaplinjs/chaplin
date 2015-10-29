@@ -72,20 +72,20 @@ events: {
 }
 ```
 
-To open all external links (different hostname) in a new window, you can set `openExternalLinksInNewWindow` to true when initializing `Chaplin.Layout` in your `Application`:
+To open all external links (different hostname) in a new window, you can set `openExternalToBlank` to true when initializing `Chaplin.Layout` in your `Application`:
 
 ```coffeescript
 class MyApplication extends Chaplin.Application
   initialize: ->
     # ...
-    @initLayout openExternalLinksInNewWindow: true
+    @initLayout openExternalToBlank: true
 ```
 
 ```javascript
 var MyApplication = Chaplin.Application.extend({
   initialize: function() {
     // ...
-    this.initLayout({openExternalLinksInNewWindow: true});
+    this.initLayout({openExternalToBlank: true});
   }
 });
 ```
