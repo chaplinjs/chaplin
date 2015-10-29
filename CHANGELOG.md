@@ -1,7 +1,12 @@
 See [upgrading guide](http://docs.chaplinjs.org/upgrading.html) if you're using old chaplin version and want to upgrade.
 
+# Chaplin 1.1.0 (29 October 2015)
+* Makes Chaplin work correctly with latest Lodash.
+* Fixes invalid `CollectionView` behavior in IE11.
+* Added `ms-appx` to the `Layout`'s list of supported protocols by default.
+
 # Chaplin 1.0.1 (22 June 2014)
-* stuff
+* A few bugfixes.
 
 # Chaplin 1.0.0 (23 January 2014)
 * `route.previous` is now `undefined` instead of an empty object if there is no previous object.
