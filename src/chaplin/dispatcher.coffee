@@ -112,8 +112,8 @@ module.exports = class Dispatcher
 
     # Save the new controller and its parameters.
     @currentController = controller
-    @currentParams = _.clone params
-    @currentQuery = _.clone options.query
+    @currentParams = _.extend {}, params
+    @currentQuery = _.extend {}, options.query
 
     # Call the controller action with params and options.
     controller[route.action] params, route, options
