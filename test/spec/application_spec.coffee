@@ -75,6 +75,12 @@ define [
       expect(Backbone.History.started).to.be true
       Backbone.history.stop()
 
+    it 'should seal itself with start()', ->
+      app.initRouter()
+      app.start()
+      if Object.isSealed
+        expect(Object.isSealed(app)).to.be true
+
     it 'should throw an error on double-init', ->
       expect(-> (new (getApp false)).initialize()).to.throwError()
       Backbone.history.stop()
