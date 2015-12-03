@@ -12,6 +12,7 @@ define [
 
   describe 'Application', ->
     app = null
+    noInitApp = true
 
     getApp = (noInit) ->
       App = if noInit
@@ -20,7 +21,7 @@ define [
         Application
 
     beforeEach ->
-      app = new (getApp true)
+      app = new (getApp noInitApp)
 
     afterEach ->
       app.dispose()
@@ -74,20 +75,32 @@ define [
       expect(Backbone.History.started).to.be true
       Backbone.history.stop()
 
+    it 'should seal itself with start()', ->
+      app.initRouter()
+      app.start()
+      if Object.isSealed
+        expect(Object.isSealed(app)).to.be true
+
     it 'should throw an error on double-init', ->
       expect(-> (new (getApp false)).initialize()).to.throwError()
       Backbone.history.stop()
 
-    it 'should dispose itself correctly', ->
-      expect(app.dispose).to.be.a 'function'
-      app.dispose()
+    context 'on disposal', ->
+      before ->
+        noInitApp = false
+      after ->
+        noInitApp = true
 
-      for prop in ['dispatcher', 'layout', 'router', 'composer']
-        expect(app[prop]).to.be null
+      it 'should dispose itself correctly', ->
+        expect(app.dispose).to.be.a 'function'
+        app.dispose()
 
-      expect(app.disposed).to.be true
-      if Object.isFrozen
-        expect(Object.isFrozen(app)).to.be true
+        for prop in ['dispatcher', 'layout', 'router', 'composer']
+          expect(app[prop].disposed).to.be true
+
+        expect(app.disposed).to.be true
+        if Object.isFrozen
+          expect(Object.isFrozen(app)).to.be true
 
     it 'should be extendable', ->
       expect(Application.extend).to.be.a 'function'
