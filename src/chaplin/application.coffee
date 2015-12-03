@@ -124,8 +124,8 @@ module.exports = class Application
     # Mark app as initialized.
     @started = true
 
-    # Freeze the application instance to prevent further changes.
-    Object.freeze? this
+    # Seal the application instance to prevent further changes.
+    Object.seal? this
 
   # Disposal
   # --------
