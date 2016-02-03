@@ -30,7 +30,7 @@ utils =
   isArray: Array.isArray or _.isArray
 
   isEmpty: (object) ->
-    not Object.keys(object).length
+    not Object.getOwnPropertyNames(object).length
 
   # Simple duck-typing serializer for models and collections.
   serialize: (data) ->
@@ -61,8 +61,8 @@ utils =
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
     chain = []
-    while proto = Object.getPrototypeOf object
-      chain.unshift proto
+    while object = Object.getPrototypeOf object
+      chain.unshift object
     chain
 
   # Get all property versions from object’s prototype chain.
