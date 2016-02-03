@@ -86,7 +86,6 @@ module.exports = class Dispatcher
     else
       setTimeout =>
         handler require moduleName
-      , 0
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
