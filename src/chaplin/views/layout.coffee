@@ -124,7 +124,8 @@ module.exports = class Layout extends View
     skipRouting = @settings.skipRouting
     type = typeof skipRouting
     return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and (if $ then $(el).is(skipRouting) else Backbone.utils.matchesSelector el, skipRouting)
+      type is 'string' and (if $ then $(el).is(skipRouting)
+      else Backbone.utils.matchesSelector el, skipRouting)
 
     # Handle external links.
     external = isAnchor and @isExternalLink el

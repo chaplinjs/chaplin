@@ -236,7 +236,10 @@ module.exports = class CollectionView extends View
     super
 
     # Set the $list property with the actual list container.
-    listSelector = if typeof @listSelector is 'function' then @listSelector() else @listSelector
+    listSelector = if typeof @listSelector is 'function'
+      @listSelector()
+    else
+      @listSelector
 
     if $
       @$list = if listSelector then @$(listSelector) else @$el

@@ -35,7 +35,8 @@ class History extends Backbone.History
   # Start the hash change handling, returning `true` if the current URL matches
   # an existing route, and `false` otherwise.
   start: (options) ->
-    throw new Error 'Backbone.history has already been started' if Backbone.History.started
+    if Backbone.History.started
+      throw new Error 'Backbone.history has already been started'
     Backbone.History.started = true
 
     # Figure out the initial configuration. Do we need an iframe?
@@ -44,7 +45,7 @@ class History extends Backbone.History
     @root             = @options.root
     @_wantsHashChange = @options.hashChange isnt false
     @_wantsPushState  = Boolean @options.pushState
-    @_hasPushState    = Boolean (@options.pushState and @history and @history.pushState)
+    @_hasPushState    = Boolean (@options.pushState and @history?.pushState)
     fragment          = @getFragment()
     routeStripper     = @options.routeStripper ? routeStripper
     rootStripper      = @options.rootStripper ? rootStripper
@@ -69,7 +70,8 @@ class History extends Backbone.History
 
     # If we've started off with a route from a `pushState`-enabled browser,
     # but we're currently in a browser that doesn't support it...
-    if @_wantsHashChange and @_wantsPushState and not @_hasPushState and not atRoot
+    if @_wantsHashChange and @_wantsPushState and
+    not @_hasPushState and not atRoot
       # CHANGED: Prevent query string from being added before hash.
       # So, it will appear only after #, as it has been already included
       # into @fragment

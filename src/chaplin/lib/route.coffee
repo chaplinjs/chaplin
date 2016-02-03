@@ -80,7 +80,8 @@ module.exports = class Route
         propertiesCount++
         property = criteria[name]
         return false if property and property isnt this[name]
-      invalidParamsCount = propertiesCount is 1 and name in ['action', 'controller']
+      invalidParamsCount = propertiesCount is 1 and name in
+        ['action', 'controller']
       not invalidParamsCount
 
   # Generates route URL from params.
@@ -229,7 +230,8 @@ module.exports = class Route
   handler: (pathParams, options) =>
     options = if options then _.extend {}, options else {}
 
-    # pathDesc may be either an object with params for reversing or a simple URL.
+    # pathParams may be either an object with params for reversing
+    # or a simple URL.
     if typeof pathParams is 'object'
       query = utils.queryParams.stringify options.query
       params = pathParams

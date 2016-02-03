@@ -170,7 +170,8 @@ module.exports = class Router # This class does not extend Backbone.Router.
         return url
 
     # We didn't get anything.
-    throw new Error "Router#reverse: invalid route criteria specified: #{JSON.stringify criteria}"
+    throw new Error 'Router#reverse: invalid route criteria specified: ' +
+      "#{JSON.stringify criteria}"
 
   # Change the current URL, add a history entry.
   changeURL: (controller, params, route, options) ->
