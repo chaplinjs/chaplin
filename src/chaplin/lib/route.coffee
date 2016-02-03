@@ -200,7 +200,7 @@ module.exports = class Route
     # Replace the optional portion with a non-capturing and optional group.
     "(?:#{portion})?"
 
-  replaceParams: (s, callback) =>
+  replaceParams: (s, callback) ->
     # Parse :foo and *bar, replacing via callback.
     s.replace paramRegExp, callback
 
