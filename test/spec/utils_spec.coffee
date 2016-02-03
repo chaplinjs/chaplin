@@ -28,6 +28,22 @@ define [
         expect(c.b).to.equal 2
         expect(c.c).to.equal 3
 
+    describe 'isEmpty', ->
+      it 'should check whether an object does not have own properties', ->
+        obj = {}
+        expect(utils.isEmpty(obj)).to.equal true
+        obj.a = 1
+        expect(utils.isEmpty(obj)).to.equal false
+
+      it 'should check only own properties', ->
+        obj = Object.create {b:2}
+        expect(utils.isEmpty(obj)).to.equal true
+
+      it 'should check non-enumerable properties too', ->
+        obj = {}
+        Object.defineProperty obj, 'c', {value:3}
+        expect(utils.isEmpty(obj)).to.equal false
+
     describe 'serialize', ->
       it 'should serialize objects and incorporate duck-typing', ->
         model = new Backbone.Model a: 1
