@@ -46,6 +46,7 @@ define [
       it 'should get prototype chain of instance', ->
         object = new D
         expect(utils.getPrototypeChain object).to.eql [
+          Object.prototype,
           A.prototype,
           B.prototype,
           C.prototype,
