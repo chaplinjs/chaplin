@@ -84,7 +84,7 @@ module.exports = class Dispatcher
     if define?.amd
       require [moduleName], handler
     else
-      setTimeout =>
+      setTimeout ->
         handler require moduleName
 
   # Handler for the controller lazy-loading.
