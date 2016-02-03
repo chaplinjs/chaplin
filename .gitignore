@@ -12,3 +12,7 @@ bower_components
 
 # Coverage report
 coverage*
+
+# Logs
+npm-debug.log
+14*.*
