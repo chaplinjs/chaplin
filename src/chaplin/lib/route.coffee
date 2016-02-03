@@ -7,9 +7,7 @@ Controller = require 'chaplin/controllers/controller'
 utils = require 'chaplin/lib/utils'
 
 isEmpty = (object) ->
-  for own key, value of object
-    return false
-  true
+  not Object.keys(object).length
 
 module.exports = class Route
   # Borrow the static extend method from Backbone.
