@@ -116,7 +116,7 @@ module.exports = class Route
 
     query = utils.queryParams.parse query if typeof query isnt 'object'
     _.extend query, remainingParams unless @options.paramsInQS is false
-    url += '?' + utils.queryParams.stringify query unless isEmpty query
+    url += '?' + utils.queryParams.stringify query unless utils.isEmpty query
     url
 
   # Validates incoming params and returns them in a unified form - hash

@@ -29,6 +29,9 @@ utils =
 
   isArray: Array.isArray or _.isArray
 
+  isEmpty: (object) ->
+    not Object.keys(object).length
+
   # Simple duck-typing serializer for models and collections.
   serialize: (data) ->
     if typeof data.serialize is 'function'
