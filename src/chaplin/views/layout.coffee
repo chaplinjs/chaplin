@@ -118,7 +118,7 @@ module.exports = class Layout extends View
       # but it doesn’t make sense to route it.
       href is '' or
       # Exclude fragment links.
-      href.charAt(0) is '#'
+      href[0] is '#'
 
     # Apply skipRouting option.
     skipRouting = @settings.skipRouting

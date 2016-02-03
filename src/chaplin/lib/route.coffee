@@ -203,7 +203,7 @@ module.exports = class Route
     s.replace paramRegExp, callback
 
   paramCapturePattern: (param) ->
-    if param.charAt(0) is ':'
+    if param[0] is ':'
       # Regexp for :foo.
       '([^\/\?]+)'
     else
