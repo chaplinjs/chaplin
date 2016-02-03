@@ -60,10 +60,10 @@ utils =
 
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
-    chain = [object.constructor.prototype]
-    while object = object.constructor?.superclass?.prototype ? object.constructor?.__super__
-      chain.push object
-    chain.reverse()
+    chain = []
+    while proto = Object.getPrototypeOf object
+      chain.unshift proto
+    chain
 
   # Get all property versions from object’s prototype chain.
   # E.g. if object1 & object2 have `prop` and object2 inherits from
