@@ -29,6 +29,9 @@ utils =
 
   isArray: Array.isArray or _.isArray
 
+  isEmpty: (object) ->
+    not Object.getOwnPropertyNames(object).length
+
   # Simple duck-typing serializer for models and collections.
   serialize: (data) ->
     if typeof data.serialize is 'function'
@@ -57,10 +60,10 @@ utils =
 
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
-    chain = [object.constructor.prototype]
-    while object = object.constructor?.superclass?.prototype ? object.constructor?.__super__
-      chain.push object
-    chain.reverse()
+    chain = []
+    while object = Object.getPrototypeOf object
+      chain.unshift object
+    chain
 
   # Get all property versions from object’s prototype chain.
   # E.g. if object1 & object2 have `prop` and object2 inherits from
@@ -97,11 +100,13 @@ utils =
 
   # Returns the url for a named route and any params.
   reverse: (criteria, params, query) ->
-    require('chaplin/mediator').execute 'router:reverse', criteria, params, query
+    require('chaplin/mediator').execute 'router:reverse',
+      criteria, params, query
 
   # Redirects to URL, route name or controller and action pair.
   redirectTo: (pathDesc, params, options) ->
-    require('chaplin/mediator').execute 'router:route', pathDesc, params, options
+    require('chaplin/mediator').execute 'router:route',
+      pathDesc, params, options
 
   # Query parameters Helpers
   # --------------

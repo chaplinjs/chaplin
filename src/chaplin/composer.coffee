@@ -81,7 +81,8 @@ module.exports = class Composer
           return @_compose name, options: third, compose: ->
             # The compose method here just constructs the class.
             # Model and Collection both take `options` as the second argument.
-            if second.prototype instanceof Backbone.Model or second.prototype instanceof Backbone.Collection
+            if second.prototype instanceof Backbone.Model or
+            second.prototype instanceof Backbone.Collection
               @item = new second null, @options
             else
               @item = new second @options

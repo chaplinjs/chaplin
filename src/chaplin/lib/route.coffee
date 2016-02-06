@@ -7,9 +7,7 @@ Controller = require 'chaplin/controllers/controller'
 utils = require 'chaplin/lib/utils'
 
 isEmpty = (object) ->
-  for own key, value of object
-    return false
-  true
+  not Object.keys(object).length
 
 module.exports = class Route
   # Borrow the static extend method from Backbone.
@@ -80,7 +78,8 @@ module.exports = class Route
         propertiesCount++
         property = criteria[name]
         return false if property and property isnt this[name]
-      invalidParamsCount = propertiesCount is 1 and name in ['action', 'controller']
+      invalidParamsCount = propertiesCount is 1 and name in
+        ['action', 'controller']
       not invalidParamsCount
 
   # Generates route URL from params.
@@ -117,7 +116,7 @@ module.exports = class Route
 
     query = utils.queryParams.parse query if typeof query isnt 'object'
     _.extend query, remainingParams unless @options.paramsInQS is false
-    url += '?' + utils.queryParams.stringify query unless isEmpty query
+    url += '?' + utils.queryParams.stringify query unless utils.isEmpty query
     url
 
   # Validates incoming params and returns them in a unified form - hash
@@ -199,12 +198,12 @@ module.exports = class Route
     # Replace the optional portion with a non-capturing and optional group.
     "(?:#{portion})?"
 
-  replaceParams: (s, callback) =>
+  replaceParams: (s, callback) ->
     # Parse :foo and *bar, replacing via callback.
     s.replace paramRegExp, callback
 
   paramCapturePattern: (param) ->
-    if param.charAt(0) is ':'
+    if param[0] is ':'
       # Regexp for :foo.
       '([^\/\?]+)'
     else
@@ -229,7 +228,8 @@ module.exports = class Route
   handler: (pathParams, options) =>
     options = if options then _.extend {}, options else {}
 
-    # pathDesc may be either an object with params for reversing or a simple URL.
+    # pathParams may be either an object with params for reversing
+    # or a simple URL.
     if typeof pathParams is 'object'
       query = utils.queryParams.stringify options.query
       params = pathParams
