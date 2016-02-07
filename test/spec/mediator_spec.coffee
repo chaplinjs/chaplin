@@ -76,14 +76,8 @@ define [
       expect(mediator.execute name).to.be resp
 
     it 'should support sealing itself', ->
-      strict = do (-> 'use strict'; !this)
-      return unless strict
-
       expect(mediator.seal).to.be.a 'function'
-      old = Object.seal
-      Object.seal = undefined
+      expect(Object.isSealed(mediator)).to.equal false
       mediator.seal()
-      expect(-> mediator.a = 1; delete mediator.a).to.not.throwError()
-      Object.seal = old
+      expect(Object.isSealed(mediator)).to.equal true
       mediator.seal()
-      expect(-> mediator.a = 1).to.throwError()

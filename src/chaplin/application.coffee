@@ -125,7 +125,7 @@ module.exports = class Application
     @started = true
 
     # Seal the application instance to prevent further changes.
-    Object.seal? this
+    Object.seal this
 
   # Disposal
   # --------
@@ -142,4 +142,4 @@ module.exports = class Application
     @disposed = true
 
     # You're frozen when your heart's not open.
-    Object.freeze? this
+    Object.freeze this

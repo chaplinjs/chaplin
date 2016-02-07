@@ -63,9 +63,11 @@ module.exports = class Controller
     return if @disposed
 
     # Dispose and delete all members which are disposable.
-    for own prop, obj of this when obj and typeof obj.dispose is 'function'
-      obj.dispose()
-      delete this[prop]
+    Object.keys(this).forEach (key) =>
+      object = this[key]
+      if object and typeof object.dispose is 'function'
+        object.dispose()
+        delete @[key]
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
@@ -77,4 +79,4 @@ module.exports = class Controller
     @disposed = true
 
     # You're frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

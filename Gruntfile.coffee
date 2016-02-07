@@ -289,6 +289,8 @@ module.exports = (grunt) ->
     coffeelint:
       source: 'src/**/*.coffee'
       # grunt: 'Gruntfile.coffee'
+      options:
+        configFile: 'coffeelint.json'
 
     # Instrumentation
     # ---------------

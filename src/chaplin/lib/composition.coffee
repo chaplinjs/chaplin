@@ -4,8 +4,6 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 EventBroker = require 'chaplin/lib/event_broker'
 
-has = Object::hasOwnProperty
-
 # Composition
 # -----------
 
@@ -31,7 +29,7 @@ module.exports = class Composition
   _stale: false
 
   constructor: (options) ->
-    @options = _.extend {}, options if options?
+    @options = _.extend {}, options
     @item = this
     @initialize @options
 
@@ -57,7 +55,7 @@ module.exports = class Composition
     @_stale = value
     for name, item of this when (
       item and item isnt this and
-      typeof item is 'object' and has.call(item, 'stale')
+      typeof item is 'object' and item.hasOwnProperty('stale')
     )
       item.stale = value
 
@@ -73,10 +71,12 @@ module.exports = class Composition
     return if @disposed
 
     # Dispose and delete all members which are disposable.
-    for own prop, obj of this when obj and typeof obj.dispose is 'function'
-      unless obj is this
-        obj.dispose()
-        delete this[prop]
+    Object.keys(this).forEach (key) =>
+      object = this[key]
+      if object and object isnt this and
+      typeof object.dispose is 'function'
+        object.dispose()
+        delete this[key]
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()
@@ -85,11 +85,10 @@ module.exports = class Composition
     @stopListening()
 
     # Remove properties which are not disposable.
-    properties = ['redirected']
-    delete this[prop] for prop in properties
+    delete this.redirected
 
     # Finished.
     @disposed = true
 
     # You're frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

@@ -1,34 +1,9 @@
 'use strict'
 
-_ = require 'underscore'
-support = require 'chaplin/lib/support'
-
 # Utilities
 # ---------
 
 utils =
-  # Object Helpers
-  # --------------
-
-  # Prototypal delegation. Create an object which delegates
-  # to another object.
-  beget: do ->
-    if typeof Object.create is 'function'
-      Object.create
-    else
-      ctor = ->
-      (obj) ->
-        ctor.prototype = obj
-        new ctor
-
-  indexOf: do ->
-    if Array::indexOf
-      (list, index) -> list.indexOf index
-    else if _.indexOf
-      _.indexOf
-
-  isArray: Array.isArray or _.isArray
-
   isEmpty: (object) ->
     not Object.getOwnPropertyNames(object).length
 
@@ -43,20 +18,13 @@ utils =
 
   # Make properties readonly and not configurable
   # using ECMAScript 5 property descriptors.
-  readonly: do ->
-    if support.propertyDescriptors
-      readonlyDescriptor =
+  readonly: (object, keys...) ->
+    for key in keys
+      Object.defineProperty object, key,
+        value: object[key]
         writable: false
-        enumerable: true
         configurable: false
-      (obj, properties...) ->
-        for prop in properties
-          readonlyDescriptor.value = obj[prop]
-          Object.defineProperty obj, prop, readonlyDescriptor
-        true
-    else
-      ->
-        false
+    true
 
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
@@ -81,7 +49,7 @@ utils =
 
   # Upcase the first character.
   upcase: (str) ->
-    str.charAt(0).toUpperCase() + str.substring(1)
+    str.charAt(0).toUpperCase() + str.slice(1)
 
   # Escapes a string to use in a regex.
   escapeRegExp: (str) ->
@@ -125,7 +93,7 @@ utils =
             query += stringifyKeyValuePair encodedKey, arrParam
         else
           query += stringifyKeyValuePair encodedKey, value
-      query and query.substring 1
+      query and query.slice 1
 
     # Returns a hash with query parameters from a query string
     parse: (queryString) ->
@@ -154,14 +122,19 @@ utils =
 
       params
 
-# Backwards-compat.
+# Backwards-compatibility methods
+# -------------------------------
+
+utils.beget = Object.create
 utils.queryParams = utils.querystring
+utils.indexOf = (array, item) -> array.indexOf item
+utils.isArray = Array.isArray
 
 # Finish
 # ------
 
 # Seal the utils object.
-Object.seal? utils
+Object.seal utils
 
 # Return our creation.
 module.exports = utils

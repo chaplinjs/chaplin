@@ -3,7 +3,6 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
 EventBroker = require 'chaplin/lib/event_broker'
 
 module.exports = class Dispatcher
@@ -50,8 +49,8 @@ module.exports = class Dispatcher
   #
   dispatch: (route, params, options) ->
     # Clone params and options so the original objects remain untouched.
-    params = if params then _.extend {}, params else {}
-    options = if options then _.extend {}, options else {}
+    params = _.extend {}, params
+    options = _.extend {}, options
 
     # null or undefined query parameters are equivalent to an empty hash
     options.query = {} if not options.query?
@@ -77,7 +76,7 @@ module.exports = class Dispatcher
   # The default implementation uses require() from a AMD module loader
   # like RequireJS to fetch the constructor.
   loadController: (name, handler) ->
-    return handler(name) if name is Object(name)
+    return handler(name) if name and typeof name is 'object'
 
     fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
@@ -167,4 +166,4 @@ module.exports = class Dispatcher
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

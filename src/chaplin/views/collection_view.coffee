@@ -393,7 +393,7 @@ module.exports = class CollectionView extends View
     items = @collection.models
 
     # Reset visible items.
-    @visibleItems = []
+    @visibleItems.length = 0
 
     # Collect remaining views.
     remainingViewsByCid = {}
@@ -404,9 +404,10 @@ module.exports = class CollectionView extends View
         remainingViewsByCid[item.cid] = view
 
     # Remove old views of items not longer in the list.
-    for own cid, view of @getItemViews() when cid not of remainingViewsByCid
-      # Remove the view.
-      @removeSubview "itemView:#{cid}"
+    Object.keys(@getItemViews()).forEach (cid) =>
+      unless cid of remainingViewsByCid
+        # Remove the view.
+        @removeSubview "itemView:#{cid}"
 
     # Re-insert remaining items; render and insert new items.
     for item, index in items
@@ -511,7 +512,7 @@ module.exports = class CollectionView extends View
   updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
     visibilityChanged = false
 
-    visibleItemsIndex = utils.indexOf @visibleItems, item
+    visibleItemsIndex = @visibleItems.indexOf item
     includedInVisibleItems = visibleItemsIndex isnt -1
 
     if includedInFilter and not includedInVisibleItems

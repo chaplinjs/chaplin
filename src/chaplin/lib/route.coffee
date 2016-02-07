@@ -6,9 +6,6 @@ EventBroker = require 'chaplin/lib/event_broker'
 Controller = require 'chaplin/controllers/controller'
 utils = require 'chaplin/lib/utils'
 
-isEmpty = (object) ->
-  not Object.keys(object).length
-
 module.exports = class Route
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
@@ -39,8 +36,7 @@ module.exports = class Route
         Use strings with :names and `constraints` option of route'
 
     # Clone options.
-    @options = if options then _.extend({}, options) else {}
-
+    @options = _.extend {}, options
     @options.paramsInQS = true if @options.paramsInQS isnt false
 
     # Store the name on the route if given
@@ -66,7 +62,7 @@ module.exports = class Route
     @createRegExp()
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this
 
   # Tests if route params are equal to criteria.
   matches: (criteria) ->
@@ -121,14 +117,14 @@ module.exports = class Route
 
   # Validates incoming params and returns them in a unified form - hash
   normalizeParams: (params) ->
-    if utils.isArray params
+    if Array.isArray params
       # Ensure we have enough parameters.
       return false if params.length < @requiredParams.length
 
       # Convert params from array into object.
       paramsHash = {}
       routeParams = @requiredParams.concat @optionalParams
-      for paramIndex in [0..params.length-1] by 1
+      for paramIndex in [0..params.length - 1] by 1
         paramName = routeParams[paramIndex]
         paramsHash[paramName] = params[paramIndex]
 
@@ -147,11 +143,8 @@ module.exports = class Route
   testConstraints: (params) ->
     # Apply the parameter constraints.
     constraints = @options.constraints
-    if constraints
-      for own name, constraint of constraints
-        return false unless constraint.test params[name]
-
-    true
+    Object.keys(constraints or {}).every (key) ->
+      constraints[key].test params[key]
 
   # Test if passed params hash matches current route.
   testParams: (params) ->
@@ -226,11 +219,11 @@ module.exports = class Route
   # The handler called by Backbone.History when the route matches.
   # It is also called by Router#route which might pass options.
   handler: (pathParams, options) =>
-    options = if options then _.extend {}, options else {}
+    options = _.extend {}, options
 
     # pathParams may be either an object with params for reversing
     # or a simple URL.
-    if typeof pathParams is 'object'
+    if pathParams and typeof pathParams is 'object'
       query = utils.queryParams.stringify options.query
       params = pathParams
       path = @reverse params
