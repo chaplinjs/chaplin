@@ -26,7 +26,7 @@ class History extends Backbone.History
         # CHANGED: Make fragment include query string.
         fragment = @location.pathname + @location.search
         root = @root.replace trailingSlash, ''
-        fragment = fragment.substr root.length unless fragment.indexOf root
+        fragment = fragment.slice root.length unless fragment.indexOf root
       else
         fragment = @getHash()
 
@@ -90,7 +90,7 @@ class History extends Backbone.History
 
     @loadUrl() if not @options.silent
 
-  navigate: (fragment='', options) ->
+  navigate: (fragment = '', options) ->
     return false unless Backbone.History.started
 
     options = {trigger: options} if not options or options is true

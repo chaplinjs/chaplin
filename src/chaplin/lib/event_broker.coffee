@@ -68,7 +68,7 @@ EventBroker =
     mediator.publish type, args...
 
 # You’re frozen when your heart’s not open.
-Object.freeze? EventBroker
+Object.freeze EventBroker
 
 # Return our creation.
 module.exports = EventBroker

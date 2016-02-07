@@ -56,4 +56,4 @@ module.exports = class Collection extends Backbone.Collection
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

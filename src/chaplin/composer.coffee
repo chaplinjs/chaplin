@@ -3,7 +3,6 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
 Composition = require 'chaplin/lib/composition'
 EventBroker = require 'chaplin/lib/event_broker'
 
@@ -182,4 +181,4 @@ module.exports = class Composer
     @disposed = true
 
     # You’re frozen when your heart’s not open
-    Object.freeze? this
+    Object.freeze this

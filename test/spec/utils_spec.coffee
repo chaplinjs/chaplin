@@ -16,18 +16,6 @@ define [
     class D extends C
       prop: 3
 
-    describe 'beget', ->
-      it 'should create a new object with the specified prototype object', ->
-        a = utils.beget {a: 1}
-        b = utils.beget a
-        b.b = 2
-        c = utils.beget b
-        c.c = 3
-        d = utils.beget c
-        expect(c.a).to.equal 1
-        expect(c.b).to.equal 2
-        expect(c.c).to.equal 3
-
     describe 'isEmpty', ->
       it 'should check whether an object does not have own properties', ->
         obj = {}

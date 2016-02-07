@@ -2,6 +2,7 @@
   "name": "chaplin",
   "version": "1.1.0",
   "dependencies": {
+    "es5-shim": "4.5.x",
     "mocha": "~2.4.5",
     "expect": "0.2.x",
     "jquery": "1.10.x",
@@ -11,7 +12,7 @@
     "sinon": "http://sinonjs.org/releases/sinon-1.7.1.js",
     "requirejs": "~2.1.22",
     "davy": "~0.0.4",
-    "exoskeleton": "~0.7.0"
+    "exoskeleton": "~0.6.0"
   },
   "exportsOverride": {
     "mocha": {

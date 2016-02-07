@@ -1,3 +1,5 @@
+'use strict'
+
 # Main entry point into Chaplin module.
 # Load all components and expose them.
 module.exports =

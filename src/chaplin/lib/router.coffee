@@ -69,7 +69,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # Connect an address with a controller action.
   # Creates a route on the Backbone.History instance.
   match: (pattern, target, options = {}) =>
-    if arguments.length is 2 and typeof target is 'object'
+    if arguments.length is 2 and target and typeof target is 'object'
       # Handles cases like `match 'url', controller: 'c', action: 'a'`.
       options = target
       {controller, action} = options
@@ -105,14 +105,14 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # and passes the routing options to the callback function.
   route: (pathDesc, params, options) ->
     # Try to extract an URL from the pathDesc if it's a hash.
-    if typeof pathDesc is 'object'
+    if pathDesc and typeof pathDesc is 'object'
       path = pathDesc.url
       params = pathDesc.params if not params and pathDesc.params
 
-    params = if params
-      if utils.isArray(params) then params.slice() else _.extend {}, params
+    params = if Array.isArray(params)
+      params.slice()
     else
-      {}
+      _.extend {}, params
 
     # Accept path to be given via URL wrapped in object,
     # or implicitly via route name, or explicitly via object.
@@ -127,7 +127,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       options = params
       params = null
     else
-      options = if options then _.extend {}, options else {}
+      options = _.extend {}, options
 
       # Find a route using a passed via pathDesc string route name.
       handler = @findHandler (handler) ->
@@ -207,4 +207,4 @@ module.exports = class Router # This class does not extend Backbone.Router.
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this
