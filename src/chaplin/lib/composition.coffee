@@ -55,7 +55,7 @@ module.exports = class Composition
     @_stale = value
     for name, item of this when (
       item and item isnt this and
-      typeof item is 'object' and item.hasOwnProperty('stale')
+      typeof item is 'object' and item.hasOwnProperty 'stale'
     )
       item.stale = value
 
@@ -72,11 +72,11 @@ module.exports = class Composition
 
     # Dispose and delete all members which are disposable.
     Object.keys(this).forEach (key) =>
-      object = this[key]
+      object = @[key]
       if object and object isnt this and
       typeof object.dispose is 'function'
         object.dispose()
-        delete this[key]
+        delete @[key]
 
     # Unbind handlers of global events.
     @unsubscribeAllEvents()

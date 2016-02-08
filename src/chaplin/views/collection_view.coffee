@@ -491,7 +491,7 @@ module.exports = class CollectionView extends View
     if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
-        setTimeout (=> addClass elem, @animationEndClass), 0
+        setTimeout => addClass elem, @animationEndClass
       else
         # Fade the view in if it was made transparent before.
         endAnimation elem, @animationDuration
