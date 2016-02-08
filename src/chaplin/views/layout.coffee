@@ -64,7 +64,7 @@ module.exports = class Layout extends View
     # Reset the scroll position.
     to = @settings.scrollTo
     if to and typeof to is 'object'
-      [x, y] = @settings.scrollTo
+      [x, y] = to
       window.scrollTo x, y
 
   # Handler for the global dispatcher:dispatch event.

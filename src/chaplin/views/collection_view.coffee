@@ -537,8 +537,10 @@ module.exports = class CollectionView extends View
     return if @disposed
 
     # Remove jQuery objects, item view cache and visible items list.
-    properties = ['$list', '$fallback', '$loading', 'visibleItems']
-    delete this[prop] for prop in properties
+    delete this[prop] for prop in [
+      '$list', '$fallback',
+      '$loading', 'visibleItems'
+    ]
 
     # Self-disposal.
     super
