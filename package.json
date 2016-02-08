@@ -6,25 +6,29 @@
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
-    "grunt-contrib-coffee": "0.13.x",
-    "grunt-contrib-clean": "~0.7.0",
-    "grunt-contrib-concat": "~0.5.1",
-    "grunt-contrib-copy": "~0.8.2",
+    "grunt-coffeelint": "~0.0.15",
+    "grunt-mocha-test": "~0.12.7",
+    "grunt-browserify": "~4.0.1",
+    "grunt-transbrute": "0.2.x",
     "grunt-contrib-compress": "0.14.x",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-contrib-uglify": "~0.11.1",
-    "grunt-bower-task": "0.4.x",
-    "grunt-istanbul": "~0.6.1",
-    "grunt-urequire": "concordusapps/grunt-urequire",
-    "grunt-coffeelint": "~0.0.13",
-    "grunt-mocha": "~0.4.15",
-    "grunt-transbrute": "0.2.x",
-    "prompt": "~0.2.14",
-    "phantomjs": "1.9.x"
+    "coffeeify": "~2.0.1",
+    "jsdom": "~8.0.2",
+    "jsdom-global": "~1.6.1",
+    "coffee-script": "1.10.x",
+    "mocha": "~2.4.5",
+    "sinon": "~1.17.3",
+    "sinon-chai": "2.8.x",
+    "chai": "3.5.x",
+    "jquery": "2.2.x",
+    "backbone": "~1.2.3",
+    "underscore": "~1.8.3",
+    "prompt": "~0.2.14"
   },
   "main": "build/chaplin.js",
   "scripts": {
-    "install": "grunt clean build",
-    "test": "grunt prepare test"
-  }
+    "test": "grunt test"
+  },
+  "license": "SEE LICENSE IN MIT-LICENSE.txt"
 }

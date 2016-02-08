@@ -2,11 +2,12 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-EventBroker = require 'chaplin/lib/event_broker'
-History = require 'chaplin/lib/history'
-Route = require 'chaplin/lib/route'
-utils = require 'chaplin/lib/utils'
+
+EventBroker = require './event_broker'
+History = require './history'
+Route = require './route'
+utils = require './utils'
+mediator = require '../mediator'
 
 # The router which is a replacement for Backbone.Router.
 # Like the standard router, it creates a Backbone.History
@@ -175,7 +176,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
 
   # Change the current URL, add a history entry.
   changeURL: (controller, params, route, options) ->
-    return unless route.path? and options.changeURL
+    return unless route.path? and options?.changeURL
 
     url = route.path + if route.query then "?#{route.query}" else ""
 

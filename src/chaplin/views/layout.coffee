@@ -2,10 +2,11 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
-EventBroker = require 'chaplin/lib/event_broker'
-View = require 'chaplin/views/view'
+
+View = require './view'
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
+mediator = require '../mediator'
 
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
@@ -97,7 +98,7 @@ module.exports = class Layout extends View
   isExternalLink: (link) ->
     link.target is '_blank' or
     link.rel is 'external' or
-    link.protocol not in ['http:', 'https:', 'file:', 'ms-appx:'] or
+    link.protocol not in ['http:', 'https:', 'file:', 'ms-appx:', ':'] or
     link.hostname not in [location.hostname, '']
 
   # Handle all clicks on A elements and try to route them internally.
@@ -105,7 +106,6 @@ module.exports = class Layout extends View
     return if utils.modifierKeyPressed(event)
 
     el = if $ then event.currentTarget else event.delegateTarget
-    isAnchor = el.nodeName.toUpperCase() in ['A', 'AREA']
 
     # Get the href and perform checks on it.
     href = el.getAttribute('href') or el.getAttribute('data-href')
@@ -126,12 +126,13 @@ module.exports = class Layout extends View
       else Backbone.utils.matchesSelector el, skipRouting)
 
     # Handle external links.
+    isAnchor = el.nodeName.toUpperCase() in ['A', 'AREA']
     external = isAnchor and @isExternalLink el
     if external
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
-        @openWindow href, el
+        @openWindow href
       return
 
     # Pass to the router, try to route the path internally.

@@ -1,6 +1,6 @@
 'use strict'
 
-mediator = require 'chaplin/mediator'
+mediator = require '../mediator'
 
 # Add functionality to subscribe and publish to global
 # Publish/Subscribe events so they can be removed afterwards

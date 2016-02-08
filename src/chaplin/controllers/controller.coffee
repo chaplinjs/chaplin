@@ -2,9 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
-utils = require 'chaplin/lib/utils'
-mediator = require 'chaplin/mediator'
+
+mediator = require '../mediator'
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
 
 module.exports = class Controller
   # Borrow the static extend method from Backbone.
@@ -38,7 +39,7 @@ module.exports = class Controller
 
   # Convenience method to publish the `!composer:compose` event. See the
   # composer for information on parameters, etc.
-  reuse: (name) ->
+  reuse: ->
     method = if arguments.length is 1 then 'retrieve' else 'compose'
     mediator.execute "composer:#{method}", arguments...
 
@@ -50,9 +51,9 @@ module.exports = class Controller
   # -----------
 
   # Redirect to URL.
-  redirectTo: (pathDesc, params, options) ->
+  redirectTo: ->
     @redirected = true
-    utils.redirectTo pathDesc, params, options
+    utils.redirectTo arguments...
 
   # Disposal
   # --------
@@ -63,10 +64,10 @@ module.exports = class Controller
     return if @disposed
 
     # Dispose and delete all members which are disposable.
-    Object.keys(this).forEach (key) =>
-      object = @[key]
-      if object and typeof object.dispose is 'function'
-        object.dispose()
+    for key in Object.keys this
+      member = @[key]
+      if typeof member?.dispose is 'function'
+        member.dispose()
         delete @[key]
 
     # Unbind handlers of global events.

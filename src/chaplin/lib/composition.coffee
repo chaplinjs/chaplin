@@ -2,7 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
+EventBroker = require './event_broker'
 
 # Composition
 # -----------
@@ -71,11 +71,11 @@ module.exports = class Composition
     return if @disposed
 
     # Dispose and delete all members which are disposable.
-    Object.keys(this).forEach (key) =>
-      object = @[key]
-      if object and object isnt this and
-      typeof object.dispose is 'function'
-        object.dispose()
+    for key in Object.keys this
+      member = @[key]
+      if member and member isnt this and
+      typeof member.dispose is 'function'
+        member.dispose()
         delete @[key]
 
     # Unbind handlers of global events.

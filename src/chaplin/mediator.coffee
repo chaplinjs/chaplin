@@ -1,8 +1,7 @@
 'use strict'
 
 Backbone = require 'backbone'
-_ = require 'underscore'
-utils = require 'chaplin/lib/utils'
+utils = require './lib/utils'
 
 # Mediator
 # --------
