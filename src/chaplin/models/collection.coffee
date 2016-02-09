@@ -45,12 +45,11 @@ module.exports = class Collection extends Backbone.Collection
 
     # Remove model constructor reference, internal model lists
     # and event handlers.
-    properties = [
+    delete this[prop] for prop in [
       'model',
       'models', '_byId', '_byCid',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
 
     # Finished.
     @disposed = true

@@ -64,7 +64,7 @@ module.exports = class Controller
 
     # Dispose and delete all members which are disposable.
     Object.keys(this).forEach (key) =>
-      object = this[key]
+      object = @[key]
       if object and typeof object.dispose is 'function'
         object.dispose()
         delete @[key]

@@ -62,20 +62,18 @@ module.exports = class Layout extends View
   # Handler for the global beforeControllerDispose event.
   scroll: ->
     # Reset the scroll position.
-    position = @settings.scrollTo
-    if position
-      window.scrollTo position[0], position[1]
+    to = @settings.scrollTo
+    if to and typeof to is 'object'
+      [x, y] = to
+      window.scrollTo x, y
 
   # Handler for the global dispatcher:dispatch event.
   # Change the document title to match the new controller.
   # Get the title from the title property of the current controller.
   adjustTitle: (subtitle = '') ->
     title = @settings.titleTemplate {@title, subtitle}
-    # Internet Explorer < 9 workaround.
-    setTimeout =>
-      document.title = title
-      @publishEvent 'adjustTitle', subtitle, title
-    , 50
+    document.title = title
+    @publishEvent 'adjustTitle', subtitle, title
     title
 
   # Automatic routing of internal links
@@ -107,10 +105,10 @@ module.exports = class Layout extends View
     return if utils.modifierKeyPressed(event)
 
     el = if $ then event.currentTarget else event.delegateTarget
-    isAnchor = el.nodeName is 'A'
+    isAnchor = el.nodeName.toUpperCase() in ['A', 'AREA']
 
     # Get the href and perform checks on it.
-    href = el.getAttribute('href') or el.getAttribute('data-href') or null
+    href = el.getAttribute('href') or el.getAttribute('data-href')
 
     # Basic href checks.
     return if not href? or
@@ -144,7 +142,7 @@ module.exports = class Layout extends View
     return
 
   # Handle all browsing context resources
-  openWindow: (href, el) ->
+  openWindow: (href) ->
     window.open href
 
   # Region management

@@ -95,14 +95,13 @@ module.exports = class Model extends Backbone.Model
 
     # Remove the collection reference, internal attribute hashes
     # and event handlers.
-    properties = [
+    delete this[prop] for prop in [
       'collection',
       'attributes', 'changed', 'defaults',
       '_escapedAttributes', '_previousAttributes',
       '_silent', '_pending',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
 
     # Finished.
     @disposed = true

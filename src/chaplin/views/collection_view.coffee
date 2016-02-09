@@ -491,7 +491,7 @@ module.exports = class CollectionView extends View
     if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
-        setTimeout (=> addClass elem, @animationEndClass), 0
+        setTimeout => addClass elem, @animationEndClass
       else
         # Fade the view in if it was made transparent before.
         endAnimation elem, @animationDuration
@@ -537,8 +537,10 @@ module.exports = class CollectionView extends View
     return if @disposed
 
     # Remove jQuery objects, item view cache and visible items list.
-    properties = ['$list', '$fallback', '$loading', 'visibleItems']
-    delete this[prop] for prop in properties
+    delete this[prop] for prop in [
+      '$list', '$fallback',
+      '$loading', 'visibleItems'
+    ]
 
     # Self-disposal.
     super

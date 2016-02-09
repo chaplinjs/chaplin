@@ -28,7 +28,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       trailing: no
 
     # Cached regex for stripping a leading subdir and hash/slash.
-    @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
+    @removeRoot = new RegExp '^' + utils.escapeRegExp(@options.root) + '(#)?'
 
     @subscribeEvent '!router:route', @oldEventError
     @subscribeEvent '!router:routeByName', @oldEventError
@@ -83,7 +83,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
         throw new Error 'Router#match cannot use both target and ' +
           'options.controller / options.action'
       # Separate target into controller and controller action.
-      [controller, action] = target.split('#')
+      [controller, action] = target.split '#'
 
     # Let each match call provide its own trailing option to appropriate Route.
     # Pass trailing value from the Router by default.
@@ -109,7 +109,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       path = pathDesc.url
       params = pathDesc.params if not params and pathDesc.params
 
-    params = if Array.isArray(params)
+    params = if Array.isArray params
       params.slice()
     else
       _.extend {}, params
@@ -132,7 +132,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       # Find a route using a passed via pathDesc string route name.
       handler = @findHandler (handler) ->
         if handler.route.matches pathDesc
-          params = handler.route.normalizeParams(params)
+          params = handler.route.normalizeParams params
           return true if params
         false
 
