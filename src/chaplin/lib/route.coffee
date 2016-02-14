@@ -2,9 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
-Controller = require 'chaplin/controllers/controller'
-utils = require 'chaplin/lib/utils'
+
+EventBroker = require './event_broker'
+utils = require './utils'
+Controller = require '../controllers/controller'
 
 module.exports = class Route
   # Borrow the static extend method from Backbone.
@@ -253,7 +254,7 @@ module.exports = class Route
     matches = @regExp.exec path
 
     # Fill the hash using param names and the matches.
-    for match, index in matches.slice(1)
+    for match, index in matches.slice 1
       paramName = if @allParams.length then @allParams[index] else index
       params[paramName] = match
 

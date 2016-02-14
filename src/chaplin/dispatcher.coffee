@@ -2,8 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-EventBroker = require 'chaplin/lib/event_broker'
+
+EventBroker = require './lib/event_broker'
+{loadModule} = require './lib/utils'
+mediator = require './mediator'
 
 module.exports = class Dispatcher
   # Borrow the static extend method from Backbone.
@@ -80,11 +82,7 @@ module.exports = class Dispatcher
 
     fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
-    if define?.amd
-      require [moduleName], handler
-    else
-      setTimeout ->
-        handler require moduleName
+    loadModule moduleName, handler
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->

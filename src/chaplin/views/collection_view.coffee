@@ -1,9 +1,9 @@
 'use strict'
 
-_ = require 'underscore'
 Backbone = require 'backbone'
-View = require 'chaplin/views/view'
-utils = require 'chaplin/lib/utils'
+
+View = require './view'
+utils = require '../lib/utils'
 
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
@@ -404,7 +404,7 @@ module.exports = class CollectionView extends View
         remainingViewsByCid[item.cid] = view
 
     # Remove old views of items not longer in the list.
-    Object.keys(@getItemViews()).forEach (cid) =>
+    for cid in Object.keys @getItemViews()
       unless cid of remainingViewsByCid
         # Remove the view.
         @removeSubview "itemView:#{cid}"

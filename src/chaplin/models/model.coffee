@@ -2,7 +2,7 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
+EventBroker = require '../lib/event_broker'
 
 # Private helper function for serializing attributes recursively,
 # creating objects which delegate to the original attributes

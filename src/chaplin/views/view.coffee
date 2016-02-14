@@ -2,9 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-EventBroker = require 'chaplin/lib/event_broker'
-utils = require 'chaplin/lib/utils'
+
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
+mediator = require '../mediator'
 
 # Shortcut to access the DOM manipulation library.
 $ = Backbone.$
@@ -21,7 +22,7 @@ setHTML = do ->
 attach = do ->
   if $
     (view) ->
-      actual = $(view.container)
+      actual = $ view.container
       if typeof view.containerMethod is 'function'
         view.containerMethod actual, view.el
       else
@@ -116,11 +117,13 @@ module.exports = class View extends Backbone.View
     'noWrap'
   ]
 
-  constructor: (options) ->
+  constructor: (options = {}) ->
     # Copy some options to instance properties.
-    if options
-      for optName, optValue of options when optName in @optionNames
-        this[optName] = optValue
+    for key in Object.keys options
+      if key in @optionNames
+        @[key] = options[key]
+      else if $ and typeof $::[key] is 'function'
+        @containerMethod = key
 
     # Wrap `render` so `attach` is called afterwards.
     # Enclose the original function.
@@ -213,9 +216,9 @@ module.exports = class View extends Backbone.View
 
     # Add an event namespace, bind handler it to view.
     list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-    events = list.join(' ')
+    events = list.join ' '
     bound = handler.bind this
-    @$el.on events, (selector or null), bound
+    @$el.on events, selector or null, bound
 
     # Return the bound handler.
     bound
@@ -231,7 +234,7 @@ module.exports = class View extends Backbone.View
       eventName = "#{match[1]}.delegateEvents#{@cid}"
       selector = match[2]
       bound = handler.bind this
-      @$el.on eventName, (selector or null), bound
+      @$el.on eventName, selector or null, bound
     return
 
   # Override Backbones method to combine the events
@@ -266,8 +269,8 @@ module.exports = class View extends Backbone.View
         handler = third
 
       list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-      events = list.join(' ')
-      @$el.off events, (selector or null)
+      events = list.join ' '
+      @$el.off events, selector or null
     else
       @$el.off ".delegate#{@cid}"
 

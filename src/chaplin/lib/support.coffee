@@ -3,5 +3,5 @@
 # Backwards-compatibility module
 # ------------------------------
 
-module.exports = support
+module.exports =
   propertyDescriptors: yes

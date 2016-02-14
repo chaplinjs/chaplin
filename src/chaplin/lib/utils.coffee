@@ -49,7 +49,7 @@ utils =
 
   # Upcase the first character.
   upcase: (str) ->
-    str.charAt(0).toUpperCase() + str.slice(1)
+    str.charAt(0).toUpperCase() + str.slice 1
 
   # Escapes a string to use in a regex.
   escapeRegExp: (str) ->
@@ -68,13 +68,28 @@ utils =
 
   # Returns the url for a named route and any params.
   reverse: (criteria, params, query) ->
-    require('chaplin/mediator').execute 'router:reverse',
+    require('../mediator').execute 'router:reverse',
       criteria, params, query
 
   # Redirects to URL, route name or controller and action pair.
   redirectTo: (pathDesc, params, options) ->
-    require('chaplin/mediator').execute 'router:route',
+    require('../mediator').execute 'router:route',
       pathDesc, params, options
+
+  # Determines module system and returns module loader function.
+  loadModule: do ->
+    {require} = window
+
+    if typeof define is 'function' and define.amd
+      (moduleName, handler) ->
+        require [moduleName], handler
+    else
+      enqueue = setImmediate ? setTimeout
+
+      (moduleName, handler) ->
+        enqueue ->
+          handler require moduleName
+
 
   # Query parameters Helpers
   # --------------
@@ -121,6 +136,7 @@ utils =
           params[field] = value
 
       params
+
 
 # Backwards-compatibility methods
 # -------------------------------

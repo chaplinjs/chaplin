@@ -2,9 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
-Model = require 'chaplin/models/model'
-utils = require 'chaplin/lib/utils'
+
+Model = require './model'
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
 
 # Abstract class which extends the standard Backbone collection
 # in order to add some functionality.
