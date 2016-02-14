@@ -4,7 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 
 EventBroker = require './lib/event_broker'
-{load} = require './lib/utils'
+{loadModule} = require './lib/utils'
 mediator = require './mediator'
 
 module.exports = class Dispatcher
@@ -82,7 +82,7 @@ module.exports = class Dispatcher
 
     fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
-    load moduleName, handler
+    loadModule moduleName, handler
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->

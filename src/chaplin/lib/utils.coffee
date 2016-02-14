@@ -77,7 +77,7 @@ utils =
       pathDesc, params, options
 
   # Determines module system and returns module loader function.
-  load: do ->
+  loadModule: do ->
     {require} = window
 
     if typeof define is 'function' and define.amd
