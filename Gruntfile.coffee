@@ -63,7 +63,7 @@ module.exports = (grunt) ->
           reporter: 'spec'
           require: [
             'coffee-script/register'
-            -> require('jsdom-global')()
+            'jsdom-assign'
             'jquery'
           ]
         src: 'test/*.coffee'
