@@ -111,22 +111,52 @@ describe 'utils', ->
       # expect(url).to.be.null
 
   describe 'queryParams', ->
+    {stringify, parse} = utils.querystring
+
     queryParams = p1: 'With space', p2_empty: '', 'p 3': ['999', 'a&b']
     queryString = 'p1=With%20space&p2_empty=&p%203=999&p%203=a%26b'
 
     it 'should serialize query parameters from object into string', ->
-      expect(utils.querystring.stringify queryParams).to.equal queryString
+      expect(stringify queryParams).to.equal queryString
 
     it 'should ignore undefined and null when serializing query parameters', ->
       params = p1: null, p2: undefined, p3: 'third'
-      expect(utils.querystring.stringify params).to.equal 'p3=third'
+      expect(stringify params).to.equal 'p3=third'
+
+    it 'should ignore first parameter == null', ->
+      expect(stringify {}).to.equal ''
+      expect(parse '').to.deep.equal {}
+
+    it 'should ignore non-callable second parameter', ->
+      expect(stringify queryParams, 1).to.equal queryString
+      expect(parse queryString, []).to.deep.equal queryParams
+
+    it 'should serialize with replacer when provided', ->
+      replacer = (key, value) ->
+        value += '_'
+        {key, value}
+
+      expect(stringify queryParams, replacer).to.equal(
+        'p1=With%20space_&p2_empty=_&p%203=999%2Ca%26b_')
+
+    it 'should deserialize with reviver when provided', ->
+      reviver = (key, value) ->
+        if ',' in value
+          value = value.split(',').map (value) ->
+            if isNaN value then value else +value
+        {key, value}
+
+      expect(parse 'a=1%2C2%2C3&b=c%2Cd&e=4', reviver).to.deep.equal
+        a: [1, 2, 3]
+        b: ['c', 'd']
+        e: '4'
 
     it 'should deserialize query parameters from query string into object', ->
-      expect(utils.querystring.parse queryString).to.deep.equal queryParams
+      expect(parse queryString).to.deep.equal queryParams
 
     it 'should take a full url and only return params object', ->
       url = "http://foo.com/app/path?#{queryString}"
-      expect(utils.querystring.parse url).to.deep.equal queryParams
+      expect(parse url).to.deep.equal queryParams
 
     it 'should have old methods', ->
       expect(utils.queryParams.stringify).to.be.a 'function'

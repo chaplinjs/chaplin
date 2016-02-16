@@ -96,55 +96,50 @@ utils =
 
   querystring:
 
-    # Returns a query string from a hash
-    stringify: (queryParams) ->
-      query = ''
-      stringifyKeyValuePair = (encodedKey, value) ->
-        if value? then '&' + encodedKey + '=' + encodeURIComponent value else ''
-      for own key, value of queryParams
-        encodedKey = encodeURIComponent key
-        if utils.isArray value
-          for arrParam in value
-            query += stringifyKeyValuePair encodedKey, arrParam
-        else
-          query += stringifyKeyValuePair encodedKey, value
-      query and query.slice 1
+    # Returns a query string from a hash.
+    stringify: (params = {}, replacer) ->
+      if typeof replacer isnt 'function'
+        replacer = (key, value) ->
+          if Array.isArray value
+            value.map (value) -> {key, value}
+          else if value?
+            {key, value}
 
-    # Returns a hash with query parameters from a query string
-    parse: (queryString) ->
-      params = {}
-      return params unless queryString
-      queryString = queryString.slice queryString.indexOf('?') + 1
-      pairs = queryString.split '&'
-      for pair in pairs
-        continue unless pair.length
-        [field, value] = pair.split '='
-        continue unless field.length
-        field = decodeURIComponent field
-        value = decodeURIComponent value
-        current = params[field]
-        if current
-          # Handle multiple params with same name:
-          # Aggregate them in an array.
-          if current.push
-            # Add the existing array.
-            current.push value
+      Object.keys(params).reduce (pairs, key) ->
+        pair = replacer key, params[key]
+        pairs.concat pair or []
+      , []
+      .map ({key, value}) ->
+        [key, value].map(encodeURIComponent).join '='
+      .join '&'
+
+    # Returns a hash with query parameters from a query string.
+    parse: (string = '', reviver) ->
+      if typeof reviver isnt 'function'
+        reviver = (key, value) -> {key, value}
+
+      string = string.slice 1 + string.indexOf '?'
+      string.split('&').reduce (params, pair) ->
+        parts = pair.split('=').map decodeURIComponent
+        {key, value} = reviver parts...
+
+        if value? then params[key] =
+          if params.hasOwnProperty key
+            [].concat params[key], value
           else
-            # Create a new array.
-            params[field] = [current, value]
-        else
-          params[field] = value
+            value
 
-      params
+        params
+      , {}
 
 
 # Backwards-compatibility methods
 # -------------------------------
 
 utils.beget = Object.create
-utils.queryParams = utils.querystring
 utils.indexOf = (array, item) -> array.indexOf item
 utils.isArray = Array.isArray
+utils.queryParams = utils.querystring
 
 # Finish
 # ------
