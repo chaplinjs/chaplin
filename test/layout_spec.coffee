@@ -110,7 +110,7 @@ describe 'Layout', ->
   it 'should not route `rel=external` links', ->
     expectWasNotRouted href: '/foo', rel: 'external'
 
-  it 'should not route `target=blank` links', ->
+  it 'should not route `target=_blank` links', ->
     expectWasNotRouted href: '/foo', target: '_blank'
 
   it 'should not route non-http(s) links', ->

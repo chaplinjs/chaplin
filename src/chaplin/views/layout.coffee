@@ -96,14 +96,23 @@ module.exports = class Layout extends View
       @undelegate 'click', route, @openLink
 
   isExternalLink: (link) ->
-    link.target is '_blank' or
+    # IE 9-11 resolve href but do not populate protocol, host etc.
+    # Reassigning href helps. See #878 issue for details.
+    link.href += '' unless link.host
+
+    {protocol, host} = location
+    {target} = link
+
+    target is '_blank' or
     link.rel is 'external' or
-    link.protocol not in ['http:', 'https:', 'file:', 'ms-appx:', ':'] or
-    link.hostname not in [location.hostname, '']
+    link.protocol isnt protocol or
+    link.host isnt host or
+    (target is '_parent' and parent isnt self) or
+    (target is '_top' and top isnt self)
 
   # Handle all clicks on A elements and try to route them internally.
   openLink: (event) =>
-    return if utils.modifierKeyPressed(event)
+    return if utils.modifierKeyPressed event
 
     el = if $ then event.currentTarget else event.delegateTarget
 
@@ -111,7 +120,7 @@ module.exports = class Layout extends View
     href = el.getAttribute('href') or el.getAttribute('data-href')
 
     # Basic href checks.
-    return if not href? or
+    return if href is null or
       # Technically an empty string is a valid relative URL
       # but it doesn’t make sense to route it.
       href is '' or
