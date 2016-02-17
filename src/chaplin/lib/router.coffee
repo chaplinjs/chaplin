@@ -72,8 +72,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
   match: (pattern, target, options = {}) =>
     if arguments.length is 2 and target and typeof target is 'object'
       # Handles cases like `match 'url', controller: 'c', action: 'a'`.
-      options = target
-      {controller, action} = options
+      {controller, action} = options = target
       unless controller and action
         throw new Error 'Router#match must receive either target or ' +
           'options.controller & options.action'
@@ -178,7 +177,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
   changeURL: (controller, params, route, options) ->
     return unless route.path? and options?.changeURL
 
-    url = route.path + if route.query then "?#{route.query}" else ""
+    url = route.path + if route.query then "?#{route.query}" else ''
 
     navigateOptions =
       # Do not trigger or replace per default.

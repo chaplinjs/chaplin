@@ -78,7 +78,7 @@ utils =
 
   # Determines module system and returns module loader function.
   loadModule: do ->
-    {require} = window
+    {define, require} = window
 
     if typeof define is 'function' and define.amd
       (moduleName, handler) ->
@@ -87,8 +87,7 @@ utils =
       enqueue = setImmediate ? setTimeout
 
       (moduleName, handler) ->
-        enqueue ->
-          handler require moduleName
+        enqueue -> handler require moduleName
 
 
   # Query parameters Helpers
@@ -121,7 +120,7 @@ utils =
       string = string.slice 1 + string.indexOf '?'
       string.split('&').reduce (params, pair) ->
         parts = pair.split('=').map decodeURIComponent
-        {key, value} = reviver parts...
+        {key, value} = reviver(parts...) or {}
 
         if value? then params[key] =
           if params.hasOwnProperty key
