@@ -4,7 +4,7 @@ _ = require 'underscore'
 Backbone = require 'backbone'
 
 EventBroker = require './lib/event_broker'
-{loadModule} = require './lib/utils'
+utils = require './lib/utils'
 mediator = require './mediator'
 
 module.exports = class Dispatcher
@@ -78,11 +78,11 @@ module.exports = class Dispatcher
   # The default implementation uses require() from a AMD module loader
   # like RequireJS to fetch the constructor.
   loadController: (name, handler) ->
-    return handler(name) if name is Object name
+    return handler name if name is Object name
 
     fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
-    loadModule moduleName, handler
+    utils.loadModule moduleName, handler
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
@@ -146,7 +146,7 @@ module.exports = class Dispatcher
 
     # Execute action in controller context.
     promise = controller.beforeAction params, route, options
-    if promise and promise.then
+    if typeof promise?.then is 'function'
       promise.then executeAction
     else
       executeAction()

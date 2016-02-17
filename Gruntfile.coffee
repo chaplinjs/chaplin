@@ -64,7 +64,6 @@ module.exports = (grunt) ->
           require: [
             'coffee-script/register'
             'jsdom-assign'
-            'jquery'
           ]
         src: 'test/*.coffee'
 

@@ -8,7 +8,7 @@ chai.use require 'sinon-chai'
 chai.should()
 
 {expect} = require 'chai'
-{Composer, Controller, Dispatcher, mediator} = require '../src/chaplin'
+{Composer, Controller, Dispatcher, utils, mediator} = require '../src/chaplin'
 
 describe 'Dispatcher', ->
   # Initialize shared variables
@@ -49,6 +49,7 @@ describe 'Dispatcher', ->
       #console.debug 'Test2Controller#dispose'
       super
 
+  {loadController} = Dispatcher.prototype
   loadStub = sinon.stub Dispatcher.prototype, 'loadController'
 
   makeLoadController = (name, controller) ->
@@ -92,6 +93,31 @@ describe 'Dispatcher', ->
     loadStub.restore()
 
   # The Tests
+
+  it 'should load controller by calling utils.loadModule', ->
+    stub = sinon.stub utils, 'loadModule'
+    handler = ->
+
+    dispatcher.loadController = loadController
+    dispatcher.loadController 'a', handler
+
+    stub.should.have.been.calledOnce
+    stub.should.have.been.calledWith 'controllers/a_controller', handler
+    stub.restore()
+
+  it 'should load controller by calling handler if name is object', ->
+    stub = sinon.stub utils, 'loadModule'
+    spy = sinon.spy()
+    name = ->
+
+    dispatcher.loadController = loadController
+    dispatcher.loadController name, spy
+
+    spy.should.have.been.calledOnce
+    spy.should.have.been.calledWith name
+
+    stub.should.not.have.been.called
+    stub.restore()
 
   it 'should dispatch routes to controller actions', ->
     proto = Test1Controller.prototype

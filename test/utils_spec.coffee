@@ -111,6 +111,7 @@ describe 'utils', ->
       # expect(url).to.be.null
 
   describe 'queryParams', ->
+    falsy = ['', 0, NaN, false, null, undefined]
     {stringify, parse} = utils.querystring
 
     queryParams = p1: 'With space', p2_empty: '', 'p 3': ['999', 'a&b']
@@ -139,6 +140,17 @@ describe 'utils', ->
       expect(stringify queryParams, replacer).to.equal(
         'p1=With%20space_&p2_empty=_&p%203=999%2Ca%26b_')
 
+    it 'should skip pair if replacer returns falsy value', ->
+      for value in falsy
+        expect(stringify queryParams, -> value).to.equal ''
+
+    it 'should deserialize query parameters from query string into object', ->
+      expect(parse queryString).to.deep.equal queryParams
+
+    it 'should take a full url and only return params object', ->
+      url = "http://foo.com/app/path?#{queryString}"
+      expect(parse url).to.deep.equal queryParams
+
     it 'should deserialize with reviver when provided', ->
       reviver = (key, value) ->
         if ',' in value
@@ -151,12 +163,14 @@ describe 'utils', ->
         b: ['c', 'd']
         e: '4'
 
-    it 'should deserialize query parameters from query string into object', ->
-      expect(parse queryString).to.deep.equal queryParams
+    it 'should skip pair if reviver returns falsy value', ->
+      for value in falsy
+        expect(parse queryString, -> value).to.deep.equal {}
 
-    it 'should take a full url and only return params object', ->
-      url = "http://foo.com/app/path?#{queryString}"
-      expect(parse url).to.deep.equal queryParams
+    it 'should skip pair if reviver returns value == null', ->
+      expect(parse 'a&').to.deep.equal {}
+      expect(parse 'b=1', -> {value: null}).to.deep.equal {}
+      expect(parse 'c=2', -> []).to.deep.equal {}
 
     it 'should have old methods', ->
       expect(utils.queryParams.stringify).to.be.a 'function'
