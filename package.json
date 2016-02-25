@@ -20,15 +20,16 @@
     "mocha": "~2.4.5",
     "sinon": "~1.17.3",
     "sinon-chai": "2.8.x",
-    "chai": "3.5.x",
     "jquery": "2.2.x",
+    "chai": "3.5.x",
     "backbone": "~1.2.3",
+    "backbone.nativeview": "~0.3.3",
     "underscore": "~1.8.3",
     "prompt": "~0.2.14"
   },
   "main": "build/chaplin.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test && grunt test:jquery"
   },
   "license": "SEE LICENSE IN MIT-LICENSE.txt"
 }

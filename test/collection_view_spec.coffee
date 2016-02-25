@@ -1,6 +1,6 @@
 'use strict'
 
-jQuery = $ = require 'jquery'
+$ = require 'jquery'
 
 sinon = require 'sinon'
 chai = require 'chai'
@@ -8,7 +8,7 @@ chai.use require 'sinon-chai'
 chai.should()
 
 {expect} = require 'chai'
-{SyncMachine, Collection, Model} = require '../src/chaplin'
+{SyncMachine, utils, Collection, Model} = require '../src/chaplin'
 {CollectionView, View} = require '../src/chaplin'
 
 describe 'CollectionView', ->
@@ -67,16 +67,16 @@ describe 'CollectionView', ->
     models
 
   getViewChildren = ->
-    if jQuery
+    if $
       collectionView.$list.children collectionView.itemSelector
     else
       if collectionView.itemSelector
-        (item for item in collectionView.list.children when Backbone.utils.matchesSelector item, collectionView.itemSelector)
+        (item for item in collectionView.list.children when utils.matchesSelector item, collectionView.itemSelector)
       else
         collectionView.list.children
 
   getAllChildren = ->
-    if jQuery
+    if $
       collectionView.$el.children()
     else
       collectionView.el.children
@@ -153,8 +153,8 @@ describe 'CollectionView', ->
       expect(collectionView).not.to.have.ownProperty '$list'
 
       collectionView.render()
-      if jQuery
-        expect(collectionView.$list).to.be.an.instanceof jQuery
+      if $
+        expect(collectionView.$list).to.be.an.instanceof $
         expect(collectionView.$list).to.have.lengthOf 1
       else
         expect(collectionView.list).to.be.an.instanceof Element
@@ -393,10 +393,10 @@ describe 'CollectionView', ->
       itemView: ItemView
 
     it 'should animate the opacity of new items', ->
-      return unless jQuery
+      return unless $
 
-      $css = sinon.stub jQuery.prototype, 'css', -> this
-      $animate = sinon.stub jQuery.prototype, 'animate', -> this
+      $css = sinon.stub $.fn, 'css', -> this
+      $animate = sinon.stub $.fn, 'animate', -> this
 
       createCollection()
       collectionView = new AnimatingCollectionView {collection}
@@ -418,10 +418,10 @@ describe 'CollectionView', ->
       $animate.restore()
 
     it 'should not animate if animationDuration is 0', ->
-      return unless jQuery
+      return unless $
 
-      $css = sinon.spy jQuery.prototype, 'css'
-      $animate = sinon.spy jQuery.prototype, 'animate'
+      $css = sinon.spy $.fn, 'css'
+      $animate = sinon.spy $.fn, 'animate'
 
       createCollection()
       collectionView = new TestCollectionView {collection}
@@ -438,10 +438,10 @@ describe 'CollectionView', ->
       $animate.restore()
 
     it 'should not animate when re-inserting', ->
-      return unless jQuery
+      return unless $
 
-      $css = sinon.stub jQuery.prototype, 'css', -> this
-      $animate = sinon.stub jQuery.prototype, 'animate', -> this
+      $css = sinon.stub $.fn, 'css', -> this
+      $animate = sinon.stub $.fn, 'animate', -> this
 
       model1 = new Model id: 1
       model2 = new Model id: 2
@@ -560,8 +560,8 @@ describe 'CollectionView', ->
 
       children = getViewChildren()
       for element in children
-        if jQuery
-          displayValue = jQuery(element).css 'display'
+        if $
+          displayValue = $(element).css 'display'
           expect(displayValue).not.to.equal 'none'
         else
           displayValue = element.style.display
@@ -609,7 +609,7 @@ describe 'CollectionView', ->
 
       filterCallback = (view, included) ->
         cls = if included then 'included' else 'not-included'
-        if jQuery
+        if $
           view.$el.addClass cls
         else
           view.el.classList.add cls
@@ -719,9 +719,9 @@ describe 'CollectionView', ->
     describe 'Selectors', ->
 
       it 'should append views to the listSelector', ->
-        if jQuery
+        if $
           $list = collectionView.$list
-          expect($list).to.be.an.instanceof jQuery
+          expect($list).to.be.an.instanceof $
           expect($list).to.have.lengthOf 1
 
           $list2 = collectionView.$(collectionView.listSelector)
@@ -731,10 +731,10 @@ describe 'CollectionView', ->
           expect(children).to.have.lengthOf collection.length
         else
           list = collectionView.list
-          expect(list).to.be.true
+          expect(list).to.be.an.instanceof HTMLElement
 
-          list2 = collectionView.find(collectionView.listSelector)
-          expect(list).to.equal.list2
+          list2 = collectionView.el.querySelector collectionView.listSelector
+          expect(list).to.equal list2
 
           children = getViewChildren()
           expect(children).to.have.lengthOf collection.length
@@ -773,27 +773,27 @@ describe 'CollectionView', ->
     describe 'Fallback element', ->
 
       it 'should set the fallback element properly', ->
-        if jQuery
+        if $
           {$fallback} = collectionView
-          expect($fallback).to.be.an.instanceof jQuery if jQuery
+          expect($fallback).to.be.an.instanceof $
           expect($fallback).to.have.lengthOf 1
 
-          $fallback2 = collectionView.$ collectionView.fallbackSelector
+          $fallback2 = collectionView.find collectionView.fallbackSelector
           expect($fallback[0]).to.equal $fallback2[0]
         else
           {fallback} = collectionView
-          expect(fallback).to.be.true
-          fallback2 = collectionView.find(collectionView.fallbackSelector)
-          expect(fallback).to.be fallback2
+          expect(fallback).to.be.an.instanceof HTMLElement
+          fallback2 = collectionView.find collectionView.fallbackSelector
+          expect(fallback).to.equal fallback2
 
       it 'should show the fallback element properly', ->
-        fallback = if jQuery
+        fallback = if $
           collectionView.$fallback[0]
         else
           collectionView.fallback
 
         expectVisible = ->
-          expect(fallback.style.display).to.equal if jQuery then 'block' else ''
+          expect(fallback.style.display).to.equal if $ then 'block' else ''
 
         expectInvisible = ->
           expect(fallback.style.display).to.equal 'none'
@@ -841,34 +841,39 @@ describe 'CollectionView', ->
         expect(collectionView.filterer).to.equal filterer
         expect(collectionView.visibleItems).to.be.empty
 
-        [{style}] = collectionView.$ collectionView.fallbackSelector
+        fallback = collectionView.find collectionView.fallbackSelector
 
-        expect(style.display).to.equal if jQuery then 'block' else ''
+        if $
+          [{style}] = fallback
+          expect(style.display).to.equal 'block'
+        else
+          {style} = fallback
+          expect(style.display).to.equal ''
 
     describe 'Loading indicator', ->
 
       it 'should set the loading indicator properly', ->
-        if jQuery
+        if $
           {$loading} = collectionView
-          expect($loading).to.be.an.instanceof jQuery if jQuery
+          expect($loading).to.be.an.instanceof $
           expect($loading).to.have.lengthOf 1
 
-          $loading2 = collectionView.$ collectionView.loadingSelector
+          $loading2 = collectionView.find collectionView.loadingSelector
           expect($loading[0]).to.equal $loading2[0]
         else
           {loading} = collectionView
-          expect(loading).to.be.true
-          loading2 = collectionView.find(collectionView.loadingSelector)
+          expect(loading).to.be.an.instanceof HTMLElement
+          loading2 = collectionView.find collectionView.loadingSelector
           expect(loading).to.equal loading2
 
       it 'should show the loading indicator properly', ->
-        loading = if jQuery
+        loading = if $
           collectionView.$loading[0]
         else
           collectionView.loading
 
         expectVisible = ->
-          expect(loading.style.display).to.equal if jQuery then 'block' else ''
+          expect(loading.style.display).to.equal if $ then 'block' else ''
 
         expectInvisible = ->
           expect(loading.style.display).to.equal 'none'

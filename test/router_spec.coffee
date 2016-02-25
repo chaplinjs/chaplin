@@ -1,6 +1,5 @@
 'use strict'
 
-$ = require 'jquery'
 Backbone = require 'backbone'
 
 sinon = require 'sinon'

@@ -6,11 +6,11 @@ View = require './view'
 utils = require '../lib/utils'
 
 # Shortcut to access the DOM manipulation library.
-$ = Backbone.$
+{$} = Backbone
 
 filterChildren = (nodeList, selector) ->
   return nodeList unless selector
-  for node in nodeList when Backbone.utils.matchesSelector node, selector
+  for node in nodeList when utils.matchesSelector node, selector
     node
 
 toggleElement = do ->
@@ -45,7 +45,7 @@ endAnimation = do ->
     (elem, duration) -> elem.animate {opacity: 1}, duration
   else
     (elem, duration) ->
-      elem.style.transition = "opacity #{(duration / 1000)}s"
+      elem.style.transition = "opacity #{duration}ms"
       elem.style.opacity = 1
 
 insertView = do ->
@@ -176,7 +176,7 @@ module.exports = class CollectionView extends View
   # A function that will be executed after each filter.
   # Hides excluded items by default.
   filterCallback: (view, included) ->
-    view.$el.stop(true, true) if $
+    view.$el.stop true, true if $
     toggleElement (if $ then view.$el else view.el), included
 
   # View lists
@@ -242,9 +242,9 @@ module.exports = class CollectionView extends View
       @listSelector
 
     if $
-      @$list = if listSelector then @$(listSelector) else @$el
+      @$list = if listSelector then @find listSelector else @$el
     else
-      @list = if listSelector then @find(@listSelector) else @el
+      @list = if listSelector then @find @listSelector else @el
 
     @initFallback()
     @initLoadingIndicator()
@@ -275,7 +275,7 @@ module.exports = class CollectionView extends View
 
     # Set the $fallback property.
     if $
-      @$fallback = @$ @fallbackSelector
+      @$fallback = @find @fallbackSelector
     else
       @fallback = @find @fallbackSelector
 
@@ -311,7 +311,7 @@ module.exports = class CollectionView extends View
 
     # Set the $loading property.
     if $
-      @$loading = @$ @loadingSelector
+      @$loading = @find @loadingSelector
     else
       @loading = @find @loadingSelector
 
@@ -336,9 +336,9 @@ module.exports = class CollectionView extends View
   # Filters only child item views from all current subviews.
   getItemViews: ->
     itemViews = {}
-    if @subviews.length > 0
-      for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
-        itemViews[name.slice(9)] = view
+    for key in Object.keys @subviewsByName
+      unless key.indexOf 'itemView:'
+        itemViews[key.slice 9] = @subviewsByName[key]
     itemViews
 
   # Applies a filter to the collection view.
@@ -353,11 +353,9 @@ module.exports = class CollectionView extends View
     if typeof filterCallback is 'function' or filterCallback is null
       @filterCallback = filterCallback
 
-    hasItemViews = do =>
-      if @subviews.length > 0
-        for name of @subviewsByName when name.slice(0, 9) is 'itemView:'
-          return true
-      false
+    hasItemViews = Object
+      .keys @subviewsByName
+      .some (key) -> 0 is key.indexOf 'itemView:'
 
     # Show/hide existing views.
     if hasItemViews
