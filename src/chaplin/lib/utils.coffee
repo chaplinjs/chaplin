@@ -24,6 +24,7 @@ utils =
         value: object[key]
         writable: false
         configurable: false
+    # Always return `true` for compatibility reasons.
     true
 
   # Get the whole chain of object prototypes.
@@ -34,12 +35,12 @@ utils =
     chain
 
   # Get all property versions from object’s prototype chain.
-  # E.g. if object1 & object2 have `prop` and object2 inherits from
+  # E.g. if object1 & object2 have `key` and object2 inherits from
   # object1, it will get [object1prop, object2prop].
-  getAllPropertyVersions: (object, property) ->
+  getAllPropertyVersions: (object, key) ->
     result = []
     for proto in utils.getPrototypeChain object
-      value = proto[property]
+      value = proto[key]
       if value and value not in result
         result.push value
     result
@@ -89,9 +90,20 @@ utils =
       (moduleName, handler) ->
         enqueue -> handler require moduleName
 
+  # DOM helpers
+  # -----------
+
+  matchesSelector: do ->
+    el = document.documentElement
+    matches = el.matches or
+    el.msMatchesSelector or
+    el.mozMatchesSelector or
+    el.webkitMatchesSelector
+
+    -> matches.call arguments...
 
   # Query parameters Helpers
-  # --------------
+  # ------------------------
 
   querystring:
 

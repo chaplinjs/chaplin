@@ -73,6 +73,9 @@ describe 'Layout', ->
 
   it 'should have el, $el and $ props / methods', ->
     expect(layout.el).to.equal document.body
+    return unless $
+
+    expect(layout.$).to.equal View::$
     expect(layout.$el).to.be.an.instanceof $
 
   it 'should set the document title', ->
@@ -323,8 +326,12 @@ describe 'Layout', ->
     instance2 = new Test2View {region: 'test2'}
     instance3 = new Test2View {region: 'test0'}
 
-    expect(instance2.container.prop 'id').to.equal 'test2'
-    expect(instance3.container).to.equal instance1.$el
+    if $
+      expect(instance2.container.prop 'id').to.equal 'test2'
+      expect(instance3.container).to.equal instance1.$el
+    else
+      expect(instance2.container.id).to.equal 'test2'
+      expect(instance3.container).to.equal instance1.el
 
     instance1.dispose()
     instance2.dispose()
@@ -352,7 +359,12 @@ describe 'Layout', ->
     instance2 = new Test2View()
     instance3 = new Test3View region: 'test2'
 
-    expect(instance3.container.prop 'id').to.equal 'test5'
+    id = if $
+      instance3.container.prop 'id'
+    else
+      instance3.container.id
+
+    expect(id).to.equal 'test5'
 
     instance1.dispose()
     instance2.dispose()
@@ -382,7 +394,12 @@ describe 'Layout', ->
     instance2.stale = true
     instance3 = new Test3View {region: 'test2'}
 
-    expect(instance3.container.prop 'id').to.equal 'test2'
+    id = if $
+      instance3.container.prop 'id'
+    else
+      instance3.container.id
+
+    expect(id).to.equal 'test2'
 
     instance1.dispose()
     instance2.dispose()

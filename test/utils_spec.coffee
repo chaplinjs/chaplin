@@ -110,6 +110,21 @@ describe 'utils', ->
       # url = utils.reverse 'foo', id: 3, d: 'data'
       # expect(url).to.be.null
 
+  describe 'matchesSelector', ->
+    {matchesSelector} = utils
+
+    el = document.createElement 'input'
+    el.type = 'email'
+    el.required = true
+    el.className = 'cls'
+    el.setAttribute 'data-a', 'b'
+
+    it 'should check whether the element matches CSS selector', ->
+      expect(matchesSelector el, 'input[type=email].cls').to.be.true
+      expect(matchesSelector el, '[data-a][required]').to.be.true
+      expect(matchesSelector el, ':not([optional])').to.be.true
+      expect(matchesSelector el, '[data-a=b]').to.be.true
+
   describe 'queryParams', ->
     falsy = ['', 0, NaN, false, null, undefined]
     {stringify, parse} = utils.querystring

@@ -9,7 +9,7 @@ utils = require '../lib/utils'
 mediator = require '../mediator'
 
 # Shortcut to access the DOM manipulation library.
-$ = Backbone.$
+{$} = Backbone
 
 module.exports = class Layout extends View
   # Bind to document body by default.
@@ -82,18 +82,11 @@ module.exports = class Layout extends View
 
   startLinkRouting: ->
     route = @settings.routeLinks
-    return unless route
-    if $
-      @$el.on 'click', route, @openLink
-    else
-      @delegate 'click', route, @openLink
+    @delegate 'click', route, @openLink if route
 
   stopLinkRouting: ->
     route = @settings.routeLinks
-    if $
-      @$el.off 'click', route if route
-    else
-      @undelegate 'click', route, @openLink
+    @undelegate 'click', route if route
 
   isExternalLink: (link) ->
     # IE 9-11 resolve href but do not populate protocol, host etc.
@@ -114,7 +107,7 @@ module.exports = class Layout extends View
   openLink: (event) =>
     return if utils.modifierKeyPressed event
 
-    el = if $ then event.currentTarget else event.delegateTarget
+    el = event.target
 
     # Get the href and perform checks on it.
     href = el.getAttribute('href') or el.getAttribute('data-href')
@@ -132,7 +125,7 @@ module.exports = class Layout extends View
     type = typeof skipRouting
     return if type is 'function' and not skipRouting(href, el) or
       type is 'string' and (if $ then $(el).is(skipRouting)
-      else Backbone.utils.matchesSelector el, skipRouting)
+      else utils.matchesSelector el, skipRouting)
 
     # Handle external links.
     isAnchor = el.nodeName.toUpperCase() in ['A', 'AREA']
@@ -231,12 +224,9 @@ module.exports = class Layout extends View
         region.instance.el
     else
       if region.instance.noWrap
-        if $
-          $(region.instance.container).find region.selector
-        else
-          region.instance.container.querySelector region.selector
+        region.instance.container.find region.selector
       else
-        region.instance[if $ then '$' else 'find'] region.selector
+        region.instance.find region.selector
 
   # Disposal
   # --------

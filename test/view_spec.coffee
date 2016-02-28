@@ -114,11 +114,15 @@ describe 'View', ->
     expect(view.el.parentNode).to.equal testbed
 
   it 'should attach itself to a jQuery object automatically', ->
+    return unless $
+
     view = new TestView container: $ '#testbed'
     view.render()
     expect(view.el.parentNode).to.equal testbed
 
   it 'should use the given attach method', ->
+    return unless $
+
     view = new TestView {container: testbed, 'after'}
     view.render()
     expect(view.el).to.equal testbed.nextSibling
@@ -243,13 +247,21 @@ describe 'View', ->
   it 'should register and remove multiple user input event handlers', ->
     spy = sinon.spy()
     handler = view.delegate 'click input', spy
-    view.$el.trigger 'click'
-    view.$el.trigger 'input'
+    if $
+      view.$el.trigger 'click'
+      view.$el.trigger 'input'
+    else
+      view.el.dispatchEvent new MouseEvent 'click'
+      view.el.dispatchEvent new Event 'input'
     spy.should.have.been.calledTwice
 
     view.undelegate()
-    view.$el.trigger 'click'
-    view.$el.trigger 'input'
+    if $
+      view.$el.trigger 'click'
+      view.$el.trigger 'input'
+    else
+      view.el.dispatchEvent new MouseEvent 'click'
+      view.el.dispatchEvent new Event 'input'
     spy.should.have.been.calledTwice
 
   it 'should allow undelegating one event', ->

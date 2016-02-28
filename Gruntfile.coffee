@@ -58,7 +58,17 @@ module.exports = (grunt) ->
         configFile: 'coffeelint.json'
 
     mochaTest:
-      test:
+      native:
+        options:
+          reporter: 'spec'
+          require: [
+            'coffee-script/register'
+            'jsdom-assign'
+            -> require.cache[require.resolve 'jquery'] = {}
+            'backbone.nativeview'
+          ]
+        src: 'test/*.coffee'
+      jquery:
         options:
           reporter: 'spec'
           require: [
@@ -281,7 +291,8 @@ module.exports = (grunt) ->
   # Aliases
   # =======
   grunt.registerTask 'lint', 'coffeelint'
-  grunt.registerTask 'test', 'mochaTest'
+  grunt.registerTask 'test', 'mochaTest:native'
+  grunt.registerTask 'test:jquery', 'mochaTest:jquery'
 
   # Building
   # ========
