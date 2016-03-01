@@ -32,7 +32,7 @@ umdHead = '''
     return {backbone: Backbone, underscore: _}[name];
   }
 
-  require = 
+  require =
 '''
 
 umdTail = '''
@@ -76,6 +76,23 @@ module.exports = (grunt) ->
             'jsdom-assign'
           ]
         src: 'test/*.coffee'
+      coverage:
+        options:
+          reporter: 'spec'
+          require: [
+            'coffee-script/register'
+            'coffee-coverage/register-istanbul'
+            'jsdom-assign'
+            -> require.cache[require.resolve 'jquery'] = {}
+            'backbone.nativeview'
+          ]
+        src: 'test/*.coffee'
+
+    makeReport:
+      src: 'coverage/coverage-coffee.json',
+      options:
+        type: 'html'
+        dir: 'coverage'
 
     browserify:
       dist:
@@ -293,6 +310,10 @@ module.exports = (grunt) ->
   grunt.registerTask 'lint', 'coffeelint'
   grunt.registerTask 'test', 'mochaTest:native'
   grunt.registerTask 'test:jquery', 'mochaTest:jquery'
+
+  # Coverage
+  # ========
+  grunt.registerTask 'coverage', ['mochaTest:coverage', 'makeReport']
 
   # Building
   # ========

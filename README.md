@@ -55,7 +55,7 @@ How to run the tests:
    npm test
    ```
 
-Furthermore code coverage reports are generated and may be viewed by opening `test/coverage/index.html` in your browser.
+Furthermore code coverage reports are generated and may be viewed by opening `coverage/index.html` in your browser.
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
