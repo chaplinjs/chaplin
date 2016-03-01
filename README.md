@@ -21,20 +21,19 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
 
 1. Download and install [Node.js](http://nodejs.org/).
 2. Open a shell (aka terminal aka command prompt) and type in the commands in the following steps.
-3. Install the Node package for the grunt command line interface globally.
-
-   ```sh
-   sudo npm install -g grunt-cli
-   ```
-
-   On Windows, you can omit the `sudo` command at the beginning.
-
-4. Change into the Chaplin root directory.
-5. Start the build (will install dependencies and build).
+3. Change into the Chaplin root directory.
+4. Install all dependencies
 
    ```
    npm install
    ```
+
+5. Start the build
+
+   ```
+   npm run build install
+   ```
+
 
 This creates these files in `build` dir:
 
