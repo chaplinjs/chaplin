@@ -55,13 +55,7 @@ How to run the tests:
    npm test
    ```
 
-Note that you can now additionally open `test/index.html` to run the tests in your browser (instead of in node).
 Furthermore code coverage reports are generated and may be viewed by opening `test/coverage/index.html` in your browser.
-
-To run tests with different params **with exoskeleton**:
-
-* **without jQuery / underscore:** append `?type=exos` to browser URL
-* **with jQuery / underscore:**: append `?type=deps` to browser URL
 
 ![Ending](http://s3.amazonaws.com/imgly_production/3362023/original.jpg)
 
