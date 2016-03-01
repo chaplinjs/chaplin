@@ -29,7 +29,8 @@
   },
   "main": "build/chaplin.js",
   "scripts": {
-    "test": "grunt test && grunt test:jquery"
+    "test": "grunt test && grunt test:jquery",
+    "build": "grunt build"
   },
   "license": "SEE LICENSE IN MIT-LICENSE.txt"
 }
