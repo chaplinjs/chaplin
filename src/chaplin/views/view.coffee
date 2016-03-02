@@ -122,8 +122,6 @@ module.exports = class View extends Backbone.NativeView or Backbone.View
     for key in Object.keys options
       if key in @optionNames
         @[key] = options[key]
-      else if $ and typeof $::[key] is 'function'
-        @containerMethod = key
 
     # Wrap `render` so `attach` is called afterwards.
     # Enclose the original function.
