@@ -89,6 +89,9 @@ module.exports = class Layout extends View
     @undelegate 'click', route if route
 
   isExternalLink: (link) ->
+    return false unless utils.matchesSelector link, 'a, area'
+    return true if link.download
+
     # IE 9-11 resolve href but do not populate protocol, host etc.
     # Reassigning href helps. See #878 issue for details.
     link.href += '' unless link.host
@@ -107,30 +110,28 @@ module.exports = class Layout extends View
   openLink: (event) =>
     return if utils.modifierKeyPressed event
 
-    el = event.target
+    el = if $ then event.currentTarget else event.delegateTarget
 
     # Get the href and perform checks on it.
     href = el.getAttribute('href') or el.getAttribute('data-href')
 
     # Basic href checks.
-    return if href is null or
-      # Technically an empty string is a valid relative URL
-      # but it doesn’t make sense to route it.
-      href is '' or
+    # Technically an empty string is a valid relative URL
+    # but it doesn’t make sense to route it.
+    return if not href or
       # Exclude fragment links.
       href[0] is '#'
 
     # Apply skipRouting option.
-    skipRouting = @settings.skipRouting
-    type = typeof skipRouting
-    return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and (if $ then $(el).is(skipRouting)
-      else utils.matchesSelector el, skipRouting)
+    {skipRouting} = @settings
+    switch typeof skipRouting
+      when 'function'
+        return unless skipRouting href, el
+      when 'string'
+        return if utils.matchesSelector el, skipRouting
 
     # Handle external links.
-    isAnchor = el.nodeName.toUpperCase() in ['A', 'AREA']
-    external = isAnchor and @isExternalLink el
-    if external
+    if @isExternalLink el
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
@@ -142,7 +143,6 @@ module.exports = class Layout extends View
 
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
-    return
 
   # Handle all browsing context resources
   openWindow: (href) ->

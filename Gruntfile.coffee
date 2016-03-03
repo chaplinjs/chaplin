@@ -63,6 +63,7 @@ module.exports = (grunt) ->
           reporter: 'spec'
           require: [
             'coffee-script/register'
+            'coffee-coverage/register-istanbul'
             'jsdom-assign'
             -> require.cache[require.resolve 'jquery'] = {}
             'backbone.nativeview'
@@ -74,17 +75,6 @@ module.exports = (grunt) ->
           require: [
             'coffee-script/register'
             'jsdom-assign'
-          ]
-        src: 'test/*.coffee'
-      coverage:
-        options:
-          reporter: 'spec'
-          require: [
-            'coffee-script/register'
-            'coffee-coverage/register-istanbul'
-            'jsdom-assign'
-            -> require.cache[require.resolve 'jquery'] = {}
-            'backbone.nativeview'
           ]
         src: 'test/*.coffee'
 
@@ -305,15 +295,15 @@ module.exports = (grunt) ->
   # =====================
   grunt.registerTask 'docs:publish', ['check:versions:docs', 'transbrute:docs']
 
-  # Aliases
-  # =======
+  # Tests
+  # =====
   grunt.registerTask 'lint', 'coffeelint'
   grunt.registerTask 'test', 'mochaTest:native'
   grunt.registerTask 'test:jquery', 'mochaTest:jquery'
 
   # Coverage
   # ========
-  grunt.registerTask 'coverage', ['mochaTest:coverage', 'makeReport']
+  grunt.registerTask 'coverage', ['mochaTest:native', 'makeReport']
 
   # Building
   # ========

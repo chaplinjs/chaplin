@@ -27,10 +27,11 @@ describe 'Layout', ->
       link.setAttribute key, attrs[key]
     link
 
-  clickAndRemove = (element) ->
-    body.appendChild element
-    element.click()
-    body.removeChild element
+  clickAndRemove = (link) ->
+    icon = link.appendChild document.createElement 'i'
+    body.appendChild link
+    icon.click()
+    body.removeChild link
 
   expectWasRouted = (attrs) ->
     spy = sinon.spy()
@@ -120,6 +121,9 @@ describe 'Layout', ->
     expectWasNotRouted href: 'mailto:a@a.com'
     expectWasNotRouted href: 'javascript:1+1'
     expectWasNotRouted href: 'tel:1488'
+
+  it 'should not route clicks on [download] links', ->
+    expectWasNotRouted href: '/hello.pdf', download: 'hello.pdf'
 
   it 'should not route clicks on external links', ->
     old = window.open
