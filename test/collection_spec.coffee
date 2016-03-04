@@ -80,5 +80,7 @@ describe 'Collection', ->
     it 'should remove instance properties', ->
       collection.dispose()
 
-      for key in ['model', 'models', '_byId', '_byCid']
+      for key in ['model', 'models', '_byCid']
         expect(collection).not.to.have.ownProperty key
+
+      expect(collection._byId).to.eql {}
