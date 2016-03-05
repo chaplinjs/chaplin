@@ -48,9 +48,11 @@ module.exports = class Collection extends Backbone.Collection
     # and event handlers.
     delete this[prop] for prop in [
       'model',
-      'models', '_byId', '_byCid',
+      'models', '_byCid',
       '_callbacks'
     ]
+
+    @_byId = {}
 
     # Finished.
     @disposed = true
