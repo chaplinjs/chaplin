@@ -1,6 +1,6 @@
 'use strict'
 
-mediator = require 'chaplin/mediator'
+mediator = require '../mediator'
 
 # Add functionality to subscribe and publish to global
 # Publish/Subscribe events so they can be removed afterwards
@@ -68,7 +68,7 @@ EventBroker =
     mediator.publish type, args...
 
 # You’re frozen when your heart’s not open.
-Object.freeze? EventBroker
+Object.freeze EventBroker
 
 # Return our creation.
 module.exports = EventBroker

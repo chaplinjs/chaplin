@@ -1,16 +1,16 @@
 'use strict'
 
-_ = require 'underscore'
 Backbone = require 'backbone'
-View = require 'chaplin/views/view'
-utils = require 'chaplin/lib/utils'
+
+View = require './view'
+utils = require '../lib/utils'
 
 # Shortcut to access the DOM manipulation library.
-$ = Backbone.$
+{$} = Backbone
 
 filterChildren = (nodeList, selector) ->
   return nodeList unless selector
-  for node in nodeList when Backbone.utils.matchesSelector node, selector
+  for node in nodeList when utils.matchesSelector node, selector
     node
 
 toggleElement = do ->
@@ -45,7 +45,7 @@ endAnimation = do ->
     (elem, duration) -> elem.animate {opacity: 1}, duration
   else
     (elem, duration) ->
-      elem.style.transition = "opacity #{(duration / 1000)}s"
+      elem.style.transition = "opacity #{duration}ms"
       elem.style.opacity = 1
 
 insertView = do ->
@@ -176,7 +176,7 @@ module.exports = class CollectionView extends View
   # A function that will be executed after each filter.
   # Hides excluded items by default.
   filterCallback: (view, included) ->
-    view.$el.stop(true, true) if $
+    view.$el.stop true, true if $
     toggleElement (if $ then view.$el else view.el), included
 
   # View lists
@@ -236,12 +236,15 @@ module.exports = class CollectionView extends View
     super
 
     # Set the $list property with the actual list container.
-    listSelector = if typeof @listSelector is 'function' then @listSelector() else @listSelector
+    listSelector = if typeof @listSelector is 'function'
+      @listSelector()
+    else
+      @listSelector
 
     if $
-      @$list = if listSelector then @$(listSelector) else @$el
+      @$list = if listSelector then @find listSelector else @$el
     else
-      @list = if listSelector then @find(@listSelector) else @el
+      @list = if listSelector then @find @listSelector else @el
 
     @initFallback()
     @initLoadingIndicator()
@@ -272,7 +275,7 @@ module.exports = class CollectionView extends View
 
     # Set the $fallback property.
     if $
-      @$fallback = @$ @fallbackSelector
+      @$fallback = @find @fallbackSelector
     else
       @fallback = @find @fallbackSelector
 
@@ -308,7 +311,7 @@ module.exports = class CollectionView extends View
 
     # Set the $loading property.
     if $
-      @$loading = @$ @loadingSelector
+      @$loading = @find @loadingSelector
     else
       @loading = @find @loadingSelector
 
@@ -333,9 +336,9 @@ module.exports = class CollectionView extends View
   # Filters only child item views from all current subviews.
   getItemViews: ->
     itemViews = {}
-    if @subviews.length > 0
-      for name, view of @subviewsByName when name.slice(0, 9) is 'itemView:'
-        itemViews[name.slice(9)] = view
+    for key in Object.keys @subviewsByName
+      unless key.indexOf 'itemView:'
+        itemViews[key.slice 9] = @subviewsByName[key]
     itemViews
 
   # Applies a filter to the collection view.
@@ -350,11 +353,9 @@ module.exports = class CollectionView extends View
     if typeof filterCallback is 'function' or filterCallback is null
       @filterCallback = filterCallback
 
-    hasItemViews = do =>
-      if @subviews.length > 0
-        for name of @subviewsByName when name.slice(0, 9) is 'itemView:'
-          return true
-      false
+    hasItemViews = Object
+      .keys @subviewsByName
+      .some (key) -> 0 is key.indexOf 'itemView:'
 
     # Show/hide existing views.
     if hasItemViews
@@ -390,7 +391,7 @@ module.exports = class CollectionView extends View
     items = @collection.models
 
     # Reset visible items.
-    @visibleItems = []
+    @visibleItems.length = 0
 
     # Collect remaining views.
     remainingViewsByCid = {}
@@ -401,9 +402,10 @@ module.exports = class CollectionView extends View
         remainingViewsByCid[item.cid] = view
 
     # Remove old views of items not longer in the list.
-    for own cid, view of @getItemViews() when cid not of remainingViewsByCid
-      # Remove the view.
-      @removeSubview "itemView:#{cid}"
+    for cid in Object.keys @getItemViews()
+      unless cid of remainingViewsByCid
+        # Remove the view.
+        @removeSubview "itemView:#{cid}"
 
     # Re-insert remaining items; render and insert new items.
     for item, index in items
@@ -487,7 +489,7 @@ module.exports = class CollectionView extends View
     if included and enableAnimation
       if @useCssAnimation
         # Wait for DOM state change.
-        setTimeout (=> addClass elem, @animationEndClass), 0
+        setTimeout => addClass elem, @animationEndClass
       else
         # Fade the view in if it was made transparent before.
         endAnimation elem, @animationDuration
@@ -508,7 +510,7 @@ module.exports = class CollectionView extends View
   updateVisibleItems: (item, includedInFilter, triggerEvent = true) ->
     visibilityChanged = false
 
-    visibleItemsIndex = utils.indexOf @visibleItems, item
+    visibleItemsIndex = @visibleItems.indexOf item
     includedInVisibleItems = visibleItemsIndex isnt -1
 
     if includedInFilter and not includedInVisibleItems
@@ -533,8 +535,10 @@ module.exports = class CollectionView extends View
     return if @disposed
 
     # Remove jQuery objects, item view cache and visible items list.
-    properties = ['$list', '$fallback', '$loading', 'visibleItems']
-    delete this[prop] for prop in properties
+    delete this[prop] for prop in [
+      '$list', '$fallback',
+      '$loading', 'visibleItems'
+    ]
 
     # Self-disposal.
     super

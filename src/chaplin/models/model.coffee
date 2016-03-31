@@ -2,15 +2,14 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-utils = require 'chaplin/lib/utils'
-EventBroker = require 'chaplin/lib/event_broker'
+EventBroker = require '../lib/event_broker'
 
 # Private helper function for serializing attributes recursively,
 # creating objects which delegate to the original attributes
 # in order to protect them from changes.
 serializeAttributes = (model, attributes, modelStack) ->
   # Create a delegator object.
-  delegator = utils.beget attributes
+  delegator = Object.create attributes
 
   # Add model to stack.
   modelStack ?= {}
@@ -83,7 +82,7 @@ module.exports = class Model extends Backbone.Model
     # Fire an event to notify associated collections and views.
     @trigger 'dispose', this
 
-    @collection?.remove? @, silent: true
+    @collection?.remove? this, silent: true
 
     # Unbind all global event handlers.
     @unsubscribeAllEvents()
@@ -96,17 +95,16 @@ module.exports = class Model extends Backbone.Model
 
     # Remove the collection reference, internal attribute hashes
     # and event handlers.
-    properties = [
+    delete this[prop] for prop in [
       'collection',
       'attributes', 'changed', 'defaults',
       '_escapedAttributes', '_previousAttributes',
       '_silent', '_pending',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
 
     # Finished.
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

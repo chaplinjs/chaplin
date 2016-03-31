@@ -1,33 +1,11 @@
 'use strict'
 
-_ = require 'underscore'
-support = require 'chaplin/lib/support'
-
 # Utilities
 # ---------
 
 utils =
-  # Object Helpers
-  # --------------
-
-  # Prototypal delegation. Create an object which delegates
-  # to another object.
-  beget: do ->
-    if typeof Object.create is 'function'
-      Object.create
-    else
-      ctor = ->
-      (obj) ->
-        ctor.prototype = obj
-        new ctor
-
-  indexOf: do ->
-    if Array::indexOf
-      (list, index) -> list.indexOf index
-    else if _.indexOf
-      _.indexOf
-
-  isArray: Array.isArray or _.isArray
+  isEmpty: (object) ->
+    not Object.getOwnPropertyNames(object).length
 
   # Simple duck-typing serializer for models and collections.
   serialize: (data) ->
@@ -40,35 +18,29 @@ utils =
 
   # Make properties readonly and not configurable
   # using ECMAScript 5 property descriptors.
-  readonly: do ->
-    if support.propertyDescriptors
-      readonlyDescriptor =
+  readonly: (object, keys...) ->
+    for key in keys
+      Object.defineProperty object, key,
+        value: object[key]
         writable: false
-        enumerable: true
         configurable: false
-      (obj, properties...) ->
-        for prop in properties
-          readonlyDescriptor.value = obj[prop]
-          Object.defineProperty obj, prop, readonlyDescriptor
-        true
-    else
-      ->
-        false
+    # Always return `true` for compatibility reasons.
+    true
 
   # Get the whole chain of object prototypes.
   getPrototypeChain: (object) ->
-    chain = [object.constructor.prototype]
-    while object = object.constructor?.superclass?.prototype ? object.constructor?.__super__
-      chain.push object
-    chain.reverse()
+    chain = []
+    while object = Object.getPrototypeOf object
+      chain.unshift object
+    chain
 
   # Get all property versions from object’s prototype chain.
-  # E.g. if object1 & object2 have `prop` and object2 inherits from
+  # E.g. if object1 & object2 have `key` and object2 inherits from
   # object1, it will get [object1prop, object2prop].
-  getAllPropertyVersions: (object, property) ->
+  getAllPropertyVersions: (object, key) ->
     result = []
     for proto in utils.getPrototypeChain object
-      value = proto[property]
+      value = proto[key]
       if value and value not in result
         result.push value
     result
@@ -78,7 +50,7 @@ utils =
 
   # Upcase the first character.
   upcase: (str) ->
-    str.charAt(0).toUpperCase() + str.substring(1)
+    str.charAt(0).toUpperCase() + str.slice 1
 
   # Escapes a string to use in a regex.
   escapeRegExp: (str) ->
@@ -97,66 +69,94 @@ utils =
 
   # Returns the url for a named route and any params.
   reverse: (criteria, params, query) ->
-    require('chaplin/mediator').execute 'router:reverse', criteria, params, query
+    require('../mediator').execute 'router:reverse',
+      criteria, params, query
 
   # Redirects to URL, route name or controller and action pair.
   redirectTo: (pathDesc, params, options) ->
-    require('chaplin/mediator').execute 'router:route', pathDesc, params, options
+    require('../mediator').execute 'router:route',
+      pathDesc, params, options
+
+  # Determines module system and returns module loader function.
+  loadModule: do ->
+    {define, require} = window
+
+    if typeof define is 'function' and define.amd
+      (moduleName, handler) ->
+        require [moduleName], handler
+    else
+      enqueue = setImmediate ? setTimeout
+
+      (moduleName, handler) ->
+        enqueue -> handler require moduleName
+
+  # DOM helpers
+  # -----------
+
+  matchesSelector: do ->
+    el = document.documentElement
+    matches = el.matches or
+    el.msMatchesSelector or
+    el.mozMatchesSelector or
+    el.webkitMatchesSelector
+
+    -> matches.call arguments...
 
   # Query parameters Helpers
-  # --------------
+  # ------------------------
 
   querystring:
 
-    # Returns a query string from a hash
-    stringify: (queryParams) ->
-      query = ''
-      stringifyKeyValuePair = (encodedKey, value) ->
-        if value? then '&' + encodedKey + '=' + encodeURIComponent value else ''
-      for own key, value of queryParams
-        encodedKey = encodeURIComponent key
-        if utils.isArray value
-          for arrParam in value
-            query += stringifyKeyValuePair encodedKey, arrParam
-        else
-          query += stringifyKeyValuePair encodedKey, value
-      query and query.substring 1
+    # Returns a query string from a hash.
+    stringify: (params = {}, replacer) ->
+      if typeof replacer isnt 'function'
+        replacer = (key, value) ->
+          if Array.isArray value
+            value.map (value) -> {key, value}
+          else if value?
+            {key, value}
 
-    # Returns a hash with query parameters from a query string
-    parse: (queryString) ->
-      params = {}
-      return params unless queryString
-      queryString = queryString.slice queryString.indexOf('?') + 1
-      pairs = queryString.split '&'
-      for pair in pairs
-        continue unless pair.length
-        [field, value] = pair.split '='
-        continue unless field.length
-        field = decodeURIComponent field
-        value = decodeURIComponent value
-        current = params[field]
-        if current
-          # Handle multiple params with same name:
-          # Aggregate them in an array.
-          if current.push
-            # Add the existing array.
-            current.push value
+      Object.keys(params).reduce (pairs, key) ->
+        pair = replacer key, params[key]
+        pairs.concat pair or []
+      , []
+      .map ({key, value}) ->
+        [key, value].map(encodeURIComponent).join '='
+      .join '&'
+
+    # Returns a hash with query parameters from a query string.
+    parse: (string = '', reviver) ->
+      if typeof reviver isnt 'function'
+        reviver = (key, value) -> {key, value}
+
+      string = string.slice 1 + string.indexOf '?'
+      string.split('&').reduce (params, pair) ->
+        parts = pair.split('=').map decodeURIComponent
+        {key, value} = reviver(parts...) or {}
+
+        if value? then params[key] =
+          if params.hasOwnProperty key
+            [].concat params[key], value
           else
-            # Create a new array.
-            params[field] = [current, value]
-        else
-          params[field] = value
+            value
 
-      params
+        params
+      , {}
 
-# Backwards-compat.
+
+# Backwards-compatibility methods
+# -------------------------------
+
+utils.beget = Object.create
+utils.indexOf = (array, item) -> array.indexOf item
+utils.isArray = Array.isArray
 utils.queryParams = utils.querystring
 
 # Finish
 # ------
 
 # Seal the utils object.
-Object.seal? utils
+Object.seal utils
 
 # Return our creation.
 module.exports = utils

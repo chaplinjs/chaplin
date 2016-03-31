@@ -2,9 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
-Model = require 'chaplin/models/model'
-utils = require 'chaplin/lib/utils'
+
+Model = require './model'
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
 
 # Abstract class which extends the standard Backbone collection
 # in order to add some functionality.
@@ -45,15 +46,16 @@ module.exports = class Collection extends Backbone.Collection
 
     # Remove model constructor reference, internal model lists
     # and event handlers.
-    properties = [
+    delete this[prop] for prop in [
       'model',
-      'models', '_byId', '_byCid',
+      'models', '_byCid',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
+
+    @_byId = {}
 
     # Finished.
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

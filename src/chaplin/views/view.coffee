@@ -2,33 +2,27 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-EventBroker = require 'chaplin/lib/event_broker'
-utils = require 'chaplin/lib/utils'
+
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
+mediator = require '../mediator'
 
 # Shortcut to access the DOM manipulation library.
-$ = Backbone.$
-
-# Function bind shortcut.
-bind = do ->
-  if Function::bind
-    (item, ctx) -> item.bind ctx
-  else if _.bind
-    _.bind
+{$} = Backbone
 
 setHTML = do ->
   if $
-    (elem, html) ->
-      elem.empty()
-      elem.append html
+    (view, html) ->
+      view.$el.html html
       html
   else
-    (elem, html) -> elem.innerHTML = html
+    (view, html) ->
+      view.el.innerHTML = html
 
 attach = do ->
   if $
     (view) ->
-      actual = $(view.container)
+      actual = $ view.container
       if typeof view.containerMethod is 'function'
         view.containerMethod actual, view.el
       else
@@ -45,7 +39,7 @@ attach = do ->
       else
         actual[view.containerMethod] view.el
 
-module.exports = class View extends Backbone.View
+module.exports = class View extends Backbone.NativeView or Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
 
@@ -123,17 +117,19 @@ module.exports = class View extends Backbone.View
     'noWrap'
   ]
 
-  constructor: (options) ->
+  constructor: (options = {}) ->
     # Copy some options to instance properties.
-    if options
-      for optName, optValue of options when optName in @optionNames
-        this[optName] = optValue
+    for key in Object.keys options
+      if key in @optionNames
+        @[key] = options[key]
+      else if $ and typeof $::[key] is 'function'
+        @containerMethod = key
 
     # Wrap `render` so `attach` is called afterwards.
     # Enclose the original function.
     render = @render
     # Create the wrapper method.
-    @render = =>
+    @render = ->
       # Stop if the instance was already disposed.
       return false if @disposed
       # Call the original method.
@@ -183,6 +179,12 @@ module.exports = class View extends Backbone.View
     # Render automatically if set by options or instance property.
     @render() if @autoRender
 
+  find: (selector) ->
+    if $
+      @$el.find selector
+    else
+      @el.querySelector selector
+
   # User input event handling
   # -------------------------
 
@@ -197,48 +199,54 @@ module.exports = class View extends Backbone.View
   #   e.g.
   #   @delegate('click', 'button.confirm', @confirm)
   delegate: (eventName, second, third) ->
-    if Backbone.utils and Backbone.utils?.delegate
-      return Backbone.utils.delegate(this, eventName, second, third)
     if typeof eventName isnt 'string'
       throw new TypeError 'View#delegate: first argument must be a string'
 
-    if arguments.length is 2
-      handler = second
-    else if arguments.length is 3
-      selector = second
-      if typeof selector isnt 'string'
+    switch arguments.length
+      when 2
+        handler = second
+      when 3
+        selector = second
+        handler = third
+        if typeof selector isnt 'string'
+          throw new TypeError 'View#delegate: ' +
+            'second argument must be a string'
+      else
         throw new TypeError 'View#delegate: ' +
-          'second argument must be a string'
-      handler = third
-    else
-      throw new TypeError 'View#delegate: ' +
-        'only two or three arguments are allowed'
+          'only two or three arguments are allowed'
 
     if typeof handler isnt 'function'
       throw new TypeError 'View#delegate: ' +
         'handler argument must be function'
 
     # Add an event namespace, bind handler it to view.
-    list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-    events = list.join(' ')
-    bound = bind handler, this
-    @$el.on events, (selector or null), bound
+    # Bind handler to view.
+    bound = handler.bind this
+
+    if $
+      events = eventName
+        .split ' '
+        .map (name) => "#{name}.delegateEvents#{@cid}"
+        .join ' '
+
+      @$el.on events, selector, bound
+    else
+      for event in eventName.split ' '
+        super event, selector, bound
 
     # Return the bound handler.
     bound
 
   # Copy of original Backbone method without `undelegateEvents` call.
   _delegateEvents: (events) ->
-    if Backbone.View::delegateEvents.length is 2
-      return Backbone.View::delegateEvents.call this, events, true
-    for key, value of events
-      handler = if typeof value is 'function' then value else this[value]
-      throw new Error "Method '#{value}' does not exist" unless handler
-      match = key.match /^(\S+)\s*(.*)$/
-      eventName = "#{match[1]}.delegateEvents#{@cid}"
-      selector = match[2]
-      bound = bind handler, this
-      @$el.on eventName, (selector or null), bound
+    for key in Object.keys events
+      value = events[key]
+      handler = if typeof value is 'function' then value else @[value]
+      throw new Error "Method `#{value}` does not exist" unless handler
+
+      match = /^(\S+)\s*(.*)$/.exec key
+      @delegate match[1], match[2], handler
+
     return
 
   # Override Backbones method to combine the events
@@ -250,33 +258,35 @@ module.exports = class View extends Backbone.View
     for classEvents in utils.getAllPropertyVersions this, 'events'
       classEvents = classEvents.call this if typeof classEvents is 'function'
       @_delegateEvents classEvents
+
     return
 
   # Remove all handlers registered with @delegate.
-  undelegate: (eventName, second, third) ->
-    if Backbone.utils and Backbone.utils?.undelegate
-      return Backbone.utils.undelegate(this, eventName, second, third)
-    if eventName
-      if typeof eventName isnt 'string'
-        throw new TypeError 'View#undelegate: first argument must be a string'
+  undelegate: (eventName = '', second) ->
+    if typeof eventName isnt 'string'
+      throw new TypeError 'View#undelegate: first argument must be a string'
 
-      if arguments.length is 2
-        if typeof second is 'string'
-          selector = second
-        else
-          handler = second
-      else if arguments.length is 3
+    switch arguments.length
+      when 2
+        selector = second if typeof second is 'string'
+      when 3
         selector = second
         if typeof selector isnt 'string'
           throw new TypeError 'View#undelegate: ' +
             'second argument must be a string'
-        handler = third
 
-      list = ("#{event}.delegate#{@cid}" for event in eventName.split ' ')
-      events = list.join(' ')
-      @$el.off events, (selector or null)
+    if $
+      events = eventName
+        .split ' '
+        .map (name) => "#{name}.delegateEvents#{@cid}"
+        .join ' '
+
+      @$el.off events, selector
     else
-      @$el.off ".delegate#{@cid}"
+      if eventName
+        super eventName, selector
+      else
+        @undelegateEvents()
 
   # Handle declarative event bindings from `listen`
   delegateListeners: ->
@@ -285,13 +295,14 @@ module.exports = class View extends Backbone.View
     # Walk all `listen` hashes in the prototype chain.
     for version in utils.getAllPropertyVersions this, 'listen'
       version = version.call this if typeof version is 'function'
-      for key, method of version
+      for key in Object.keys version
         # Get the method, ensure it is a function.
+        method = version[key]
         if typeof method isnt 'function'
-          method = this[method]
+          method = @[method]
         if typeof method isnt 'function'
           throw new Error 'View#delegateListeners: ' +
-            "listener for \"#{key}\" must be function"
+            "listener for `#{key}` must be function"
 
         # Split event name and target.
         [eventName, target] = key.split ' '
@@ -301,7 +312,7 @@ module.exports = class View extends Backbone.View
 
   delegateListener: (eventName, target, callback) ->
     if target in ['model', 'collection']
-      prop = this[target]
+      prop = @[target]
       @listenTo prop, eventName, callback if prop
     else if target is 'mediator'
       @subscribeEvent eventName, callback
@@ -323,7 +334,7 @@ module.exports = class View extends Backbone.View
 
   # Unregister all regions; called upon view disposal.
   unregisterAllRegions: ->
-    mediator.execute (name: 'region:unregister', silent: true), this
+    mediator.execute name: 'region:unregister', silent: true, this
 
   # Subviews
   # --------
@@ -357,18 +368,17 @@ module.exports = class View extends Backbone.View
     else
       # View instance given, search for the corresponding name.
       view = nameOrView
-      for otherName, otherView of byName when otherView is view
-        name = otherName
-        break
+      Object.keys(byName).some (key) ->
+        name = key if byName[key] is view
 
     # Break if no view and name were found.
-    return unless name and view and view.dispose
+    return unless name and view?.dispose
 
     # Dispose the view.
     view.dispose()
 
     # Remove the subview from the lists.
-    index = utils.indexOf subviews, view
+    index = subviews.indexOf view
     subviews.splice index, 1 if index isnt -1
     delete byName[name]
 
@@ -429,15 +439,15 @@ module.exports = class View extends Backbone.View
         el.innerHTML = html
 
         if el.children.length > 1
-          throw new Error 'There must be a single top-level element when ' +
-                          'using `noWrap`.'
+          throw new Error 'There must be a single top-level element ' +
+            'when using `noWrap`'
 
         # Undelegate the container events that were setup.
         @undelegateEvents()
         # Delegate events to the top-level container in the template.
         @setElement el.firstChild, true
       else
-        setHTML (if $ then @$el else @el), html
+        setHTML this, html
 
     # Return the view.
     this
@@ -487,16 +497,15 @@ module.exports = class View extends Backbone.View
 
     # Remove element references, options,
     # model/collection references and subview lists.
-    properties = [
+    delete this[prop] for prop in [
       'el', '$el',
       'options', 'model', 'collection',
       'subviews', 'subviewsByName',
       '_callbacks'
     ]
-    delete this[prop] for prop in properties
 
     # Finished.
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

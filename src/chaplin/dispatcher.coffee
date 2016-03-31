@@ -2,9 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
-EventBroker = require 'chaplin/lib/event_broker'
+
+EventBroker = require './lib/event_broker'
+utils = require './lib/utils'
+mediator = require './mediator'
 
 module.exports = class Dispatcher
   # Borrow the static extend method from Backbone.
@@ -50,8 +51,8 @@ module.exports = class Dispatcher
   #
   dispatch: (route, params, options) ->
     # Clone params and options so the original objects remain untouched.
-    params = if params then _.extend {}, params else {}
-    options = if options then _.extend {}, options else {}
+    params = _.extend {}, params
+    options = _.extend {}, options
 
     # null or undefined query parameters are equivalent to an empty hash
     options.query = {} if not options.query?
@@ -77,15 +78,11 @@ module.exports = class Dispatcher
   # The default implementation uses require() from a AMD module loader
   # like RequireJS to fetch the constructor.
   loadController: (name, handler) ->
-    return handler(name) if name is Object(name)
+    return handler name if name is Object name
 
     fileName = name + @settings.controllerSuffix
     moduleName = @settings.controllerPath + fileName
-    if define?.amd
-      require [moduleName], handler
-    else
-      setTimeout ->
-        handler require moduleName
+    utils.loadModule moduleName, handler
 
   # Handler for the controller lazy-loading.
   controllerLoaded: (route, params, options, Controller) ->
@@ -149,7 +146,7 @@ module.exports = class Dispatcher
 
     # Execute action in controller context.
     promise = controller.beforeAction params, route, options
-    if promise and promise.then
+    if typeof promise?.then is 'function'
       promise.then executeAction
     else
       executeAction()
@@ -167,4 +164,4 @@ module.exports = class Dispatcher
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this

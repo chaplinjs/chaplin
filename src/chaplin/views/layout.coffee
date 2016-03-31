@@ -2,13 +2,14 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
-EventBroker = require 'chaplin/lib/event_broker'
-View = require 'chaplin/views/view'
+
+View = require './view'
+EventBroker = require '../lib/event_broker'
+utils = require '../lib/utils'
+mediator = require '../mediator'
 
 # Shortcut to access the DOM manipulation library.
-$ = Backbone.$
+{$} = Backbone
 
 module.exports = class Layout extends View
   # Bind to document body by default.
@@ -62,20 +63,18 @@ module.exports = class Layout extends View
   # Handler for the global beforeControllerDispose event.
   scroll: ->
     # Reset the scroll position.
-    position = @settings.scrollTo
-    if position
-      window.scrollTo position[0], position[1]
+    to = @settings.scrollTo
+    if to and typeof to is 'object'
+      [x, y] = to
+      window.scrollTo x, y
 
   # Handler for the global dispatcher:dispatch event.
   # Change the document title to match the new controller.
   # Get the title from the title property of the current controller.
   adjustTitle: (subtitle = '') ->
     title = @settings.titleTemplate {@title, subtitle}
-    # Internet Explorer < 9 workaround.
-    setTimeout =>
-      document.title = title
-      @publishEvent 'adjustTitle', subtitle, title
-    , 50
+    document.title = title
+    @publishEvent 'adjustTitle', subtitle, title
     title
 
   # Automatic routing of internal links
@@ -83,56 +82,60 @@ module.exports = class Layout extends View
 
   startLinkRouting: ->
     route = @settings.routeLinks
-    return unless route
-    if $
-      @$el.on 'click', route, @openLink
-    else
-      @delegate 'click', route, @openLink
+    @delegate 'click', route, @openLink if route
 
   stopLinkRouting: ->
     route = @settings.routeLinks
-    if $
-      @$el.off 'click', route if route
-    else
-      @undelegate 'click', route, @openLink
+    @undelegate 'click', route if route
 
   isExternalLink: (link) ->
-    link.target is '_blank' or
+    return false unless utils.matchesSelector link, 'a, area'
+    return true if link.download
+
+    # IE 9-11 resolve href but do not populate protocol, host etc.
+    # Reassigning href helps. See #878 issue for details.
+    link.href += '' unless link.host
+
+    {protocol, host} = location
+    {target} = link
+
+    target is '_blank' or
     link.rel is 'external' or
-    link.protocol not in ['http:', 'https:', 'file:', 'ms-appx:'] or
-    link.hostname not in [location.hostname, '']
+    link.protocol isnt protocol or
+    link.host isnt host or
+    (target is '_parent' and parent isnt self) or
+    (target is '_top' and top isnt self)
 
   # Handle all clicks on A elements and try to route them internally.
   openLink: (event) =>
-    return if utils.modifierKeyPressed(event)
+    return if utils.modifierKeyPressed event
 
     el = if $ then event.currentTarget else event.delegateTarget
-    isAnchor = el.nodeName is 'A'
 
     # Get the href and perform checks on it.
-    href = el.getAttribute('href') or el.getAttribute('data-href') or null
+    href = el.getAttribute('href') or el.getAttribute('data-href')
 
     # Basic href checks.
-    return if not href? or
-      # Technically an empty string is a valid relative URL
-      # but it doesn’t make sense to route it.
-      href is '' or
+    # Technically an empty string is a valid relative URL
+    # but it doesn’t make sense to route it.
+    return if not href or
       # Exclude fragment links.
-      href.charAt(0) is '#'
+      href[0] is '#'
 
     # Apply skipRouting option.
-    skipRouting = @settings.skipRouting
-    type = typeof skipRouting
-    return if type is 'function' and not skipRouting(href, el) or
-      type is 'string' and (if $ then $(el).is(skipRouting) else Backbone.utils.matchesSelector el, skipRouting)
+    {skipRouting} = @settings
+    switch typeof skipRouting
+      when 'function'
+        return unless skipRouting href, el
+      when 'string'
+        return if utils.matchesSelector el, skipRouting
 
     # Handle external links.
-    external = isAnchor and @isExternalLink el
-    if external
+    if @isExternalLink el
       if @settings.openExternalToBlank
         # Open external links normally in a new tab.
         event.preventDefault()
-        @openWindow href, el
+        @openWindow href
       return
 
     # Pass to the router, try to route the path internally.
@@ -140,10 +143,9 @@ module.exports = class Layout extends View
 
     # Prevent default handling if the URL could be routed.
     event.preventDefault()
-    return
 
   # Handle all browsing context resources
-  openWindow: (href, el) ->
+  openWindow: (href) ->
     window.open href
 
   # Region management
@@ -222,12 +224,9 @@ module.exports = class Layout extends View
         region.instance.el
     else
       if region.instance.noWrap
-        if $
-          $(region.instance.container).find region.selector
-        else
-          region.instance.container.querySelector region.selector
+        region.instance.container.find region.selector
       else
-        region.instance[if $ then '$' else 'find'] region.selector
+        region.instance.find region.selector
 
   # Disposal
   # --------

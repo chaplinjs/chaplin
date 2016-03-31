@@ -2,14 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-EventBroker = require 'chaplin/lib/event_broker'
-Controller = require 'chaplin/controllers/controller'
-utils = require 'chaplin/lib/utils'
 
-isEmpty = (object) ->
-  for own key, value of object
-    return false
-  true
+EventBroker = require './event_broker'
+utils = require './utils'
+Controller = require '../controllers/controller'
 
 module.exports = class Route
   # Borrow the static extend method from Backbone.
@@ -41,8 +37,7 @@ module.exports = class Route
         Use strings with :names and `constraints` option of route'
 
     # Clone options.
-    @options = if options then _.extend({}, options) else {}
-
+    @options = _.extend {}, options
     @options.paramsInQS = true if @options.paramsInQS isnt false
 
     # Store the name on the route if given
@@ -68,7 +63,7 @@ module.exports = class Route
     @createRegExp()
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this
 
   # Tests if route params are equal to criteria.
   matches: (criteria) ->
@@ -80,7 +75,8 @@ module.exports = class Route
         propertiesCount++
         property = criteria[name]
         return false if property and property isnt this[name]
-      invalidParamsCount = propertiesCount is 1 and name in ['action', 'controller']
+      invalidParamsCount = propertiesCount is 1 and name in
+        ['action', 'controller']
       not invalidParamsCount
 
   # Generates route URL from params.
@@ -117,19 +113,19 @@ module.exports = class Route
 
     query = utils.queryParams.parse query if typeof query isnt 'object'
     _.extend query, remainingParams unless @options.paramsInQS is false
-    url += '?' + utils.queryParams.stringify query unless isEmpty query
+    url += '?' + utils.queryParams.stringify query unless utils.isEmpty query
     url
 
   # Validates incoming params and returns them in a unified form - hash
   normalizeParams: (params) ->
-    if utils.isArray params
+    if Array.isArray params
       # Ensure we have enough parameters.
       return false if params.length < @requiredParams.length
 
       # Convert params from array into object.
       paramsHash = {}
       routeParams = @requiredParams.concat @optionalParams
-      for paramIndex in [0..params.length-1] by 1
+      for paramIndex in [0..params.length - 1] by 1
         paramName = routeParams[paramIndex]
         paramsHash[paramName] = params[paramIndex]
 
@@ -148,11 +144,8 @@ module.exports = class Route
   testConstraints: (params) ->
     # Apply the parameter constraints.
     constraints = @options.constraints
-    if constraints
-      for own name, constraint of constraints
-        return false unless constraint.test params[name]
-
-    true
+    Object.keys(constraints or {}).every (key) ->
+      constraints[key].test params[key]
 
   # Test if passed params hash matches current route.
   testParams: (params) ->
@@ -199,12 +192,12 @@ module.exports = class Route
     # Replace the optional portion with a non-capturing and optional group.
     "(?:#{portion})?"
 
-  replaceParams: (s, callback) =>
+  replaceParams: (s, callback) ->
     # Parse :foo and *bar, replacing via callback.
     s.replace paramRegExp, callback
 
   paramCapturePattern: (param) ->
-    if param.charAt(0) is ':'
+    if param[0] is ':'
       # Regexp for :foo.
       '([^\/\?]+)'
     else
@@ -227,10 +220,11 @@ module.exports = class Route
   # The handler called by Backbone.History when the route matches.
   # It is also called by Router#route which might pass options.
   handler: (pathParams, options) =>
-    options = if options then _.extend {}, options else {}
+    options = _.extend {}, options
 
-    # pathDesc may be either an object with params for reversing or a simple URL.
-    if typeof pathParams is 'object'
+    # pathParams may be either an object with params for reversing
+    # or a simple URL.
+    if pathParams and typeof pathParams is 'object'
       query = utils.queryParams.stringify options.query
       params = pathParams
       path = @reverse params
@@ -260,7 +254,7 @@ module.exports = class Route
     matches = @regExp.exec path
 
     # Fill the hash using param names and the matches.
-    for match, index in matches.slice(1)
+    for match, index in matches.slice 1
       paramName = if @allParams.length then @allParams[index] else index
       params[paramName] = match
 

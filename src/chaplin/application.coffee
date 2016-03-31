@@ -4,17 +4,17 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
 
-# JavaScript classes which are instantiated with `new`
-Dispatcher = require 'chaplin/dispatcher'
-Layout = require 'chaplin/views/layout'
-Composer = require 'chaplin/composer'
-Router = require 'chaplin/lib/router'
+# CoffeeScript classes which are instantiated with `new`
+Composer = require './composer'
+Dispatcher = require './dispatcher'
+Router = require './lib/router'
+Layout = require './views/layout'
 
 # A mix-in that should be mixed to class.
-EventBroker = require 'chaplin/lib/event_broker'
+EventBroker = require './lib/event_broker'
 
 # Independent global event bus that is used by itself, so lowercased.
-mediator = require 'chaplin/mediator'
+mediator = require './mediator'
 
 # The bootstrapper is the entry point for Chaplin apps.
 module.exports = class Application
@@ -100,7 +100,7 @@ module.exports = class Application
   # mediator.
 
   initMediator: ->
-    mediator.seal()
+    Object.seal mediator
 
   # **Chaplin.Router** is responsible for observing URL changes. The router
   # is a replacement for Backbone.Router and *does not inherit from it*
@@ -124,12 +124,11 @@ module.exports = class Application
     # Mark app as initialized.
     @started = true
 
-    # Seal the application instance to prevent further changes.
-    Object.seal? this
+    # Disposal should be own property because of `Object.seal`
+    @disposed = false
 
-  # Disposal
-  # --------
-  disposed: false
+    # Seal the application instance to prevent further changes.
+    Object.seal this
 
   dispose: ->
     # Am I already disposed?
@@ -142,4 +141,4 @@ module.exports = class Application
     @disposed = true
 
     # You're frozen when your heart's not open.
-    Object.freeze? this
+    Object.freeze this

@@ -3,12 +3,12 @@
 
 # Generated folders from build process
 /build
-temp*
 
 # Local package dependencies
 /node_modules
-components
-bower_components
 
 # Coverage report
 coverage*
+
+# Logs
+npm-debug.log

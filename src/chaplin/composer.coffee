@@ -2,10 +2,10 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-utils = require 'chaplin/lib/utils'
-Composition = require 'chaplin/lib/composition'
-EventBroker = require 'chaplin/lib/event_broker'
+
+Composition = require './lib/composition'
+EventBroker = require './lib/event_broker'
+mediator = require './mediator'
 
 # Composer
 # --------
@@ -81,7 +81,8 @@ module.exports = class Composer
           return @_compose name, options: third, compose: ->
             # The compose method here just constructs the class.
             # Model and Collection both take `options` as the second argument.
-            if second.prototype instanceof Backbone.Model or second.prototype instanceof Backbone.Collection
+            if second.prototype instanceof Backbone.Model or
+            second.prototype instanceof Backbone.Collection
               @item = new second null, @options
             else
               @item = new second @options
@@ -121,8 +122,6 @@ module.exports = class Composer
     # Check for an existing composition
     current = @compositions[name]
 
-    isPromise = false
-
     # Apply the check method
     if current and current.check composition.options
       # Mark the current composition as not stale
@@ -131,7 +130,7 @@ module.exports = class Composer
       # Remove the current composition and apply this one
       current.dispose() if current
       returned = composition.compose composition.options
-      isPromise = (typeof returned?.then is 'function')
+      isPromise = typeof returned?.then is 'function'
       composition.stale false
       @compositions[name] = composition
 
@@ -144,7 +143,7 @@ module.exports = class Composer
   # Retrieves an active composition using the compose method.
   retrieve: (name) ->
     active = @compositions[name]
-    (if active and not active.stale() then active.item else undefined)
+    if active and not active.stale() then active.item
 
   # Declare all compositions as stale and remove all that were previously
   # marked stale without being re-composed.
@@ -153,15 +152,18 @@ module.exports = class Composer
     # Dispose and delete all no-longer-active compositions.
     # Declare all active compositions as de-activated (eg. to be removed
     # on the next controller startup unless they are re-composed).
-    for name, composition of @compositions
+    for key in Object.keys @compositions
+      composition = @compositions[key]
       if composition.stale()
         composition.dispose()
-        delete @compositions[name]
+        delete @compositions[key]
       else
         composition.stale true
 
     # Return nothing.
     return
+
+  disposed: false
 
   dispose: ->
     return if @disposed
@@ -172,7 +174,8 @@ module.exports = class Composer
     mediator.removeHandlers this
 
     # Dispose of all compositions and their items (that can be)
-    composition.dispose() for name, composition of @compositions
+    for key in Object.keys @compositions
+      @compositions[key].dispose()
 
     # Remove properties
     delete @compositions
@@ -181,4 +184,4 @@ module.exports = class Composer
     @disposed = true
 
     # You’re frozen when your heart’s not open
-    Object.freeze? this
+    Object.freeze this

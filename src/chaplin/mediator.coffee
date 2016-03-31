@@ -1,9 +1,7 @@
 'use strict'
 
 Backbone = require 'backbone'
-_ = require 'underscore'
-support = require 'chaplin/lib/support'
-utils = require 'chaplin/lib/utils'
+utils = require './lib/utils'
 
 # Mediator
 # --------
@@ -47,13 +45,11 @@ mediator.setHandler = (name, method, instance) ->
   handlers[name] = {instance, method}
 
 # Retrieves a handler function and executes it.
-mediator.execute = (nameOrObj, args...) ->
-  silent = false
-  if typeof nameOrObj is 'object'
-    silent = nameOrObj.silent
-    name = nameOrObj.name
+mediator.execute = (options, args...) ->
+  if options and typeof options is 'object'
+    {name, silent} = options
   else
-    name = nameOrObj
+    name = options
   handler = handlers[name]
   if handler
     handler.method.apply handler.instance, args
@@ -66,17 +62,13 @@ mediator.removeHandlers = (instanceOrNames) ->
   unless instanceOrNames
     mediator._handlers = {}
 
-  if utils.isArray instanceOrNames
+  if Array.isArray instanceOrNames
     for name in instanceOrNames
       delete handlers[name]
   else
     for name, handler of handlers when handler.instance is instanceOrNames
       delete handlers[name]
   return
-
-# Make properties readonly.
-utils.readonly mediator,
-  'subscribe', 'subscribeOnce', 'unsubscribe', 'publish', 'setHandler', 'execute', 'removeHandlers'
 
 # Sealing the mediator
 # --------------------
@@ -85,11 +77,12 @@ utils.readonly mediator,
 # using this method.
 mediator.seal = ->
   # Prevent extensions and make all properties non-configurable.
-  if support.propertyDescriptors and Object.seal
-    Object.seal mediator
+  Object.seal mediator
 
-# Make the method readonly.
-utils.readonly mediator, 'seal'
+# Make properties readonly.
+utils.readonly mediator,
+  'subscribe', 'subscribeOnce', 'unsubscribe', 'publish',
+  'setHandler', 'execute', 'removeHandlers', 'seal'
 
 # Return our creation.
 module.exports = mediator

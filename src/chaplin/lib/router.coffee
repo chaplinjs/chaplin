@@ -2,11 +2,12 @@
 
 _ = require 'underscore'
 Backbone = require 'backbone'
-mediator = require 'chaplin/mediator'
-EventBroker = require 'chaplin/lib/event_broker'
-History = require 'chaplin/lib/history'
-Route = require 'chaplin/lib/route'
-utils = require 'chaplin/lib/utils'
+
+EventBroker = require './event_broker'
+History = require './history'
+Route = require './route'
+utils = require './utils'
+mediator = require '../mediator'
 
 # The router which is a replacement for Backbone.Router.
 # Like the standard router, it creates a Backbone.History
@@ -28,7 +29,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
       trailing: no
 
     # Cached regex for stripping a leading subdir and hash/slash.
-    @removeRoot = new RegExp('^' + utils.escapeRegExp(@options.root) + '(#)?')
+    @removeRoot = new RegExp '^' + utils.escapeRegExp(@options.root) + '(#)?'
 
     @subscribeEvent '!router:route', @oldEventError
     @subscribeEvent '!router:routeByName', @oldEventError
@@ -69,10 +70,9 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # Connect an address with a controller action.
   # Creates a route on the Backbone.History instance.
   match: (pattern, target, options = {}) =>
-    if arguments.length is 2 and typeof target is 'object'
+    if arguments.length is 2 and target and typeof target is 'object'
       # Handles cases like `match 'url', controller: 'c', action: 'a'`.
-      options = target
-      {controller, action} = options
+      {controller, action} = options = target
       unless controller and action
         throw new Error 'Router#match must receive either target or ' +
           'options.controller & options.action'
@@ -83,7 +83,7 @@ module.exports = class Router # This class does not extend Backbone.Router.
         throw new Error 'Router#match cannot use both target and ' +
           'options.controller / options.action'
       # Separate target into controller and controller action.
-      [controller, action] = target.split('#')
+      [controller, action] = target.split '#'
 
     # Let each match call provide its own trailing option to appropriate Route.
     # Pass trailing value from the Router by default.
@@ -105,14 +105,14 @@ module.exports = class Router # This class does not extend Backbone.Router.
   # and passes the routing options to the callback function.
   route: (pathDesc, params, options) ->
     # Try to extract an URL from the pathDesc if it's a hash.
-    if typeof pathDesc is 'object'
+    if pathDesc and typeof pathDesc is 'object'
       path = pathDesc.url
       params = pathDesc.params if not params and pathDesc.params
 
-    params = if params
-      if utils.isArray(params) then params.slice() else _.extend {}, params
+    params = if Array.isArray params
+      params.slice()
     else
-      {}
+      _.extend {}, params
 
     # Accept path to be given via URL wrapped in object,
     # or implicitly via route name, or explicitly via object.
@@ -127,12 +127,12 @@ module.exports = class Router # This class does not extend Backbone.Router.
       options = params
       params = null
     else
-      options = if options then _.extend {}, options else {}
+      options = _.extend {}, options
 
       # Find a route using a passed via pathDesc string route name.
       handler = @findHandler (handler) ->
         if handler.route.matches pathDesc
-          params = handler.route.normalizeParams(params)
+          params = handler.route.normalizeParams params
           return true if params
         false
 
@@ -170,13 +170,14 @@ module.exports = class Router # This class does not extend Backbone.Router.
         return url
 
     # We didn't get anything.
-    throw new Error "Router#reverse: invalid route criteria specified: #{JSON.stringify criteria}"
+    throw new Error 'Router#reverse: invalid route criteria specified: ' +
+      "#{JSON.stringify criteria}"
 
   # Change the current URL, add a history entry.
   changeURL: (controller, params, route, options) ->
-    return unless route.path? and options.changeURL
+    return unless route.path? and options?.changeURL
 
-    url = route.path + if route.query then "?#{route.query}" else ""
+    url = route.path + if route.query then "?#{route.query}" else ''
 
     navigateOptions =
       # Do not trigger or replace per default.
@@ -206,4 +207,4 @@ module.exports = class Router # This class does not extend Backbone.Router.
     @disposed = true
 
     # You’re frozen when your heart’s not open.
-    Object.freeze? this
+    Object.freeze this
