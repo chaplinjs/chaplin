@@ -121,9 +121,11 @@ describe 'View', ->
     expect(view.el.parentNode).to.equal testbed
 
   it 'should use the given attach method', ->
-    return unless $
-
-    view = new TestView {container: testbed, 'after'}
+    customContainerMethod = (container, el) ->
+      p = container.parentNode
+      p.insertBefore el, container.nextSibling
+    containerMethod = if $ then 'after' else customContainerMethod
+    view = new TestView {container: testbed, containerMethod}
     view.render()
     expect(view.el).to.equal testbed.nextSibling
     expect(view.el.parentNode).to.equal testbed.parentNode
