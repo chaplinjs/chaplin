@@ -90,7 +90,7 @@ module.exports = class Layout extends View
 
   isExternalLink: (link) ->
     return false unless utils.matchesSelector link, 'a, area'
-    return true if link.download
+    return true if link.hasAttribute 'download'
 
     # IE 9-11 resolve href but do not populate protocol, host etc.
     # Reassigning href helps. See #878 issue for details.

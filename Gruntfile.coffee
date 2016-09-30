@@ -3,11 +3,10 @@
 # Package
 # =======
 pkg = require './package.json'
-bower = 'bower_components'
 
 banner = """
 /*!
- * Chaplin #{ pkg.version }
+ * Chaplin #{pkg.version}
  *
  * Chaplin may be freely distributed under the MIT license.
  * For all details and documentation:
@@ -44,11 +43,11 @@ module.exports = (grunt) ->
 
   # Configuration
   # =============
-  grunt.initConfig
+  grunt.initConfig {
 
     # Package
     # -------
-    pkg: pkg
+    pkg
 
     coffeelint:
       src: 'src/**/*.coffee'
@@ -88,8 +87,8 @@ module.exports = (grunt) ->
       dist:
         files:
           'build/chaplin.js': ['./src/chaplin.coffee']
-        options:
-          banner: banner
+        options: {
+          banner
           external: ['backbone', 'underscore']
           transform: ['coffeeify']
           browserifyOptions:
@@ -101,6 +100,7 @@ module.exports = (grunt) ->
             else
               src = umdHead + src + umdTail
               next null, new Buffer src
+        }
 
     # Minify
     # ======
@@ -156,7 +156,7 @@ module.exports = (grunt) ->
               version: pkg.version,
               main: 'chaplin.js',
               scripts: ['chaplin.js'],
-              dependencies: (obj = {}; obj["#{ bower }/backbone"] = '1.x'; obj)
+              dependencies: { 'bower_components/backbone': '1.x' }
             }
           },
           {
@@ -173,7 +173,7 @@ module.exports = (grunt) ->
               author: 'Chaplin team',
               license: 'MIT',
               bugs: { url: 'https://github.com/chaplinjs/downloads/issues' },
-              dependencies: { backbone: '~1.1.2', underscore: '~1.6.0' }
+              dependencies: pkg.dependencies
             }
           }
         ]
@@ -184,6 +184,7 @@ module.exports = (grunt) ->
       coffee:
         files: ['src/**/*.coffee', 'test/*.coffee']
         tasks: ['test']
+  }
 
   # Dependencies
   # ============

@@ -83,4 +83,4 @@ describe 'Collection', ->
       for key in ['model', 'models', '_byCid']
         expect(collection).not.to.have.ownProperty key
 
-      expect(collection._byId).to.eql {}
+      expect(collection._byId).to.deep.equal {}
