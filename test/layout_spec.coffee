@@ -125,6 +125,9 @@ describe 'Layout', ->
   it 'should not route clicks on [download] links', ->
     expectWasNotRouted href: '/hello.pdf', download: 'hello.pdf'
 
+  it 'should not route clicks on [download=""] links', ->
+    expectWasNotRouted href: '/hello.pdf', download: ''
+
   it 'should not route clicks on external links', ->
     old = window.open
     window.open = sinon.spy()
