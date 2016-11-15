@@ -61,7 +61,6 @@ module.exports = (grunt) ->
         options:
           reporter: 'spec'
           require: [
-            'coffee-script/register'
             'coffee-coverage/register-istanbul'
             'jsdom-assign'
             -> require.cache[require.resolve 'jquery'] = {}
