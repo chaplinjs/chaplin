@@ -15,30 +15,6 @@ banner = """
 
 """
 
-umdHead = '''
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define(['backbone', 'underscore'], factory);
-  } else if (typeof module === 'object' && module && module.exports) {
-    module.exports = factory(require('backbone'), require('underscore'));
-  } else if (typeof require === 'function') {
-    factory(window.Backbone, window._ || window.Backbone.utils);
-  } else {
-    throw new Error('Chaplin requires Common.js or AMD modules');
-  }
-}(this, function(Backbone, _) {
-  function require(name) {
-    return {backbone: Backbone, underscore: _}[name];
-  }
-
-  require =
-'''
-
-umdTail = '''
-  return require(1);
-}))
-'''
-
 module.exports = (grunt) ->
 
   # Configuration
@@ -82,24 +58,23 @@ module.exports = (grunt) ->
         type: 'html'
         dir: 'coverage'
 
-    browserify:
+    rollup:
+      options:
+        plugins: [
+          require('rollup-plugin-coffee-script')()
+          require('rollup-plugin-node-resolve')(extensions: ['.coffee'])
+        ]
+        external: ['underscore', 'backbone']
+        globals:
+          backbone: 'Backbone'
+          underscore: '_'
+        format: 'umd'
+        moduleName: 'Chaplin'
+        banner: banner
+
       dist:
         files:
-          'build/chaplin.js': ['./src/chaplin.coffee']
-        options: {
-          banner
-          external: ['backbone', 'underscore']
-          transform: ['coffeeify']
-          browserifyOptions:
-            debug: true
-            extensions: ['.coffee']
-          postBundleCB: (err, src, next) ->
-            if err
-              next err
-            else
-              src = umdHead + src + umdTail
-              next null, new Buffer src
-        }
+          'build/chaplin.js': 'src/chaplin.coffee'
 
     # Minify
     # ======
@@ -307,7 +282,7 @@ module.exports = (grunt) ->
 
   # Building
   # ========
-  grunt.registerTask 'build', ['browserify', 'uglify', 'compress']
+  grunt.registerTask 'build', ['rollup', 'uglify', 'compress']
 
   # Default
   # =======

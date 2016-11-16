@@ -1,7 +1,6 @@
-'use strict'
-
 # Backwards-compatibility module
 # ------------------------------
 
-module.exports =
+export default {
   propertyDescriptors: yes
+}

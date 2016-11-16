@@ -1,17 +1,15 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
-
-View = require './view'
-EventBroker = require '../lib/event_broker'
-utils = require '../lib/utils'
-mediator = require '../mediator'
+import View from './view'
+import EventBroker from '../lib/event_broker'
+import utils from '../lib/utils'
+import mediator from '../mediator'
 
 # Shortcut to access the DOM manipulation library.
 {$} = Backbone
 
-module.exports = class Layout extends View
+export default class Layout extends View
   # Bind to document body by default.
   el: 'body'
 

@@ -1,4 +1,4 @@
-'use strict'
+import mediator from '../mediator'
 
 # Utilities
 # ---------
@@ -69,12 +69,12 @@ utils =
 
   # Returns the url for a named route and any params.
   reverse: (criteria, params, query) ->
-    require('../mediator').execute 'router:reverse',
+    mediator.execute 'router:reverse',
       criteria, params, query
 
   # Redirects to URL, route name or controller and action pair.
   redirectTo: (pathDesc, params, options) ->
-    require('../mediator').execute 'router:route',
+    mediator.execute 'router:route',
       pathDesc, params, options
 
   # Determines module system and returns module loader function.
@@ -159,4 +159,4 @@ utils.queryParams = utils.querystring
 Object.seal utils
 
 # Return our creation.
-module.exports = utils
+export default utils

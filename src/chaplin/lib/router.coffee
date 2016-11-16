@@ -1,18 +1,16 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
-
-EventBroker = require './event_broker'
-History = require './history'
-Route = require './route'
-utils = require './utils'
-mediator = require '../mediator'
+import EventBroker from './event_broker'
+import History from './history'
+import Route from './route'
+import utils from './utils'
+import mediator from '../mediator'
 
 # The router which is a replacement for Backbone.Router.
 # Like the standard router, it creates a Backbone.History
 # instance and registers routes on it.
-module.exports = class Router # This class does not extend Backbone.Router.
+export default class Router # This class does not extend Backbone.Router.
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 

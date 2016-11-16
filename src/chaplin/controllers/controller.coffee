@@ -1,13 +1,11 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
+import mediator from '../mediator'
+import EventBroker from '../lib/event_broker'
+import utils from '../lib/utils'
 
-mediator = require '../mediator'
-EventBroker = require '../lib/event_broker'
-utils = require '../lib/utils'
-
-module.exports = class Controller
+export default class Controller
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 

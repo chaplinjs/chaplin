@@ -1,6 +1,4 @@
-'use strict'
-
-mediator = require '../mediator'
+import mediator from '../mediator'
 
 # Add functionality to subscribe and publish to global
 # Publish/Subscribe events so they can be removed afterwards
@@ -71,4 +69,4 @@ EventBroker =
 Object.freeze EventBroker
 
 # Return our creation.
-module.exports = EventBroker
+export default EventBroker

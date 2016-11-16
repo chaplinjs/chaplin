@@ -1,7 +1,5 @@
-'use strict'
-
-Backbone = require 'backbone'
-utils = require './lib/utils'
+import Backbone from 'backbone'
+import utils from './lib/utils'
 
 # Mediator
 # --------
@@ -85,4 +83,4 @@ utils.readonly mediator,
   'setHandler', 'execute', 'removeHandlers', 'seal'
 
 # Return our creation.
-module.exports = mediator
+export default mediator

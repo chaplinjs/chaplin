@@ -1,11 +1,9 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
-
-EventBroker = require '../lib/event_broker'
-utils = require '../lib/utils'
-mediator = require '../mediator'
+import EventBroker from '../lib/event_broker'
+import utils from '../lib/utils'
+import mediator from '../mediator'
 
 # Shortcut to access the DOM manipulation library.
 {$} = Backbone
@@ -39,7 +37,7 @@ attach = do ->
       else
         actual[view.containerMethod] view.el
 
-module.exports = class View extends Backbone.NativeView or Backbone.View
+export default class View extends Backbone.NativeView or Backbone.View
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
 
