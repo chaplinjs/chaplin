@@ -1,12 +1,13 @@
-'use strict'
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import Chaplin from '../src/chaplin'
 
-sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
+chai.use sinonChai
 chai.should()
 
 {expect} = chai
-{mediator, Model} = require '../src/chaplin'
+{mediator, Model} = Chaplin
 
 describe 'mediator', ->
   it 'should be a simple object', ->

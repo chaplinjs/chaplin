@@ -32,25 +32,39 @@ module.exports = (grunt) ->
       options:
         configFile: 'coffeelint.json'
 
+    clean: ['./tmp']
+
+    coffee:
+      test:
+        expand: true,
+        cwd: './test/',
+        src: ['*.coffee'],
+        dest: './tmp/test/',
+        ext: '.js'
+
     mochaTest:
       native:
         options:
           reporter: 'spec'
           require: [
-            'coffee-coverage/register-istanbul'
+            ->
+              global._$coffeeIstanbul = {}
+            'babel-register'
             'jsdom-assign'
             -> require.cache[require.resolve 'jquery'] = {}
             'backbone.nativeview'
           ]
-        src: 'test/*.coffee'
+        src: 'tmp/test/*.js'
       jquery:
         options:
           reporter: 'spec'
           require: [
-            'coffee-script/register'
+            ->
+              global._$coffeeIstanbul = {}
+            'babel-register'
             'jsdom-assign'
           ]
-        src: 'test/*.coffee'
+        src: 'tmp/test/*.js'
 
     makeReport:
       src: 'coverage/coverage-coffee.json',
@@ -272,9 +286,17 @@ module.exports = (grunt) ->
 
   # Tests
   # =====
+
+  grunt.registerTask 'instrument', ->
+    {CoverageInstrumentor} = require('coffee-coverage')
+    coverageInstrumentor = new CoverageInstrumentor({
+      instrumentor: 'istanbul'
+    })
+    coverageInstrumentor.instrument('./src', './tmp/src', bare: true)
+
   grunt.registerTask 'lint', 'coffeelint'
-  grunt.registerTask 'test', 'mochaTest:native'
-  grunt.registerTask 'test:jquery', 'mochaTest:jquery'
+  grunt.registerTask 'test', ['clean', 'instrument', 'coffee:test', 'mochaTest:native']
+  grunt.registerTask 'test:jquery', ['clean', 'instrument', 'coffee:test', 'mochaTest:jquery']
 
   # Coverage
   # ========

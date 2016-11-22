@@ -1,12 +1,13 @@
-'use strict'
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import Chaplin from '../src/chaplin'
 
-sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
+chai.use sinonChai
 chai.should()
 
 {expect} = chai
-{EventBroker, mediator} = require '../src/chaplin'
+{EventBroker, mediator} = Chaplin
 
 describe 'EventBroker', ->
   # Create a simple object which mixes in the EventBroker

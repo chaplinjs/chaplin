@@ -1,14 +1,14 @@
-'use strict'
+import Backbone from 'backbone'
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import Chaplin from '../src/chaplin'
 
-Backbone = require 'backbone'
-
-sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
+chai.use sinonChai
 chai.should()
 
 {expect} = chai
-{Controller, EventBroker, mediator, Model, View} = require '../src/chaplin'
+{Controller, EventBroker, mediator, Model, View} = Chaplin
 
 describe 'Controller', ->
   controller = null
