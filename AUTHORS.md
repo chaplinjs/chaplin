@@ -24,13 +24,9 @@ With input and contributions from (in chronological order):
 
 The Chaplin architecture was derived from [moviepilot.com](http://moviepilot.com/), a project by **Moviepilot** with support from **9elements**.
 
-![Moviepilot](http://moviepilot.com/images/mp-logo-opaque.png)
-
 **Moviepilot** is an internet startup from Berlin, Germany, maintaining several movie news sites and communities.
 
 Find out more [about moviepilot.com](http://moviepilot.com/about) and [moviepilot.de](http://www.moviepilot.de/pages/about).
-
-![9elements](http://molily.de/img/9elements.png)
 
 **9elements** is a software and design company from Bochum & Berlin, Germany, focussed on web applications with Ruby on Rails and JavaScript, as well as iOS app development.
 
