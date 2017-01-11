@@ -1,7 +1,5 @@
-'use strict'
-
-_ = require 'underscore'
-Backbone = require 'backbone'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
 # Cached regex for stripping a leading hash/slash and trailing space.
 routeStripper = /^[#\/]|\s+$/g
@@ -120,4 +118,6 @@ class History extends Backbone.History
     if options.trigger
       @loadUrl fragment
 
-module.exports = if Backbone.$ then History else Backbone.History
+History = if Backbone.$ then History else Backbone.History
+
+export default History

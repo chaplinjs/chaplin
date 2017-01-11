@@ -1,9 +1,9 @@
-'use strict'
+import Backbone from 'backbone'
+import chai from 'chai'
+import Chaplin from '../src/chaplin'
 
-Backbone = require 'backbone'
-
-{expect} = require 'chai'
-{utils, mediator} = require '../src/chaplin'
+{expect} = chai
+{utils, mediator} = Chaplin
 
 describe 'utils', ->
   class A

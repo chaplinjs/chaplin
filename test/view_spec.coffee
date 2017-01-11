@@ -1,16 +1,16 @@
-'use strict'
+import $ from 'jquery'
+import Backbone from 'backbone'
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import Chaplin from '../src/chaplin'
 
-$ = require 'jquery'
-Backbone = require 'backbone'
-
-sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
+chai.use sinonChai
 chai.should()
 
-{expect} = require 'chai'
-{EventBroker, SyncMachine, mediator} = require '../src/chaplin'
-{Collection, Model, View}  = require '../src/chaplin'
+{expect} = chai
+{EventBroker, SyncMachine, mediator} = Chaplin
+{Collection, Model, View}  = Chaplin
 
 describe 'View', ->
   renderCalled = false

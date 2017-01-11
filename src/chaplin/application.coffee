@@ -1,23 +1,21 @@
-'use strict'
-
 # Third-party libraries.
-_ = require 'underscore'
-Backbone = require 'backbone'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
 # CoffeeScript classes which are instantiated with `new`
-Composer = require './composer'
-Dispatcher = require './dispatcher'
-Router = require './lib/router'
-Layout = require './views/layout'
+import Composer from './composer'
+import Dispatcher from './dispatcher'
+import Router from './lib/router'
+import Layout from './views/layout'
 
 # A mix-in that should be mixed to class.
-EventBroker = require './lib/event_broker'
+import EventBroker from './lib/event_broker'
 
 # Independent global event bus that is used by itself, so lowercased.
-mediator = require './mediator'
+import mediator from './mediator'
 
 # The bootstrapper is the entry point for Chaplin apps.
-module.exports = class Application
+export default class Application
   # Borrow the `extend` method from a dear friend.
   @extend = Backbone.Model.extend
 

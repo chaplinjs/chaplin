@@ -1,8 +1,7 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
-EventBroker = require './event_broker'
+import EventBroker from './event_broker'
 
 # Composition
 # -----------
@@ -11,7 +10,7 @@ EventBroker = require './event_broker'
 # controller that is used internally to inflate simple
 # calls to !composer:compose and may be extended and used to have complete
 # control over the composition process.
-module.exports = class Composition
+export default class Composition
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 

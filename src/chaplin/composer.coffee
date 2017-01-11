@@ -1,11 +1,9 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
-
-Composition = require './lib/composition'
-EventBroker = require './lib/event_broker'
-mediator = require './mediator'
+import Composition from './lib/composition'
+import EventBroker from './lib/event_broker'
+import mediator from './mediator'
 
 # Composer
 # --------
@@ -18,7 +16,7 @@ mediator = require './mediator'
 # is routed to where a view that was composed is not re-composed, the
 # composed view is disposed.
 
-module.exports = class Composer
+export default class Composer
   # Borrow the static extend method from Backbone
   @extend = Backbone.Model.extend
 

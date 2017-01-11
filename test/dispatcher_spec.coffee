@@ -1,14 +1,15 @@
-'use strict'
+import _ from 'underscore'
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import Chaplin from '../src/chaplin'
 
-{uniqueId} = require 'underscore'
-
-sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
+chai.use sinonChai
 chai.should()
 
-{expect} = require 'chai'
-{Composer, Controller, Dispatcher, utils, mediator} = require '../src/chaplin'
+{uniqueId} = _
+{expect} = chai
+{Composer, Controller, Dispatcher, utils, mediator} = Chaplin
 
 describe 'Dispatcher', ->
   # Initialize shared variables

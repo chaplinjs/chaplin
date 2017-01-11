@@ -1,7 +1,8 @@
-'use strict'
+import chai from 'chai'
+import Chaplin from '../src/chaplin'
 
-{expect} = require 'chai'
-{Composition, EventBroker, mediator} = require '../src/chaplin'
+{expect} = chai
+{Composition, EventBroker, mediator} = Chaplin
 
 describe 'Composition', ->
   composition = null

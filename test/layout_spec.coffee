@@ -1,14 +1,14 @@
-'use strict'
+import $ from 'jquery'
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import Chaplin from '../src/chaplin'
 
-$ = require 'jquery'
-
-sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
+chai.use sinonChai
 chai.should()
 
 {expect} = chai
-{Controller, mediator, Layout, View} = require '../src/chaplin'
+{Controller, mediator, Layout, View} = Chaplin
 
 describe 'Layout', ->
   # Initialize shared variables

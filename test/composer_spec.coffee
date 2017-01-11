@@ -1,13 +1,13 @@
-'use strict'
+import sinon from 'sinon'
+import chai from 'chai'
+import Chaplin from '../src/chaplin'
 
-sinon = require 'sinon'
-chai = require 'chai'
 chai.use require 'sinon-chai'
 chai.should()
 
 {expect} = chai
-{Composer, Controller, Dispatcher, Composition} = require '../src/chaplin'
-{EventBroker, Router, mediator, Model, View} = require '../src/chaplin'
+{Composer, Controller, Dispatcher, Composition} = Chaplin
+{EventBroker, Router, mediator, Model, View} = Chaplin
 
 describe 'Composer', ->
   composer = null

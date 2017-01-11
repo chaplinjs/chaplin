@@ -1,10 +1,9 @@
-'use strict'
+import Backbone from 'backbone'
+import {expect} from 'chai'
+import Chaplin from '../src/chaplin'
 
-Backbone = require 'backbone'
-
-{expect} = require 'chai'
-{Application, Composer, Dispatcher} = require '../src/chaplin'
-{EventBroker, Router, mediator, Layout} = require '../src/chaplin'
+{Application, Composer, Dispatcher} = Chaplin
+{EventBroker, Router, mediator, Layout} = Chaplin
 
 describe 'Application', ->
   app = null

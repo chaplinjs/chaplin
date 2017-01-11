@@ -4,6 +4,9 @@
 # Generated folders from build process
 /build
 
+# Compiled js for tests
+/tmp
+
 # Local package dependencies
 /node_modules
 
