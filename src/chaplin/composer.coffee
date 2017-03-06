@@ -158,7 +158,7 @@ module.exports = class Composer
         composition.dispose()
         delete @compositions[key]
       else
-        composition.stale true
+        composition.stale composition.check composition.options
 
     # Return nothing.
     return
