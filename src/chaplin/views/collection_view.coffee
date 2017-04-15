@@ -15,7 +15,7 @@ filterChildren = (nodeList, selector) ->
 
 toggleElement = do ->
   if $
-    (elem, visible) -> elem.toggle visible
+    (elem, visible) -> elem.css 'display', (if visible then 'block' else 'none')
   else
     (elem, visible) ->
       elem.style.display = (if visible then '' else 'none')
