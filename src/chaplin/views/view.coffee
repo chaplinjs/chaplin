@@ -456,7 +456,7 @@ module.exports = class View extends Backbone.NativeView or Backbone.View
     mediator.execute 'region:show', @region, this if @region?
 
     # Automatically append to DOM if the container element is set.
-    if @container and not document.body.contains @el
+    if @container and not $.contains document.body, @el
       attach this
       # Trigger an event.
       @trigger 'addedToDOM'
