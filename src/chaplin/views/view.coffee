@@ -113,7 +113,7 @@ module.exports = class View extends Backbone.NativeView or Backbone.View
   optionNames: [
     'autoAttach', 'autoRender',
     'container', 'containerMethod',
-    'region', 'regions'
+    'region', 'regions', 'template',
     'noWrap'
   ]
 
