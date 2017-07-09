@@ -24,9 +24,9 @@
     "grunt-mocha-test": "~0.12.7",
     "grunt-transbrute": "0.2.x",
     "jquery": "2.2.x",
-    "jsdom": "~8.0.2",
-    "jsdom-assign": "shvaikalesh/jsdom-assign",
     "mocha": "~2.4.5",
+    "jsdom": "~11.1.0",
+    "jsdom-global": "~3.0.2",
     "prompt": "~0.2.14",
     "sinon": "~1.17.3",
     "sinon-chai": "2.8.x"
