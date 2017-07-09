@@ -28,8 +28,8 @@
     "jsdom": "~11.1.0",
     "jsdom-global": "~3.0.2",
     "prompt": "~0.2.14",
-    "sinon": "~1.17.3",
-    "sinon-chai": "2.8.x"
+    "sinon": "~2.3.6",
+    "sinon-chai": "~2.8.0"
   },
   "main": "build/chaplin.js",
   "scripts": {

@@ -395,8 +395,8 @@ describe 'CollectionView', ->
     it 'should animate the opacity of new items', ->
       return unless $
 
-      $css = sinon.stub $.fn, 'css', -> this
-      $animate = sinon.stub $.fn, 'animate', -> this
+      $css = sinon.stub($.fn, 'css').callsFake -> this
+      $animate = sinon.stub($.fn, 'animate').callsFake -> this
 
       createCollection()
       collectionView = new AnimatingCollectionView {collection}
@@ -440,8 +440,8 @@ describe 'CollectionView', ->
     it 'should not animate when re-inserting', ->
       return unless $
 
-      $css = sinon.stub $.fn, 'css', -> this
-      $animate = sinon.stub $.fn, 'animate', -> this
+      $css = sinon.stub($.fn, 'css').callsFake -> this
+      $animate = sinon.stub($.fn, 'animate').callsFake -> this
 
       model1 = new Model id: 1
       model2 = new Model id: 2
