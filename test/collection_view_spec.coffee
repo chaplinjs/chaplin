@@ -149,7 +149,7 @@ describe 'CollectionView', ->
       renderAllItemsSpy.should.not.have.been.called
 
       children = getAllChildren()
-      expect(children.length).to.be.empty
+      expect(children).to.have.lengthOf 0
       expect(collectionView).not.to.have.ownProperty '$list'
 
       collectionView.render()

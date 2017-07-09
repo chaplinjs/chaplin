@@ -154,12 +154,11 @@ describe 'Layout', ->
 
     stub.should.have.been.calledOnce
     [link] = stub.lastCall.args
-    expect(link).to.include
-      rel: 'external'
-      host: 'www.example.org:1234'
-      pathname: '/foo'
-      hash: '#baz'
-      target: '_blank'
+    expect(link.rel).to.equal 'external'
+    expect(link.host).to.equal 'www.example.org:1234'
+    expect(link.pathname).to.equal '/foo'
+    expect(link.hash).to.equal '#baz'
+    expect(link.target).to.equal '_blank'
 
   it 'custom `isExternalLink` should not route if true', ->
     layout.isExternalLink = -> true

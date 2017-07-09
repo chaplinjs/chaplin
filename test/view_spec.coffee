@@ -337,7 +337,7 @@ describe 'View', ->
     for index in [1...5]
       d["a#{index}Handler"].should.have.been.calledOnce
     for index in ['b', 'c', 'd']
-      d["#{index}Handler"].should.not.have.been.caled
+      d["#{index}Handler"].should.not.have.been.called
       d.click index
       d["#{index}Handler"].should.have.been.calledOnce
 
