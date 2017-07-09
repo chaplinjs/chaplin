@@ -70,6 +70,7 @@ module.exports = (grunt) ->
         src: 'test/*.coffee'
       jquery:
         options:
+          timeout: 1e5
           reporter: 'spec'
           require: [
             'coffee-script/register'
