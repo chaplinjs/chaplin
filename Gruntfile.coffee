@@ -39,8 +39,11 @@ umdTail = '''
 }))
 '''
 
-jsdomOptions =
-  url: 'https://github.com'
+setupJSDOM = ->
+  require('jsdom-global')(undefined,
+    url: 'https://github.com'
+  )
+
 
 module.exports = (grunt) ->
 
@@ -66,7 +69,7 @@ module.exports = (grunt) ->
           require: [
             'coffee-script/register'
             'coffee-coverage/register-istanbul'
-            -> require('jsdom-global')(undefined, jsdomOptions)
+            setupJSDOM
             -> require.cache[require.resolve 'jquery'] = {}
             'backbone.nativeview'
           ]
@@ -77,7 +80,7 @@ module.exports = (grunt) ->
           reporter: 'spec'
           require: [
             'coffee-script/register'
-            -> require('jsdom-global')(undefined, jsdomOptions)
+            setupJSDOM
           ]
         src: 'test/*.coffee'
 
