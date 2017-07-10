@@ -94,8 +94,8 @@ describe 'Dispatcher', ->
     dispatcher.loadController = loadController
     dispatcher.loadController 'a', handler
 
-    stub.should.have.been.calledOnce
-    stub.should.have.been.calledWith 'controllers/a_controller', handler
+    expect(stub).to.have.been.calledOnce
+    expect(stub).to.have.been.calledWith 'controllers/a_controller', handler
     stub.restore()
 
   it 'should load controller by calling handler if name is object', ->
@@ -106,10 +106,10 @@ describe 'Dispatcher', ->
     dispatcher.loadController = loadController
     dispatcher.loadController name, spy
 
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith name
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith name
 
-    stub.should.not.have.been.called
+    expect(stub).to.not.have.been.called
     stub.restore()
 
   it 'should dispatch routes to controller actions', ->
@@ -120,7 +120,7 @@ describe 'Dispatcher', ->
     publishMatch route1, params, options
 
     for spy in [initialize, action]
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
       expect(spy.firstCall.thisValue).to.be.an.instanceof Test1Controller
 
       [passedParams, passedRoute, passedOptions] = spy.firstCall.args
@@ -142,10 +142,10 @@ describe 'Dispatcher', ->
     publishMatch route1, params,
       Object.assign {}, options, query: {}
 
-    initialize.should.not.have.been.called
+    expect(initialize).to.not.have.been.called
     initialize.restore()
 
-    action.should.not.have.been.called
+    expect(action).to.not.have.been.called
     action.restore()
 
   it 'should start the same controller if params differ', ->
@@ -162,8 +162,8 @@ describe 'Dispatcher', ->
       optionsStore.push options
       publishMatch route1, params, options
 
-    initialize.should.have.been.calledTwice
-    action.should.have.been.calledTwice
+    expect(initialize).to.have.been.calledTwice
+    expect(action).to.have.been.calledTwice
 
     for i in [0..1]
       for spy in [initialize, action]
@@ -193,8 +193,8 @@ describe 'Dispatcher', ->
     publishMatch route1, params, optionsStore[0]
     publishMatch route1, params, optionsStore[1]
 
-    initialize.should.have.been.calledTwice
-    action.should.have.been.calledTwice
+    expect(initialize).to.have.been.calledTwice
+    expect(action).to.have.been.calledTwice
 
     for i in [0..1]
       for spy in [initialize, action]
@@ -262,7 +262,7 @@ describe 'Dispatcher', ->
     publishMatch route1, params, options
     publishMatch route2, params, options
 
-    action.should.have.been.calledOnce
+    expect(action).to.have.been.calledOnce
     route = action.firstCall.args[1]
     expect(route.controller).to.equal route2.controller
     expect(route.action).to.equal route2.action
@@ -278,7 +278,7 @@ describe 'Dispatcher', ->
     publishMatch route2, params, options
 
     # It should pass the params and the new controller name
-    dispose.should.have.been.calledOnce
+    expect(dispose).to.have.been.calledOnce
     [passedParams, passedRoute] = dispose.firstCall.args
     expect(passedParams).to.deep.equal params
     expect(passedRoute.controller).to.equal route2.controller
@@ -295,7 +295,7 @@ describe 'Dispatcher', ->
 
     # Now route to Test2Controller
     publishMatch route2, params, options
-    beforeControllerDispose.should.have.been.calledOnce
+    expect(beforeControllerDispose).to.have.been.calledOnce
 
     # Event payload should be the now disposed controller
     [passedController] = beforeControllerDispose.firstCall.args
@@ -311,7 +311,7 @@ describe 'Dispatcher', ->
     publishMatch route1, params, options
     publishMatch route2, params, options
 
-    dispatch.should.have.been.calledTwice
+    expect(dispatch).to.have.been.calledTwice
 
     for i in [0..1]
       {args} = dispatch.getCall i
@@ -355,7 +355,7 @@ describe 'Dispatcher', ->
     action = sinon.spy Test1Controller.prototype, actionName
     publishMatch redirectToURLRoute, params, options
 
-    action.should.have.been.calledOnce
+    expect(action).to.have.been.calledOnce
     [passedParams, passedRoute, passedOptions] = action.firstCall.args
     expect(passedParams).to.deep.equal params
     expect(passedRoute.previous.controller).to.equal 'test1'
@@ -371,8 +371,8 @@ describe 'Dispatcher', ->
     expect(d.currentRoute.action).to.equal actionName
     expect(d.currentRoute.path).to.equal redirectToURLRoute.path
 
-    dispatch.should.have.been.calledOnce
-    route.should.have.been.calledOnce
+    expect(dispatch).to.have.been.calledOnce
+    expect(route).to.have.been.calledOnce
 
     mediator.unsubscribe 'dispatcher:dispatch', dispatch
     action.restore()
@@ -390,7 +390,7 @@ describe 'Dispatcher', ->
 
     route = {controller: name, action: 'show', path}
     publishMatch route, params, options
-    dispose.should.have.been.calledOnce
+    expect(dispose).to.have.been.calledOnce
     dispose.restore()
 
   it 'should dispose itself correctly', ->
@@ -403,7 +403,7 @@ describe 'Dispatcher', ->
     expect(dispatcher.disposed).to.be.true
     expect(dispatcher).to.be.frozen
 
-    initialize.should.not.have.been.called
+    expect(initialize).to.not.have.been.called
     initialize.restore()
 
   it 'should be extendable', ->
@@ -440,16 +440,16 @@ describe 'Dispatcher', ->
       expect(beforeAction.firstCall.thisValue)
         .to.be.an.instanceof BeforeActionController
 
-      beforeAction.should.have.been.calledOnce
+      expect(beforeAction).to.have.been.calledOnce
       beforeAction.restore()
 
-      action.should.have.been.calledOnce
+      expect(action).to.have.been.calledOnce
       action.restore()
 
     it 'should proceed if there is no before action', ->
       route = {controller: 'no_before_action', action: 'show', path}
       publishMatch route, params, options
-      NoBeforeController::show.should.have.been.calledOnce
+      expect(NoBeforeController::show).to.have.been.calledOnce
 
     it 'should throw an error if a before action method isn’t a function', ->
       class BrokenController extends Controller
@@ -479,7 +479,7 @@ describe 'Dispatcher', ->
       makeLoadController name, BeforeActionChainController
 
       publishMatch route, params, options
-      action.should.have.been.calledOnce
+      expect(action).to.have.been.calledOnce
 
       [passedParams, passedRoute, passedOptions] = action.firstCall.args
 
@@ -508,11 +508,11 @@ describe 'Dispatcher', ->
       action = sinon.spy AsyncBeforeActionController.prototype, 'show'
 
       publishMatch route, params, options
-      action.should.not.have.been.called
+      expect(action).to.not.have.been.called
 
       resolve()
       setImmediate ->
-        action.should.have.been.calledOnce
+        expect(action).to.have.been.calledOnce
         action.restore()
 
         done()
@@ -539,10 +539,10 @@ describe 'Dispatcher', ->
         action = sinon.spy proto, 'show'
         publishMatch route, params, options
 
-        beforeAction.should.have.been.calledOnce
+        expect(beforeAction).to.have.been.calledOnce
         beforeAction.restore()
 
-        action.should.have.been.calledOnce
+        expect(action).to.have.been.calledOnce
         action.restore()
 
         if ++i < 4
@@ -574,14 +574,14 @@ describe 'Dispatcher', ->
       action = sinon.spy proto, 'show'
       publishMatch route, params, options
 
-      beforeAction.should.have.been.calledOnce
-      action.should.not.have.been.called
+      expect(beforeAction).to.have.been.calledOnce
+      expect(action).to.not.have.been.called
 
       resolve()
       setImmediate ->
         beforeAction.restore()
 
-        action.should.have.been.calledOnce
+        expect(action).to.have.been.calledOnce
         action.restore()
 
         composer.dispose()
@@ -609,17 +609,17 @@ describe 'Dispatcher', ->
       # Start the neverending controller
       publishMatch firstRoute, params, options
 
-      beforeAction.should.have.been.calledOnce
-      firstAction.should.not.have.been.called
+      expect(beforeAction).to.have.been.calledOnce
+      expect(firstAction).to.not.have.been.called
 
       # While the promise is pending, start another controller
       publishMatch route2, params, options
-      secondAction.should.have.been.calledOnce
+      expect(secondAction).to.have.been.calledOnce
 
       # Test what happens when the Promise is resolved later
       resolve()
       setImmediate ->
-        firstAction.should.have.been.calledOnce
+        expect(firstAction).to.have.been.calledOnce
         firstAction.restore()
 
         beforeAction.restore()

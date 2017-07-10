@@ -134,7 +134,7 @@ describe 'View', ->
     view = new TestView container: testbed
     view.render()
     view.render()
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
 
   it 'should not attach itself if autoAttach is false', ->
     class NoAutoAttachView1 extends View
@@ -151,11 +151,11 @@ describe 'View', ->
       attach: sinon.spy()
 
     view1 = new NoAutoAttachView1
-    view1.attach.should.not.have.been.called
+    expect(view1.attach).to.not.have.been.called
     expect(view1.el.parentNode).to.be.null
 
     view2 = new NoAutoAttachView2
-    view2.attach.should.not.have.been.called
+    expect(view2.attach).to.not.have.been.called
     expect(view2.el.parentNode).to.be.null
 
   it 'should not wrap el with `tagName` when using a region', ->
@@ -207,7 +207,7 @@ describe 'View', ->
     spy = sinon.spy()
     view.on 'addedToDOM', spy
     view.render()
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
 
   it 'should register and remove user input event handlers', ->
     view.dispose()
@@ -220,7 +220,7 @@ describe 'View', ->
     expect(handler).to.be.a 'function'
     view.render()
     view.el.click()
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
 
     view.undelegate()
     view.el.click()
@@ -232,7 +232,7 @@ describe 'View', ->
     p = view.el.querySelector 'p'
     p.click()
 
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
     expect(-> view.delegate spy).to.throw Error
 
     view.undelegate()
@@ -248,7 +248,7 @@ describe 'View', ->
     else
       view.el.dispatchEvent new MouseEvent 'click'
       view.el.dispatchEvent new Event 'input'
-    spy.should.have.been.calledTwice
+    expect(spy).to.have.been.calledTwice
 
     view.undelegate()
     if $
@@ -257,7 +257,7 @@ describe 'View', ->
     else
       view.el.dispatchEvent new MouseEvent 'click'
       view.el.dispatchEvent new Event 'input'
-    spy.should.have.been.calledTwice
+    expect(spy).to.have.been.calledTwice
 
   it 'should allow undelegating one event', ->
     spy = sinon.spy()
@@ -267,15 +267,15 @@ describe 'View', ->
     view.render()
 
     view.el.click()
-    spy.should.have.been.calledOnce
-    spy2.should.not.have.been.called
+    expect(spy).to.have.been.calledOnce
+    expect(spy2).to.not.have.been.called
 
     view.undelegate 'click'
     view.el.dispatchEvent new Event 'focus'
     view.el.click()
 
-    spy.should.have.been.calledOnce
-    spy2.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
+    expect(spy2).to.have.been.calledOnce
 
   it 'should check delegate parameters', ->
     expect(-> view.delegate 1, 2, 3).to.throw Error
@@ -328,11 +328,11 @@ describe 'View', ->
     d.click 'a'
 
     for index in [1...5]
-      d["a#{index}Handler"].should.have.been.calledOnce
+      expect(d["a#{index}Handler"]).to.have.been.calledOnce
     for index in ['b', 'c', 'd']
-      d["#{index}Handler"].should.not.have.been.called
+      expect(d["#{index}Handler"]).to.not.have.been.called
       d.click index
-      d["#{index}Handler"].should.have.been.calledOnce
+      expect(d["#{index}Handler"]).to.have.been.calledOnce
 
     expect(d.globalHandler.callCount).to.equal 4
 
@@ -345,8 +345,8 @@ describe 'View', ->
     e = new E()
     e.el.click()
 
-    e.handler.should.have.been.calledOnce
-    e.handler.should.have.been.calledOn e
+    expect(e.handler).to.have.been.calledOnce
+    expect(e.handler).to.have.been.calledOn e
 
   it 'should allow "listen" to be passed as a function', ->
     class E extends TestView
@@ -357,8 +357,8 @@ describe 'View', ->
     e = new E()
     e.trigger 'test'
 
-    e.handler.should.have.been.calledOnce
-    e.handler.should.have.been.calledOn e
+    expect(e.handler).to.have.been.calledOnce
+    expect(e.handler).to.have.been.calledOn e
 
   it 'should add and return subviews', ->
     expect(view.subview).to.be.a 'function'
@@ -488,9 +488,9 @@ describe 'View', ->
     sinon.stub(view, 'getTemplateFunction').returns templateFunc
 
     view.render()
-    view.getTemplateFunction.should.have.been.calledOnce
-    view.getTemplateData.should.have.been.calledOnce
-    templateFunc.should.have.been.calledOnce
+    expect(view.getTemplateFunction).to.have.been.calledOnce
+    expect(view.getTemplateData).to.have.been.calledOnce
+    expect(templateFunc).to.have.been.calledOnce
 
     [templateData] = templateFunc.lastCall.args
     expect(templateData).to.deep.equal {
@@ -551,84 +551,84 @@ describe 'View', ->
       model = new Model()
       view = new EventedView {model}
 
-      view.a1Handler.should.not.have.been.called
-      view.a2Handler.should.not.have.been.called
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.not.have.been.called
+      expect(view.a2Handler).to.not.have.been.called
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       view.trigger 'ns:a'
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       view.trigger 'ns:b'
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.have.been.calledOnce
-      view.b2Handler.should.have.been.calledOnce
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.have.been.calledOnce
+      expect(view.b2Handler).to.have.been.calledOnce
 
     it 'should bind to model events declaratively', ->
       model = new Model()
       view = new EventedView {model}
 
-      view.a1Handler.should.not.have.been.called
-      view.a2Handler.should.not.have.been.called
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.not.have.been.called
+      expect(view.a2Handler).to.not.have.been.called
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       model.set 'a', 1
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       model.set 'b', 2
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.have.been.calledOnce
-      view.b2Handler.should.have.been.calledOnce
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.have.been.calledOnce
+      expect(view.b2Handler).to.have.been.calledOnce
 
     it 'should bind to collection events declaratively', ->
       collection = new Collection()
       view = new EventedView {collection}
 
-      view.a1Handler.should.not.have.been.called
-      view.a2Handler.should.not.have.been.called
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.not.have.been.called
+      expect(view.a2Handler).to.not.have.been.called
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       collection.reset [{a: 1}]
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       collection.trigger 'custom'
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.have.been.calledOnce
-      view.b2Handler.should.have.been.calledOnce
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.have.been.calledOnce
+      expect(view.b2Handler).to.have.been.calledOnce
 
     it 'should bind to mediator events declaratively', ->
       view = new EventedView()
 
-      view.a1Handler.should.not.have.been.called
-      view.a2Handler.should.not.have.been.called
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.not.have.been.called
+      expect(view.a2Handler).to.not.have.been.called
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       mediator.publish 'ns:a'
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.not.have.been.called
-      view.b2Handler.should.not.have.been.called
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.not.have.been.called
+      expect(view.b2Handler).to.not.have.been.called
 
       mediator.publish 'ns:b'
-      view.a1Handler.should.have.been.calledOnce
-      view.a2Handler.should.have.been.calledOnce
-      view.b1Handler.should.have.been.calledOnce
-      view.b2Handler.should.have.been.calledOnce
+      expect(view.a1Handler).to.have.been.calledOnce
+      expect(view.a2Handler).to.have.been.calledOnce
+      expect(view.b1Handler).to.have.been.calledOnce
+      expect(view.b2Handler).to.have.been.calledOnce
 
     it 'should throw an error when corresponding method doesn’t exist', ->
       class ErrorView extends View
@@ -648,7 +648,7 @@ describe 'View', ->
       view.delegateEvents 'click p': spy
       view.el.querySelector('p').click()
 
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
 
     # Events hash
     # -----------
@@ -668,8 +668,8 @@ describe 'View', ->
       parent = view.el
       el = parent.querySelector 'p'
       el.click()
-      spy1.should.have.been.calledOnce
-      spy2.should.have.been.calledOnce
+      expect(spy1).to.have.been.calledOnce
+      expect(spy2).to.have.been.calledOnce
       view.dispose()
       el.click()
       expect(spy1.callCount).to.equal 1
@@ -691,8 +691,8 @@ describe 'View', ->
       parent = view.el
       el = parent.querySelector 'p'
       el.click()
-      spy1.should.have.been.calledOnce
-      spy2.should.have.been.calledOnce
+      expect(spy1).to.have.been.calledOnce
+      expect(spy2).to.have.been.calledOnce
       view.undelegateEvents()
       el.click()
       expect(spy1.callCount).to.equal 1
@@ -719,7 +719,7 @@ describe 'View', ->
     it 'should call Backbone.View#remove', ->
       sinon.spy view, 'remove'
       view.dispose()
-      view.remove.should.have.been.calledOnce
+      expect(view.remove).to.have.been.calledOnce
 
     it 'should dispose subviews', ->
       subview = new View()
@@ -729,7 +729,7 @@ describe 'View', ->
       view.dispose()
 
       expect(subview.disposed).to.be.true
-      subview.dispose.should.have.been.calledOnce
+      expect(subview.dispose).to.have.been.calledOnce
 
     it 'should unsubscribe from Pub/Sub events', ->
       spy = sinon.spy()
@@ -737,7 +737,7 @@ describe 'View', ->
       view.dispose()
 
       mediator.publish 'foo'
-      spy.should.not.have.been.called
+      expect(spy).to.not.have.been.called
 
     it 'should unsubscribe from model events', ->
       setModel()
@@ -747,7 +747,7 @@ describe 'View', ->
       view.dispose()
 
       model.trigger 'foo'
-      spy.should.not.have.been.called
+      expect(spy).to.not.have.been.called
 
     it 'should remove all event handlers from itself', ->
       spy = sinon.spy()
@@ -757,7 +757,7 @@ describe 'View', ->
       view.dispose()
       view.trigger 'foo'
 
-      spy.should.not.have.been.called
+      expect(spy).to.not.have.been.called
 
     it 'should remove instance properties', ->
       view.dispose()
@@ -805,7 +805,7 @@ describe 'View', ->
 
       renderResult = view.render()
       expect(renderResult).to.be.false
-      view.attach.should.have.been.calledOnce
+      expect(view.attach).to.have.been.calledOnce
 
     it 'should not render when disposed given render was overridden', ->
       initial = testbed.children.length
@@ -813,7 +813,7 @@ describe 'View', ->
       sinon.spy view, 'attach'
       renderResult = view.render()
       expect(renderResult).to.equal renderReturnValue
-      view.attach.should.have.been.calledOnce
+      expect(view.attach).to.have.been.calledOnce
       expect(renderCalled).to.be.true
       expect(view.el.parentNode).to.equal testbed
 
@@ -824,4 +824,4 @@ describe 'View', ->
       # Render was called but super call should not do anything
       expect(renderCalled).to.be.true
       expect(testbed.children).have.lengthOf initial
-      view.attach.should.have.been.calledOnce
+      expect(view.attach).to.have.been.calledOnce

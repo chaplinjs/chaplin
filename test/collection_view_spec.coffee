@@ -138,8 +138,8 @@ describe 'CollectionView', ->
         renderItems: false
       }
 
-      renderSpy.should.not.have.been.called
-      renderAllItemsSpy.should.not.have.been.called
+      expect(renderSpy).to.not.have.been.called
+      expect(renderAllItemsSpy).to.not.have.been.called
 
       children = getAllChildren()
       expect(children).to.have.lengthOf 0
@@ -375,7 +375,7 @@ describe 'CollectionView', ->
       collectionView.on 'visibilityChange', visibilityChange
       addOne()
       {visibleItems} = collectionView
-      visibilityChange.should.have.been.calledWith visibleItems
+      expect(visibilityChange).to.have.been.calledWith visibleItems
       expect(visibleItems).to.have.lengthOf 1
 
   describe 'Animation', ->
@@ -395,7 +395,7 @@ describe 'CollectionView', ->
       collectionView = new AnimatingCollectionView {collection}
 
       expect($css.callCount).to.equal collection.length
-      $css.should.have.been.calledWith 'opacity', 0
+      expect($css).to.have.been.calledWith 'opacity', 0
 
       expect($animate.callCount).to.equal collection.length
       {args} = $animate.firstCall
@@ -419,13 +419,13 @@ describe 'CollectionView', ->
       createCollection()
       collectionView = new TestCollectionView {collection}
 
-      $css.should.not.have.been.called
-      $animate.should.not.have.been.called
+      expect($css).to.not.have.been.called
+      expect($animate).to.not.have.been.called
 
       addThree()
 
-      $css.should.not.have.been.called
-      $animate.should.not.have.been.called
+      expect($css).to.not.have.been.called
+      expect($animate).to.not.have.been.called
 
       $css.restore()
       $animate.restore()
@@ -443,8 +443,8 @@ describe 'CollectionView', ->
       createCollection [model1, model2]
       collectionView = new AnimatingCollectionView {collection}
 
-      $css.should.have.been.calledTwice
-      $animate.should.have.been.calledTwice
+      expect($css).to.have.been.calledTwice
+      expect($animate).to.have.been.calledTwice
 
       collection.reset [model1, model2, model3]
 
@@ -582,7 +582,7 @@ describe 'CollectionView', ->
       collectionView.filter (model) ->
         model.get('title') is 'new'
 
-      visibilityChange.should.have.been.calledOnce
+      expect(visibilityChange).to.have.been.calledOnce
       {args} = visibilityChange.firstCall
       expect(args).to.have.lengthOf 1
       expect(args[0]).to.equal collectionView.visibleItems
@@ -615,7 +615,7 @@ describe 'CollectionView', ->
       checkCall = (model, call) ->
         view = collectionView.subview "itemView:#{model.cid}"
         included = filterer model
-        call.should.have.been.calledWith view, included
+        expect(call).to.have.been.calledWith view, included
         hasClass = view.el.className.indexOf(
           if included then 'included' else 'not-included'
         ) isnt -1
@@ -651,7 +651,7 @@ describe 'CollectionView', ->
       spy = sinon.spy collectionView, 'filterCallback'
       collection.reset freshModels()
       addThree()
-      spy.should.not.have.been.called
+      expect(spy).to.not.have.been.called
 
   describe 'Disposal', ->
 
@@ -671,7 +671,7 @@ describe 'CollectionView', ->
       for cid, view of viewsByCid
         expect(view.disposed).to.be.true
 
-      collectionView.should.not.have.ownProperty 'visibleItems'
+      expect(collectionView).to.not.have.ownProperty 'visibleItems'
 
   describe 'Templated CollectionView', ->
 

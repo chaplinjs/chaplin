@@ -36,7 +36,7 @@ describe 'Router and Route', ->
       expect(router.startHistory).to.be.a 'function'
       router.startHistory()
       expect(Backbone.History.started).to.be.true
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
       spy.restore()
 
     it 'should default to pushState', ->
@@ -61,7 +61,7 @@ describe 'Router and Route', ->
       expect(router.stopHistory).to.be.a 'function'
       router.stopHistory()
       expect(Backbone.History.started).to.be.false
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
       spy.restore()
 
   describe 'Creating Routes', ->
@@ -125,7 +125,7 @@ describe 'Router and Route', ->
       router.match '', 'null#null'
 
       router.route url: '/'
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
 
     it 'should match route names, both default and custom', ->
       spy = sinon.spy()
@@ -137,7 +137,7 @@ describe 'Router and Route', ->
       routed2 = router.route 'routeName'
 
       expect(routed1 and routed2).to.be.true
-      spy.should.have.been.calledTwice
+      expect(spy).to.have.been.calledTwice
 
       mediator.unsubscribe 'router:match', spy
 
@@ -149,7 +149,7 @@ describe 'Router and Route', ->
 
       routed = router.route url: '/correct-match1'
       expect(routed).to.be.true
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
 
       mediator.unsubscribe 'router:match', spy
 
@@ -165,7 +165,7 @@ describe 'Router and Route', ->
       routed2 = router.route name: 'null'
 
       expect(routed1 and routed2).to.be.true
-      spy.should.have.been.calledTwice
+      expect(spy).to.have.been.calledTwice
 
       mediator.unsubscribe 'router:match', spy
 
@@ -180,7 +180,7 @@ describe 'Router and Route', ->
 
       routed = subdirRooter.route url: '/subdir/correct-match1'
       expect(routed).to.be.true
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
 
       mediator.unsubscribe 'router:match', spy
       subdirRooter.dispose()
@@ -194,7 +194,7 @@ describe 'Router and Route', ->
       routed = router.route url: '/params/1'
 
       expect(routed).to.be.true
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
       expect(passedParams).to.be.deep.equal {
         one: '1'
       }
@@ -211,7 +211,7 @@ describe 'Router and Route', ->
       routed = Backbone.history.loadUrl '/params/1'
 
       expect(routed).to.be.true
-      spy.should.have.been.calledOnce
+      expect(spy).to.have.been.calledOnce
       expect(passedParams).to.be.deep.equal {
         one: '1'
       }
@@ -402,7 +402,7 @@ describe 'Router and Route', ->
 
       router.route url: '/constraints/123'
       router.route 'controller#action', id: 123
-      spy.should.have.been.calledTwice
+      expect(spy).to.have.been.calledTwice
 
       mediator.unsubscribe 'router:match', spy
 
@@ -769,14 +769,14 @@ describe 'Router and Route', ->
       options = some: 'stuff', changeURL: true
 
       router.changeURL null, null, {path}, options
-      navigate.should.have.been.calledWith path,
+      expect(navigate).to.have.been.calledWith path,
         replace: false, trigger: false
 
       forwarding = replace: true, trigger: true
       router.changeURL null, null, {path},
         Object.assign {}, options, forwarding
 
-      navigate.should.have.been.calledWith path, forwarding
+      expect(navigate).to.have.been.calledWith path, forwarding
       navigate.restore()
 
       changeURL.restore()
@@ -787,7 +787,7 @@ describe 'Router and Route', ->
       navigate = sinon.spy Backbone.history, 'navigate'
 
       router.changeURL null, null, {path}, changeURL: false
-      navigate.should.not.have.been.called
+      expect(navigate).to.not.have.been.called
 
       changeURL.restore()
       navigate.restore()
@@ -799,7 +799,7 @@ describe 'Router and Route', ->
       navigate = sinon.spy Backbone.history, 'navigate'
 
       router.changeURL null, null, {path, query}, changeURL: true
-      navigate.should.have.been.calledWith "#{path}?#{query}"
+      expect(navigate).to.have.been.calledWith "#{path}?#{query}"
 
       changeURL.restore()
       navigate.restore()
