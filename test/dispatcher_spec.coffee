@@ -1,13 +1,6 @@
 'use strict'
-
-{uniqueId} = require 'underscore'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = require 'chai'
+{uniqueId} = require 'underscore'
 {Composer, Controller, Dispatcher, utils, mediator} = require '../src/chaplin'
 
 describe 'Dispatcher', ->

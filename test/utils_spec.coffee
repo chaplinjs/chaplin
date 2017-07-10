@@ -1,8 +1,5 @@
 'use strict'
-
 Backbone = require 'backbone'
-
-{expect} = require 'chai'
 {utils, mediator} = require '../src/chaplin'
 
 describe 'utils', ->

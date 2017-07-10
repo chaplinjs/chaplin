@@ -1,16 +1,9 @@
 'use strict'
-
 $ = require 'jquery'
 Backbone = require 'backbone'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = require 'chai'
 {EventBroker, SyncMachine, mediator} = require '../src/chaplin'
-{Collection, Model, View}  = require '../src/chaplin'
+{Collection, Model, View} = require '../src/chaplin'
 
 describe 'View', ->
   renderCalled = false

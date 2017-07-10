@@ -1,13 +1,6 @@
 'use strict'
-
 Backbone = require 'backbone'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {EventBroker, mediator, Model} = require '../src/chaplin'
 
 describe 'Model', ->

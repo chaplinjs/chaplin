@@ -1,11 +1,5 @@
 'use strict'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {mediator, Model} = require '../src/chaplin'
 
 describe 'mediator', ->

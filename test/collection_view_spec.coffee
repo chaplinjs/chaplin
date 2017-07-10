@@ -1,13 +1,6 @@
 'use strict'
-
 $ = require 'jquery'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = require 'chai'
 {SyncMachine, utils, Collection, Model} = require '../src/chaplin'
 {CollectionView, View} = require '../src/chaplin'
 

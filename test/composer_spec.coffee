@@ -1,11 +1,5 @@
 'use strict'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {Composer, Controller, Dispatcher, Composition} = require '../src/chaplin'
 {EventBroker, Router, mediator, Model, View} = require '../src/chaplin'
 

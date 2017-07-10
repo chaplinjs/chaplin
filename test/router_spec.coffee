@@ -1,13 +1,6 @@
 'use strict'
-
 Backbone = require 'backbone'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = require 'chai'
 {Route, Router, utils, mediator} = require '../src/chaplin'
 
 describe 'Router and Route', ->

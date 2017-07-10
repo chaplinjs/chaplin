@@ -1,13 +1,6 @@
 'use strict'
-
 $ = require 'jquery'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {Controller, mediator, Layout, View} = require '../src/chaplin'
 
 describe 'Layout', ->

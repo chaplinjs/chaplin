@@ -44,6 +44,10 @@ setupJSDOM = ->
     url: 'https://github.com'
   )
 
+setupChai = ->
+  chai = require 'chai'
+  chai.use require 'sinon-chai'
+  require 'chai/register-expect'
 
 module.exports = (grunt) ->
 
@@ -72,6 +76,7 @@ module.exports = (grunt) ->
             setupJSDOM
             -> require.cache[require.resolve 'jquery'] = {}
             'backbone.nativeview'
+            setupChai
           ]
         src: 'test/*.coffee'
       jquery:
@@ -81,6 +86,7 @@ module.exports = (grunt) ->
           require: [
             'coffee-script/register'
             setupJSDOM
+            setupChai
           ]
         src: 'test/*.coffee'
 
