@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "backbone.nativeview": "~0.3.3",
-    "chai": "~4.0.2",
+    "chai": "~4.1.1",
     "coffee-coverage": "1.0.1",
     "coffee-script": "~1.12.6",
     "coffeeify": "~2.0.1",
