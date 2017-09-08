@@ -1,13 +1,6 @@
 'use strict'
-
 Backbone = require 'backbone'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {SyncMachine} = require '../src/chaplin'
 
 describe 'SyncMachine', ->
@@ -40,14 +33,14 @@ describe 'SyncMachine', ->
     machine.on 'synced', synced
 
     machine.beginSync()
-    stateChange.should.have.been.calledOnce
-    stateChange.should.have.been.calledWith machine, 'syncing'
-    syncing.should.have.been.calledOnce
+    expect(stateChange).to.have.been.calledOnce
+    expect(stateChange).to.have.been.calledWith machine, 'syncing'
+    expect(syncing).to.have.been.calledOnce
 
     machine.finishSync()
-    stateChange.should.have.been.calledTwice
-    stateChange.should.have.been.calledWith machine, 'synced'
-    synced.should.have.been.calledOnce
+    expect(stateChange).to.have.been.calledTwice
+    expect(stateChange).to.have.been.calledWith machine, 'synced'
+    expect(synced).to.have.been.calledOnce
 
   it 'should has shortcuts for checking sync state', ->
     expect(machine.isUnsynced()).to.be.true
@@ -79,10 +72,10 @@ describe 'SyncMachine', ->
     machine.unsynced unsynced
 
     machine.beginSync()
-    syncing.should.have.been.calledOnce
+    expect(syncing).to.have.been.calledOnce
 
     machine.finishSync()
-    synced.should.have.been.calledOnce
+    expect(synced).to.have.been.calledOnce
 
     machine.unsync()
-    unsynced.should.have.been.calledTwice # Including initial call.
+    expect(unsynced).to.have.been.calledTwice # Including initial call.

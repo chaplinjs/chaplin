@@ -39,6 +39,16 @@ umdTail = '''
 }))
 '''
 
+setupJSDOM = ->
+  require('jsdom-global')(undefined,
+    url: 'https://github.com'
+  )
+
+setupChai = ->
+  chai = require 'chai'
+  chai.use require 'sinon-chai'
+  require 'chai/register-expect'
+
 module.exports = (grunt) ->
 
   # Configuration
@@ -63,17 +73,20 @@ module.exports = (grunt) ->
           require: [
             'coffee-script/register'
             'coffee-coverage/register-istanbul'
-            'jsdom-assign'
+            setupJSDOM
             -> require.cache[require.resolve 'jquery'] = {}
             'backbone.nativeview'
+            setupChai
           ]
         src: 'test/*.coffee'
       jquery:
         options:
+          timeout: 1e5
           reporter: 'spec'
           require: [
             'coffee-script/register'
-            'jsdom-assign'
+            setupJSDOM
+            setupChai
           ]
         src: 'test/*.coffee'
 

@@ -96,13 +96,11 @@ module.exports = class Layout extends View
     # Reassigning href helps. See #878 issue for details.
     link.href += '' unless link.host
 
-    {protocol, host} = location
     {target} = link
 
     target is '_blank' or
     link.rel is 'external' or
-    link.protocol isnt protocol or
-    link.host isnt host or
+    link.origin isnt location.origin or
     (target is '_parent' and parent isnt self) or
     (target is '_top' and top isnt self)
 

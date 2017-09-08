@@ -1,13 +1,6 @@
 'use strict'
-
 Backbone = require 'backbone'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {EventBroker, mediator, Model} = require '../src/chaplin'
 
 describe 'Model', ->
@@ -149,7 +142,7 @@ describe 'Model', ->
       model.on 'dispose', disposeSpy
       model.dispose()
 
-      disposeSpy.should.have.been.called
+      expect(disposeSpy).to.have.been.called
 
     it 'should unsubscribe from Pub/Sub events', ->
       pubSubSpy = sinon.spy()
@@ -158,7 +151,7 @@ describe 'Model', ->
       model.dispose()
       mediator.publish 'foo'
 
-      pubSubSpy.should.not.have.been.called
+      expect(pubSubSpy).to.not.have.been.called
 
     it 'should remove all event handlers from itself', ->
       modelBindSpy = sinon.spy()
@@ -167,7 +160,7 @@ describe 'Model', ->
       model.dispose()
       model.trigger 'foo'
 
-      modelBindSpy.should.not.have.been.called
+      expect(modelBindSpy).to.not.have.been.called
 
     it 'should unsubscribe from other events', ->
       spy = sinon.spy()
@@ -176,7 +169,7 @@ describe 'Model', ->
       model.dispose()
 
       model2.trigger 'foo'
-      spy.should.not.have.been.called
+      expect(spy).to.not.have.been.called
 
     it 'should remove instance properties', ->
       model.dispose()

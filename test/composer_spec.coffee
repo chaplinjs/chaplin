@@ -1,11 +1,5 @@
 'use strict'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {Composer, Controller, Dispatcher, Composition} = require '../src/chaplin'
 {EventBroker, Router, mediator, Model, View} = require '../src/chaplin'
 
@@ -143,7 +137,7 @@ describe 'Composer', ->
     mediator.execute 'composer:compose', 'spy', spy
     mediator.publish 'dispatcher:dispatch'
 
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
 
   it 'should allow a function to be composed with options', ->
     spy = sinon.spy()
@@ -152,7 +146,7 @@ describe 'Composer', ->
     mediator.execute 'composer:compose', 'spy', params, spy
     mediator.publish 'dispatcher:dispatch'
 
-    spy.should.have.been.calledWith params
+    expect(spy).to.have.been.calledWith params
 
   it 'should allow options hash with function to be composed with options', ->
     spy = sinon.spy()
@@ -164,7 +158,7 @@ describe 'Composer', ->
 
     mediator.publish 'dispatcher:dispatch'
 
-    spy.should.have.been.calledWith params
+    expect(spy).to.have.been.calledWith params
 
   it 'should allow a model to be composed', ->
     mediator.execute 'composer:compose', 'spy', Model
@@ -192,7 +186,7 @@ describe 'Composer', ->
     expect(item).to.be.an.instanceof Composition
     expect(item).to.be.an.instanceof CustomComposition
 
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
 
   it 'should allow a composition to be composed with options', ->
     spy = sinon.spy()
@@ -208,8 +202,8 @@ describe 'Composer', ->
     expect(item).to.be.an.instanceof Composition
     expect(item).to.be.an.instanceof CustomComposition
 
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith params
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith params
 
   it 'should allow a composition to be retreived', ->
     mediator.execute 'composer:compose', 'spy', Model

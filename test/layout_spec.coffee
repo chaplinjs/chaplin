@@ -1,13 +1,6 @@
 'use strict'
-
 $ = require 'jquery'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {Controller, mediator, Layout, View} = require '../src/chaplin'
 
 describe 'Layout', ->
@@ -38,7 +31,7 @@ describe 'Layout', ->
     mediator.setHandler 'router:route', spy
 
     clickAndRemove create arguments...
-    spy.should.have.been.calledOnce
+    expect(spy).to.have.been.calledOnce
 
     href = attrs.href or attrs['data-href']
     [passedPath] = spy.firstCall.args
@@ -52,7 +45,7 @@ describe 'Layout', ->
     mediator.setHandler 'router:route', spy
     clickAndRemove create arguments...
 
-    spy.should.not.have.been.called
+    expect(spy).to.not.have.been.called
     mediator.unsubscribe '!router:route', spy
     spy
 
@@ -85,7 +78,7 @@ describe 'Layout', ->
     mediator.execute 'adjustTitle', testController.title
     title = "#{testController.title} \u2013 #{layout.title}"
     expect(document.title).to.equal title
-    spy.should.have.been.calledWith testController.title, title
+    expect(spy).to.have.been.calledWith testController.title, title
 
   # Default routing options
   # -----------------------
@@ -134,7 +127,7 @@ describe 'Layout', ->
     expectWasNotRouted href: 'http://example.com/'
     expectWasNotRouted href: 'https://example.com/'
 
-    window.open.should.not.have.been.called
+    expect(window.open).to.not.have.been.called
     window.open = old
 
   it 'should route clicks on elements with the `go-to` class', ->
@@ -152,7 +145,7 @@ describe 'Layout', ->
       href: 'http://www.example.org:1234/foo?bar=1#baz'
       target: '_blank'
 
-    stub.should.have.been.calledOnce
+    expect(stub).to.have.been.calledOnce
     [link] = stub.lastCall.args
     expect(link).to.include
       rel: 'external'
@@ -184,14 +177,14 @@ describe 'Layout', ->
     layout.dispose()
     layout = new Layout title: '', openExternalToBlank: true
     expectWasNotRouted href: 'http://www.example.org/'
-    window.open.should.have.been.calledOnce
+    expect(window.open).to.have.been.calledOnce
 
     window.open = sinon.stub()
     layout.dispose()
     layout = new Layout title: '', openExternalToBlank: true
     expectWasNotRouted href: '/foo', rel: 'external'
 
-    window.open.should.have.been.calledOnce
+    expect(window.open).to.have.been.calledOnce
     window.open = old
 
   it 'skipRouting=false should route links with a `noscript` class', ->
@@ -207,7 +200,7 @@ describe 'Layout', ->
     layout = new Layout title: '', skipRouting: stub
     expectWasNotRouted href: path
 
-    stub.should.have.been.calledOnce
+    expect(stub).to.have.been.calledOnce
     args = stub.lastCall.args
     expect(args[0]).to.equal path
     expect(args[1].nodeName).to.equal 'A'
@@ -217,7 +210,7 @@ describe 'Layout', ->
     layout = new Layout title: '', skipRouting: stub
     expectWasRouted href: path
 
-    stub.should.have.been.calledOnce
+    expect(stub).to.have.been.calledOnce
     expect(args[0]).to.equal path
     expect(args[1].nodeName).to.equal 'A'
 
@@ -239,9 +232,9 @@ describe 'Layout', ->
 
     spy = sinon.spy(layout, 'registerGlobalRegion')
     instance1 = new Test1View()
-    spy.should.have.been.calledWith instance1, 'view-region1', ''
-    spy.should.have.been.calledWith instance1, 'test1', '#test1'
-    spy.should.have.been.calledWith instance1, 'test2', '#test2'
+    expect(spy).to.have.been.calledWith instance1, 'view-region1', ''
+    expect(spy).to.have.been.calledWith instance1, 'test1', '#test1'
+    expect(spy).to.have.been.calledWith instance1, 'test2', '#test2'
     expect(layout.globalRegions).to.deep.equal [
       {instance: instance1, name: 'test2', selector: '#test2'}
       {instance: instance1, name: 'test1', selector: '#test1'}
@@ -249,9 +242,9 @@ describe 'Layout', ->
     ]
 
     instance2 = new Test2View()
-    spy.should.have.been.calledWith instance2, 'view-region2', ''
-    spy.should.have.been.calledWith instance2, 'test3', '#test1'
-    spy.should.have.been.calledWith instance2, 'test4', '#test2'
+    expect(spy).to.have.been.calledWith instance2, 'view-region2', ''
+    expect(spy).to.have.been.calledWith instance2, 'test3', '#test1'
+    expect(spy).to.have.been.calledWith instance2, 'test4', '#test2'
     expect(layout.globalRegions).to.deep.equal [
       {instance: instance2, name: 'test4', selector: '#test2'}
       {instance: instance2, name: 'test3', selector: '#test1'}
@@ -428,8 +421,8 @@ describe 'Layout', ->
     mediator.publish 'foo'
 
     # It should unsubscribe from events
-    spy1.should.not.have.been.called
-    spy2.should.not.have.been.called
+    expect(spy1).to.not.have.been.called
+    expect(spy2).to.not.have.been.called
 
   it 'should be extendable', ->
     expect(Layout.extend).to.be.a 'function'

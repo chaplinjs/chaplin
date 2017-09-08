@@ -1,11 +1,5 @@
 'use strict'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {EventBroker, mediator} = require '../src/chaplin'
 
 describe 'EventBroker', ->
@@ -22,9 +16,9 @@ describe 'EventBroker', ->
     eventBroker.subscribeEvent type, spy
 
     mediator.publish type, 1, 2, 3, 4
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith 1, 2, 3, 4
-    spy.should.have.been.calledOn eventBroker
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith 1, 2, 3, 4
+    expect(spy).to.have.been.calledOn eventBroker
 
     mediator.unsubscribe type, spy
 
@@ -35,9 +29,9 @@ describe 'EventBroker', ->
     eventBroker.subscribeEvent type, spy
 
     mediator.publish type, 1, 2, 3, 4
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith 1, 2, 3, 4
-    spy.should.have.been.calledOn eventBroker
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith 1, 2, 3, 4
+    expect(spy).to.have.been.calledOn eventBroker
 
     mediator.unsubscribe type, spy
 
@@ -50,9 +44,9 @@ describe 'EventBroker', ->
     mediator.publish type, 1, 2, 3, 4
     mediator.publish type, 5, 6, 7, 8
 
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith 1, 2, 3, 4
-    spy.should.have.been.calledOn eventBroker
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith 1, 2, 3, 4
+    expect(spy).to.have.been.calledOn eventBroker
 
   it 'should unsubscribe from events', ->
     expect(eventBroker.unsubscribeEvent).to.be.a 'function'
@@ -63,7 +57,7 @@ describe 'EventBroker', ->
     eventBroker.unsubscribeEvent type, spy
 
     mediator.publish type
-    spy.should.not.have.been.called
+    expect(spy).to.not.have.been.called
 
   it 'should unsubscribe from all events', ->
     expect(eventBroker.unsubscribeAllEvents).to.be.a 'function'
@@ -84,9 +78,9 @@ describe 'EventBroker', ->
     mediator.publish 'three'
     mediator.publish 'four'
 
-    spy.should.not.have.been.called
+    expect(spy).to.not.have.been.called
     # Ensure other handlers remain untouched
-    unrelatedHandler.should.have.been.calledTwice
+    expect(unrelatedHandler).to.have.been.calledTwice
     mediator.unsubscribe 'four', unrelatedHandler
 
   it 'should publish events', ->
@@ -97,7 +91,7 @@ describe 'EventBroker', ->
     mediator.subscribe type, spy
 
     eventBroker.publishEvent type, 1, 2, 3, 4
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith 1, 2, 3, 4
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith 1, 2, 3, 4
 
     mediator.unsubscribe type, spy

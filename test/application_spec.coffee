@@ -1,8 +1,5 @@
 'use strict'
-
 Backbone = require 'backbone'
-
-{expect} = require 'chai'
 {Application, Composer, Dispatcher} = require '../src/chaplin'
 {EventBroker, Router, mediator, Layout} = require '../src/chaplin'
 

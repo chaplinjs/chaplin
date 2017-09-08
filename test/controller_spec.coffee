@@ -1,13 +1,6 @@
 'use strict'
-
 Backbone = require 'backbone'
-
 sinon = require 'sinon'
-chai = require 'chai'
-chai.use require 'sinon-chai'
-chai.should()
-
-{expect} = chai
 {Controller, EventBroker, mediator, Model, View} = require '../src/chaplin'
 
 describe 'Controller', ->
@@ -46,7 +39,7 @@ describe 'Controller', ->
     controller.redirectTo url
 
     expect(controller.redirected).to.be.true
-    routerRoute.should.have.been.calledWith url
+    expect(routerRoute).to.have.been.calledWith url
 
   it 'should redirect to a URL with routing options', ->
     routerRoute = sinon.spy()
@@ -57,7 +50,7 @@ describe 'Controller', ->
     controller.redirectTo url, options
 
     expect(controller.redirected).to.be.true
-    routerRoute.should.have.been.calledWith url, options
+    expect(routerRoute).to.been.calledWith url, options
 
   it 'should redirect to a named route', ->
     routerRoute = sinon.spy()
@@ -69,7 +62,7 @@ describe 'Controller', ->
     controller.redirectTo pathDesc
 
     expect(controller.redirected).to.be.true
-    routerRoute.should.have.been.calledWith pathDesc
+    expect(routerRoute).to.have.been.calledWith pathDesc
 
   it 'should redirect to a named route with options', ->
     routerRoute = sinon.spy()
@@ -82,15 +75,15 @@ describe 'Controller', ->
     controller.redirectTo pathDesc, options
 
     expect(controller.redirected).to.be.true
-    routerRoute.should.have.been.calledWith pathDesc, options
+    expect(routerRoute).to.have.been.calledWith pathDesc, options
 
   it 'should adjust page title', ->
     spy = sinon.spy()
     mediator.setHandler 'adjustTitle', spy
     controller.adjustTitle 'meh'
 
-    spy.should.have.been.calledOnce
-    spy.should.have.been.calledWith 'meh'
+    expect(spy).to.have.been.calledOnce
+    expect(spy).to.have.been.calledWith 'meh'
 
   describe 'Disposal', ->
     mediator.setHandler 'region:unregister', ->
@@ -121,7 +114,7 @@ describe 'Controller', ->
       controller.dispose()
 
       mediator.publish 'foo'
-      pubSubSpy.should.not.have.been.called
+      expect(pubSubSpy).to.not.have.been.called
 
     it 'should unsubscribe from other events', ->
       spy = sinon.spy()
@@ -131,4 +124,4 @@ describe 'Controller', ->
       controller.dispose()
 
       model.trigger 'foo'
-      spy.should.not.have.been.called
+      expect(spy).to.not.have.been.called

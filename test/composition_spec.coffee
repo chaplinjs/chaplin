@@ -1,6 +1,4 @@
 'use strict'
-
-{expect} = require 'chai'
 {Composition, EventBroker, mediator} = require '../src/chaplin'
 
 describe 'Composition', ->
