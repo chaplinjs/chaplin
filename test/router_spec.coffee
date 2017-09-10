@@ -1,7 +1,7 @@
 'use strict'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{Route, Router, utils, mediator} = require '../src/chaplin'
+{Route, Router, utils, mediator} = require '../build/chaplin'
 
 describe 'Router and Route', ->
   # Initialize shared variables

@@ -1,7 +1,7 @@
 'use strict'
 $ = require 'jquery'
 sinon = require 'sinon'
-{Controller, mediator, Layout, View} = require '../src/chaplin'
+{Controller, mediator, Layout, View} = require '../build/chaplin'
 
 describe 'Layout', ->
   # Initialize shared variables

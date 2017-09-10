@@ -1,8 +1,7 @@
 'use strict'
 $ = require 'jquery'
 sinon = require 'sinon'
-{SyncMachine, utils, Collection, Model} = require '../src/chaplin'
-{CollectionView, View} = require '../src/chaplin'
+{SyncMachine, utils, Collection, Model, CollectionView, View} = require '../build/chaplin'
 
 describe 'CollectionView', ->
   # Initialize shared variables

@@ -1,5 +1,5 @@
 'use strict'
-{Composition, EventBroker, mediator} = require '../src/chaplin'
+{Composition, EventBroker, mediator} = require '../build/chaplin'
 
 describe 'Composition', ->
   composition = null

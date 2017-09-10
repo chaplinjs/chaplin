@@ -1,7 +1,7 @@
 'use strict'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{EventBroker, mediator, Collection, Model} = require '../src/chaplin'
+{EventBroker, mediator, Collection, Model} = require '../build/chaplin'
 
 describe 'Collection', ->
   collection = null

@@ -1,6 +1,6 @@
 'use strict'
 sinon = require 'sinon'
-{EventBroker, mediator} = require '../src/chaplin'
+{EventBroker, mediator} = require '../build/chaplin'
 
 describe 'EventBroker', ->
   # Create a simple object which mixes in the EventBroker

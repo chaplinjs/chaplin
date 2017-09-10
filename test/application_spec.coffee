@@ -1,7 +1,7 @@
 'use strict'
 Backbone = require 'backbone'
-{Application, Composer, Dispatcher} = require '../src/chaplin'
-{EventBroker, Router, mediator, Layout} = require '../src/chaplin'
+{Application, Composer, Dispatcher} = require '../build/chaplin'
+{EventBroker, Router, mediator, Layout} = require '../build/chaplin'
 
 describe 'Application', ->
   app = null

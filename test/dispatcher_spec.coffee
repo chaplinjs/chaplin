@@ -1,7 +1,7 @@
 'use strict'
 sinon = require 'sinon'
 {uniqueId} = require 'underscore'
-{Composer, Controller, Dispatcher, utils, mediator} = require '../src/chaplin'
+{Composer, Controller, Dispatcher, utils, mediator} = require '../build/chaplin'
 
 describe 'Dispatcher', ->
   # Initialize shared variables

@@ -1,7 +1,7 @@
 'use strict'
 sinon = require 'sinon'
-{Composer, Controller, Dispatcher, Composition} = require '../src/chaplin'
-{EventBroker, Router, mediator, Model, View} = require '../src/chaplin'
+{Composer, Controller, Dispatcher, Composition} = require '../build/chaplin'
+{EventBroker, Router, mediator, Model, View} = require '../build/chaplin'
 
 describe 'Composer', ->
   composer = null

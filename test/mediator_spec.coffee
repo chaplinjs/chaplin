@@ -1,6 +1,6 @@
 'use strict'
 sinon = require 'sinon'
-{mediator, Model} = require '../src/chaplin'
+{mediator, Model} = require '../build/chaplin'
 
 describe 'mediator', ->
   it 'should be a simple object', ->

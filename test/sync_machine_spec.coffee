@@ -1,7 +1,7 @@
 'use strict'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{SyncMachine} = require '../src/chaplin'
+{SyncMachine} = require '../build/chaplin'
 
 describe 'SyncMachine', ->
   machine = null

@@ -2,8 +2,8 @@
 $ = require 'jquery'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{EventBroker, SyncMachine, mediator} = require '../src/chaplin'
-{Collection, Model, View} = require '../src/chaplin'
+{EventBroker, SyncMachine, mediator} = require '../build/chaplin'
+{Collection, Model, View} = require '../build/chaplin'
 
 describe 'View', ->
   renderCalled = false

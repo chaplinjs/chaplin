@@ -1,6 +1,6 @@
 'use strict'
 Backbone = require 'backbone'
-{utils, mediator} = require '../src/chaplin'
+{utils, mediator} = require '../build/chaplin'
 
 describe 'utils', ->
   class A
