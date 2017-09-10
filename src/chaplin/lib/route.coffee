@@ -1,13 +1,11 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
+import EventBroker from './event_broker'
+import utils from './utils'
+import Controller from '../controllers/controller'
 
-EventBroker = require './event_broker'
-utils = require './utils'
-Controller = require '../controllers/controller'
-
-module.exports = class Route
+export default class Route
   # Borrow the static extend method from Backbone.
   @extend = Backbone.Model.extend
 

@@ -152,11 +152,5 @@ utils.indexOf = (array, item) -> array.indexOf item
 utils.isArray = Array.isArray
 utils.queryParams = utils.querystring
 
-# Finish
-# ------
-
 # Seal the utils object.
-Object.seal utils
-
-# Return our creation.
-module.exports = utils
+export default Object.seal utils

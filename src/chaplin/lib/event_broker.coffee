@@ -1,6 +1,4 @@
-'use strict'
-
-mediator = require '../mediator'
+import mediator from '../mediator'
 
 # Add functionality to subscribe and publish to global
 # Publish/Subscribe events so they can be removed afterwards
@@ -14,7 +12,7 @@ mediator = require '../mediator'
 # Since Backbone 0.9.2 this abstraction just serves the purpose
 # that a handler cannot be registered twice for the same event.
 
-EventBroker =
+export default Object.freeze
   subscribeEvent: (type, handler) ->
     if typeof type isnt 'string'
       throw new TypeError 'EventBroker#subscribeEvent: ' +
@@ -66,9 +64,3 @@ EventBroker =
 
     # Publish global handler.
     mediator.publish type, args...
-
-# You’re frozen when your heart’s not open.
-Object.freeze EventBroker
-
-# Return our creation.
-module.exports = EventBroker

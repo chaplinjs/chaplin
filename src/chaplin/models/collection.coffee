@@ -1,15 +1,13 @@
-'use strict'
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-_ = require 'underscore'
-Backbone = require 'backbone'
-
-Model = require './model'
-EventBroker = require '../lib/event_broker'
-utils = require '../lib/utils'
+import Model from './model'
+import EventBroker from '../lib/event_broker'
+import utils from '../lib/utils'
 
 # Abstract class which extends the standard Backbone collection
 # in order to add some functionality.
-module.exports = class Collection extends Backbone.Collection
+export default class Collection extends Backbone.Collection
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
 

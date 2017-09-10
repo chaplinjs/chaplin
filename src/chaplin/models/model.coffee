@@ -1,8 +1,6 @@
-'use strict'
-
-_ = require 'underscore'
-Backbone = require 'backbone'
-EventBroker = require '../lib/event_broker'
+import _ from 'underscore'
+import Backbone from 'backbone'
+import EventBroker from '../lib/event_broker'
 
 # Private helper function for serializing attributes recursively,
 # creating objects which delegate to the original attributes
@@ -54,7 +52,7 @@ serializeModelAttributes = (model, currentModel, modelStack) ->
 
 
 # Abstraction that adds some useful functionality to backbone model.
-module.exports = class Model extends Backbone.Model
+export default class Model extends Backbone.Model
   # Mixin an EventBroker.
   _.extend @prototype, EventBroker
 
