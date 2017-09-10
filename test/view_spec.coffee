@@ -714,7 +714,7 @@ describe 'View', ->
       document.body.appendChild view.el
       expect(document.querySelector '#disposed-view').to.be.ok
       view.dispose()
-      expect(document.querySelector '#disposed-view').not.to.be.ok
+      expect(document.querySelector '#disposed-view').to.be.null
 
     it 'should call Backbone.View#remove', ->
       sinon.spy view, 'remove'

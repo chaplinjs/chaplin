@@ -83,7 +83,7 @@ describe 'Application', ->
     expect(-> app.initialize()).to.throw Error
 
   it 'should dispose itself correctly', ->
-    expect(app.disposed).not.to.be.ok
+    expect(app.disposed).to.be.false
     expect(app).to.respondTo 'dispose'
     app.dispose()
 
