@@ -58,8 +58,8 @@ describe 'Application', ->
       routesCalled = yes
       passedMatch = match
 
-    expect(app.initRouter.length).to.equal 2
     expect(app).to.respondTo 'initRouter'
+    expect(app.initRouter).to.have.lengthOf 2
     app.initRouter routes, root: '/', pushState: false
 
     expect(app.router).to.be.an.instanceof Router
