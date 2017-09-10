@@ -40,7 +40,7 @@ handlers = mediator._handlers = {}
 
 # Sets a handler function for requests.
 mediator.setHandler = (name, method, instance) ->
-  handlers[name] = {instance, method}
+  handlers[name] = {method, instance}
 
 # Retrieves a handler function and executes it.
 mediator.execute = (options, args...) ->

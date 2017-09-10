@@ -45,9 +45,7 @@ export default class Collection extends Backbone.Collection
     # Remove model constructor reference, internal model lists
     # and event handlers.
     delete this[prop] for prop in [
-      'model',
-      'models', '_byCid',
-      '_callbacks'
+      'model', 'models', '_byCid', '_callbacks'
     ]
 
     @_byId = {}
