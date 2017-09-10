@@ -6,14 +6,15 @@ Backbone = require 'backbone'
 describe 'Application', ->
   app = null
 
-  getApp = (dontInit) ->
-    if dontInit
-      class extends Application then initialize: ->
-    else
+  getApp = (init) ->
+    if init
       Application
+    else
+      class extends Application
+        initialize: ->
 
   beforeEach ->
-    app = new (getApp yes)
+    app = new (getApp no)
 
   afterEach ->
     app.dispose()
@@ -78,7 +79,7 @@ describe 'Application', ->
     expect(app).to.be.sealed
 
   it 'should throw an error on double-init', ->
-    app = new (getApp no)
+    app = new (getApp yes)
     expect(-> app.initialize()).to.throw Error
 
   it 'should dispose itself correctly', ->
