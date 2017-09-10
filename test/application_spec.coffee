@@ -19,13 +19,11 @@ describe 'Application', ->
   afterEach ->
     app.dispose()
 
-  it 'should be a simple object', ->
-    expect(app).to.be.an 'object'
+  it 'should be an instance of Application', ->
     expect(app).to.be.an.instanceof Application
 
-  it 'should mixin a EventBroker', ->
-    prototype = Application.prototype
-    expect(prototype).to.contain.all.keys EventBroker
+  it 'should mix in a EventBroker', ->
+    expect(Application.prototype).to.contain.all.keys EventBroker
 
   it 'should have initialize function', ->
     expect(app).to.respondTo 'initialize'
@@ -55,8 +53,8 @@ describe 'Application', ->
     passedMatch = null
     routesCalled = no
     routes = (match) ->
-      routesCalled = yes
       passedMatch = match
+      routesCalled = yes
 
     expect(app).to.respondTo 'initRouter'
     expect(app.initRouter).to.have.lengthOf 2

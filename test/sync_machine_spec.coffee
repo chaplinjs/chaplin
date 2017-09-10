@@ -7,9 +7,7 @@ describe 'SyncMachine', ->
   machine = null
 
   beforeEach ->
-    machine = {}
-    Object.assign machine, Backbone.Events
-    Object.assign machine, SyncMachine
+    machine = Object.assign {}, Backbone.Events, SyncMachine
 
   it 'should change its state', ->
     expect(machine.syncState()).to.equal 'unsynced'

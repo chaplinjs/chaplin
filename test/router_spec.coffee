@@ -831,10 +831,9 @@ describe 'Router and Route', ->
       DerivedRouter = Router.extend()
       derivedRouter = new DerivedRouter()
       expect(derivedRouter).to.be.an.instanceof Router
+      derivedRouter.dispose()
 
       expect(Route).to.respondTo 'extend'
       DerivedRoute = Route.extend()
       derivedRoute = new DerivedRoute 'foo', 'foo#bar'
       expect(derivedRoute).to.be.an.instanceof Route
-
-      derivedRouter.dispose()

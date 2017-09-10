@@ -6,9 +6,11 @@ describe 'mediator', ->
   it 'should be a simple object', ->
     expect(mediator).to.be.an 'object'
 
-  it 'should have seal method and be sealed', ->
-    expect(mediator.seal).to.be.a 'function'
+  it 'should be sealed', ->
     expect(mediator).to.be.sealed
+
+  it 'should have seal method and be sealed', ->
+    expect(mediator).to.respondTo 'seal'
 
   it 'should have Pub/Sub methods', ->
     expect(mediator).to.respondTo 'subscribe'

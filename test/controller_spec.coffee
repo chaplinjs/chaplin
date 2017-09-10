@@ -79,11 +79,13 @@ describe 'Controller', ->
 
   it 'should adjust page title', ->
     spy = sinon.spy()
+    title = 'meh'
+
     mediator.setHandler 'adjustTitle', spy
-    controller.adjustTitle 'meh'
+    controller.adjustTitle title
 
     expect(spy).to.have.been.calledOnce
-    expect(spy).to.have.been.calledWith 'meh'
+    expect(spy).to.have.been.calledWith title
 
   describe 'Disposal', ->
     mediator.setHandler 'region:unregister', ->
