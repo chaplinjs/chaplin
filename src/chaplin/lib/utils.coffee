@@ -1,11 +1,8 @@
-'use strict'
-
-# Utilities
-# ---------
+import mediator from '../mediator'
 
 utils =
   isEmpty: (object) ->
-    not Object.getOwnPropertyNames(object).length
+    Object.getOwnPropertyNames(object).length is 0
 
   # Simple duck-typing serializer for models and collections.
   serialize: (data) ->
@@ -54,7 +51,7 @@ utils =
 
   # Escapes a string to use in a regex.
   escapeRegExp: (str) ->
-    return String(str or '').replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
+    String(str or '').replace /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1'
 
 
   # Event handling helpers
@@ -69,13 +66,11 @@ utils =
 
   # Returns the url for a named route and any params.
   reverse: (criteria, params, query) ->
-    require('../mediator').execute 'router:reverse',
-      criteria, params, query
+    mediator.execute 'router:reverse', criteria, params, query
 
   # Redirects to URL, route name or controller and action pair.
   redirectTo: (pathDesc, params, options) ->
-    require('../mediator').execute 'router:route',
-      pathDesc, params, options
+    mediator.execute 'router:route', pathDesc, params, options
 
   # Determines module system and returns module loader function.
   loadModule: do ->
@@ -152,5 +147,4 @@ utils.indexOf = (array, item) -> array.indexOf item
 utils.isArray = Array.isArray
 utils.queryParams = utils.querystring
 
-# Seal the utils object.
 export default Object.seal utils

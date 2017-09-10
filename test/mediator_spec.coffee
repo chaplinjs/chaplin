@@ -19,18 +19,17 @@ describe 'mediator', ->
     expect(mediator).to.respondTo 'publish'
 
   it 'should have readonly Pub/Sub and Resp/Req methods', ->
-    desc =
-      writable: false
-      enumerable: true
-      configurable: false
+    methods = [
+      'subscribe', 'subscribeOnce', 'unsubscribe', 'publish',
+      'setHandler', 'execute', 'removeHandlers'
+    ]
 
-    expect(mediator).to.have.ownPropertyDescriptor 'subscribe', desc
-    expect(mediator).to.have.ownPropertyDescriptor 'subscribeOnce', desc
-    expect(mediator).to.have.ownPropertyDescriptor 'unsubscribe', desc
-    expect(mediator).to.have.ownPropertyDescriptor 'publish', desc
-    expect(mediator).to.have.ownPropertyDescriptor 'setHandler', desc
-    expect(mediator).to.have.ownPropertyDescriptor 'execute', desc
-    expect(mediator).to.have.ownPropertyDescriptor 'removeHandlers', desc
+    for method in methods
+      expect(mediator).to.have.ownPropertyDescriptor method,
+        value: mediator[method]
+        writable: false
+        enumerable: true
+        configurable: false
 
   it 'should publish messages to subscribers', ->
     spy = sinon.spy()

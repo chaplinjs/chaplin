@@ -425,7 +425,7 @@ describe 'Layout', ->
     expect(spy2).to.not.have.been.called
 
   it 'should be extendable', ->
-    expect(Layout).to.respondTo 'extend'
+    expect(Layout).itself.to.respondTo 'extend'
 
     DerivedLayout = Layout.extend()
     derivedLayout = new DerivedLayout()

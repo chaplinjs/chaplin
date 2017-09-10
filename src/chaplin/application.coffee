@@ -128,6 +128,8 @@ export default class Application
     # Seal the application instance to prevent further changes.
     Object.seal this
 
+  disposed: false
+
   dispose: ->
     # Am I already disposed?
     return if @disposed

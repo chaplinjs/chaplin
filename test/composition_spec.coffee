@@ -46,7 +46,7 @@ describe 'Composition', ->
   # ----------
 
   it 'should be extendable', ->
-    expect(Composition).to.respondTo 'extend'
+    expect(Composition).itself.to.respondTo 'extend'
 
     DerivedComposition = Composition.extend()
     derivedComposition = new DerivedComposition()

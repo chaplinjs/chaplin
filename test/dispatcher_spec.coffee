@@ -407,7 +407,7 @@ describe 'Dispatcher', ->
     initialize.restore()
 
   it 'should be extendable', ->
-    expect(Dispatcher).to.respondTo 'extend'
+    expect(Dispatcher).itself.to.respondTo 'extend'
 
     DerivedDispatcher = Dispatcher.extend()
     derivedDispatcher = new DerivedDispatcher()

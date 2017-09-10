@@ -92,7 +92,7 @@ describe 'Application', ->
     expect(app).to.be.frozen
 
   it 'should be extendable', ->
-    expect(Application).to.respondTo 'extend'
+    expect(Application).itself.to.respondTo 'extend'
 
     DerivedApplication = Application.extend()
     derivedApp = new DerivedApplication()

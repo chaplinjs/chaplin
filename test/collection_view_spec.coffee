@@ -190,7 +190,7 @@ describe 'CollectionView', ->
       basicSetup()
       collection.reset()
       children = getViewChildren()
-      expect(children).to.be.empty
+      expect(children).to.have.lengthOf 0
 
   describe 'Sorting', ->
 

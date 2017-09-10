@@ -236,7 +236,7 @@ describe 'Composer', ->
   # ----------
 
   it 'should be extendable', ->
-    expect(Composer).to.respondTo 'extend'
+    expect(Composer).itself.to.respondTo 'extend'
 
     DerivedComposer = Composer.extend()
     derivedComposer = new DerivedComposer()

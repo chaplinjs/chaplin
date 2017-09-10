@@ -22,7 +22,7 @@ describe 'Controller', ->
     expect(prototype).to.contain.all.keys EventBroker
 
   it 'should be extendable', ->
-    expect(Controller).to.respondTo 'extend'
+    expect(Controller).itself.to.respondTo 'extend'
 
     DerivedController = Controller.extend()
     derivedController = new DerivedController()

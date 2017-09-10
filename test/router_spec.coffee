@@ -827,13 +827,13 @@ describe 'Router and Route', ->
   describe 'Extendability', ->
 
     it 'should be extendable', ->
-      expect(Router).to.respondTo 'extend'
+      expect(Router).itself.to.respondTo 'extend'
       DerivedRouter = Router.extend()
       derivedRouter = new DerivedRouter()
       expect(derivedRouter).to.be.an.instanceof Router
       derivedRouter.dispose()
 
-      expect(Route).to.respondTo 'extend'
+      expect(Route).itself.to.respondTo 'extend'
       DerivedRoute = Route.extend()
       derivedRoute = new DerivedRoute 'foo', 'foo#bar'
       expect(derivedRoute).to.be.an.instanceof Route

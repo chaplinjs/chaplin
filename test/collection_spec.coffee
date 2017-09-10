@@ -33,7 +33,7 @@ describe 'Collection', ->
       expect(collection).to.respondTo 'dispose'
       collection.dispose()
 
-      expect(collection).to.be.empty
+      expect(collection).to.have.lengthOf 0
       expect(collection.disposed).to.be.true
       expect(collection).to.be.frozen
 
