@@ -47,7 +47,7 @@ setupJSDOM = ->
 setupChai = ->
   chai = require 'chai'
   chai.use require 'sinon-chai'
-  require 'chai/register-expect'
+  chai.should()
 
 module.exports = (grunt) ->
 
