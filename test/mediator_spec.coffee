@@ -11,10 +11,10 @@ describe 'mediator', ->
     expect(mediator).to.be.sealed
 
   it 'should have Pub/Sub methods', ->
-    expect(mediator.subscribe).to.be.a 'function'
-    expect(mediator.subscribeOnce).to.be.a 'function'
-    expect(mediator.unsubscribe).to.be.a 'function'
-    expect(mediator.publish).to.be.a 'function'
+    expect(mediator).to.respondTo 'subscribe'
+    expect(mediator).to.respondTo 'subscribeOnce'
+    expect(mediator).to.respondTo 'unsubscribe'
+    expect(mediator).to.respondTo 'publish'
 
   it 'should have readonly Pub/Sub and Resp/Req methods', ->
     methods = [
@@ -64,9 +64,9 @@ describe 'mediator', ->
     expect(spy).to.not.have.been.calledWith payload
 
   it 'should have response / request methods', ->
-    expect(mediator.setHandler).to.be.a 'function'
-    expect(mediator.execute).to.be.a 'function'
-    expect(mediator.removeHandlers).to.be.a 'function'
+    expect(mediator).to.respondTo 'setHandler'
+    expect(mediator).to.respondTo 'execute'
+    expect(mediator).to.respondTo 'removeHandlers'
 
   it 'should allow to set and execute handlers', ->
     response = 'austrian'

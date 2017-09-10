@@ -185,5 +185,5 @@ describe 'utils', ->
       expect(parse 'c=2', -> []).to.deep.equal {}
 
     it 'should have old methods', ->
-      expect(utils.queryParams.stringify).to.be.a 'function'
-      expect(utils.queryParams.parse).to.be.a 'function'
+      expect(utils.queryParams).to.respondTo 'stringify'
+      expect(utils.queryParams).to.respondTo 'parse'

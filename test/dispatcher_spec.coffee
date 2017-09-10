@@ -394,7 +394,7 @@ describe 'Dispatcher', ->
     dispose.restore()
 
   it 'should dispose itself correctly', ->
-    expect(dispatcher.dispose).to.be.a 'function'
+    expect(dispatcher).to.respondTo 'dispose'
     dispatcher.dispose()
 
     initialize = sinon.spy Test1Controller.prototype, 'initialize'
@@ -407,7 +407,7 @@ describe 'Dispatcher', ->
     initialize.restore()
 
   it 'should be extendable', ->
-    expect(Dispatcher.extend).to.be.a 'function'
+    expect(Dispatcher).to.respondTo 'extend'
 
     DerivedDispatcher = Dispatcher.extend()
     derivedDispatcher = new DerivedDispatcher()

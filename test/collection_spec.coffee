@@ -21,7 +21,7 @@ describe 'Collection', ->
     model2 = new Backbone.Model id: 2, bar: 'bar'
     collection = new Collection [model1, model2]
 
-    expect(collection.serialize).to.be.a 'function'
+    expect(collection).to.respondTo 'serialize'
     expect(collection.serialize collection).to.deep.equal [
       {id: 1, foo: 'foo'}
       {id: 2, bar: 'bar'}
@@ -30,7 +30,7 @@ describe 'Collection', ->
   describe 'Disposal', ->
     it 'should dispose itself correctly', ->
       expect(collection.disposed).to.be.false
-      expect(collection.dispose).to.be.a 'function'
+      expect(collection).to.respondTo 'dispose'
       collection.dispose()
 
       expect(collection.length).to.equal 0

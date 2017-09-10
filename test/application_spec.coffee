@@ -28,21 +28,21 @@ describe 'Application', ->
     expect(prototype).to.contain.all.keys EventBroker
 
   it 'should have initialize function', ->
-    expect(app.initialize).to.be.a 'function'
+    expect(app).to.respondTo 'initialize'
     app.initialize()
 
   it 'should create a dispatcher', ->
-    expect(app.initDispatcher).to.be.a 'function'
+    expect(app).to.respondTo 'initDispatcher'
     app.initDispatcher()
     expect(app.dispatcher).to.be.an.instanceof Dispatcher
 
   it 'should create a layout', ->
-    expect(app.initLayout).to.be.a 'function'
+    expect(app).to.respondTo 'initLayout'
     app.initLayout()
     expect(app.layout).to.be.an.instanceof Layout
 
   it 'should create a composer', ->
-    expect(app.initComposer).to.be.a 'function'
+    expect(app).to.respondTo 'initComposer'
     app.initComposer()
     expect(app.composer).to.be.an.instanceof Composer
 
@@ -58,8 +58,8 @@ describe 'Application', ->
       routesCalled = yes
       passedMatch = match
 
-    expect(app.initRouter).to.be.a 'function'
     expect(app.initRouter.length).to.equal 2
+    expect(app).to.respondTo 'initRouter'
     app.initRouter routes, root: '/', pushState: false
 
     expect(app.router).to.be.an.instanceof Router
@@ -84,7 +84,7 @@ describe 'Application', ->
 
   it 'should dispose itself correctly', ->
     expect(app.disposed).not.to.be.ok
-    expect(app.dispose).to.be.a 'function'
+    expect(app).to.respondTo 'dispose'
     app.dispose()
 
     for key in ['dispatcher', 'layout', 'router', 'composer']
@@ -94,7 +94,7 @@ describe 'Application', ->
     expect(app).to.be.frozen
 
   it 'should be extendable', ->
-    expect(Application.extend).to.be.a 'function'
+    expect(Application).to.respondTo 'extend'
 
     DerivedApplication = Application.extend()
     derivedApp = new DerivedApplication()

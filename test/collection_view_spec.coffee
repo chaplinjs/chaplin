@@ -657,7 +657,7 @@ describe 'CollectionView', ->
     it 'should dispose itself correctly', ->
       basicSetup()
 
-      expect(collectionView.dispose).to.be.a 'function'
+      expect(collectionView).to.respondTo 'dispose'
       viewsByCid = collectionView.getItemViews()
 
       expect(collectionView.disposed).to.be.false

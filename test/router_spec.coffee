@@ -33,7 +33,7 @@ describe 'Router and Route', ->
 
     it 'should allow to start the Backbone.History', ->
       spy = sinon.spy Backbone.history, 'start'
-      expect(router.startHistory).to.be.a 'function'
+      expect(router).to.respondTo 'startHistory'
       router.startHistory()
       expect(Backbone.History.started).to.be.true
       expect(spy).to.have.been.calledOnce
@@ -58,7 +58,7 @@ describe 'Router and Route', ->
     it 'should allow to stop the Backbone.History', ->
       router.startHistory()
       spy = sinon.spy Backbone.history, 'stop'
-      expect(router.stopHistory).to.be.a 'function'
+      expect(router).to.respondTo 'stopHistory'
       router.stopHistory()
       expect(Backbone.History.started).to.be.false
       expect(spy).to.have.been.calledOnce
@@ -67,7 +67,7 @@ describe 'Router and Route', ->
   describe 'Creating Routes', ->
 
     it 'should have a match method which returns a route', ->
-      expect(router.match).to.be.a 'function'
+      expect(router).to.respondTo 'match'
       route = router.match '', 'null#null'
       expect(route).to.be.an.instanceof Route
 
@@ -807,7 +807,7 @@ describe 'Router and Route', ->
   describe 'Disposal', ->
 
     it 'should dispose itself correctly', ->
-      expect(router.dispose).to.be.a 'function'
+      expect(router).to.respondTo 'dispose'
       router.dispose()
 
       # It should stop Backbone.History
@@ -827,13 +827,12 @@ describe 'Router and Route', ->
   describe 'Extendability', ->
 
     it 'should be extendable', ->
-      expect(Router.extend).to.be.a 'function'
-      expect(Route.extend).to.be.a 'function'
-
+      expect(Router).to.respondTo 'extend'
       DerivedRouter = Router.extend()
       derivedRouter = new DerivedRouter()
       expect(derivedRouter).to.be.an.instanceof Router
 
+      expect(Route).to.respondTo 'extend'
       DerivedRoute = Route.extend()
       derivedRoute = new DerivedRoute 'foo', 'foo#bar'
       expect(derivedRoute).to.be.an.instanceof Route
