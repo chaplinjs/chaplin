@@ -1,7 +1,7 @@
 'use strict'
 sinon = require 'sinon'
-{Composer, Controller, Dispatcher, Composition} = require '../src/chaplin'
-{EventBroker, Router, mediator, Model, View} = require '../src/chaplin'
+{Composer, Controller, Dispatcher, Composition} = require '../build/chaplin'
+{EventBroker, Router, mediator, Model, View} = require '../build/chaplin'
 
 describe 'Composer', ->
   composer = null
@@ -36,7 +36,7 @@ describe 'Composer', ->
   # ----------
 
   it 'should initialize', ->
-    expect(composer.initialize).to.be.a 'function'
+    expect(composer).to.respondTo 'initialize'
     composer.initialize()
     expect(composer.compositions).to.deep.equal {}
 
@@ -225,7 +225,7 @@ describe 'Composer', ->
 
   it 'should dispose itself correctly', ->
     expect(composer.disposed).to.be.false
-    expect(composer.dispose).to.be.a 'function'
+    expect(composer).to.respondTo 'dispose'
     composer.dispose()
 
     expect(composer).not.to.have.ownProperty 'compositions'
@@ -236,7 +236,7 @@ describe 'Composer', ->
   # ----------
 
   it 'should be extendable', ->
-    expect(Composer.extend).to.be.a 'function'
+    expect(Composer).itself.to.respondTo 'extend'
 
     DerivedComposer = Composer.extend()
     derivedComposer = new DerivedComposer()

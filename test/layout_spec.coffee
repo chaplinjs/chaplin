@@ -1,7 +1,7 @@
 'use strict'
 $ = require 'jquery'
 sinon = require 'sinon'
-{Controller, mediator, Layout, View} = require '../src/chaplin'
+{Controller, mediator, Layout, View} = require '../build/chaplin'
 
 describe 'Layout', ->
   # Initialize shared variables
@@ -412,7 +412,7 @@ describe 'Layout', ->
     spy2 = sinon.spy()
     layout.delegateEvents 'click #testbed': spy2
 
-    expect(layout.dispose).to.be.a 'function'
+    expect(layout).to.respondTo 'dispose'
     layout.dispose()
 
     expect(layout.disposed).to.be.true
@@ -425,7 +425,7 @@ describe 'Layout', ->
     expect(spy2).to.not.have.been.called
 
   it 'should be extendable', ->
-    expect(Layout.extend).to.be.a 'function'
+    expect(Layout).itself.to.respondTo 'extend'
 
     DerivedLayout = Layout.extend()
     derivedLayout = new DerivedLayout()

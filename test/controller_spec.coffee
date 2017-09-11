@@ -1,7 +1,7 @@
 'use strict'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{Controller, EventBroker, mediator, Model, View} = require '../src/chaplin'
+{Controller, EventBroker, mediator, Model, View} = require '../build/chaplin'
 
 describe 'Controller', ->
   controller = null
@@ -22,7 +22,7 @@ describe 'Controller', ->
     expect(prototype).to.contain.all.keys EventBroker
 
   it 'should be extendable', ->
-    expect(Controller.extend).to.be.a 'function'
+    expect(Controller).itself.to.respondTo 'extend'
 
     DerivedController = Controller.extend()
     derivedController = new DerivedController()
@@ -31,7 +31,7 @@ describe 'Controller', ->
     derivedController.dispose()
 
   it 'should redirect to a URL', ->
-    expect(controller.redirectTo).to.be.a 'function'
+    expect(controller).to.respondTo 'redirectTo'
 
     routerRoute = sinon.spy()
     mediator.setHandler 'router:route', routerRoute
@@ -79,18 +79,20 @@ describe 'Controller', ->
 
   it 'should adjust page title', ->
     spy = sinon.spy()
+    title = 'meh'
+
     mediator.setHandler 'adjustTitle', spy
-    controller.adjustTitle 'meh'
+    controller.adjustTitle title
 
     expect(spy).to.have.been.calledOnce
-    expect(spy).to.have.been.calledWith 'meh'
+    expect(spy).to.have.been.calledWith title
 
   describe 'Disposal', ->
     mediator.setHandler 'region:unregister', ->
 
     it 'should dispose itself correctly', ->
       expect(controller.disposed).to.be.false
-      expect(controller.dispose).to.be.a 'function'
+      expect(controller).to.respondTo 'dispose'
       controller.dispose()
 
       expect(controller.disposed).to.be.true

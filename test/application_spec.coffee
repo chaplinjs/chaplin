@@ -1,47 +1,46 @@
 'use strict'
 Backbone = require 'backbone'
-{Application, Composer, Dispatcher} = require '../src/chaplin'
-{EventBroker, Router, mediator, Layout} = require '../src/chaplin'
+{Application, Composer, Dispatcher} = require '../build/chaplin'
+{EventBroker, Router, mediator, Layout} = require '../build/chaplin'
 
 describe 'Application', ->
   app = null
 
-  getApp = (dontInit) ->
-    if dontInit
-      class extends Application then initialize: ->
-    else
+  getApp = (init) ->
+    if init
       Application
+    else
+      class extends Application
+        initialize: ->
 
   beforeEach ->
-    app = new (getApp yes)
+    app = new (getApp no)
 
   afterEach ->
     app.dispose()
 
-  it 'should be a simple object', ->
-    expect(app).to.be.an 'object'
+  it 'should be an instance of Application', ->
     expect(app).to.be.an.instanceof Application
 
-  it 'should mixin a EventBroker', ->
-    prototype = Application.prototype
-    expect(prototype).to.contain.all.keys EventBroker
+  it 'should mix in a EventBroker', ->
+    expect(Application.prototype).to.contain.all.keys EventBroker
 
   it 'should have initialize function', ->
-    expect(app.initialize).to.be.a 'function'
+    expect(app).to.respondTo 'initialize'
     app.initialize()
 
   it 'should create a dispatcher', ->
-    expect(app.initDispatcher).to.be.a 'function'
+    expect(app).to.respondTo 'initDispatcher'
     app.initDispatcher()
     expect(app.dispatcher).to.be.an.instanceof Dispatcher
 
   it 'should create a layout', ->
-    expect(app.initLayout).to.be.a 'function'
+    expect(app).to.respondTo 'initLayout'
     app.initLayout()
     expect(app.layout).to.be.an.instanceof Layout
 
   it 'should create a composer', ->
-    expect(app.initComposer).to.be.a 'function'
+    expect(app).to.respondTo 'initComposer'
     app.initComposer()
     expect(app.composer).to.be.an.instanceof Composer
 
@@ -54,11 +53,11 @@ describe 'Application', ->
     passedMatch = null
     routesCalled = no
     routes = (match) ->
-      routesCalled = yes
       passedMatch = match
+      routesCalled = yes
 
-    expect(app.initRouter).to.be.a 'function'
-    expect(app.initRouter.length).to.equal 2
+    expect(app).to.respondTo 'initRouter'
+    expect(app.initRouter).to.have.lengthOf 2
     app.initRouter routes, root: '/', pushState: false
 
     expect(app.router).to.be.an.instanceof Router
@@ -78,12 +77,12 @@ describe 'Application', ->
     expect(app).to.be.sealed
 
   it 'should throw an error on double-init', ->
-    app = new (getApp no)
+    app = new (getApp yes)
     expect(-> app.initialize()).to.throw Error
 
   it 'should dispose itself correctly', ->
-    expect(app.disposed).not.to.be.ok
-    expect(app.dispose).to.be.a 'function'
+    expect(app.disposed).to.be.false
+    expect(app).to.respondTo 'dispose'
     app.dispose()
 
     for key in ['dispatcher', 'layout', 'router', 'composer']
@@ -93,7 +92,7 @@ describe 'Application', ->
     expect(app).to.be.frozen
 
   it 'should be extendable', ->
-    expect(Application.extend).to.be.a 'function'
+    expect(Application).itself.to.respondTo 'extend'
 
     DerivedApplication = Application.extend()
     derivedApp = new DerivedApplication()

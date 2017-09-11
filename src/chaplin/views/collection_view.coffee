@@ -1,9 +1,6 @@
-'use strict'
-
-Backbone = require 'backbone'
-
-View = require './view'
-utils = require '../lib/utils'
+import Backbone from 'backbone'
+import View from './view'
+import utils from '../lib/utils'
 
 # Shortcut to access the DOM manipulation library.
 {$} = Backbone
@@ -106,7 +103,7 @@ insertView = do ->
 # Derive this class and declare at least `itemView` or override
 # `initItemView`. `initItemView` gets an item model and should instantiate
 # and return a corresponding item view.
-module.exports = class CollectionView extends View
+export default class CollectionView extends View
   # Configuration options
   # =====================
 

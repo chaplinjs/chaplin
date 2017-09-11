@@ -1,13 +1,13 @@
 'use strict'
 sinon = require 'sinon'
-{EventBroker, mediator} = require '../src/chaplin'
+{EventBroker, mediator} = require '../build/chaplin'
 
 describe 'EventBroker', ->
   # Create a simple object which mixes in the EventBroker
   eventBroker = Object.assign {}, EventBroker
 
   it 'should subscribe to events', ->
-    expect(eventBroker.subscribeEvent).to.be.a 'function'
+    expect(eventBroker).to.respondTo 'subscribeEvent'
 
     # We could mock mediator.publish here and test if it was called,
     # well, better testing the outcome.
@@ -49,7 +49,7 @@ describe 'EventBroker', ->
     expect(spy).to.have.been.calledOn eventBroker
 
   it 'should unsubscribe from events', ->
-    expect(eventBroker.unsubscribeEvent).to.be.a 'function'
+    expect(eventBroker).to.respondTo 'unsubscribeEvent'
 
     type = 'eventBrokerTest'
     spy = sinon.spy()
@@ -60,7 +60,7 @@ describe 'EventBroker', ->
     expect(spy).to.not.have.been.called
 
   it 'should unsubscribe from all events', ->
-    expect(eventBroker.unsubscribeAllEvents).to.be.a 'function'
+    expect(eventBroker).to.respondTo 'unsubscribeAllEvents'
 
     spy = sinon.spy()
     unrelatedHandler = sinon.spy()
@@ -84,7 +84,7 @@ describe 'EventBroker', ->
     mediator.unsubscribe 'four', unrelatedHandler
 
   it 'should publish events', ->
-    expect(eventBroker.publishEvent).to.be.a 'function'
+    expect(eventBroker).to.respondTo 'publishEvent'
 
     type = 'eventBrokerTest'
     spy = sinon.spy()

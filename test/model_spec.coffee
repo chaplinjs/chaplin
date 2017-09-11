@@ -1,7 +1,7 @@
 'use strict'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{EventBroker, mediator, Model} = require '../src/chaplin'
+{EventBroker, mediator, Model} = require '../build/chaplin'
 
 describe 'Model', ->
   model = null
@@ -130,7 +130,7 @@ describe 'Model', ->
   describe 'Disposal', ->
     it 'should dispose itself correctly', ->
       expect(model.disposed).to.be.false
-      expect(model.dispose).to.be.a 'function'
+      expect(model).to.respondTo 'dispose'
       model.dispose()
 
       expect(model.disposed).to.be.true

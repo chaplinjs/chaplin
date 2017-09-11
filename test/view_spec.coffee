@@ -2,8 +2,8 @@
 $ = require 'jquery'
 Backbone = require 'backbone'
 sinon = require 'sinon'
-{EventBroker, SyncMachine, mediator} = require '../src/chaplin'
-{Collection, Model, View} = require '../src/chaplin'
+{EventBroker, SyncMachine, mediator} = require '../build/chaplin'
+{Collection, Model, View} = require '../build/chaplin'
 
 describe 'View', ->
   renderCalled = false
@@ -73,7 +73,7 @@ describe 'View', ->
     expect(prototype).to.contain.all.keys EventBroker
 
   it 'should render', ->
-    expect(view.render).to.be.a 'function'
+    expect(view).to.respondTo 'render'
     renderResult = view.render()
     expect(renderResult).to.be.equal renderReturnValue
 
@@ -212,8 +212,8 @@ describe 'View', ->
   it 'should register and remove user input event handlers', ->
     view.dispose()
     view = new TestView container: testbed
-    expect(view.delegate).to.be.a 'function'
-    expect(view.undelegate).to.be.a 'function'
+    expect(view).to.respondTo 'delegate'
+    expect(view).to.respondTo 'undelegate'
 
     spy = sinon.spy()
     handler = view.delegate 'click', spy
@@ -361,7 +361,7 @@ describe 'View', ->
     expect(e.handler).to.have.been.calledOn e
 
   it 'should add and return subviews', ->
-    expect(view.subview).to.be.a 'function'
+    expect(view).to.respondTo 'subview'
 
     subview = new View()
     view.subview 'fooSubview', subview
@@ -374,7 +374,7 @@ describe 'View', ->
     expect(view.subviews).to.have.lengthOf 1
 
   it 'should remove subviews', ->
-    expect(view.removeSubview).to.be.a 'function'
+    expect(view).to.respondTo 'removeSubview'
 
     # By name
     subview = new View()
@@ -703,7 +703,7 @@ describe 'View', ->
 
     it 'should dispose itself correctly', ->
       expect(view.disposed).to.be.false
-      expect(view.dispose).to.be.a 'function'
+      expect(view).to.respondTo 'dispose'
       view.dispose()
 
       expect(view.disposed).to.be.true
@@ -714,7 +714,7 @@ describe 'View', ->
       document.body.appendChild view.el
       expect(document.querySelector '#disposed-view').to.be.ok
       view.dispose()
-      expect(document.querySelector '#disposed-view').not.to.be.ok
+      expect(document.querySelector '#disposed-view').to.be.null
 
     it 'should call Backbone.View#remove', ->
       sinon.spy view, 'remove'

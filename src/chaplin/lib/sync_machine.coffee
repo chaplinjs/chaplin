@@ -1,5 +1,3 @@
-'use strict'
-
 # Simple finite state machine for synchronization of models/collections
 # Three states: unsynced, syncing and synced
 # Several transitions between them
@@ -9,9 +7,8 @@
 # (named after the events above)
 
 UNSYNCED = 'unsynced'
-SYNCING  = 'syncing'
-SYNCED   = 'synced'
-
+SYNCING = 'syncing'
+SYNCED = 'synced'
 STATE_CHANGE = 'syncStateChange'
 
 SyncMachine =
@@ -74,15 +71,10 @@ SyncMachine =
 
 # Create shortcut methods to bind a handler to a state change
 # -----------------------------------------------------------
-
-for event in [UNSYNCED, SYNCING, SYNCED, STATE_CHANGE]
-  do (event) ->
-    SyncMachine[event] = (callback, context = this) ->
-      @on event, callback, context
-      callback.call(context) if @_syncState is event
+[UNSYNCED, SYNCING, SYNCED, STATE_CHANGE].forEach (event) ->
+  SyncMachine[event] = (callback, context = this) ->
+    @on event, callback, context
+    callback.call(context) if @_syncState is event
 
 # You’re frozen when your heart’s not open.
-Object.freeze SyncMachine
-
-# Return our creation.
-module.exports = SyncMachine
+export default Object.freeze SyncMachine

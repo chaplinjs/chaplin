@@ -1,5 +1,5 @@
 'use strict'
-{Composition, EventBroker, mediator} = require '../src/chaplin'
+{Composition, EventBroker, mediator} = require '../build/chaplin'
 
 describe 'Composition', ->
   composition = null
@@ -24,7 +24,7 @@ describe 'Composition', ->
   # ----------
 
   it 'should initialize', ->
-    expect(composition.initialize).to.be.a 'function'
+    expect(composition).to.respondTo 'initialize'
     composition.initialize()
 
     expect(composition.stale()).to.be.false
@@ -35,7 +35,7 @@ describe 'Composition', ->
 
   it 'should dispose itself correctly', ->
     expect(composition.disposed).to.be.false
-    expect(composition.dispose).to.be.a 'function'
+    expect(composition).to.respondTo 'dispose'
     composition.dispose()
 
     expect(composition).not.to.have.property 'compositions'
@@ -46,7 +46,7 @@ describe 'Composition', ->
   # ----------
 
   it 'should be extendable', ->
-    expect(Composition.extend).to.be.a 'function'
+    expect(Composition).itself.to.respondTo 'extend'
 
     DerivedComposition = Composition.extend()
     derivedComposition = new DerivedComposition()

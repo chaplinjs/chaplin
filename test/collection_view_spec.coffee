@@ -1,8 +1,7 @@
 'use strict'
 $ = require 'jquery'
 sinon = require 'sinon'
-{SyncMachine, utils, Collection, Model} = require '../src/chaplin'
-{CollectionView, View} = require '../src/chaplin'
+{SyncMachine, utils, Collection, Model, CollectionView, View} = require '../build/chaplin'
 
 describe 'CollectionView', ->
   # Initialize shared variables
@@ -191,7 +190,7 @@ describe 'CollectionView', ->
       basicSetup()
       collection.reset()
       children = getViewChildren()
-      expect(children.length).to.equal 0
+      expect(children).to.have.lengthOf 0
 
   describe 'Sorting', ->
 
@@ -658,7 +657,7 @@ describe 'CollectionView', ->
     it 'should dispose itself correctly', ->
       basicSetup()
 
-      expect(collectionView.dispose).to.be.a 'function'
+      expect(collectionView).to.respondTo 'dispose'
       viewsByCid = collectionView.getItemViews()
 
       expect(collectionView.disposed).to.be.false
