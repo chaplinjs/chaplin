@@ -74,13 +74,11 @@ utils =
 
   # Determines module system and returns module loader function.
   loadModule: do ->
-    {define, require} = window
-
     if typeof define is 'function' and define.amd
       (moduleName, handler) ->
         require [moduleName], handler
     else
-      enqueue = setImmediate ? setTimeout
+      enqueue = setImmediate or setTimeout
 
       (moduleName, handler) ->
         enqueue -> handler require moduleName
