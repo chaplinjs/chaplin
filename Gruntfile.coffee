@@ -34,9 +34,6 @@ module.exports = (grunt) ->
     # -------
     pkg
 
-    clean:
-      dist: 'build'
-
     coffeelint:
       src: 'src/**/*.coffee'
       test: 'test/*.coffee'
