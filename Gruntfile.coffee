@@ -12,32 +12,7 @@ banner = """
  * For all details and documentation:
  * http://chaplinjs.org
  */
-
 """
-
-umdHead = '''
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define(['backbone', 'underscore'], factory);
-  } else if (typeof module === 'object' && module && module.exports) {
-    module.exports = factory(require('backbone'), require('underscore'));
-  } else if (typeof require === 'function') {
-    factory(window.Backbone, window._ || window.Backbone.utils);
-  } else {
-    throw new Error('Chaplin requires Common.js or AMD modules');
-  }
-}(this, function(Backbone, _) {
-  function require(name) {
-    return {backbone: Backbone, underscore: _}[name];
-  }
-
-  require =
-'''
-
-umdTail = '''
-  return require(1);
-}))
-'''
 
 setupJSDOM = ->
   require('jsdom-global')(undefined,
@@ -47,7 +22,7 @@ setupJSDOM = ->
 setupChai = ->
   chai = require 'chai'
   chai.use require 'sinon-chai'
-  chai.should()
+  require 'chai/register-expect'
 
 module.exports = (grunt) ->
 
@@ -58,6 +33,9 @@ module.exports = (grunt) ->
     # Package
     # -------
     pkg
+
+    clean:
+      dist: 'build'
 
     coffeelint:
       src: 'src/**/*.coffee'
@@ -72,7 +50,6 @@ module.exports = (grunt) ->
           reporter: 'spec'
           require: [
             'coffee-script/register'
-            'coffee-coverage/register-istanbul'
             setupJSDOM
             -> require.cache[require.resolve 'jquery'] = {}
             'backbone.nativeview'
@@ -90,37 +67,33 @@ module.exports = (grunt) ->
           ]
         src: 'test/*.coffee'
 
-    makeReport:
-      src: 'coverage/coverage-coffee.json',
-      options:
-        type: 'html'
-        dir: 'coverage'
+    rollup:
+      options: {
+        plugins: [
+          require('rollup-plugin-coffee-script')()
+          require('rollup-plugin-node-resolve')(extensions: ['.coffee'])
+        ]
+        external: [
+          'underscore'
+          'backbone'
+        ]
+        globals:
+          underscore: '_'
+          backbone: 'Backbone'
+        format: 'umd'
+        moduleName: 'Chaplin'
+        intro: '_ = _ || Backbone.utils;' # support exoskeleton
+        banner
+      }
 
-    browserify:
       dist:
         files:
-          'build/chaplin.js': ['./src/chaplin.coffee']
-        options: {
-          banner
-          external: ['backbone', 'underscore']
-          transform: ['coffeeify']
-          browserifyOptions:
-            debug: true
-            extensions: ['.coffee']
-          postBundleCB: (err, src, next) ->
-            if err
-              next err
-            else
-              src = umdHead + src + umdTail
-              next null, new Buffer src
-        }
+          'build/chaplin.js': 'src/chaplin.coffee'
 
     # Minify
     # ======
     uglify:
-      options:
-        mangle: true
-      universal:
+      dist:
         files:
           'build/chaplin.min.js': 'build/chaplin.js'
 
@@ -234,8 +207,8 @@ module.exports = (grunt) ->
       grunt.log.ok()
 
   grunt.registerTask 'check:versions', [
-    'check:versions:component',
-    'check:versions:changelog',
+    'check:versions:component'
+    'check:versions:changelog'
     'check:versions:docs'
   ]
 
@@ -312,16 +285,12 @@ module.exports = (grunt) ->
   # Tests
   # =====
   grunt.registerTask 'lint', 'coffeelint'
-  grunt.registerTask 'test', 'mochaTest:native'
-  grunt.registerTask 'test:jquery', 'mochaTest:jquery'
-
-  # Coverage
-  # ========
-  grunt.registerTask 'coverage', ['mochaTest:native', 'makeReport']
+  grunt.registerTask 'test', ['rollup', 'mochaTest:native']
+  grunt.registerTask 'test:jquery', ['rollup', 'mochaTest:jquery']
 
   # Building
   # ========
-  grunt.registerTask 'build', ['browserify', 'uglify', 'compress']
+  grunt.registerTask 'build', ['rollup', 'uglify', 'compress']
 
   # Default
   # =======
