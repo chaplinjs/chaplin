@@ -260,22 +260,22 @@ describe 'View', ->
     expect(spy).to.have.been.calledTwice
 
   it 'should allow undelegating one event', ->
-    spy = sinon.spy()
-    spy2 = sinon.spy()
-    view.delegate 'click', spy
-    view.delegate 'focus', spy2
+    clickSpy = sinon.spy()
+    inputSpy = sinon.spy()
+    view.delegate 'click', clickSpy
+    view.delegate 'input', inputSpy
     view.render()
 
     view.el.click()
-    expect(spy).to.have.been.calledOnce
-    expect(spy2).to.not.have.been.called
+    expect(clickSpy).to.have.been.calledOnce
+    expect(inputSpy).to.not.have.been.called
 
     view.undelegate 'click'
-    view.el.dispatchEvent new Event 'focus'
+    view.el.dispatchEvent new Event 'input'
     view.el.click()
 
-    expect(spy).to.have.been.calledOnce
-    expect(spy2).to.have.been.calledOnce
+    expect(clickSpy).to.have.been.calledOnce
+    expect(inputSpy).to.have.been.calledOnce
 
   it 'should check delegate parameters', ->
     expect(-> view.delegate 1, 2, 3).to.throw Error

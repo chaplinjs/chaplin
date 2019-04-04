@@ -69,9 +69,10 @@ module.exports = (grunt) ->
     mochaTest:
       native:
         options:
+          timeout: 1e5
           reporter: 'spec'
           require: [
-            'coffee-script/register'
+            'coffeescript/register'
             'coffee-coverage/register-istanbul'
             setupJSDOM
             -> require.cache[require.resolve 'jquery'] = {}
@@ -84,7 +85,7 @@ module.exports = (grunt) ->
           timeout: 1e5
           reporter: 'spec'
           require: [
-            'coffee-script/register'
+            'coffeescript/register'
             setupJSDOM
             setupChai
           ]

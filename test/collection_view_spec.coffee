@@ -786,7 +786,7 @@ describe 'CollectionView', ->
           collectionView.fallback
 
         expectVisible = ->
-          expect(fallback.style.display).to.equal if $ then 'block' else ''
+          expect(fallback.style.display).to.equal ''
 
         expectInvisible = ->
           expect(fallback.style.display).to.equal 'none'
@@ -838,10 +838,9 @@ describe 'CollectionView', ->
 
         if $
           [{style}] = fallback
-          expect(style.display).to.equal 'block'
         else
           {style} = fallback
-          expect(style.display).to.equal ''
+        expect(style.display).to.equal ''
 
     describe 'Loading indicator', ->
 
@@ -866,7 +865,7 @@ describe 'CollectionView', ->
           collectionView.loading
 
         expectVisible = ->
-          expect(loading.style.display).to.equal if $ then 'block' else ''
+          expect(loading.style.display).to.equal ''
 
         expectInvisible = ->
           expect(loading.style.display).to.equal 'none'
