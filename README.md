@@ -30,7 +30,7 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
 5. Start the build
 
    ```
-   npm run build install
+   npm run build
    ```
 
 
