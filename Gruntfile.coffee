@@ -107,6 +107,7 @@ module.exports = (grunt) ->
           transform: ['coffeeify']
           browserifyOptions:
             debug: true
+            bare: true
             extensions: ['.coffee']
           postBundleCB: (err, src, next) ->
             if err
