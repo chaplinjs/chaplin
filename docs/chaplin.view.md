@@ -45,7 +45,7 @@ When establishing bindings between view and model, `this.model.on()` should not 
   Set [`autoRender`](#autoRender) to true to enable rendering upon View instantiation. If [`autoAttach`](#autoAttach) is enabled, this will automatically append the view to a [`container`](#container). The method of appending can be overridden using the [`containerMethod`](#containerMethod) property (to `html`, `before`, `prepend`, etc).
 
 <h3 class="module-member" id="getTemplateFunction">getTemplateFunction()</h3>
-* **function (throws error if not overriden)**
+* **function (throws error if not overridden)**
 
   Core method that returns the compiled template function. Usually set application-wide in a base view class.
 
@@ -111,7 +111,7 @@ Packages like [Brunch With Chaplin](https://github.com/paulmillr/brunch-with-cha
 <h3 class="module-member" id="getTemplateData">getTemplateData()</h3>
 * **function that returns Object**
 
-  Empty method which returns the prepared model data for the template. Should be overriden by inheriting classes (often from model data).
+  Empty method which returns the prepared model data for the template. Should be overridden by inheriting classes (often from model data).
 
 ```coffeescript
 getTemplateData: ->
@@ -136,10 +136,10 @@ getTemplateData: function() {
 }
 ```
 
-Often overriden in a base model class to intelligently pick out attributes.
+Often overridden in a base model class to intelligently pick out attributes.
 
 <h3 class="module-member" id="render">render</h3>
-By default calls the `templateFunction` with the `templateData` and sets the HTML of the `$el`. Can be overriden in your base view if needed, though this should be suitable for the majority of cases.
+By default calls the `templateFunction` with the `templateData` and sets the HTML of the `$el`. Can be overridden in your base view if needed, though this should be suitable for the majority of cases.
 
 <h3 class="module-member" id="attach">attach</h3>
 The `attach` method is called after the prototype chain has completed for `View#render`. It attaches the view to its `container` element and fires an `'addedToDOM'` event on the view on success.
