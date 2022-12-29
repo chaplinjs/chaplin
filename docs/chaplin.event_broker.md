@@ -10,7 +10,7 @@ The `EventBroker` offers an interface to interact with [Chaplin.mediator](./chap
 <h2 id="methods">Methods</h2>
 
 <h3 class="module-member" id="publishEvent">publishEvent(event, arguments...)</h3>
-Publishes `event` globablly, passing `arguments` along for interested subscribers.
+Publishes `event` globally, passing `arguments` along for interested subscribers.
 
 <h3 class="module-member" id="subscribeEvent">subscribeEvent(event, handler)</h3>
 Subscribes the `handler` to the given `event`. If `handler` already subscribed to `event`, it will be removed as a subscriber and added afresh. This function is like `Chaplin.mediator.subscribe` except it cannot subscribe twice.
