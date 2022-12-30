@@ -21,7 +21,7 @@ While Backbone is an easy starting point, it provides only basic, low-level patt
 The bootstrapper of the application; an extension point for key parts of the architecture.
 
 ### [Router](./chaplin.router.html)
-Facilitates mapping URLs to controller actions based on a user-defined configuration file. It is responsible for observing and acting upon URL changes. It does no direct action apart from notifiying the dispatcher of such a change however.
+Facilitates mapping URLs to controller actions based on a user-defined configuration file. It is responsible for observing and acting upon URL changes. It does no direct action apart from notifying the dispatcher of such a change however.
 
 #### Routes
 By convention, routes should be declared in a separate module (typically `routes.coffee`). For example:
@@ -58,7 +58,7 @@ A controller is the place where a model and associated views are instantiated.  
 By convention, there is a controller for each application module. A controller may provide several action methods like `index`, `show`, `edit` and so on.  These actions are called by the `Dispatcher` when a route matches.
 
 ### [Model](./chaplin.model.html)
-Holds reference to the data and contains any logic neccessary to retrieve the data from its source and optionally send it back.
+Holds reference to the data and contains any logic necessary to retrieve the data from its source and optionally send it back.
 
 ### [Collection](./chaplin.collection.html)
 A collection of models. Contains logic to provide client-side filtering and sorting of them.

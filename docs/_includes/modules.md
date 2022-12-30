@@ -13,7 +13,7 @@
 * <a href="./chaplin.dispatcher.html" title="Broker between router and controller">Chaplin.Dispatcher</a>
 * <a href="./chaplin.composer.html" title="Handles reuse of views between controller actions">Chaplin.Composer</a>
 * <a href="./chaplin.layout.html" title="Top-level application view">Chaplin.Layout</a>
-* <a href="./chaplin.application.html" title="Application boostrapper">Chaplin.Application</a>
+* <a href="./chaplin.application.html" title="Application bootstrapper">Chaplin.Application</a>
 
 ### MVC
 * <a href="./chaplin.controller.html" title="For initializing models, collections and views">Chaplin.Controller</a>

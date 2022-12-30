@@ -11,7 +11,7 @@ Views may subscribe to global pub/sub and model/collection events in a manner wh
 
 The templating function is provided by `this.getTemplateFunction`. The input data for the template is provided by `this.getTemplateData`. By default, this method just returns an object delegating to the model attributes. Views might override the method to process the raw model data for the view.
 
-In addition to Backbone’s `events` hash and the `delegateEvents` method, Chaplin has the `delegate` method to register user input handlers. The declarative `events` hash doesn’t work well for class hierarchies when several `initialize` methods register their own handlers. The programatic approach of `delegate` solves these problems.
+In addition to Backbone’s `events` hash and the `delegateEvents` method, Chaplin has the `delegate` method to register user input handlers. The declarative `events` hash doesn’t work well for class hierarchies when several `initialize` methods register their own handlers. The programmatic approach of `delegate` solves these problems.
 
 When establishing bindings between view and model, `this.model.on()` should not be used directly. Instead,  Backbone’s built-in methods for handling bindings, such as `this.listenTo(this.model, ...)` should be used, so handlers can be removed automatically on view disposal to prevent memory leakage.
 
@@ -254,7 +254,7 @@ For events affecting the whole view the signature is `delegate(eventType, handle
 this.delegate('click', this.clicked);
 ```
 
-For events only affecting an element or colletion of elements in the view, pass a selector, too, `delegate(eventType, selector, handler)`:
+For events only affecting an element or collection of elements in the view, pass a selector, too, `delegate(eventType, selector, handler)`:
 
 ```coffeescript
 @delegate('click', 'button.confirm', @confirm)
@@ -345,7 +345,7 @@ However the latter case is more flexible, as it leaves it to the controller to d
 
 <h3 class="module-member" id="regions">regions</h3>
 
-A region registration hash that works much like the declarative events hash present in Backbone. Region names are specifyed as keys, region selectors as values. If the region selector is empty (`''`), the view’s own DOM element will be selected.
+A region registration hash that works much like the declarative events hash present in Backbone. Region names are specified as keys, region selectors as values. If the region selector is empty (`''`), the view’s own DOM element will be selected.
 
 The following snippet will register the named regions `sidebar` and `body` and bind them to their respective selectors directly on the prototype:
 
